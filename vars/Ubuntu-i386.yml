@@ -1,0 +1,4 @@
+---
+jdk7_archive: jdk-7-linux-i586.tar.gz
+jdk8_archive: jdk-8-linux-i586.tar.gz
+jvm_folder: /usr/lib/jvm/

@@ -1,0 +1,13 @@
+---
+
+#NIS issue jenkins_home: /home/jenkins
+jenkins_home: /jenkins
+jenkins_slave_home: /kgr-mvn
+jenkins_url: https://home.nabla.mobi/jenkins
+jenkins_slave_name: swarm-{{ ansible_hostname }}
+nexus_url: http://home.nabla.mobi:8081
+git_machine: 82.231.208.223
+git_login: jenkins
+git_password: microsoft
+#prompted jenkins_username: tbd
+#prompted jenkins_password: tbd

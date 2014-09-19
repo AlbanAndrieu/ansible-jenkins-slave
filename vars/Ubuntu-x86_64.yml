@@ -1,0 +1,4 @@
+---
+jdk7_archive: jdk-7u51-linux-x64.tar.gz
+jdk8_archive: jdk-8-linux-x64.tar.gz
+jvm_folder: /usr/lib/jvm/

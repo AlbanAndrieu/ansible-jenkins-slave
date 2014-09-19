@@ -1,0 +1,3 @@
+- name: Remove JDK8 archive
+  file: path={{ jvm_folder }}/{{ jdk8_archive }} state=absent
+  

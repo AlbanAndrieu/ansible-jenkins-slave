@@ -1,0 +1,928 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- {{ ansible_managed }} -->
+ 
+<!-- USED by JENKINS -->
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+<!--
+ | This is the configuration file for Maven. It can be specified at two levels:
+ |
+ |  1. User Level. This settings.xml file provides configuration for a single user,
+ |               and is normally provided in ${user.home}/.m2/settings.xml.
+ |
+ |               NOTE: This location can be overridden with the CLI option:
+ |
+ |               -s /path/to/user/settings.xml
+ |
+ |  2. Global Level. This settings.xml file provides configuration for all Maven
+ |               users on a machine (assuming they're all using the same Maven
+ |               installation). It's normally provided in
+ |               ${maven.home}/conf/settings.xml.
+ |
+ |               NOTE: This location can be overridden with the CLI option:
+ |
+ |               -gs /path/to/global/settings.xml
+ |
+ | The sections in this sample file are intended to give you a running start at,
+ | getting the most out of your Maven installation. Where appropriate, the default
+ | values (values used when the setting is not specified) are provided.
+ |
+ |-->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <!-- localRepository
+   | The path to the local repository maven will use to store artifacts.
+   |
+   | Default: ~/.m2/repository
+  <localRepository>/path/to/local/repo</localRepository>
+  -->
+  <!--<localRepository>~/.m2/repository</localRepository>-->
+  <!--<localRepository>C:/repo</localRepository>-->
+  <!--<localRepository>/scratch/jenkins/workspace/nabla-demo/.repository</localRepository>-->
+  <!--<localRepository>${env.WORKSPACE}/.repository</localRepository>-->
+  <localRepository>[[MAVEN_LOCAL_REPO_PATH]]</localRepository>
+
+  <!-- interactiveMode
+   | This will determine whether maven prompts you when it needs input. If set to false,
+   | maven will use a sensible default value, perhaps based on some other setting, for
+   | the parameter in question.
+   |
+   | Default: true
+  <interactiveMode>true</interactiveMode>
+  -->
+
+  <!-- offline
+   | Determines whether maven should attempt to connect to the network when executing a build.
+   | This will have an effect on artifact downloads, artifact deployment, and others.
+   |
+   | Default: false
+  <offline>false</offline>
+  -->
+
+  <!-- pluginGroups
+   | This is a list of additional group identifiers that will be searched when resolving plugins by their prefix, i.e.
+   | when invoking a command line like "mvn prefix:goal". Maven will automatically add the group identifiers
+   | "org.apache.maven.plugins" and "org.codehaus.mojo" if these are not already contained in the list.
+   |-->
+  <pluginGroups>
+    <pluginGroup>com.atlassian.maven.plugins</pluginGroup>
+    <pluginGroup>com.sonatype.maven.plugins</pluginGroup>
+    <pluginGroup>org.sonatype.plugins</pluginGroup>
+  </pluginGroups>
+
+  <!-- proxies
+   | This is a list of proxies which can be used on this machine to connect to the network.
+   | Unless otherwise specified (by system property or command-line switch), the first proxy
+   | specification in this list marked as active will be used.
+   |-->
+  <proxies>
+    <!-- proxy
+     | Specification for one proxy, to be used in connecting to the network.
+     |
+    <proxy>
+      <id>optional</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <username>proxyuser</username>
+      <password>proxypass</password>
+      <host>proxy.host.net</host>
+      <port>80</port>
+      <nonProxyHosts>local.net|some.host.com</nonProxyHosts>
+    </proxy>
+    -->
+
+  </proxies>
+
+  <!-- servers
+   | This is a list of authentication profiles, keyed by the server-id used within the system.
+   | Authentication profiles can be used whenever maven must make a connection to a remote server.
+   |-->
+  <servers>
+    <!-- server
+     | Specifies the authentication information to use when connecting to a particular server, identified by
+     | a unique name within the system (referred to by the 'id' attribute below).
+     |
+     | NOTE: You should either specify username/password OR privateKey/passphrase, since these pairings are
+     |     used together.
+     |
+    <server>
+      <id>deploymentRepo</id>
+      <username>repouser</username>
+      <password>repopwd</password>
+    </server>
+    -->
+    <server>
+      <id>server-releases</id>
+      <username>alban.andrieu@nabla.mobi</username>
+      <password>TODO</password>
+    </server>
+
+    <server>
+      <id>website</id>
+      <username>u54677262</username>
+      <password>TODO</password>
+    </server>
+
+    <!--
+    <server>
+      <id>cloudbees-private-repository</id>
+      <username>nabla</username>
+      <password>TODO</password>
+    </server>
+
+    <server>
+      <id>server-forge-release</id>
+      <username>nabla</username>
+      <password>TODO</password>
+    </server>
+
+    <server>
+      <id>server-forge-snapshot</id>
+      <username>nabla</username>
+      <password>TODO</password>
+    </server>
+    -->
+
+    <server>
+      <id>nexus-releases</id>
+      <username>admin</username>
+      <password>TODO</password>
+    </server>
+
+    <server>
+      <id>nexus-snapshots</id>
+      <username>admin</username>
+      <password>TODO</password>
+    </server>
+
+    <server>
+      <id>tomcat</id>
+      <username>admin</username>
+      <password>admin</password>
+    </server>
+
+    <server>
+      <id>[[WORKSTATION]]</id>
+      <username>albandri</username>
+      <password>XXX</password>
+      <passphrase>some_passphrase</passphrase>
+      <filePermissions>664</filePermissions>
+      <directoryPermissions>775</directoryPermissions>
+      <privateKey>${user.home}/.ssh/id_dsa</privateKey>
+    </server>
+
+  </servers>
+
+  <!-- mirrors
+   | This is a list of mirrors to be used in downloading artifacts from remote repositories.
+   |
+   | It works like this: a POM may declare a repository to use in resolving certain artifacts.
+   | However, this repository may have problems with heavy traffic at times, so people have mirrored
+   | it to several places.
+   |
+   | That repository definition will have a unique id, so we can create a mirror reference for that
+   | repository, to be used as an alternate download site. The mirror site will be the preferred
+   | server for that repository.
+   |-->
+  <mirrors>
+    <!-- mirror
+     | Specifies a repository mirror site to use instead of a given repository. The repository that
+     | this mirror serves has an ID that matches the mirrorOf element of this mirror. IDs are used
+     | for inheritance and direct lookup purposes, and must be unique across the set of mirrors.
+     |
+    <mirror>
+      <id>mirrorId</id>
+      <mirrorOf>repositoryId</mirrorOf>
+      <name>Human Readable Name for this Mirror.</name>
+      <url>http://my.repository.com/repo/path</url>
+    </mirror>
+
+    <mirror>
+      <id>nexus</id>
+      <url>http://nexus/</url>
+      <mirrorOf>*,!sonar</mirrorOf>
+      <name>Central maven repository</name>
+    </mirror>
+
+    <mirror>
+      <id>archiva.default</id>
+      <url>http://localhost:8010/archiva/repository/internal</url>
+      <mirrorOf>*,!sonar</mirrorOf>
+    </mirror>
+    <mirror>
+      <id>archiva.apache.snapshots</id>
+      <url>http://localhost:8010/archiva/repository/snapshots</url>
+      <mirrorOf>apache.snapshots</mirrorOf>
+    </mirror>
+    -->
+
+    <!--This sends everything else to /public -->
+    <mirror>
+      <id>nexus-central</id>
+      <name>Nexus mirror of Maven central repository</name>
+      <url>{{ nexus_url }}/nexus/content/groups/public/</url>
+      <!-- Set to 'central' for non dev installations, and to 'nothing' for dev installations -->
+      <mirrorOf>central</mirrorOf>
+    </mirror>
+
+    <!--
+    <mirror>
+      <id>nexus</id>
+      <mirrorOf>*</mirrorOf>
+      <url>{{ nexus_url }}/nexus/content/groups/public/</url>
+    </mirror>
+    -->
+    <mirror>
+      <id>nexus</id>
+      <name>Nabla repository - all Nabla dependencies</name>
+      <url>{{ nexus_url }}/nexus/content/groups/public/</url>
+      <!-- Set to '*,!central' for non dev installations, and to 'nothing' for dev installations -->
+      <mirrorOf>*,!central,!thirdparty</mirrorOf>
+    </mirror>
+
+    <mirror>
+      <id>nexus-thirdparty</id>
+      <name>Nexus thirdparty repository - all non-central dependencies</name>
+      <url>{{ nexus_url }}/nexus/content/repositories/thirdparty/</url>
+      <!-- Set to '*,!central' for non dev installations, and to 'nothing' for dev installations -->
+      <mirrorOf>*,!central</mirrorOf>
+    </mirror>
+  </mirrors>
+
+  <!-- profiles
+   | This is a list of profiles which can be activated in a variety of ways, and which can modify
+   | the build process. Profiles provided in the settings.xml are intended to provide local machine-
+   | specific paths and repository locations which allow the build to work in the local environment.
+   |
+   | For example, if you have an integration testing plugin - like cactus - that needs to know where
+   | your Tomcat instance is installed, you can provide a variable here such that the variable is
+   | dereferenced during the build process to configure the cactus plugin.
+   |
+   | As noted above, profiles can be activated in a variety of ways. One way - the activeProfiles
+   | section of this document (settings.xml) - will be discussed later. Another way essentially
+   | relies on the detection of a system property, either matching a particular value for the property,
+   | or merely testing its existence. Profiles can also be activated by JDK version prefix, where a
+   | value of '1.4' might activate a profile when the build is executed on a JDK version of '1.4.2_07'.
+   | Finally, the list of active profiles can be specified directly from the command line.
+   |
+   | NOTE: For profiles defined in the settings.xml, you are restricted to specifying only artifact
+   |       repositories, plugin repositories, and free-form properties to be used as configuration
+   |       variables for plugins in the POM.
+   |
+   |-->
+  <profiles>
+    <!-- profile
+     | Specifies a set of introductions to the build process, to be activated using one or more of the
+     | mechanisms described above. For inheritance purposes, and to activate profiles via <activatedProfiles/>
+     | or the command line, profiles have to have an ID that is unique.
+     |
+     | An encouraged best practice for profile identification is to use a consistent naming convention
+     | for profiles, such as 'env-dev', 'env-test', 'env-production', 'user-jdcasey', 'user-brett', etc.
+     | This will make it more intuitive to understand what the set of introduced profiles is attempting
+     | to accomplish, particularly when you only have a list of profile id's for debug.
+     |
+     | This profile example uses the JDK version to trigger activation, and provides a JDK-specific repo.
+    <profile>
+      <id>jdk-1.4</id>
+
+      <activation>
+        <jdk>1.4</jdk>
+      </activation>
+
+      <repositories>
+        <repository>
+          <id>jdk14</id>
+          <name>Repository for JDK 1.4 builds</name>
+          <url>http://www.myhost.com/maven/jdk14</url>
+          <layout>default</layout>
+          <snapshotPolicy>always</snapshotPolicy>
+        </repository>
+      </repositories>
+    </profile>
+    -->
+
+    <!--
+     | Here is another profile, activated by the system property 'target-env' with a value of 'dev',
+     | which provides a specific path to the Tomcat instance. To use this, your plugin configuration
+     | might hypothetically look like:
+     |
+     | ...
+     | <plugin>
+     |   <groupId>org.myco.myplugins</groupId>
+     |   <artifactId>myplugin</artifactId>
+     |
+     |   <configuration>
+     |   <tomcatLocation>${tomcatPath}</tomcatLocation>
+     |   </configuration>
+     | </plugin>
+     | ...
+     |
+     | NOTE: If you just wanted to inject this configuration whenever someone set 'target-env' to
+     |     anything, you could just leave off the <value/> inside the activation-property.
+     |
+    <profile>
+      <id>env-dev</id>
+
+      <activation>
+        <property>
+          <name>target-env</name>
+          <value>dev</value>
+        </property>
+      </activation>
+
+      <properties>
+        <tomcatPath>/path/to/tomcat/instance</tomcatPath>
+      </properties>
+    </profile>
+    -->
+    <!-- mvn help:active-profiles -->
+    <!-- defined in the project
+    <profile>
+      <id>sonar</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <sonar.jdbc.url>jdbc:derby://localhost:${sonar.derby.port}/sonar;create=true</sonar.jdbc.url>
+        <sonar.jdbc.driver>org.apache.derby.jdbc.ClientDriver</sonar.jdbc.driver>
+        <sonar.jdbc.defaultTransactionIsolation>1</sonar.jdbc.defaultTransactionIsolation>
+        <sonar.jdbc.username>sonar</sonar.jdbc.username>
+        <sonar.jdbc.password>sonar</sonar.jdbc.password>
+        <sonar.host.url>http://localhost:${sonar.port}</sonar.host.url>
+      </properties>
+    </profile>
+    -->
+
+    <!-- defined in the project
+    <profile>
+      <id>unittest</id>
+      <properties>
+        <maven.test.skip>false</maven.test.skip>
+        <maven.failure.skip>true</maven.failure.skip>
+      </properties>
+    </profile>
+    -->
+    <!-- workaround because some environment does not have the WORKSPACE global varaible -->
+    <profile>
+      <id>env.WORKSPACE.default</id>
+      <activation>
+        <property>
+          <name>!env.WORKSPACE</name>
+        </property>
+      </activation>
+      <properties>
+        <env.WORKSPACE>${env.HOME}</env.WORKSPACE>
+      </properties>
+    </profile>
+    <profile>
+      <id>cloudbees</id>
+      <repositories>
+        <repository>
+            <id>server-forge-release</id>
+            <name>External Staging Repository</name>
+            <url>https://repository-nabla.forge.cloudbees.com/release</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>server-forge-snapshot</id>
+            <name>External Snapshot Repository</name>
+            <url>https://repository-nabla.forge.cloudbees.com/snapshot</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>server-forge-release</id>
+            <url>https://repository-nabla.forge.cloudbees.com/release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+		<pluginRepository>
+			<id>cloudbees-public-release</id>
+			<url>http://repository-cloudbees.forge.cloudbees.com/public-release</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+        </pluginRepositories>
+    </profile>
+    <profile>
+      <id>[[PROJECT_USER]]</id>      
+      <!-- http://mvnrepository.com/search.html -->
+      <repositories>
+        <repository>
+            <id>nexus-releases</id>
+            <name>Nexus Staging Repository</name>
+            <url>{{ nexus_url }}/nexus/content/repositories/releases</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </repository>
+        <repository>
+            <id>nexus-snapshots</id>
+            <name>Nexus Snapshot Repository</name>
+            <url>{{ nexus_url }}/nexus/content/repositories/snapshots</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <!--<updatePolicy>always</updatePolicy>-->
+                <checksumPolicy>ignore</checksumPolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+              <!--
+        <repository>
+            <id>nabla-releases</id>
+            <name>Nabla Release Repository</name>
+            <url>http://alban.googlecode.com/svn/mavenrepo/releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>nabla-snapshots</id>
+            <name>Nabla Snapshot Repository</name>
+            <url>http://alban.googlecode.com/svn/mavenrepo/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        -->
+        <repository>
+            <id>openqa-releases</id>
+            <name>Openqa Release Repository</name>
+            <url>http://nexus.openqa.org/content/repositories/releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>openqa-snapshots</id>
+            <name>Openqa Snapshot Repository</name>
+            <url>http://nexus.openqa.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+
+        <repository>
+            <id>central</id>
+            <name>Codehaus Maven 2.x Release Repository 1</name>
+            <url>http://repo1.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+		<repository>
+            <id>jboss-public-deprecated</id>
+            <name>JBoss Repository Public Deprecated</name>
+            <!--<url>http://repository.jboss.org/nexus/content/repositories/deprecated</url>-->
+            <url>http://maven-eu.nuxeo.org/nexus/content/groups/public</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jboss-public</id>
+            <name>JBoss Repository Public</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public-jboss</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+           <id>jboss-snapshots</id>
+           <name>JBoss Snapshot Repository</name>
+           <url>http://snapshots.jboss.org/maven2</url>
+           <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>daily</updatePolicy>
+            <checksumPolicy>ignore</checksumPolicy>
+           </snapshots>
+           <releases>
+              <enabled>false</enabled>
+           </releases>
+        </repository>
+        <!--
+        <repository>
+            <id>download</id>
+            <name>Java.Net Download</name>
+            <url>http://download.java.net/maven/2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        -->
+        <repository>
+            <id>andromda</id>
+            <name>AndroMDA Maven 2.x Repository</name>
+            <url>http://andromda.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>sonatype</id>
+            <name>Sonatype AndroMDA Repository</name>
+            <url>http://oss.sonatype.org/content/groups/public</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <!--
+        <repository>
+                <id>Codehaus Snapshots</id>
+                <url>http://snapshots.repository.codehaus.org</url>
+                <snapshots>
+                        <enabled>true</enabled>
+                </snapshots>
+                <releases>
+                        <enabled>false</enabled>
+                </releases>
+        </repository>
+        -->
+		<repository>
+		  <id>smartics</id>
+			  <name>Smartics Repository</name>
+		  <url>http://www.smartics.eu/nexus/content/groups/public-group</url>
+		  <releases>
+			<enabled>true</enabled>
+		  </releases>
+		  <snapshots>
+			<enabled>false</enabled>
+		  </snapshots>
+		</repository>
+        <repository>
+            <id>mule-deps</id>
+            <name>Mule Dependencies</name>
+            <url>http://dist.codehaus.org/mule/dependencies/maven2</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+      </repositories>
+
+      <pluginRepositories>
+        <pluginRepository>
+            <id>nexus-releases</id>
+            <name>Nexus Staging Repository</name>
+			<url>{{ nexus_url }}/nexus/content/repositories/releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+        <pluginRepository>
+			<id>nexus-snapshots</id>
+			<name>Nexus Staging Repository</name>
+			<url>{{ nexus_url }}/nexus/content/repositories/snapshots</url>
+			<snapshots>
+					<enabled>true</enabled>
+					<updatePolicy>interval:60</updatePolicy>
+			</snapshots>
+			<releases>
+					<enabled>false</enabled>
+			</releases>
+        </pluginRepository>
+
+        <!--
+        <pluginRepository>
+            <id>nabla-plugins</id>
+            <url>http://alban.googlecode.com/svn/mavenrepo/releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+        -->
+	    <pluginRepository>
+			  <id>cloudbees-public-release</id>
+			  <name>Cloudbees Public Release</name>
+			  <url>http://repository-cloudbees.forge.cloudbees.com/public-release</url>
+			  <snapshots>
+				<enabled>false</enabled>
+			  </snapshots>
+			  <releases>
+				<enabled>true</enabled>
+			  </releases>
+	    </pluginRepository>
+        <pluginRepository>
+            <id>mobilvox-snapshots</id>
+                <name>Mobilvox JS Plugin Snapshots</name>
+            <url>http://maven-js-plugin.sourceforge.net/m2snapshotrepo</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>codehaus-plugins</id>
+			<name>Codehaus Plugins</name>
+            <url>http://dist.codehaus.org</url>
+			  <snapshots>
+				<enabled>false</enabled>
+			  </snapshots>
+			  <releases>
+				<enabled>true</enabled>
+			  </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>appfuse</id>
+			<name>Appfuse</name>
+			<url>http://static.appfuse.org/repository</url>
+			  <snapshots>
+				<enabled>false</enabled>
+			  </snapshots>
+			  <releases>
+				<enabled>true</enabled>
+			  </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>elca-services</id>
+            <name>Elca Services</name>
+            <url>http://el4.elca-services.ch/el4j/maven2repository</url>
+			  <snapshots>
+				<enabled>false</enabled>
+			  </snapshots>
+			  <releases>
+				<enabled>true</enabled>
+			  </releases>
+        </pluginRepository>
+        <!--
+            be sure to add this repository to retreive the dashboard plugin
+        -->
+        <pluginRepository>
+            <id>codehaus-repository</id>
+            <name>Codehaus</name>
+            <url>http://repository.codehaus.org/</url>
+			  <snapshots>
+				<enabled>false</enabled>
+			  </snapshots>
+			  <releases>
+				<enabled>true</enabled>
+			  </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>sonatype-repository</id>
+            <name>Sonatype Repository</name>
+            <url>http://oss.sonatype.org/content/groups/public</url>
+			  <snapshots>
+				<enabled>false</enabled>
+			  </snapshots>
+			  <releases>
+				<enabled>true</enabled>
+			  </releases>
+        </pluginRepository>
+        <!--
+        <pluginRepository>
+            <id>Codehaus Snapshots</id>
+            <url>http://snapshots.repository.codehaus.org</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </pluginRepository>
+        -->
+		<pluginRepository>
+			<id>jboss-public-repository</id>
+			<name>JBoss Repository</name>
+			<url>http://repository.jboss.org/nexus/content/groups/public</url>
+			  <snapshots>
+				<enabled>false</enabled>
+			  </snapshots>
+			  <releases>
+				<enabled>true</enabled>
+			  </releases>
+		</pluginRepository>
+		<pluginRepository>
+		  <id>smartics</id>
+			  <name>Smartics Repository</name>
+		  <url>http://www.smartics.eu/nexus/content/groups/public-group</url>
+		  <releases>
+			<enabled>true</enabled>
+		  </releases>
+		  <snapshots>
+			<enabled>false</enabled>
+		  </snapshots>
+		</pluginRepository>
+		<pluginRepository>
+		  <id>wso2</id>
+		  <name>Maven wso2</name>
+		  <url>http://maven.wso2.org/nexus/content/repositories/public/</url>
+		  <releases>
+			<enabled>true</enabled>
+		  </releases>
+		  <snapshots>
+			<enabled>true</enabled>
+		  </snapshots>
+		</pluginRepository>
+              <!--
+              <pluginRepository>
+                <id>ctpjava</id>
+            <name>CTP Public Repository</name>
+            <url>http://ctpjava.googlecode.com/svn/trunk/repository</url>
+        </pluginRepository>
+        -->
+      </pluginRepositories>
+    </profile>
+	<profile>
+		<id>nexus</id>
+		<!--all requests to nexus via the mirror -->
+		<repositories>
+			<repository>
+				<id>nexus-releases</id>
+				<name>External Staging Repository</name>
+				<url>{{ nexus_url }}/nexus/content/repositories/server-forge-release</url>
+				<releases>
+					<enabled>true</enabled>
+					<updatePolicy>never</updatePolicy>
+				</releases>
+				<snapshots>
+					<enabled>false</enabled>
+				</snapshots>
+			</repository>
+			<repository>
+				<id>nexus-snapshots</id>
+				<name>External Snapshot Repository</name>
+				<url>{{ nexus_url }}/nexus/content/repositories/server-forge-snapshot</url>
+				<releases>
+					<enabled>false</enabled>
+				</releases>
+				<snapshots>
+					<enabled>true</enabled>
+					<!--<updatePolicy>always</updatePolicy>-->
+					<updatePolicy>interval:60</updatePolicy>
+				</snapshots>
+			</repository>
+		</repositories>
+		<pluginRepositories>
+			<pluginRepository>
+				<id>nexus-releases</id>
+				<name>External Staging Repository</name>
+				<url>{{ nexus_url }}/nexus/content/repositories/server-forge-release</url>
+				<releases>
+					<enabled>true</enabled>
+					<updatePolicy>never</updatePolicy>
+				</releases>
+				<snapshots>
+					<enabled>false</enabled>
+				</snapshots>
+			</pluginRepository>
+			<pluginRepository>
+				<id>nexus-snapshots</id>
+				<name>External Snapshot Repository</name>
+				<url>{{ nexus_url }}/nexus/content/repositories/server-forge-snapshot</url>
+				<releases>
+					<enabled>false</enabled>
+				</releases>
+				<snapshots>
+					<enabled>true</enabled>
+					<!--<updatePolicy>always</updatePolicy>-->
+					<updatePolicy>interval:60</updatePolicy>
+				</snapshots>
+			</pluginRepository>
+		</pluginRepositories>
+            <!--
+        <properties>
+          <maven.clover.licenseLocation>${user.home}/clover.license</maven.clover.licenseLocation>
+        </properties>
+        -->
+        </profile>
+        <!-- below is used by https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+Maven+Repository+Server -->
+		<profile>
+		   <id>upstream</id>
+		   <repositories>
+			  <repository>
+				 <id>upstream</id>
+				 <url>${env.Jenkins.Repository}</url>
+				 <releases>
+					 <enabled>true</enabled>
+				 </releases>
+				 <snapshots>
+					<enabled>true</enabled>
+				 </snapshots>
+			  </repository>
+			</repositories>
+		 <pluginRepositories>
+			<pluginRepository>
+				  <id>upstream</id>
+				  <url>${env.Jenkins.Repository}</url>
+				  <releases>
+					<enabled>true</enabled>
+				  </releases>
+				  <snapshots>
+					<enabled>true</enabled>
+				 </snapshots>
+			</pluginRepository>
+		  </pluginRepositories>
+		</profile>                
+  </profiles>
+
+  <!-- activeProfiles
+   | List of profiles that are active for all builds.
+   |
+  <activeProfiles>
+    <activeProfile>alwaysActiveProfile</activeProfile>
+    <activeProfile>anotherAlwaysActiveProfile</activeProfile>
+  </activeProfiles>
+  -->
+
+  <activeProfiles>
+    <!--<activeProfile>cloudbees</activeProfile>-->
+    <activeProfile>nexus</activeProfile>
+    <!--<activeProfile>[[PROJECT_USER]]</activeProfile>-->
+    <activeProfile>unittest</activeProfile>
+  </activeProfiles>
+</settings>

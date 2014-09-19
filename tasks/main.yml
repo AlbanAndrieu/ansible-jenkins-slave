@@ -1,0 +1,310 @@
+#ansible-playbook jenkins.yml --extra-vars "host=myhost user=myuser" -i hosts --ask-sudo-pass
+
+- name: Install wget package (Debian based)
+  action: apt pkg='wget' state=installed
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install wget package (RedHat based)
+  action: yum name='wget' state=installed
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+######
+# JAVA
+#
+
+#- name: Install JDK (apt)
+#  apt: pkg={{ item }} state=present update_cache=yes
+#  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'  
+#  tags: package
+#  with_items:
+#   - openjdk-6-jdk 
+#   - openjdk-7-jdk
+
+#sudo add-apt-repository ppa:webupd8team/java
+#sudo apt-get update
+#sudo apt-get install oracle-java7-installer
+#sudo apt-get install oracle-java8-installer
+
+- name: Copy download JDK7 script
+  copy: src=download-jdk7.sh dest=/tmp mode=0555
+
+- name: Download JDK7 (Ubuntu)
+  action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} /tmp/download-jdk7.sh {{ jdk7_archive }}
+
+- name: Unpack JDK7
+  action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} tar zxvf {{ jvm_folder }}/{{ jdk7_archive }} --owner=root
+  register: jdk7_installed
+#  ignore_errors: True
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install JDK7 RPM package
+  action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk7_archive }}
+  register: jdk7_installed
+#  ignore_errors: True
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+#- debug: msg="jdk7_installed value is {{ jdk7_installed.stdout }} "
+
+- debug: msg="jdk7_installed value is {{ jdk7_installed }} {{ jdk7_installed.skipped }} {{ jdk7_installed.changed }}"
+
+- include: jdk7-tasks.yml
+
+- name: Copy download JDK8 script
+  copy: src=download-jdk8.sh dest=/tmp mode=0555
+
+- name: Download JDK8 (Ubuntu)
+  action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} /tmp/download-jdk8.sh {{ jdk8_archive }}
+
+- name: Unpack JDK8
+  action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} tar zxvf {{jvm_folder}}/{{ jdk8_archive }} --owner=root
+  register: jdk8_installed
+#  ignore_errors: True    
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'      
+
+- name: Install JDK8 RPM package
+  action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk8_archive }}
+  register: jdk8_installed
+#  ignore_errors: True
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'  
+
+#- debug: msg="jdk8_installed value is {{ jdk8_installed.stdout }} "
+
+- debug: msg="jdk8_installed value is {{ jdk8_installed }} {{ jdk8_installed.skipped }} {{ jdk8_installed.changed }}"
+
+- include: jdk8-tasks.yml
+
+#######
+# MAVEN
+#
+
+- name: Create /opt directory
+  file: path=/opt state=directory
+
+- name: Download Maven 3.2.1
+  get_url: dest=/opt/maven321.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.2.1-bin.tar.gz
+
+- name: Unpack Maven 3.2.1
+  action: command creates=/opt/maven321 chdir=/opt tar zxvf /opt/maven321.tar.gz
+
+- name: Create Maven 3.2.1 directory link
+  file: path=/opt/maven321 src=/opt/apache-maven-3.2.1 state=link
+
+- name: Create Maven 3.2.1 directory link (legacy required)
+  file: path=/usr/local/apache-maven-3.2.1 src=/opt/apache-maven-3.2.1 state=link
+  
+#- name: Download Maven 3.0.5
+#  get_url: dest=/opt/maven305.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.0.5-bin.tar.gz
+
+#- name: Unpack Maven 3.0.5
+#  action: command creates=/opt/maven305 chdir=/opt tar zxvf /opt/maven305.tar.gz
+
+#- name: Create Maven 3.0.5 directory link
+#  file: path=/opt/maven305 src=/opt/apache-maven-3.0.5 state=link
+
+#- name: Create Maven 3.0.5 directory link (legacy required)
+#  file: path=/usr/local/apache-maven-3.0.5 src=/opt/apache-maven-3.0.5 state=link
+    
+#- name: Download Maven 3.0.4
+#  get_url: dest=/opt/maven3.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.0.4-bin.tar.gz
+
+#- name: Unpack Maven 3.0.4
+#  action: command creates=/opt/maven3 chdir=/opt tar zxvf /opt/maven3.tar.gz
+
+#- name: Create Maven 3.0.4 directory link
+#  file: path=/opt/maven3 src=/opt/apache-maven-3.0.4 state=link
+
+#- name: Create Maven 3.0.4 directory link (legacy required)
+#  file: path=/usr/local/apache-maven-3.0.4 src=/opt/apache-maven-3.0.4 state=link
+
+#- name: Download Maven 2.2.1
+#  get_url: dest=/opt/maven2.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-2.2.1-bin.tar.gz
+
+#- name: Unpack Maven 2.2.1
+#  action: command creates=/opt/maven2 chdir=/opt tar zxvf /opt/maven2.tar.gz
+
+#- name: Create Maven 2.2.1 directory link
+#  file: path=/opt/maven2 src=/opt/apache-maven-2.2.1 state=link
+
+#- name: Create Maven 2.2.1 directory link (legacy required)
+#  file: path=/usr/local/apache-maven-2.2.1 src=/opt/apache-maven-2.2.1 state=link
+
+#- name: Download Maven 2.0.9
+#  get_url: dest=/opt/maven209.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-2.0.9-bin.tar.gz
+
+#- name: Unpack Maven 2.0.9
+#  action: command creates=/opt/maven209 chdir=/opt tar zxvf /opt/maven209.tar.gz
+
+#- name: Create Maven 2.0.9 directory link
+#  file: path=/opt/maven209 src=/opt/apache-maven-2.0.9 state=link
+
+#- name: Create Maven 2.0.9 directory link (legacy required)
+#  file: path=/usr/local/apache-maven-2.0.9 src=/opt/apache-maven-2.0.9 state=link
+
+- name: Remove Maven321 archive
+  file: path=/opt/maven321.tar.gz state=absent
+
+- name: Remove Maven305 archive
+  file: path=/opt/maven305.tar.gz state=absent
+
+- name: Remove Maven3 archive
+  file: path=/opt/maven3.tar.gz state=absent
+
+- name: Remove Maven2 archive
+  file: path=/opt/maven2.tar.gz state=absent
+
+- name: Remove Maven209 archive
+  file: path=/opt/maven209.tar.gz state=absent
+
+##
+ # git
+ #
+- name: Install git package (Debian based)
+  action: apt pkg='git' state=installed
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install git package (RedHat based)
+  action: yum name='git' state=installed
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Install coverage and metrics tools (Debian based)
+  apt: pkg={{ item }} state=present update_cache=yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+   - lcov
+   - graphviz
+   - doxygen
+   
+#TODO opencl install
+#wget http://registrationcenter.intel.com/irc_nas/4181/intel_sdk_for_ocl_applications_2014_ubuntu_4.4.0.117_x64.tgz
+#tar zxvf intel_sdk_for_ocl_applications_2014_ubuntu_4.4.0.117_x64.tgz
+#./install-cpu.sh
+#ll /usr/lib/x86_64-linux-gnu/libOpenCL.so   
+   
+- name: Install C++ tools (Debian based)
+  apt: pkg={{ item }} state=present update_cache=yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+   - libxml-dom-perl
+   - libfile-find-rule-perl
+   - libjson-perl
+   - libdate-calc-perl
+   - libdate-manip-perl
+   - libcrypt-ssleay-perl
+   - libxml-handler-yawriter-perl
+   - libxml-simple-perl
+
+#TODO extract jenkins user to another script
+# jenkins user
+- name: Create jenkins user
+  user: name=jenkins comment="Jenkins slave user" home={{ jenkins_home }} shell=/bin/bash
+  ignore_errors: True
+
+- name: Create .ssh folder
+  file: path={{ jenkins_home }}/.ssh state=directory mode=0700 owner=jenkins
+  ignore_errors: True
+
+- name: Add passwordless connection for jenkins (Alban Andrieu)
+  authorized_key: user=jenkins key="ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIEAio3SOQ9yeK6QfKqSFNKyTasuzjStxWevG1Vz1wgJIxPF+KB0XoMAPD081J+Bzj2LCDRSWisNv2L4xv2jbFxW/Pl7NEakoX47eNx3U+Dxaf+szeWBTryYcDUGkduLV7G8Qncm0luIFd+HDIe/Qir1E2f56Qu2uuBNE6Tz5TFt1vc= Alban"
+
+#TODO use authorized_key instead of copy-keys.yml
+#http://brokenbad.com/better-handling-of-public-ssh-keys-using-ansible/
+#- name: Checking public keys list
+#  authorized_key:
+#    user: "{{ base_admin_username }}"
+#    key: "{{ item }}"
+#  with_items: base_admin_keys
+
+- name: Update authorized_keys rights
+  file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner=jenkins
+  ignore_errors: True
+  
+- name: Copy the .netrc script for git credentials
+  copy: src=.netrc dest={{ jenkins_home }}/.netrc mode=0600 owner=jenkins
+
+- name: Update git .netrc rights
+  file: path={{ jenkins_home }}/.netrc state=file mode=0600 owner=jenkins
+
+- name: Create .m2 folder
+  file: path={{ jenkins_home }}/.m2 state=directory owner=jenkins mode=0775
+
+- name: Copy maven configuration
+  template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner=jenkins mode=0700
+
+- name: Jenkins can run any command with no password
+  lineinfile: "line='jenkins ALL=NOPASSWD: ALL' dest=/etc/sudoers regexp='^jenkins'"
+ 
+- name: Copy sonar runner configuration
+  copy: src=sonar-runner.properties.j2 dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner=jenkins
+  
+- name: Create {{ jenkins_slave_home }} directory
+  file: path={{ jenkins_slave_home }} state=directory
+
+- name: Create /repository directory
+  file: path={{ jenkins_slave_home }}/repository state=directory owner=jenkins
+
+- name: Create Jenkins slave directory
+  file: path={{ jenkins_slave_home }}/Jenkins-slave state=directory owner=jenkins mode=0775
+
+- name: Create Java directory link (legacy required)
+  file: path={{ jenkins_slave_home }}/jdk src=/usr/lib/jvm/jdk1.7.0 state=link
+
+#END OF TODO extract jenkins user to another script
+
+#sudo update-alternatives --list java
+#sudo update-alternatives --remove java /usr/lib/jvm/jdk1.7.0/bin/java
+#sudo update-alternatives --remove java /usr/lib/jvm/java-6-openjdk-amd64/jre/bin/java
+#sudo update-alternatives --remove java /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
+
+#TODO  
+#sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.6.0_32/bin/javac 1
+#sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.6.0_32/bin/java 1
+#sudo update-alternatives --install /usr/bin/javaws javaws /usr/lib/jvm/jdk1.6.0_32/bin/javaws 1  
+#- name: Set java link
+#  action: command update-alternatives --install /usr/bin/java java {{ jvm_folder }}/jdk1.8.0/bin/java 1
+#  when: "jdk8_installed.changed == 'True'"
+
+#TODO
+#sudo update-alternatives --config javac
+#sudo update-alternatives --config java
+#sudo update-alternatives --config javaws
+#sudo update-alternatives --config javadoc
+#sudo update-alternatives --config javafxpackager
+#sudo update-alternatives --config javah
+#sudo update-alternatives --config javap
+
+#TODO Verify the symlinks all point to the new java location:
+#ls -la /etc/alternatives/java*
+   
+#------------------------------
+
+#Setting Java environment variables
+#sudo apt-get install oracle-java8-set-default
+
+#Switching between Oracle Java 8 and Java 7
+#sudo update-java-alternatives -s java-7-oracle
+#sudo update-java-alternatives -s java-8-oracle
+
+#- name: Set java link
+#  action: command update-alternatives --install /usr/bin/java java {{ jvm_folder }}/jdk1.7.0/bin/java 1
+#  when: "jdk7_installed.changed == 'True'"
+
+#- name: Set jar link
+#  action: command update-alternatives --install /usr/bin/jar jar {{ jvm_folder }}/jdk1.7.0/bin/jar 1
+#  when: "jdk7_installed.changed == 'True'"
+
+#sudo update-alternatives --list mvn
+#sudo update-alternatives --remove mvn /usr/share/maven/bin/mvn
+#sudo update-alternatives --remove mvn /opt/maven321/bin/mvn
+#sudo update-alternatives --remove mvn /opt/maven3/bin/mvn
+
+#sudo update-alternatives --config mvn
+#- name: Set mvn link to Maven 3.0.5
+#  action: command update-alternatives --install /usr/bin/mvn mvn /opt/maven305/bin/mvn 1
+  
+#- name: Set mvn local link to Maven 3.0.5
+#  action: command update-alternatives --install /usr/local/bin/mvn mvn /opt/maven305/bin/mvn 1
+
+#http://drupalcode.org/sandbox/franskuipers/1801378.git/blob/e0d2e3dd3f3b9ff7f9ace61f9e56c56a1f28e915:/ansible.yml  #
+
+#- name: Clone the application
+#  action: git repo=http://almtools/stash/scm/risk/buildmasters.git dest=/jenkins/buildmasters
