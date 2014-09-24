@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOCKERNAME="nabla/ansible-jenkins-slave"
+DOCKERNAME="{{ docker_image_name }}"
 
 time docker build -t $DOCKERNAME .
 

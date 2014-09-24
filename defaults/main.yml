@@ -1,11 +1,15 @@
 ---
 
 #NIS issue jenkins_home: /home/jenkins
-jenkins_home: /jenkins
-jenkins_slave_home: /kgr-mvn
-nexus_url: http://home.nabla.mobi:8081
+jenkins_home                  : /jenkins
+jenkins_slave_home            : /kgr-mvn
+nexus_url                     : http://home.nabla.mobi:8081
 
-git_machine: 82.231.208.223
-git_login: jenkins
-git_password: microsoft
-git_path: "/usr/bin"
+git_machine                   : 82.231.208.223
+git_login                     : jenkins
+git_password                  : microsoft
+git_path                      : "/usr/bin"
+
+docker_volume_directory       : "/kgr-mvn"
+docker_working_directory      : "/home/vagrant"
+docker_image_name             : "nabla/ansible-jenkins-slave"

@@ -311,3 +311,6 @@
 
 - name: copy Dockerfile
   template: src=Dockerfile.j2 dest=roles/jenkins-slave/Dockerfile mode=0700
+  
+- name: copy build.sh
+  template: src=build.sh dest=roles/jenkins-slave/build.sh mode=0700

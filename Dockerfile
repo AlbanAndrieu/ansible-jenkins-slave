@@ -1,17 +1,21 @@
-# Ansible managed: /workspace/users/albandri10/env/ansible/roles/jenkins-slave/templates/Dockerfile.j2 modified on 2014-09-24 18:00:17 by albandri on albandri-laptop-misys
+# Ansible managed: /workspace/users/albandri10/env/ansible/roles/jenkins-slave/templates/Dockerfile.j2 modified on 2014-09-25 00:36:24 by albandri on albandri-laptop-misys
+#FROM        debian:jessie
 #FROM        stackbrew/ubuntu:14.04
 FROM        jasongiedymin/ansible-base-ubuntu
-#FROM        debian:jessie
 
-VOLUME      ["/var/log/jenkins"]
+# Volume can be accessed outside of container
+VOLUME      [/kgr-mvn]
 
-MAINTAINER  Alban Andrieu "https://github.com/AlbanAndrieu/nabla"
+MAINTAINER  Alban Andrieu "https://github.com/AlbanAndrieu"
 
 ENV			DEBIAN_FRONTEND noninteractive
-#ENV         JENKINS_HOME /jenkins
+ENV         JENKINS_HOME /jenkins
 
 # Working dir
-ENV WORKDIR /tmp/build/ansible-jenkins-slave
+WORKDIR /home/vagrant
+
+# COPY
+#COPY
 
 # ADD
 ADD default $WORKDIR/default
