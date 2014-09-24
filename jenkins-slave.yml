@@ -3,3 +3,8 @@
   sudo: True
   roles:
     - ansible-jenkins-slave
+
+  vars_files:
+  - [ "roles/jenkins-slave/defaults/main.yml" ]
+  - [ "roles/jenkins-slave/vars/{{ ansible_distribution }}-{{ ansible_architecture }}.yml", "roles/jenkins-slave/vars/{{ ansible_distribution }}.yml" ]
+  
