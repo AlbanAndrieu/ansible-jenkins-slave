@@ -8,3 +8,7 @@
   - [ "jenkins-slave/defaults/main.yml" ]
   - [ "jenkins-slave/vars/{{ ansible_distribution }}-{{ ansible_architecture }}.yml", "roles/jenkins-slave/vars/{{ ansible_distribution }}.yml" ]
   
+  vars:     
+#       user: root
+#       home: /root
+       docker_files_generated_directory         : "jenkins-slave"  
