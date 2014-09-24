@@ -310,7 +310,7 @@
 #  action: git repo=http://almtools/stash/scm/risk/buildmasters.git dest=/jenkins/buildmasters
 
 - name: Copy Dockerfile
-  template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0700
+  template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0777
   
 - name: Copy build.sh
-  template: src=build.sh dest={{ docker_files_generated_directory }}/build.sh mode=0700
+  template: src=build.sh dest={{ docker_files_generated_directory }}/build.sh mode=0777
