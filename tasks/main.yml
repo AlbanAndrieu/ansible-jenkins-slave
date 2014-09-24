@@ -309,8 +309,8 @@
 #- name: Clone the application
 #  action: git repo=http://almtools/stash/scm/risk/buildmasters.git dest=/jenkins/buildmasters
 
-- name: copy Dockerfile
-  template: src=Dockerfile.j2 dest=roles/jenkins-slave/Dockerfile mode=0700
+- name: Copy Dockerfile
+  template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0700
   
-- name: copy build.sh
-  template: src=build.sh dest=roles/jenkins-slave/build.sh mode=0700
+- name: Copy build.sh
+  template: src=build.sh dest={{ docker_files_generated_directory }}/build.sh mode=0700

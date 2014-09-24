@@ -10,6 +10,7 @@ git_login                     : jenkins
 git_password                  : microsoft
 git_path                      : "/usr/bin"
 
-docker_volume_directory       : "/kgr-mvn"
-docker_working_directory      : "/home/vagrant"
-docker_image_name             : "nabla/ansible-jenkins-slave"
+docker_files_generated_directory         : "roles/jenkins-slave"
+docker_volume_directory                  : "/kgr-mvn"
+docker_working_directory                 : "/home/vagrant"
+docker_image_name                        : "nabla/ansible-jenkins-slave"
