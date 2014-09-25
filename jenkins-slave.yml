@@ -12,3 +12,4 @@
 #       user: root
 #       home: /root
        docker_files_generated_directory         : ""  
+       jenkins_jdk7_enable                      : false
