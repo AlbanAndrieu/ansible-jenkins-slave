@@ -25,12 +25,19 @@
 #sudo apt-get install oracle-java7-installer
 #sudo apt-get install oracle-java8-installer
 
+- name: Create temporary directory
+  shell: mktemp -d
+  register: tempdir
+  sudo: true
+  tags:
+    - jenkins-slave
+    
 - name: Copy download JDK7 script
-  copy: src=download-jdk7.sh dest=/tmp mode=0555
+  copy: src=download-jdk7.sh dest={{ tempdir.stdout }} mode=0555
   when: jenkins_jdk7_enable
 
 - name: Download JDK7 (Ubuntu)
-  action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} /tmp/download-jdk7.sh {{ jdk7_archive }}
+  action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} {{ tempdir.stdout }}/download-jdk7.sh {{ jdk7_archive }}
   when: jenkins_jdk7_enable
   
 - name: Unpack JDK7
@@ -54,11 +61,11 @@
   when: jenkins_jdk7_enable
   
 - name: Copy download JDK8 script
-  copy: src=download-jdk8.sh dest=/tmp mode=0555
+  copy: src=download-jdk8.sh dest={{ tempdir.stdout }} mode=0555
   when: jenkins_jdk8_enable
   
 - name: Download JDK8 (Ubuntu)
-  action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} /tmp/download-jdk8.sh {{ jdk8_archive }}
+  action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} {{ tempdir.stdout }}/download-jdk8.sh {{ jdk8_archive }}
   when: jenkins_jdk8_enable
   
 - name: Unpack JDK8
@@ -204,15 +211,15 @@
 #TODO extract jenkins user to another script
 # jenkins user
 - name: Create jenkins user
-  user: name=jenkins comment="Jenkins slave user" home={{ jenkins_home }} shell=/bin/bash
+  user: name={{ jenkins_user }} comment="Jenkins slave user" home={{ jenkins_home }} shell=/bin/bash
   ignore_errors: True
 
 - name: Create .ssh folder
-  file: path={{ jenkins_home }}/.ssh state=directory mode=0700 owner=jenkins
+  file: path={{ jenkins_home }}/.ssh state=directory mode=0700  owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: True
 
 - name: Add passwordless connection for jenkins (Alban Andrieu)
-  authorized_key: user=jenkins key="ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIEAio3SOQ9yeK6QfKqSFNKyTasuzjStxWevG1Vz1wgJIxPF+KB0XoMAPD081J+Bzj2LCDRSWisNv2L4xv2jbFxW/Pl7NEakoX47eNx3U+Dxaf+szeWBTryYcDUGkduLV7G8Qncm0luIFd+HDIe/Qir1E2f56Qu2uuBNE6Tz5TFt1vc= Alban"
+  authorized_key: user={{ jenkins_user }} key="ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIEAio3SOQ9yeK6QfKqSFNKyTasuzjStxWevG1Vz1wgJIxPF+KB0XoMAPD081J+Bzj2LCDRSWisNv2L4xv2jbFxW/Pl7NEakoX47eNx3U+Dxaf+szeWBTryYcDUGkduLV7G8Qncm0luIFd+HDIe/Qir1E2f56Qu2uuBNE6Tz5TFt1vc= Alban"
 
 #TODO use authorized_key instead of copy-keys.yml
 #http://brokenbad.com/better-handling-of-public-ssh-keys-using-ansible/
@@ -223,26 +230,26 @@
 #  with_items: base_admin_keys
 
 - name: Update authorized_keys rights
-  file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner=jenkins
+  file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: True
   
 - name: Copy the .netrc script for git credentials
-  copy: src=.netrc dest={{ jenkins_home }}/.netrc mode=0600 owner=jenkins
+  copy: src=.netrc dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 
 - name: Update git .netrc rights
-  file: path={{ jenkins_home }}/.netrc state=file mode=0600 owner=jenkins
+  file: path={{ jenkins_home }}/.netrc state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 
 - name: Create .m2 folder
-  file: path={{ jenkins_home }}/.m2 state=directory owner=jenkins mode=0775
+  file: path={{ jenkins_home }}/.m2 state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
 
 - name: Copy maven configuration
-  template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner=jenkins mode=0700
+  template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0700
 
 - name: Jenkins can run any command with no password
   lineinfile: "line='jenkins ALL=NOPASSWD: ALL' dest=/etc/sudoers regexp='^jenkins'"
  
 - name: Copy sonar runner configuration
-  copy: src=sonar-runner.properties.j2 dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner=jenkins
+  copy: src=sonar-runner.properties.j2 dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
   
 - name: Create {{ jenkins_slave_home }} directory
   file: path={{ jenkins_slave_home }} state=directory
@@ -251,7 +258,7 @@
   file: path={{ jenkins_slave_home }}/repository state=directory owner=jenkins
 
 - name: Create Jenkins slave directory
-  file: path={{ jenkins_slave_home }}/Jenkins-slave state=directory owner=jenkins mode=0775
+  file: path={{ jenkins_slave_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
 
 - name: Create Java directory link (legacy required)
   file: path={{ jenkins_slave_home }}/jdk src=/usr/lib/jvm/jdk1.7.0 state=link
@@ -316,6 +323,11 @@
 
 #- name: Clone the application
 #  action: git repo=http://almtools/stash/scm/risk/buildmasters.git dest=/jenkins/buildmasters
+
+- name: Cleanup temporary directory
+  file: name={{ tempdir.stdout }} state=absent
+  tags:
+    - jenkins-slave
 
 - name: Copy Dockerfile
   template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0777

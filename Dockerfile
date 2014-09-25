@@ -4,12 +4,12 @@
 FROM        jasongiedymin/ansible-base-ubuntu
 
 # Volume can be accessed outside of container
-VOLUME      [/kgr-mvn]
+VOLUME      [/var/lib/jenkins]
 
 MAINTAINER  Alban Andrieu "https://github.com/AlbanAndrieu"
 
 ENV			DEBIAN_FRONTEND noninteractive
-ENV         JENKINS_HOME /jenkins
+ENV         JENKINS_HOME /var/lib/jenkins
 
 # Working dir
 WORKDIR /home/vagrant
@@ -45,6 +45,6 @@ RUN         ansible-playbook $WORKDIR/docker/playbook.yml -i $WORKDIR/docker/hos
             
 EXPOSE      22
 ENTRYPOINT  ["/etc/init.d/jenkins-swarm-client"]
-#ENTRYPOINT ["java", "-jar", "/jenkins/swarm-client-1.9-jar-with-dependencies.jar"]
+#ENTRYPOINT ["java", "-jar", "/var/lib/jenkins/swarm-client-1.9-jar-with-dependencies.jar"]
 CMD /usr/sbin/sshd -D
 #CMD ["-g", "deamon off;"]
