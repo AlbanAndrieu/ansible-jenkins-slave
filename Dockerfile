@@ -1,4 +1,4 @@
-# Ansible managed: /workspace/users/albandri10/env/ansible/roles/jenkins-slave/templates/Dockerfile.j2 modified on 2014-09-25 00:36:24 by albandri on albandri-laptop-misys
+# Ansible managed: /workspace/users/albandri10/env/ansible/roles/jenkins-slave/templates/Dockerfile.j2 modified on 2014-09-25 16:29:35 by albandri on albandri-laptop-misys
 #FROM        debian:jessie
 #FROM        stackbrew/ubuntu:14.04
 FROM        jasongiedymin/ansible-base-ubuntu
@@ -31,10 +31,10 @@ ADD docker $WORKDIR/docker
 # there are a limited number of RUNs
 # allowed.
 ADD docker/hosts /etc/ansible/hosts
-ADD docker/playbook.yml $WORKDIR/playbook.yml
+ADD docker/playbook.yml $WORKDIR/playbook.yml -vvvv
 
 # Execute
-#RUN         ansible-playbook $WORKDIR/playbook.yml -c local -vvvv
+#RUN         ansible-playbook $WORKDIR/playbook.yml -c local
 RUN         ansible-playbook $WORKDIR/docker/playbook.yml -i $WORKDIR/docker/hosts -c local
 
 #RUN         apt-get update && \

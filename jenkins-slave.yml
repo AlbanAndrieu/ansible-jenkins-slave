@@ -9,7 +9,5 @@
   - [ "vars/{{ ansible_distribution }}-{{ ansible_architecture }}.yml", "vars/{{ ansible_distribution }}.yml" ]
   
   vars:     
-#       user: root
-#       home: /root
        docker_files_generated_directory         : ""  
-       jenkins_jdk7_enable                      : false
+       jenkins_jdk7_enable                      : no
