@@ -208,10 +208,8 @@
    - libxml-handler-yawriter-perl
    - libxml-simple-perl
 
-#TODO extract jenkins user to another script
-# jenkins user
 - name: Create jenkins user
-  user: name={{ jenkins_user }} comment="Jenkins slave user" home={{ jenkins_home }} shell=/bin/bash
+  user: name={{ jenkins_user }} comment="Jenkins user" home={{ jenkins_home }} shell={{ jenkins_shell }}
   ignore_errors: True
 
 - name: Create .ssh folder
