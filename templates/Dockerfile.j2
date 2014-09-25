@@ -15,13 +15,13 @@ ENV         JENKINS_HOME {{ jenkins_home }}
 WORKDIR {{ docker_working_directory }}
 
 # COPY
-#COPY
+#COPY /workspace/users/albandri10/env/ansible/roles/jenkins-slave $WORKDIR
 
 # ADD
-ADD default $WORKDIR/default
+ADD defaults $WORKDIR/defaults
 ADD meta $WORKDIR/meta
 ADD files $WORKDIR/files
-ADD handlers $WORKDIR/handlers
+#ADD handlers $WORKDIR/handlers
 ADD tasks $WORKDIR/tasks
 ADD templates $WORKDIR/templates
 ADD vars $WORKDIR/vars
@@ -31,10 +31,11 @@ ADD docker $WORKDIR/docker
 # there are a limited number of RUNs
 # allowed.
 ADD docker/hosts /etc/ansible/hosts
-ADD docker/playbook.yml $WORKDIR/playbook.yml
+ADD docker/playbook.yml $WORKDIR/playbook.yml -vvvv
 
 # Execute
-RUN         ansible-playbook $WORKDIR/playbook.yml -c local
+#RUN         ansible-playbook $WORKDIR/playbook.yml -c local
+RUN         ansible-playbook $WORKDIR/docker/playbook.yml -i $WORKDIR/docker/hosts -c local
 
 #RUN         apt-get update && \
 #            apt-get install -y openssh-server openjdk-7-jre-headless

@@ -27,51 +27,59 @@
 
 - name: Copy download JDK7 script
   copy: src=download-jdk7.sh dest=/tmp mode=0555
+  when: jenkins_jdk7_enable
 
 - name: Download JDK7 (Ubuntu)
   action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} /tmp/download-jdk7.sh {{ jdk7_archive }}
-
+  when: jenkins_jdk7_enable
+  
 - name: Unpack JDK7
   action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} tar zxvf {{ jvm_folder }}/{{ jdk7_archive }} --owner=root
   register: jdk7_installed
 #  ignore_errors: True
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jenkins_jdk7_enable
 
 - name: Install JDK7 RPM package
   action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk7_archive }}
   register: jdk7_installed
 #  ignore_errors: True
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and jenkins_jdk7_enable
 
 #- debug: msg="jdk7_installed value is {{ jdk7_installed.stdout }} "
 
 - debug: msg="jdk7_installed value is {{ jdk7_installed }} {{ jdk7_installed.skipped }} {{ jdk7_installed.changed }}"
-
+  when: jenkins_jdk7_enable
+  
 - include: jdk7-tasks.yml
-
+  when: jenkins_jdk7_enable
+  
 - name: Copy download JDK8 script
   copy: src=download-jdk8.sh dest=/tmp mode=0555
-
+  when: jenkins_jdk8_enable
+  
 - name: Download JDK8 (Ubuntu)
   action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} /tmp/download-jdk8.sh {{ jdk8_archive }}
-
+  when: jenkins_jdk8_enable
+  
 - name: Unpack JDK8
   action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} tar zxvf {{jvm_folder}}/{{ jdk8_archive }} --owner=root
   register: jdk8_installed
 #  ignore_errors: True    
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'      
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jenkins_jdk8_enable
 
 - name: Install JDK8 RPM package
   action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk8_archive }}
   register: jdk8_installed
 #  ignore_errors: True
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'  
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and jenkins_jdk8_enable
 
 #- debug: msg="jdk8_installed value is {{ jdk8_installed.stdout }} "
 
 - debug: msg="jdk8_installed value is {{ jdk8_installed }} {{ jdk8_installed.skipped }} {{ jdk8_installed.changed }}"
-
+  when: jenkins_jdk8_enable
+  
 - include: jdk8-tasks.yml
+  when: jenkins_jdk8_enable
 
 #######
 # MAVEN
@@ -313,4 +321,4 @@
   template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0777
   
 - name: Copy build.sh
-  template: src=build.sh dest={{ docker_files_generated_directory }}/build.sh mode=0777
+  template: src=build.sh.j2 dest={{ docker_files_generated_directory }}/build.sh mode=0777
