@@ -7,9 +7,9 @@
   vars_files:
   - [ "defaults/main.yml" ]
   - [ "vars/{{ ansible_distribution }}-{{ ansible_architecture }}.yml", "vars/{{ ansible_distribution }}.yml" ]
-  
-  vars:     
-       docker_files_generated_directory: ""  
-       jenkins_home: "/var/lib/jenkins"
-       jenkins_slave_home: "{{ jenkins_home }}"       
-       jenkins_jdk7_enable: no
+
+  vars:
+    docker_files_generated_directory: ""
+    jenkins_home: "/var/lib/jenkins"
+    jenkins_slave_home: "{{ jenkins_home }}"
+    jenkins_jdk7_enable: no
