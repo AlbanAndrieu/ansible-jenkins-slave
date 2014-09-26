@@ -260,7 +260,8 @@
 
 - name: Create Java directory link (legacy required)
   file: path={{ jenkins_slave_home }}/jdk src=/usr/lib/jvm/jdk1.7.0 state=link
-
+  when: jenkins_jdk7_enable
+  
 #END OF TODO extract jenkins user to another script
 
 #sudo update-alternatives --list java
