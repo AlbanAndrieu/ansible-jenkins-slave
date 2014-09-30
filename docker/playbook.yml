@@ -9,4 +9,4 @@
   roles:
     - role: ./
 
-- include: tests/integration-tests.yml
+#- include: tests/integration-tests.yml

@@ -247,7 +247,7 @@
   lineinfile: "line='jenkins ALL=NOPASSWD: ALL' dest=/etc/sudoers regexp='^jenkins'"
  
 - name: Copy sonar runner configuration
-  copy: src=sonar-runner.properties.j2 dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
+  copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
   
 - name: Create {{ jenkins_slave_home }} directory
   file: path={{ jenkins_slave_home }} state=directory
