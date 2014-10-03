@@ -14,10 +14,10 @@
 
 #- name: Install JDK (apt)
 #  apt: pkg={{ item }} state=present update_cache=yes
-#  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'  
+#  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 #  tags: package
 #  with_items:
-#   - openjdk-6-jdk 
+#   - openjdk-6-jdk
 #   - openjdk-7-jdk
 
 #sudo add-apt-repository ppa:webupd8team/java
@@ -31,15 +31,18 @@
   sudo: true
   tags:
     - jenkins-slave
-    
+
 - name: Copy download JDK7 script
   copy: src=download-jdk7.sh dest={{ tempdir.stdout }} mode=0555
   when: jenkins_jdk7_enable
 
+- name: Create {{ jvm_folder }} directory
+  file: path={{ jvm_folder }} state=directory
+
 - name: Download JDK7 (Ubuntu)
   action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} {{ tempdir.stdout }}/download-jdk7.sh {{ jdk7_archive }}
   when: jenkins_jdk7_enable
-  
+
 - name: Unpack JDK7
   action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} tar zxvf {{ jvm_folder }}/{{ jdk7_archive }} --owner=root
   register: jdk7_installed
@@ -56,22 +59,22 @@
 
 - debug: msg="jdk7_installed value is {{ jdk7_installed }} {{ jdk7_installed.skipped }} {{ jdk7_installed.changed }}"
   when: jenkins_jdk7_enable
-  
+
 - include: jdk7-tasks.yml
   when: jenkins_jdk7_enable
-  
+
 - name: Copy download JDK8 script
   copy: src=download-jdk8.sh dest={{ tempdir.stdout }} mode=0555
   when: jenkins_jdk8_enable
-  
+
 - name: Download JDK8 (Ubuntu)
   action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} {{ tempdir.stdout }}/download-jdk8.sh {{ jdk8_archive }}
   when: jenkins_jdk8_enable
-  
+
 - name: Unpack JDK8
   action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} tar zxvf {{jvm_folder}}/{{ jdk8_archive }} --owner=root
   register: jdk8_installed
-#  ignore_errors: True    
+#  ignore_errors: True
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jenkins_jdk8_enable
 
 - name: Install JDK8 RPM package
@@ -84,7 +87,7 @@
 
 - debug: msg="jdk8_installed value is {{ jdk8_installed }} {{ jdk8_installed.skipped }} {{ jdk8_installed.changed }}"
   when: jenkins_jdk8_enable
-  
+
 - include: jdk8-tasks.yml
   when: jenkins_jdk8_enable
 
@@ -106,7 +109,7 @@
 
 - name: Create Maven 3.2.1 directory link (legacy required)
   file: path=/usr/local/apache-maven-3.2.1 src=/opt/apache-maven-3.2.1 state=link
-  
+
 #- name: Download Maven 3.0.5
 #  get_url: dest=/opt/maven305.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.0.5-bin.tar.gz
 
@@ -118,7 +121,7 @@
 
 #- name: Create Maven 3.0.5 directory link (legacy required)
 #  file: path=/usr/local/apache-maven-3.0.5 src=/opt/apache-maven-3.0.5 state=link
-    
+
 #- name: Download Maven 3.0.4
 #  get_url: dest=/opt/maven3.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.0.4-bin.tar.gz
 
@@ -188,13 +191,13 @@
    - lcov
    - graphviz
    - doxygen
-   
+
 #TODO opencl install
 #wget http://registrationcenter.intel.com/irc_nas/4181/intel_sdk_for_ocl_applications_2014_ubuntu_4.4.0.117_x64.tgz
 #tar zxvf intel_sdk_for_ocl_applications_2014_ubuntu_4.4.0.117_x64.tgz
 #./install-cpu.sh
-#ll /usr/lib/x86_64-linux-gnu/libOpenCL.so   
-   
+#ll /usr/lib/x86_64-linux-gnu/libOpenCL.so
+
 - name: Install C++ tools (Debian based)
   apt: pkg={{ item }} state=present update_cache=yes
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
@@ -230,7 +233,7 @@
 - name: Update authorized_keys rights
   file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: True
-  
+
 - name: Copy the .netrc script for git credentials
   copy: src=.netrc dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 
@@ -245,10 +248,10 @@
 
 - name: Jenkins can run any command with no password
   lineinfile: "line='jenkins ALL=NOPASSWD: ALL' dest=/etc/sudoers regexp='^jenkins'"
- 
+
 - name: Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
-  
+
 - name: Create {{ jenkins_slave_home }} directory
   file: path={{ jenkins_slave_home }} state=directory
 
@@ -261,7 +264,7 @@
 - name: Create Java directory link (legacy required)
   file: path={{ jenkins_slave_home }}/jdk src=/usr/lib/jvm/jdk1.7.0 state=link
   when: jenkins_jdk7_enable
-  
+
 #END OF TODO extract jenkins user to another script
 
 #sudo update-alternatives --list java
@@ -269,10 +272,10 @@
 #sudo update-alternatives --remove java /usr/lib/jvm/java-6-openjdk-amd64/jre/bin/java
 #sudo update-alternatives --remove java /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
 
-#TODO  
+#TODO
 #sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.6.0_32/bin/javac 1
 #sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.6.0_32/bin/java 1
-#sudo update-alternatives --install /usr/bin/javaws javaws /usr/lib/jvm/jdk1.6.0_32/bin/javaws 1  
+#sudo update-alternatives --install /usr/bin/javaws javaws /usr/lib/jvm/jdk1.6.0_32/bin/javaws 1
 #- name: Set java link
 #  action: command update-alternatives --install /usr/bin/java java {{ jvm_folder }}/jdk1.8.0/bin/java 1
 #  when: "jdk8_installed.changed == 'True'"
@@ -288,7 +291,7 @@
 
 #TODO Verify the symlinks all point to the new java location:
 #ls -la /etc/alternatives/java*
-   
+
 #------------------------------
 
 #Setting Java environment variables
@@ -314,7 +317,7 @@
 #sudo update-alternatives --config mvn
 #- name: Set mvn link to Maven 3.0.5
 #  action: command update-alternatives --install /usr/bin/mvn mvn /opt/maven305/bin/mvn 1
-  
+
 #- name: Set mvn local link to Maven 3.0.5
 #  action: command update-alternatives --install /usr/local/bin/mvn mvn /opt/maven305/bin/mvn 1
 
@@ -330,6 +333,9 @@
 
 - name: Copy Dockerfile
   template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0777
-  
+  when: docker_files_enable
+
 - name: Copy build.sh
   template: src=build.sh.j2 dest={{ docker_files_generated_directory }}/build.sh mode=0777
+  when: docker_files_enable
+

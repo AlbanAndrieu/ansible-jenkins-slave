@@ -25,17 +25,17 @@ ADD files $WORKDIR/files
 ADD tasks $WORKDIR/tasks
 ADD templates $WORKDIR/templates
 ADD vars $WORKDIR/vars
-ADD docker $WORKDIR/docker
+#ADD docker $WORKDIR/docker
 
 # Here we continue to use add because
 # there are a limited number of RUNs
 # allowed.
-ADD docker/hosts /etc/ansible/hosts
-ADD docker/playbook.yml $WORKDIR/playbook.yml -vvvv
+ADD hosts /etc/ansible/hosts
+ADD playbook.yml $WORKDIR/playbook.yml -vvvv
 
 # Execute
 #RUN         ansible-playbook $WORKDIR/playbook.yml -c local
-RUN         ansible-playbook $WORKDIR/docker/playbook.yml -i $WORKDIR/docker/hosts -c local
+RUN         ansible-playbook $WORKDIR/playbook.yml -i $WORKDIR/hosts -c local
 
 #RUN         apt-get update && \
 #            apt-get install -y openssh-server openjdk-7-jre-headless
