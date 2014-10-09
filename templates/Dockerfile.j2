@@ -30,10 +30,10 @@ ADD vars $WORKDIR/vars
 # there are a limited number of RUNs
 # allowed.
 ADD hosts /etc/ansible/hosts
-ADD playbook.yml $WORKDIR/playbook.yml -vvvv
+ADD jenkins-slave.yml $WORKDIR/jenkins-slave.yml -vvvv
 
 # Execute
-RUN         ansible-playbook $WORKDIR/playbook.yml -i $WORKDIR/hosts -c local
+RUN         ansible-playbook $WORKDIR/jenkins-slave.yml -i $WORKDIR/hosts -c local
 
 #RUN         apt-get update && \
 #            apt-get install -y openssh-server openjdk-7-jre-headless

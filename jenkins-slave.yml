@@ -2,6 +2,7 @@
 - hosts: all
   sudo: true
   roles:
+#    - role: ../  
     - ansible-jenkins-slave
 
   vars_files:
@@ -10,6 +11,9 @@
 
   vars:
     docker_files_generated_directory: ""
+    docker_files_enable: no    
     jenkins_home: "/var/lib/jenkins"
     jenkins_slave_home: "{{ jenkins_home }}"
     jenkins_jdk7_enable: no
+
+#- include: docker/integration-tests.yml
