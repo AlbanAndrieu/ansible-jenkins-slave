@@ -34,8 +34,8 @@ ADD hosts /etc/ansible/hosts
 ADD jenkins-slave.yml $WORKDIR/jenkins-slave.yml -vvvv
 
 # Execute
-#RUN         ansible-playbook $WORKDIR/playbook.yml -c local
-RUN         ansible-playbook $WORKDIR/jenkins-slave.yml -i $WORKDIR/hosts -c local
+#RUN         ansible-playbook $WORKDIR/jenkins-slave.yml -i $WORKDIR/hosts -c local
+RUN         ansible-playbook jenkins-slave.yml -i hosts -c local
 
 #RUN         apt-get update && \
 #            apt-get install -y openssh-server openjdk-7-jre-headless
