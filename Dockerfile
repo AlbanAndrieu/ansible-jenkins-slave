@@ -10,6 +10,7 @@ MAINTAINER  Alban Andrieu "https://github.com/AlbanAndrieu"
 
 ENV			DEBIAN_FRONTEND noninteractive
 ENV         JENKINS_HOME /var/lib/jenkins
+ENV         WORKDIR /home/vagrant
 
 # Working dir
 WORKDIR /home/vagrant
@@ -18,8 +19,8 @@ WORKDIR /home/vagrant
 #COPY /workspace/users/albandri10/env/ansible/roles/jenkins-slave $WORKDIR
 
 RUN         pwd
-RUN         ls -lrta
 RUN         mkdir $WORKDIR/ansible-jenkins-slave
+RUN         ls -lrta
 
 # ADD
 ADD defaults $WORKDIR/ansible-jenkins-slave/defaults
@@ -39,7 +40,7 @@ ADD jenkins-slave.yml $WORKDIR/jenkins-slave.yml
 
 # Execute
 RUN         pwd
-RUN         ls -lrta
+RUN         ls -lrta $WORKDIR
 RUN         ansible-playbook $WORKDIR/jenkins-slave.yml -c local -vvvv
 
 #RUN         apt-get update && \

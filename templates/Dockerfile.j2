@@ -10,6 +10,7 @@ MAINTAINER  Alban Andrieu "https://github.com/AlbanAndrieu"
 
 ENV			DEBIAN_FRONTEND noninteractive
 ENV         JENKINS_HOME {{ jenkins_home }}
+ENV         WORKDIR /home/vagrant
 
 # Working dir
 WORKDIR {{ docker_working_directory }}
