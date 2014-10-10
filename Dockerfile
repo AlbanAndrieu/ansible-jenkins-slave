@@ -19,7 +19,7 @@ WORKDIR /home/vagrant
 #COPY /workspace/users/albandri10/env/ansible/roles/jenkins-slave $WORKDIR
 
 RUN         pwd
-RUN         mkdir $WORKDIR/ansible-jenkins-slave
+#RUN         mkdir $WORKDIR/ansible-jenkins-slave
 RUN         ls -lrta
 
 # ADD
@@ -36,12 +36,13 @@ ADD vars $WORKDIR/ansible-jenkins-slave/vars
 # there are a limited number of RUNs
 # allowed.
 ADD hosts /etc/ansible/hosts
-ADD jenkins-slave.yml $WORKDIR/jenkins-slave.yml
+ADD jenkins-slave.yml $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml
 
 # Execute
 RUN         pwd
 RUN         ls -lrta $WORKDIR
-RUN         ansible-playbook $WORKDIR/jenkins-slave.yml -c local -vvvv
+RUN         ls -lrta $WORKDIR/ansible-jenkins-slave
+RUN         ansible-playbook $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml -c local -vvvv
 
 #RUN         apt-get update && \
 #            apt-get install -y openssh-server openjdk-7-jre-headless
