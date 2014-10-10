@@ -17,6 +17,10 @@ WORKDIR /home/vagrant
 # COPY
 #COPY /workspace/users/albandri10/env/ansible/roles/jenkins-slave $WORKDIR
 
+RUN         pwd
+RUN         ls -lrta
+RUN         mkdir $WORKDIR/ansible-jenkins-slave
+
 # ADD
 ADD defaults $WORKDIR/ansible-jenkins-slave/defaults
 ADD meta $WORKDIR/ansible-jenkins-slave/meta
