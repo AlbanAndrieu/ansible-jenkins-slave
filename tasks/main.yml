@@ -46,13 +46,13 @@
 - name: Unpack JDK7
   action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} tar zxvf {{ jvm_folder }}/{{ jdk7_archive }} --owner=root
   register: jdk7_installed
-#  ignore_errors: True
+#  ignore_errors: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jenkins_jdk7_enable
 
 - name: Install JDK7 RPM package
   action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk7_archive }}
   register: jdk7_installed
-#  ignore_errors: True
+#  ignore_errors: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and jenkins_jdk7_enable
 
 #- debug: msg="jdk7_installed value is {{ jdk7_installed.stdout }} "
@@ -74,13 +74,13 @@
 - name: Unpack JDK8
   action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} tar zxvf {{jvm_folder}}/{{ jdk8_archive }} --owner=root
   register: jdk8_installed
-#  ignore_errors: True
+#  ignore_errors: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jenkins_jdk8_enable
 
 - name: Install JDK8 RPM package
   action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk8_archive }}
   register: jdk8_installed
-#  ignore_errors: True
+#  ignore_errors: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and jenkins_jdk8_enable
 
 #- debug: msg="jdk8_installed value is {{ jdk8_installed.stdout }} "
@@ -213,11 +213,11 @@
 
 - name: Create jenkins user
   user: name={{ jenkins_user }} comment="Jenkins user" home={{ jenkins_home }} shell={{ jenkins_shell }}
-  ignore_errors: True
+  ignore_errors: true
 
 - name: Create .ssh folder
   file: path={{ jenkins_home }}/.ssh state=directory mode=0700  owner={{ jenkins_user }} group={{ jenkins_group }}
-  ignore_errors: True
+  ignore_errors: true
 
 - name: Add passwordless connection for jenkins (Alban Andrieu)
   authorized_key: user={{ jenkins_user }} key="ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIEAio3SOQ9yeK6QfKqSFNKyTasuzjStxWevG1Vz1wgJIxPF+KB0XoMAPD081J+Bzj2LCDRSWisNv2L4xv2jbFxW/Pl7NEakoX47eNx3U+Dxaf+szeWBTryYcDUGkduLV7G8Qncm0luIFd+HDIe/Qir1E2f56Qu2uuBNE6Tz5TFt1vc= Alban"
@@ -232,7 +232,7 @@
 
 - name: Update authorized_keys rights
   file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-  ignore_errors: True
+  ignore_errors: true
 
 - name: Copy the .netrc script for git credentials
   copy: src=.netrc dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
@@ -248,6 +248,7 @@
 
 - name: Jenkins can run any command with no password
   lineinfile: "line='jenkins ALL=NOPASSWD: ALL' dest=/etc/sudoers regexp='^jenkins'"
+  ignore_errors: true
 
 - name: Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
