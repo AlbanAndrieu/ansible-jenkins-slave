@@ -2,12 +2,12 @@
 - hosts: all
   sudo: true
   roles:
-#    - role: ../  
-    - ansible-jenkins-slave
+    - role: ./  
+#    - ansible-jenkins-slave
 
   vars_files:
-  - [ "ansible-jenkins-slave/defaults/main.yml" ]
-  - [ "ansible-jenkins-slave/vars/{{ ansible_distribution }}-{{ ansible_architecture }}.yml", "ansible-jenkins-slave/vars/{{ ansible_distribution }}.yml" ]
+  - [ "defaults/main.yml" ]
+  - [ "vars/{{ ansible_distribution }}-{{ ansible_architecture }}.yml", "vars/{{ ansible_distribution }}.yml" ]
 
   vars:
     docker_files_generated_directory: ""
