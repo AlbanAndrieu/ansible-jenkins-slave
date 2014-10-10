@@ -18,24 +18,25 @@ WORKDIR /home/vagrant
 #COPY /workspace/users/albandri10/env/ansible/roles/jenkins-slave $WORKDIR
 
 # ADD
-ADD defaults $WORKDIR/defaults
-ADD meta $WORKDIR/meta
-ADD files $WORKDIR/files
-#ADD handlers $WORKDIR/handlers
-ADD tasks $WORKDIR/tasks
-ADD templates $WORKDIR/templates
-ADD vars $WORKDIR/vars
-#ADD docker $WORKDIR/docker
+ADD defaults $WORKDIR/jenkins-slave/defaults
+ADD meta $WORKDIR/jenkins-slave/meta
+ADD files $WORKDIR/jenkins-slave/files
+#ADD handlers $WORKDIR/jenkins-slave/handlers
+ADD tasks $WORKDIR/jenkins-slave/tasks
+ADD templates $WORKDIR/jenkins-slave/templates
+ADD vars $WORKDIR/jenkins-slave/vars
+#ADD docker $WORKDIR/jenkins-slave/docker
 
 # Here we continue to use add because
 # there are a limited number of RUNs
 # allowed.
 ADD hosts /etc/ansible/hosts
-ADD jenkins-slave.yml $WORKDIR/jenkins-slave.yml -vvvv
+ADD jenkins-slave.yml $WORKDIR/jenkins-slave.yml
 
 # Execute
-#RUN         ansible-playbook $WORKDIR/jenkins-slave.yml -i $WORKDIR/hosts -c local
-RUN         ansible-playbook jenkins-slave.yml -i hosts -c local
+RUN         pwd
+RUN         ls -lrta
+RUN         ansible-playbook $WORKDIR/jenkins-slave.yml -c local -vvvv
 
 #RUN         apt-get update && \
 #            apt-get install -y openssh-server openjdk-7-jre-headless
