@@ -18,14 +18,14 @@ WORKDIR /home/vagrant
 #COPY /workspace/users/albandri10/env/ansible/roles/jenkins-slave $WORKDIR
 
 # ADD
-ADD defaults $WORKDIR/jenkins-slave/defaults
-ADD meta $WORKDIR/jenkins-slave/meta
-ADD files $WORKDIR/jenkins-slave/files
-#ADD handlers $WORKDIR/jenkins-slave/handlers
-ADD tasks $WORKDIR/jenkins-slave/tasks
-ADD templates $WORKDIR/jenkins-slave/templates
-ADD vars $WORKDIR/jenkins-slave/vars
-#ADD docker $WORKDIR/jenkins-slave/docker
+ADD defaults $WORKDIR/ansible-jenkins-slave/defaults
+ADD meta $WORKDIR/ansible-jenkins-slave/meta
+ADD files $WORKDIR/ansible-jenkins-slave/files
+#ADD handlers $WORKDIR/ansible-jenkins-slave/handlers
+ADD tasks $WORKDIR/ansible-jenkins-slave/tasks
+ADD templates $WORKDIR/ansible-jenkins-slave/templates
+ADD vars $WORKDIR/ansible-jenkins-slave/vars
+#ADD docker $WORKDIR/ansible-jenkins-slave/docker
 
 # Here we continue to use add because
 # there are a limited number of RUNs
