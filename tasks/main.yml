@@ -1,10 +1,10 @@
 #ansible-playbook jenkins.yml --extra-vars "host=myhost user=myuser" -i hosts --ask-sudo-pass
 
-- name: Install wget package (Debian based)
+- name: jenkins-slave | Install wget package (Debian based)
   action: apt pkg='wget' state=installed
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: Install wget package (RedHat based)
+- name: jenkins-slave | Install wget package (RedHat based)
   action: yum name='wget' state=installed
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
@@ -12,7 +12,7 @@
 # JAVA
 #
 
-#- name: Install JDK (apt)
+#- name: jenkins-slave | Install JDK (apt)
 #  apt: pkg={{ item }} state=present update_cache=yes
 #  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 #  tags: package
@@ -25,31 +25,31 @@
 #sudo apt-get install oracle-java7-installer
 #sudo apt-get install oracle-java8-installer
 
-- name: Create temporary directory
+- name: jenkins-slave | Create temporary directory
   shell: mktemp -d
   register: tempdir
   sudo: true
   tags:
     - jenkins-slave
 
-- name: Copy download JDK7 script
-  copy: src=download-jdk7.sh dest={{ tempdir.stdout }} mode=0555
+- name: jenkins-slave | Copy download JDK7 script
+  copy: src=download-jdk7.sh dest={{ jdk_dir_tmp }} mode=0555
   when: jenkins_jdk7_enable
 
-- name: Create {{ jvm_folder }} directory
+- name: jenkins-slave | Create {{ jvm_folder }} directory
   file: path={{ jvm_folder }} state=directory
 
-- name: Download JDK7 (Ubuntu)
-  action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} {{ tempdir.stdout }}/download-jdk7.sh {{ jdk7_archive }}
+- name: jenkins-slave | Download JDK7 (Ubuntu)
+  action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} {{ jdk_dir_tmp }}/download-jdk7.sh {{ jdk7_archive }}
   when: jenkins_jdk7_enable
 
-- name: Unpack JDK7
+- name: jenkins-slave | Unpack JDK7
   action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} tar zxvf {{ jvm_folder }}/{{ jdk7_archive }} --owner=root
   register: jdk7_installed
 #  ignore_errors: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jenkins_jdk7_enable
 
-- name: Install JDK7 RPM package
+- name: jenkins-slave | Install JDK7 RPM package
   action: command creates={{ jvm_folder }}/jdk1.7.0 chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk7_archive }}
   register: jdk7_installed
 #  ignore_errors: true
@@ -57,35 +57,35 @@
 
 #- debug: msg="jdk7_installed value is {{ jdk7_installed.stdout }} "
 
-- debug: msg="jdk7_installed value is {{ jdk7_installed }} {{ jdk7_installed.skipped }} {{ jdk7_installed.changed }}"
+- debug: msg=" jenkins-slave | jdk7_installed value is {{ jdk7_installed }} {{ jdk7_installed.skipped }} {{ jdk7_installed.changed }}"
   when: jenkins_jdk7_enable
 
 - include: jdk7-tasks.yml
   when: jenkins_jdk7_enable
 
-- name: Copy download JDK8 script
-  copy: src=download-jdk8.sh dest={{ tempdir.stdout }} mode=0555
+- name: jenkins-slave | Copy download JDK8 script
+  copy: src=download-jdk8.sh dest={{ jdk_dir_tmp }} mode=0555
   when: jenkins_jdk8_enable
 
-- name: Download JDK8 (Ubuntu)
-  action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} {{ tempdir.stdout }}/download-jdk8.sh {{ jdk8_archive }}
+- name: jenkins-slave | Download JDK8 (Ubuntu)
+  action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} {{ jdk_dir_tmp }}/download-jdk8.sh {{ jdk8_archive }}
   when: jenkins_jdk8_enable
 
-- name: Unpack JDK8
+- name: jenkins-slave | Unpack JDK8
   action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} tar zxvf {{jvm_folder}}/{{ jdk8_archive }} --owner=root
   register: jdk8_installed
 #  ignore_errors: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jenkins_jdk8_enable
 
-- name: Install JDK8 RPM package
+- name: jenkins-slave | Install JDK8 RPM package
   action: command creates={{ jvm_folder }}/jdk1.8.0 chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk8_archive }}
   register: jdk8_installed
 #  ignore_errors: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and jenkins_jdk8_enable
 
-#- debug: msg="jdk8_installed value is {{ jdk8_installed.stdout }} "
+#- debug: msg=" jenkins-slave | jdk8_installed value is {{ jdk8_installed.stdout }} "
 
-- debug: msg="jdk8_installed value is {{ jdk8_installed }} {{ jdk8_installed.skipped }} {{ jdk8_installed.changed }}"
+- debug: msg=" jenkins-slave | jdk8_installed value is {{ jdk8_installed }} {{ jdk8_installed.skipped }} {{ jdk8_installed.changed }}"
   when: jenkins_jdk8_enable
 
 - include: jdk8-tasks.yml
@@ -95,96 +95,96 @@
 # MAVEN
 #
 
-- name: Create /opt directory
+- name: jenkins-slave | Create /opt directory
   file: path=/opt state=directory
 
-- name: Download Maven 3.2.1
+- name: jenkins-slave | Download Maven 3.2.1
   get_url: dest=/opt/maven321.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.2.1-bin.tar.gz
 
-- name: Unpack Maven 3.2.1
+- name: jenkins-slave | Unpack Maven 3.2.1
   action: command creates=/opt/maven321 chdir=/opt tar zxvf /opt/maven321.tar.gz
 
-- name: Create Maven 3.2.1 directory link
+- name: jenkins-slave | Create Maven 3.2.1 directory link
   file: path=/opt/maven321 src=/opt/apache-maven-3.2.1 state=link
 
-- name: Create Maven 3.2.1 directory link (legacy required)
+- name: jenkins-slave | Create Maven 3.2.1 directory link (legacy required)
   file: path=/usr/local/apache-maven-3.2.1 src=/opt/apache-maven-3.2.1 state=link
 
-#- name: Download Maven 3.0.5
+#- name: jenkins-slave | Download Maven 3.0.5
 #  get_url: dest=/opt/maven305.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.0.5-bin.tar.gz
 
-#- name: Unpack Maven 3.0.5
+#- name: jenkins-slave | Unpack Maven 3.0.5
 #  action: command creates=/opt/maven305 chdir=/opt tar zxvf /opt/maven305.tar.gz
 
-#- name: Create Maven 3.0.5 directory link
+#- name: jenkins-slave | Create Maven 3.0.5 directory link
 #  file: path=/opt/maven305 src=/opt/apache-maven-3.0.5 state=link
 
-#- name: Create Maven 3.0.5 directory link (legacy required)
+#- name: jenkins-slave | Create Maven 3.0.5 directory link (legacy required)
 #  file: path=/usr/local/apache-maven-3.0.5 src=/opt/apache-maven-3.0.5 state=link
 
-#- name: Download Maven 3.0.4
+#- name: jenkins-slave | Download Maven 3.0.4
 #  get_url: dest=/opt/maven3.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.0.4-bin.tar.gz
 
-#- name: Unpack Maven 3.0.4
+#- name: jenkins-slave | Unpack Maven 3.0.4
 #  action: command creates=/opt/maven3 chdir=/opt tar zxvf /opt/maven3.tar.gz
 
-#- name: Create Maven 3.0.4 directory link
+#- name: jenkins-slave | Create Maven 3.0.4 directory link
 #  file: path=/opt/maven3 src=/opt/apache-maven-3.0.4 state=link
 
-#- name: Create Maven 3.0.4 directory link (legacy required)
+#- name: jenkins-slave | Create Maven 3.0.4 directory link (legacy required)
 #  file: path=/usr/local/apache-maven-3.0.4 src=/opt/apache-maven-3.0.4 state=link
 
-#- name: Download Maven 2.2.1
+#- name: jenkins-slave | Download Maven 2.2.1
 #  get_url: dest=/opt/maven2.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-2.2.1-bin.tar.gz
 
-#- name: Unpack Maven 2.2.1
+#- name: jenkins-slave | Unpack Maven 2.2.1
 #  action: command creates=/opt/maven2 chdir=/opt tar zxvf /opt/maven2.tar.gz
 
-#- name: Create Maven 2.2.1 directory link
+#- name: jenkins-slave | Create Maven 2.2.1 directory link
 #  file: path=/opt/maven2 src=/opt/apache-maven-2.2.1 state=link
 
-#- name: Create Maven 2.2.1 directory link (legacy required)
+#- name: jenkins-slave | Create Maven 2.2.1 directory link (legacy required)
 #  file: path=/usr/local/apache-maven-2.2.1 src=/opt/apache-maven-2.2.1 state=link
 
-#- name: Download Maven 2.0.9
+#- name: jenkins-slave | Download Maven 2.0.9
 #  get_url: dest=/opt/maven209.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-2.0.9-bin.tar.gz
 
-#- name: Unpack Maven 2.0.9
+#- name: jenkins-slave | Unpack Maven 2.0.9
 #  action: command creates=/opt/maven209 chdir=/opt tar zxvf /opt/maven209.tar.gz
 
-#- name: Create Maven 2.0.9 directory link
+#- name: jenkins-slave | Create Maven 2.0.9 directory link
 #  file: path=/opt/maven209 src=/opt/apache-maven-2.0.9 state=link
 
-#- name: Create Maven 2.0.9 directory link (legacy required)
+#- name: jenkins-slave | Create Maven 2.0.9 directory link (legacy required)
 #  file: path=/usr/local/apache-maven-2.0.9 src=/opt/apache-maven-2.0.9 state=link
 
-- name: Remove Maven321 archive
+- name: jenkins-slave | Remove Maven321 archive
   file: path=/opt/maven321.tar.gz state=absent
 
-- name: Remove Maven305 archive
+- name: jenkins-slave | Remove Maven305 archive
   file: path=/opt/maven305.tar.gz state=absent
 
-- name: Remove Maven3 archive
+- name: jenkins-slave | Remove Maven3 archive
   file: path=/opt/maven3.tar.gz state=absent
 
-- name: Remove Maven2 archive
+- name: jenkins-slave | Remove Maven2 archive
   file: path=/opt/maven2.tar.gz state=absent
 
-- name: Remove Maven209 archive
+- name: jenkins-slave | Remove Maven209 archive
   file: path=/opt/maven209.tar.gz state=absent
 
 ##
  # git
  #
-- name: Install git package (Debian based)
+- name: jenkins-slave | Install git package (Debian based)
   action: apt pkg='git' state=installed
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: Install git package (RedHat based)
+- name: jenkins-slave | Install git package (RedHat based)
   action: yum name='git' state=installed
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
-- name: Install coverage and metrics tools (Debian based)
+- name: jenkins-slave | Install coverage and metrics tools (Debian based)
   apt: pkg={{ item }} state=present update_cache=yes
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:
@@ -198,7 +198,7 @@
 #./install-cpu.sh
 #ll /usr/lib/x86_64-linux-gnu/libOpenCL.so
 
-- name: Install C++ tools (Debian based)
+- name: jenkins-slave | Install tools needed by cpp generator (Debian based)
   apt: pkg={{ item }} state=present update_cache=yes
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:
@@ -211,15 +211,15 @@
    - libxml-handler-yawriter-perl
    - libxml-simple-perl
 
-- name: Create jenkins user
+- name: jenkins-slave | Create jenkins user
   user: name={{ jenkins_user }} comment="Jenkins user" home={{ jenkins_home }} shell={{ jenkins_shell }}
   ignore_errors: true
 
-- name: Create .ssh folder
+- name: jenkins-slave | Create .ssh folder
   file: path={{ jenkins_home }}/.ssh state=directory mode=0700  owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: true
 
-- name: Add passwordless connection for jenkins (Alban Andrieu)
+- name: jenkins-slave | Add passwordless connection for jenkins (Alban Andrieu)
   authorized_key: user={{ jenkins_user }} key="ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIEAio3SOQ9yeK6QfKqSFNKyTasuzjStxWevG1Vz1wgJIxPF+KB0XoMAPD081J+Bzj2LCDRSWisNv2L4xv2jbFxW/Pl7NEakoX47eNx3U+Dxaf+szeWBTryYcDUGkduLV7G8Qncm0luIFd+HDIe/Qir1E2f56Qu2uuBNE6Tz5TFt1vc= Alban"
 
 #TODO use authorized_key instead of copy-keys.yml
@@ -230,39 +230,39 @@
 #    key: "{{ item }}"
 #  with_items: base_admin_keys
 
-- name: Update authorized_keys rights
+- name: jenkins-slave | Update authorized_keys rights
   file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: true
 
-- name: Copy the .netrc script for git credentials
+- name: jenkins-slave | Copy the .netrc script for git credentials
   copy: src=.netrc dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 
-- name: Update git .netrc rights
+- name: jenkins-slave | Update git .netrc rights
   file: path={{ jenkins_home }}/.netrc state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 
-- name: Create .m2 folder
+- name: jenkins-slave | Create .m2 folder
   file: path={{ jenkins_home }}/.m2 state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
 
-- name: Copy maven configuration
+- name: jenkins-slave | Copy maven configuration
   template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0700
 
-- name: Jenkins can run any command with no password
+- name: jenkins-slave | Jenkins can run any command with no password
   lineinfile: "line='jenkins ALL=NOPASSWD: ALL' dest=/etc/sudoers regexp='^jenkins'"
   ignore_errors: true
 
-- name: Copy sonar runner configuration
+- name: jenkins-slave | Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
 
-- name: Create {{ jenkins_slave_home }} directory
+- name: jenkins-slave | Create {{ jenkins_slave_home }} directory
   file: path={{ jenkins_slave_home }} state=directory
 
-- name: Create /repository directory
+- name: jenkins-slave | Create /repository directory
   file: path={{ jenkins_slave_home }}/repository state=directory owner=jenkins
 
-- name: Create Jenkins slave directory
+- name: jenkins-slave | Create Jenkins slave directory
   file: path={{ jenkins_slave_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
 
-- name: Create Java directory link (legacy required)
+- name: jenkins-slave | Create Java directory link (legacy required)
   file: path={{ jenkins_slave_home }}/jdk src=/usr/lib/jvm/jdk1.7.0 state=link
   when: jenkins_jdk7_enable
 
@@ -302,11 +302,11 @@
 #sudo update-java-alternatives -s java-7-oracle
 #sudo update-java-alternatives -s java-8-oracle
 
-#- name: Set java link
+#- name: jenkins-slave | Set java link
 #  action: command update-alternatives --install /usr/bin/java java {{ jvm_folder }}/jdk1.7.0/bin/java 1
 #  when: "jdk7_installed.changed == 'True'"
 
-#- name: Set jar link
+#- name: jenkins-slave | Set jar link
 #  action: command update-alternatives --install /usr/bin/jar jar {{ jvm_folder }}/jdk1.7.0/bin/jar 1
 #  when: "jdk7_installed.changed == 'True'"
 
@@ -316,27 +316,26 @@
 #sudo update-alternatives --remove mvn /opt/maven3/bin/mvn
 
 #sudo update-alternatives --config mvn
-#- name: Set mvn link to Maven 3.0.5
+#- name: jenkins-slave | Set mvn link to Maven 3.0.5
 #  action: command update-alternatives --install /usr/bin/mvn mvn /opt/maven305/bin/mvn 1
 
-#- name: Set mvn local link to Maven 3.0.5
+#- name: jenkins-slave | Set mvn local link to Maven 3.0.5
 #  action: command update-alternatives --install /usr/local/bin/mvn mvn /opt/maven305/bin/mvn 1
 
 #http://drupalcode.org/sandbox/franskuipers/1801378.git/blob/e0d2e3dd3f3b9ff7f9ace61f9e56c56a1f28e915:/ansible.yml  #
 
-#- name: Clone the application
+#- name: jenkins-slave | Clone the application
 #  action: git repo=http://almtools/stash/scm/risk/buildmasters.git dest=/jenkins/buildmasters
 
-- name: Cleanup temporary directory
+- name: jenkins-slave | Cleanup temporary directory
   file: name={{ tempdir.stdout }} state=absent
   tags:
     - jenkins-slave
 
-- name: Copy Dockerfile
+- name: jenkins-slave | Copy Dockerfile
   template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0777
   when: docker_files_enable
 
-- name: Copy build.sh
+- name: jenkins-slave | Copy build.sh
   template: src=build.sh.j2 dest={{ docker_files_generated_directory }}/build.sh mode=0777
   when: docker_files_enable
-

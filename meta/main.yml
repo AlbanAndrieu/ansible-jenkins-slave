@@ -1,5 +1,7 @@
 ---
-
+dependencies:
+  - { role: jenkins-master } #Stouts.jenkins
+  
 galaxy_info:
   author: Alban Andrieu
   description: A role for installing jenkins-slave
@@ -22,5 +24,3 @@ galaxy_info:
   categories:
   - development
   - jenkins
-dependencies: []
-

@@ -10,6 +10,8 @@ jenkins_shell: "/bin/false"
 jenkins_slave_directory: "{{ jenkins_slave_home }}/jenkins-slave"
 #jenkins_jdk7_enable: yes
 jenkins_jdk8_enable: yes
+jdk_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
+
 nexus_url: http://home.nabla.mobi:8081
 
 git_machine: 82.231.208.223
