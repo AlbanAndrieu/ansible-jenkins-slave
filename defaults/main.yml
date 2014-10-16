@@ -4,9 +4,9 @@ jenkins_name: jenkins
 jenkins_user: jenkins
 jenkins_group: jenkins
 jenkins_shell: "/bin/false"
-#NIS issue jenkins_home: /home/jenkins
-#override me jenkins_home: "/var/lib/jenkins"
-#override me jenkins_slave_home: "{{ jenkins_home }}"
+#NIS issue jenkins_home_dir: /home/jenkins
+jenkins_home_dir: /var/lib/jenkins
+jenkins_slave_home: "{{ jenkins_home_dir }}"
 jenkins_slave_directory: "{{ jenkins_slave_home }}/jenkins-slave"
 jenkins_jdk7_enable: no
 jenkins_jdk8_enable: yes
@@ -21,6 +21,6 @@ git_path: "/usr/bin"
 
 docker_files_generated_directory: "roles/jenkins-slave"
 docker_files_enable: yes
-docker_volume_directory: "{{ jenkins_home }}"
+docker_volume_directory: "{{ jenkins_home_dir }}"
 docker_working_directory: "/home/vagrant"
 docker_image_name: "nabla/ansible-jenkins-slave"

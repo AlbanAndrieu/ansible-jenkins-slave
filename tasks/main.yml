@@ -212,11 +212,11 @@
    - libxml-simple-perl
 
 - name: jenkins-slave | Create jenkins user
-  user: name={{ jenkins_user }} comment="Jenkins user" home={{ jenkins_home }} shell={{ jenkins_shell }}
+  user: name={{ jenkins_user }} comment="Jenkins user" home={{ jenkins_home_dir }} shell={{ jenkins_shell }}
   ignore_errors: true
 
 - name: jenkins-slave | Create .ssh folder
-  file: path={{ jenkins_home }}/.ssh state=directory mode=0700  owner={{ jenkins_user }} group={{ jenkins_group }}
+  file: path={{ jenkins_home_dir }}/.ssh state=directory mode=0700  owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: true
 
 - name: jenkins-slave | Add passwordless connection for jenkins (Alban Andrieu)
@@ -231,20 +231,20 @@
 #  with_items: base_admin_keys
 
 - name: jenkins-slave | Update authorized_keys rights
-  file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+  file: path={{ jenkins_home_dir }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: true
 
 - name: jenkins-slave | Copy the .netrc script for git credentials
-  copy: src=.netrc dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+  copy: src=.netrc dest={{ jenkins_home_dir }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 
 - name: jenkins-slave | Update git .netrc rights
-  file: path={{ jenkins_home }}/.netrc state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+  file: path={{ jenkins_home_dir }}/.netrc state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 
 - name: jenkins-slave | Create .m2 folder
-  file: path={{ jenkins_home }}/.m2 state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
+  file: path={{ jenkins_home_dir }}/.m2 state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
 
 - name: jenkins-slave | Copy maven configuration
-  template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0700
+  template: src=settings.xml.j2 dest={{ jenkins_home_dir }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0700
 
 - name: jenkins-slave | Jenkins can run any command with no password
   lineinfile: "line='jenkins ALL=NOPASSWD: ALL' dest=/etc/sudoers regexp='^jenkins'"

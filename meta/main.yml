@@ -1,6 +1,6 @@
 ---
-dependencies:
-  - { role: jenkins-master } #Stouts.jenkins
+#dependencies:
+#  - { role: jenkins-master } #Stouts.jenkins
   
 galaxy_info:
   author: Alban Andrieu

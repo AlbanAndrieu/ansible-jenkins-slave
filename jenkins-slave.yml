@@ -12,8 +12,8 @@
   vars:
     docker_files_generated_directory: ""
     docker_files_enable: no
-    jenkins_home: "/var/lib/jenkins"
-    jenkins_slave_home: "{{ jenkins_home }}"
+    jenkins_home_dir: "/var/lib/jenkins"
+    jenkins_slave_home: "{{ jenkins_home_dir }}"
     jenkins_jdk7_enable: no
 
 #- include: docker/integration-tests.yml

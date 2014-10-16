@@ -1,15 +1,15 @@
-# Ansible managed: /workspace/users/albandri10/env/ansible/roles/jenkins-slave/templates/Dockerfile.j2 modified on 2014-10-10 18:51:21 by albandri on albandri-laptop-misys
+# Ansible managed: /workspace/users/albandri10/env/ansible/roles/jenkins-slave/templates/Dockerfile.j2 modified on 2014-10-16 03:05:37 by albandri on albandri-laptop-misys
 #FROM        debian:jessie
 #FROM        stackbrew/ubuntu:14.04
 FROM        jasongiedymin/ansible-base-ubuntu
 
 # Volume can be accessed outside of container
-VOLUME      [/jenkins]
+VOLUME      [/var/lib/jenkins]
 
 MAINTAINER  Alban Andrieu "https://github.com/AlbanAndrieu"
 
 ENV			DEBIAN_FRONTEND noninteractive
-ENV         JENKINS_HOME /jenkins
+ENV         JENKINS_HOME /var/lib/jenkins
 ENV         WORKDIR /home/vagrant
 
 # Working dir
@@ -46,6 +46,6 @@ RUN         ansible-playbook $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml -c
             
 EXPOSE      22
 ENTRYPOINT  ["/etc/init.d/jenkins-swarm-client"]
-#ENTRYPOINT ["java", "-jar", "/jenkins/swarm-client-1.9-jar-with-dependencies.jar"]
+#ENTRYPOINT ["java", "-jar", "/var/lib/jenkins/swarm-client-1.9-jar-with-dependencies.jar"]
 CMD /usr/sbin/sshd -D
 #CMD ["-g", "deamon off;"]
