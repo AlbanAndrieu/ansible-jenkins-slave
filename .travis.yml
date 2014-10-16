@@ -11,6 +11,5 @@ script:
   - ansible --version
 #  - export ANSIBLE_ROLES_PATH="../"
 #  - echo localhost > inventory
-  - ls -lrta
   - ansible-playbook -i hosts --syntax-check jenkins-slave.yml
   - ansible-playbook -i hosts --connection=local --sudo -vvvv jenkins-slave.yml
