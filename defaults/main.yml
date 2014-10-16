@@ -8,7 +8,7 @@ jenkins_shell: "/bin/false"
 #override me jenkins_home: "/var/lib/jenkins"
 #override me jenkins_slave_home: "{{ jenkins_home }}"
 jenkins_slave_directory: "{{ jenkins_slave_home }}/jenkins-slave"
-#jenkins_jdk7_enable: yes
+jenkins_jdk7_enable: no
 jenkins_jdk8_enable: yes
 jdk_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
 
@@ -19,7 +19,7 @@ git_login: jenkins
 git_password: microsoft
 git_path: "/usr/bin"
 
-#docker_files_generated_directory: "roles/jenkins-slave"
+docker_files_generated_directory: "roles/jenkins-slave"
 docker_files_enable: yes
 docker_volume_directory: "{{ jenkins_home }}"
 docker_working_directory: "/home/vagrant"

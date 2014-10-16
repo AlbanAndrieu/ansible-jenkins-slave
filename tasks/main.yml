@@ -1,10 +1,10 @@
 #ansible-playbook jenkins.yml --extra-vars "host=myhost user=myuser" -i hosts --ask-sudo-pass
 
-- name: jenkins-slave | Install wget package (Debian based)
+- name: jenkins-slave | Install wget package
   action: apt pkg='wget' state=installed
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: jenkins-slave | Install wget package (RedHat based)
+- name: jenkins-slave | Install wget package
   action: yum name='wget' state=installed
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
@@ -12,7 +12,7 @@
 # JAVA
 #
 
-#- name: jenkins-slave | Install JDK (apt)
+#- name: jenkins-slave | Install JDK
 #  apt: pkg={{ item }} state=present update_cache=yes
 #  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 #  tags: package
@@ -176,15 +176,15 @@
 ##
  # git
  #
-- name: jenkins-slave | Install git package (Debian based)
+- name: jenkins-slave | Install git package
   action: apt pkg='git' state=installed
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: jenkins-slave | Install git package (RedHat based)
+- name: jenkins-slave | Install git package
   action: yum name='git' state=installed
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
-- name: jenkins-slave | Install coverage and metrics tools (Debian based)
+- name: jenkins-slave | Install coverage and metrics tools
   apt: pkg={{ item }} state=present update_cache=yes
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:
@@ -198,7 +198,7 @@
 #./install-cpu.sh
 #ll /usr/lib/x86_64-linux-gnu/libOpenCL.so
 
-- name: jenkins-slave | Install tools needed by cpp generator (Debian based)
+- name: jenkins-slave | Install tools needed by cpp generator
   apt: pkg={{ item }} state=present update_cache=yes
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:

@@ -1,15 +1,15 @@
-# Ansible managed: /workspace/users/albandri10/env/ansible/roles/jenkins-slave/templates/Dockerfile.j2 modified on 2014-09-25 16:29:35 by albandri on albandri-laptop-misys
+# Ansible managed: /workspace/users/albandri10/env/ansible/roles/jenkins-slave/templates/Dockerfile.j2 modified on 2014-10-10 18:51:21 by albandri on albandri-laptop-misys
 #FROM        debian:jessie
 #FROM        stackbrew/ubuntu:14.04
 FROM        jasongiedymin/ansible-base-ubuntu
 
 # Volume can be accessed outside of container
-VOLUME      [/var/lib/jenkins]
+VOLUME      [/jenkins]
 
 MAINTAINER  Alban Andrieu "https://github.com/AlbanAndrieu"
 
 ENV			DEBIAN_FRONTEND noninteractive
-ENV         JENKINS_HOME /var/lib/jenkins
+ENV         JENKINS_HOME /jenkins
 ENV         WORKDIR /home/vagrant
 
 # Working dir
@@ -17,10 +17,6 @@ WORKDIR /home/vagrant
 
 # COPY
 #COPY /workspace/users/albandri10/env/ansible/roles/jenkins-slave $WORKDIR
-
-RUN         pwd
-#RUN         mkdir $WORKDIR/ansible-jenkins-slave
-RUN         ls -lrta
 
 # ADD
 ADD defaults $WORKDIR/ansible-jenkins-slave/defaults
@@ -30,7 +26,6 @@ ADD files $WORKDIR/ansible-jenkins-slave/files
 ADD tasks $WORKDIR/ansible-jenkins-slave/tasks
 ADD templates $WORKDIR/ansible-jenkins-slave/templates
 ADD vars $WORKDIR/ansible-jenkins-slave/vars
-#ADD docker $WORKDIR/ansible-jenkins-slave/docker
 
 # Here we continue to use add because
 # there are a limited number of RUNs
@@ -40,9 +35,8 @@ ADD jenkins-slave.yml $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml
 
 # Execute
 RUN         pwd
-RUN         ls -lrta $WORKDIR
-RUN         ls -lrta $WORKDIR/ansible-jenkins-slave
-RUN         ansible-playbook $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml -c local -vvvv
+RUN         ls -lrta
+RUN         ansible-playbook $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml -c local
 
 #RUN         apt-get update && \
 #            apt-get install -y openssh-server openjdk-7-jre-headless
@@ -52,6 +46,6 @@ RUN         ansible-playbook $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml -c
             
 EXPOSE      22
 ENTRYPOINT  ["/etc/init.d/jenkins-swarm-client"]
-#ENTRYPOINT ["java", "-jar", "/var/lib/jenkins/swarm-client-1.9-jar-with-dependencies.jar"]
+#ENTRYPOINT ["java", "-jar", "/jenkins/swarm-client-1.9-jar-with-dependencies.jar"]
 CMD /usr/sbin/sshd -D
 #CMD ["-g", "deamon off;"]
