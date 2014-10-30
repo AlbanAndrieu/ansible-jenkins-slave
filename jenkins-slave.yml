@@ -1,16 +1,17 @@
 ---
 - hosts: all
-  sudo: true
-  roles:
-    - role: ./
+  sudo: true  
 
   vars_files:
 #  - [ "defaults/main.yml" ]
   - [ "vars/{{ ansible_distribution }}-{{ ansible_architecture }}.yml", "vars/{{ ansible_distribution }}.yml" ]
-
-  vars:
-    docker_files_generated_directory: ""
-    docker_files_enable: no
-    jenkins_jdk7_enable: no
+    
+  roles:
+    - { role: ./,
+        docker_files_enable: yes,
+        jenkins_jdk7_enable: no
+        #user: "root",
+        #home: "/root"     
+      }
 
 #- include: docker/integration-tests.yml

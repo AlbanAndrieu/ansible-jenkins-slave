@@ -19,8 +19,8 @@ git_login: jenkins
 git_password: microsoft
 git_path: "/usr/bin"
 
-docker_files_generated_directory: "roles/jenkins-slave"
-docker_files_enable: yes
+docker_files_generated_directory: "./"
+docker_files_enable: no
 docker_volume_directory: "{{ jenkins_home_dir }}"
 docker_working_directory: "/home/vagrant"
 docker_image_name: "nabla/ansible-jenkins-slave"
