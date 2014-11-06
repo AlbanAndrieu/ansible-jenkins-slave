@@ -1,6 +1,6 @@
 ## jenkins-slave
 
-[![Travis CI](http://img.shields.io/travis/AlbanAndrieu/ansible-jenkins-slave.svg?style=flat)](http://travis-ci.org/AlbanAndrieu/ansible-jenkins-slave) [![Branch](http://img.shields.io/github/tag/AlbanAndrieu/ansible-jenkins-slave.svg?style=flat-square)](https://github.com/AlbanAndrieu/ansible-jenkins-slave/tree/master) [![Donate](https://img.shields.io/gratipay/AlbanAndrieu.svg?style=flat)](https://www.gratipay.com/AlbanAndrieu)  [![Ansible Galaxy](http://img.shields.io/badge/galaxy-AlbanAndrieu.jenkins-slave-660198.svg?style=flat)](https://galaxy.ansible.com/list#/roles/1998) [![Platforms](http://img.shields.io/badge/platforms-ubuntu-lightgrey.svg?style=flat)](#)
+[![Travis CI](http://img.shields.io/travis/AlbanAndrieu/ansible-jenkins-slave.svg?style=flat)](http://travis-ci.org/AlbanAndrieu/ansible-jenkins-slave) [![Branch](http://img.shields.io/github/tag/AlbanAndrieu/ansible-jenkins-slave.svg?style=flat-square)](https://github.com/AlbanAndrieu/ansible-jenkins-slave/tree/master) [![Donate](https://img.shields.io/gratipay/AlbanAndrieu.svg?style=flat)](https://www.gratipay.com/AlbanAndrieu)  [![Ansible Galaxy](http://img.shields.io/badge/galaxy-AlbanAndrieu.jenkinsslave-blue.svg?style=flat)](https://galaxy.ansible.com/list#/roles/1998) [![Platforms](http://img.shields.io/badge/platforms-ubuntu-lightgrey.svg?style=flat)](#)
 
 Ensures that the basic requirements are properly installed (using `apt`) and configured for a jenkins slave to build, test package and deploy your project
 
