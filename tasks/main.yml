@@ -270,7 +270,7 @@
   template: src=settings.xml.j2 dest={{ jenkins_home_dir }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0700
 
 - name: jenkins-slave | Jenkins can run any command with no password
-  lineinfile: "line='jenkins ALL=NOPASSWD: ALL' dest=/etc/sudoers regexp='^jenkins'"
+  lineinfile: "line='jenkins ALL=NOPASSWD: ALL' dest=/etc/sudoers regexp='^jenkins' validate='visudo -cf %s'" 
   ignore_errors: true
 
 - name: jenkins-slave | Copy sonar runner configuration
