@@ -1,14 +1,16 @@
 ## jenkins-slave
 
-[![Travis CI](http://img.shields.io/travis/AlbanAndrieu/ansible-jenkins-slave.svg?style=flat)](http://travis-ci.org/AlbanAndrieu/ansible-jenkins-slave) [![Branch](http://img.shields.io/github/tag/AlbanAndrieu/ansible-jenkins-slave.svg?style=flat-square)](https://github.com/AlbanAndrieu/ansible-jenkins-slave/tree/master) [![Donate](https://img.shields.io/gratipay/AlbanAndrieu.svg?style=flat)](https://www.gratipay.com/AlbanAndrieu)  [![Ansible Galaxy](http://img.shields.io/badge/galaxy-AlbanAndrieu.jenkinsslave-blue.svg?style=flat)](https://galaxy.ansible.com/list#/roles/1998) [![Platforms](http://img.shields.io/badge/platforms-ubuntu-lightgrey.svg?style=flat)](#)
+[![Travis CI](http://img.shields.io/travis/AlbanAndrieu/ansible-jenkins-slave.svg?style=flat)](http://travis-ci.org/AlbanAndrieu/ansible-jenkins-slave) [![Branch](http://img.shields.io/github/tag/AlbanAndrieu/ansible-jenkins-slave.svg?style=flat-square)](https://github.com/AlbanAndrieu/ansible-jenkins-slave/tree/master) [![Donate](https://img.shields.io/gratipay/AlbanAndrieu.svg?style=flat)](https://www.gratipay.com/AlbanAndrieu)  [![Ansible Galaxy](http://img.shields.io/badge/galaxy-alban.andrieu.jenkinsslave-blue.svg?style=flat)](https://galaxy.ansible.com/list#/roles/1998) [![Platforms](http://img.shields.io/badge/platforms-ubuntu-lightgrey.svg?style=flat)](#)
 
 Ensures that the basic requirements are properly installed (using `apt`) and configured for a jenkins slave to build, test package and deploy your project
 
 ### Installation
 
-This role requires at least Ansible `v1.6.3`. To install it, run:
+This role requires at least Ansible `v1.6.3`. 
 
-    ansible-galaxy install AlbanAndrieu.jenkins-slave
+To install it, run:
+
+    ansible-galaxy install alban.andrieu.jenkins-slave
 
 
 
@@ -59,7 +61,7 @@ Describe how to use in more detail...
 
 ### Feedback, bug-reports, requests, ...
 
-Are [welcome](https://github.com/AlbanAndrieu/ansible-jenkins-slave/issues>)!
+Are [welcome](https://github.com/AlbanAndrieu/ansible-jenkins-slave/issues)!
 
 ***
 
