@@ -1,0 +1,25 @@
+---
+
+- file: dest={{jenkins_home}}/.ssh state=directory
+
+- name: jenkins-ssh | Copy private key
+  copy: >
+    src={{jenkins_ssh_key_file}}
+    dest={{jenkins_home}}/.ssh/id_rsa
+    owner={{jenkins_user}}
+    group={{jenkins_group}}
+    mode=0600
+  sudo: yes    
+  when: jenkins_ssh_key_file != ""
+
+- name: jenkins-ssh | Setup SSH authorized keys
+  lineinfile: 
+    line="{{item}}"
+    insertafter="EOF"
+    state="present"
+    create="yes"
+    mode="0644"
+    dest="{{jenkins_home}}/.ssh/authorized_keys"
+    owner="{{jenkins_user}}"
+  sudo: yes    
+  with_items: jenkins_ssh_authorized_keys_fingerprints

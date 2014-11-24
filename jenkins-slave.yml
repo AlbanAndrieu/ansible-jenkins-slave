@@ -3,7 +3,6 @@
   sudo: true  
 
   vars_files:
-#  - [ "defaults/main.yml" ]
   - [ "vars/{{ ansible_distribution }}-{{ ansible_architecture }}.yml", "vars/{{ ansible_distribution }}.yml" ]
     
   roles:

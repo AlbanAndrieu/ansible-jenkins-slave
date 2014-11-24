@@ -234,16 +234,20 @@
    - libxml-handler-yawriter-perl
    - libxml-simple-perl
 
-- name: jenkins-slave | Create jenkins user
-  user: name={{ jenkins_user }} comment="Jenkins user" home={{ jenkins_home_dir }} shell={{ jenkins_shell }}
-  ignore_errors: true
+#- name: jenkins-slave | Create jenkins user
+#  user: name={{ jenkins_user }} comment="Jenkins user" home={{ jenkins_home_dir }} shell={{ jenkins_shell }}
+#  ignore_errors: true
+#
+#- name: jenkins-slave | Create .ssh folder
+#  file: path={{ jenkins_home_dir }}/.ssh state=directory mode=0700  owner={{ jenkins_user }} group={{ jenkins_group }}
+#  ignore_errors: true
 
-- name: jenkins-slave | Create .ssh folder
-  file: path={{ jenkins_home_dir }}/.ssh state=directory mode=0700  owner={{ jenkins_user }} group={{ jenkins_group }}
-  ignore_errors: true
-
-- name: jenkins-slave | Add passwordless connection for jenkins (Alban Andrieu)
-  authorized_key: user={{ jenkins_user }} key="ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIEAio3SOQ9yeK6QfKqSFNKyTasuzjStxWevG1Vz1wgJIxPF+KB0XoMAPD081J+Bzj2LCDRSWisNv2L4xv2jbFxW/Pl7NEakoX47eNx3U+Dxaf+szeWBTryYcDUGkduLV7G8Qncm0luIFd+HDIe/Qir1E2f56Qu2uuBNE6Tz5TFt1vc= Alban"
+#- include: ssh.yml
+#  when: jenkins_ssh_key_file != ""
+#  tags: [jenkins, jenkins-ssh]
+  
+#- name: jenkins-slave | Add passwordless connection for jenkins (Alban Andrieu)
+#  authorized_key: user={{ jenkins_user }} key="ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIEAio3SOQ9yeK6QfKqSFNKyTasuzjStxWevG1Vz1wgJIxPF+KB0XoMAPD081J+Bzj2LCDRSWisNv2L4xv2jbFxW/Pl7NEakoX47eNx3U+Dxaf+szeWBTryYcDUGkduLV7G8Qncm0luIFd+HDIe/Qir1E2f56Qu2uuBNE6Tz5TFt1vc= Alban"
 
 #TODO use authorized_key instead of copy-keys.yml
 #http://brokenbad.com/better-handling-of-public-ssh-keys-using-ansible/
@@ -253,15 +257,15 @@
 #    key: "{{ item }}"
 #  with_items: base_admin_keys
 
-- name: jenkins-slave | Update authorized_keys rights
-  file: path={{ jenkins_home_dir }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-  ignore_errors: true
-
-- name: jenkins-slave | Copy the .netrc script for git credentials
-  copy: src=.netrc dest={{ jenkins_home_dir }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-
-- name: jenkins-slave | Update git .netrc rights
-  file: path={{ jenkins_home_dir }}/.netrc state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+#- name: jenkins-slave | Update authorized_keys rights
+#  file: path={{ jenkins_home_dir }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+#  ignore_errors: true
+#
+#- name: jenkins-slave | Copy the .netrc script for git credentials
+#  copy: src=.netrc dest={{ jenkins_home_dir }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+#
+#- name: jenkins-slave | Update git .netrc rights
+#  file: path={{ jenkins_home_dir }}/.netrc state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 
 - name: jenkins-slave | Create .m2 folder
   file: path={{ jenkins_home_dir }}/.m2 state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
@@ -276,8 +280,8 @@
 - name: jenkins-slave | Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
 
-- name: jenkins-slave | Create {{ jenkins_slave_home }} directory
-  file: path={{ jenkins_slave_home }} state=directory
+#- name: jenkins-slave | Create {{ jenkins_slave_home }} directory
+#  file: path={{ jenkins_slave_home }} state=directory
 
 - name: jenkins-slave | Create /repository directory
   file: path={{ jenkins_slave_home }}/repository state=directory owner=jenkins
