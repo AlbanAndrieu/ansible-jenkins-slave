@@ -12,12 +12,12 @@ MAINTAINER  Alban Andrieu "https://github.com/AlbanAndrieu"
 ENV			DEBIAN_FRONTEND noninteractive
 ENV         JENKINS_HOME /var/lib/jenkins
 ENV         WORKDIR /home/vagrant
-ENV         ANSIBLE_LIBRARY /home/vagrant/library
-ENV         PYTHONPATH /home/vagrant/lib:$PYTHON_PATH
-ENV         PATH /home/vagrant/bin:/sbin:/usr/sbin:/usr/bin:/bin:$PATH
+ENV         ANSIBLE_LIBRARY /tmp/ansible/library
+ENV         PYTHONPATH /tmp/ansible/lib:$PYTHON_PATH
+ENV         PATH /tmp/ansible/bin:/sbin:/usr/sbin:/usr/bin:/bin:$PATH
 
 # Working dir
-WORKDIR /home/vagrant
+WORKDIR /tmp/ansible
 
 # COPY
 #COPY /workspace/users/albandri10/env/ansible/roles/jenkins-slave $WORKDIR
@@ -43,7 +43,7 @@ RUN apt-get clean && apt-get -y update
 # Install ansible
 RUN apt-get install -y python-dev python-yaml python-jinja2 git unzip python-pip
 RUN pip install paramiko PyYAML jinja2 httplib2 boto
-RUN git clone http://github.com/ansible/ansible.git /home/vagrant
+RUN git clone http://github.com/ansible/ansible.git /tmp/ansible
 # Install a basic SSH server
 RUN apt-get install -y openssh-server
 RUN mkdir -p /var/run/sshd

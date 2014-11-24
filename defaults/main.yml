@@ -22,5 +22,6 @@ git_path: "/usr/bin"
 docker_files_generated_directory: "./"
 docker_files_enable: no
 docker_volume_directory: "{{ jenkins_home_dir }}"
-docker_working_directory: "/home/vagrant"
+docker_working_directory: "/tmp/ansible"
+#docker_working_directory: "{{ docker_volume_directory }}"
 docker_image_name: "nabla/ansible-jenkins-slave"
