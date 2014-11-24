@@ -5,19 +5,19 @@ FROM        ubuntu:latest
 #FROM        jasongiedymin/ansible-base-ubuntu
 
 # Volume can be accessed outside of container
-VOLUME      [/var/lib/jenkins]
+VOLUME      [/home/jenkins]
 
 MAINTAINER  Alban Andrieu "https://github.com/AlbanAndrieu"
 
 ENV			DEBIAN_FRONTEND noninteractive
-ENV         JENKINS_HOME /var/lib/jenkins
+ENV         JENKINS_HOME /home/jenkins
 ENV         WORKDIR /home/vagrant
 ENV         ANSIBLE_LIBRARY /tmp/ansible/library
 ENV         PYTHONPATH /tmp/ansible/lib:$PYTHON_PATH
 ENV         PATH /tmp/ansible/bin:/sbin:/usr/sbin:/usr/bin:/bin:$PATH
 
 # Working dir
-WORKDIR /tmp/ansible
+#WORKDIR /tmp/ansible
 
 # COPY
 #COPY /workspace/users/albandri10/env/ansible/roles/jenkins-slave $WORKDIR
@@ -51,7 +51,7 @@ RUN pip install paramiko PyYAML jinja2 httplib2 boto && pip install ansible
 
 # Add user jenkins to the image
 #RUN         useradd -m -s /bin/bash jenkins
-RUN         adduser --quiet jenkins --home /var/lib/jenkins
+RUN         adduser --quiet jenkins --home /home/jenkins
 # Set password for the jenkins user (you may want to alter this).
 RUN         echo jenkins:jenkins | chpasswd
 

@@ -17,7 +17,7 @@ ENV         PYTHONPATH {{ docker_working_directory }}/lib:$PYTHON_PATH
 ENV         PATH {{ docker_working_directory }}/bin:/sbin:/usr/sbin:/usr/bin:/bin:$PATH
 
 # Working dir
-WORKDIR {{ docker_working_directory }}
+#WORKDIR {{ docker_working_directory }}
 
 # COPY
 #COPY /workspace/users/albandri10/env/ansible/roles/jenkins-slave $WORKDIR
