@@ -51,7 +51,7 @@ RUN pip install paramiko PyYAML jinja2 httplib2 boto && pip install ansible
 
 # Add user jenkins to the image
 #RUN         useradd -m -s /bin/bash jenkins
-RUN         adduser --quiet jenkins
+RUN         adduser --quiet jenkins --home {{ jenkins_home_dir }}
 # Set password for the jenkins user (you may want to alter this).
 RUN         echo jenkins:jenkins | chpasswd
 

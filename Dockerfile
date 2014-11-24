@@ -51,7 +51,7 @@ RUN pip install paramiko PyYAML jinja2 httplib2 boto && pip install ansible
 
 # Add user jenkins to the image
 #RUN         useradd -m -s /bin/bash jenkins
-RUN         adduser --quiet jenkins
+RUN         adduser --quiet jenkins --home /var/lib/jenkins
 # Set password for the jenkins user (you may want to alter this).
 RUN         echo jenkins:jenkins | chpasswd
 
@@ -63,8 +63,6 @@ RUN apt-get install -y openssh-server
 RUN mkdir -p /var/run/sshd
 #RUN         apt-get update && \
 #            apt-get install -y openssh-server openjdk-7-jre-headless
-# Set password for the jenkins user (you may want to alter this).
-#RUN         echo jenkins:jenkins | chpasswd
 
 # Standard SSH port
 EXPOSE      22
