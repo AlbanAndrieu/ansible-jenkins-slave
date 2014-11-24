@@ -56,7 +56,7 @@ RUN         adduser --quiet jenkins --home /home/jenkins
 RUN         echo jenkins:jenkins | chpasswd
 
 # Execute
-RUN         ansible-playbook $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml -c local
+#RUN         ansible-playbook $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml -c local
 
 # Install a basic SSH server
 RUN apt-get install -y openssh-server
