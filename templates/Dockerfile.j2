@@ -42,11 +42,9 @@ ADD jenkins-slave.yml $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml
 RUN apt-get clean && apt-get -y update
 # Install ansible
 RUN apt-get install -y python-dev python-yaml python-jinja2 git unzip python-pip
-RUN pip install paramiko PyYAML jinja2 httplib2 boto
-RUN git clone http://github.com/ansible/ansible.git {{ docker_working_directory }}
-# Install a basic SSH server
-RUN apt-get install -y openssh-server
-RUN mkdir -p /var/run/sshd
+RUN pip install paramiko PyYAML jinja2 httplib2 boto && pip install ansible
+#RUN git clone http://github.com/ansible/ansible.git {{ docker_working_directory }}
+RUN mkdir {{ docker_working_directory }} 
 
 # Install JDK 7 (latest edition)
 #RUN apt-get install -y --no-install-recommends openjdk-7-jdk
@@ -54,6 +52,9 @@ RUN mkdir -p /var/run/sshd
 # Execute
 RUN         ansible-playbook $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml -c local
 
+# Install a basic SSH server
+RUN apt-get install -y openssh-server
+RUN mkdir -p /var/run/sshd
 #RUN         apt-get update && \
 #            apt-get install -y openssh-server openjdk-7-jre-headless
 #RUN         useradd -m -s /bin/bash jenkins
