@@ -44,7 +44,7 @@ RUN apt-get clean && apt-get -y update
 RUN apt-get install -y python-dev python-yaml python-jinja2 git unzip python-pip
 RUN pip install paramiko PyYAML jinja2 httplib2 boto && pip install ansible
 #RUN git clone http://github.com/ansible/ansible.git /tmp/ansible
-RUN mkdir /tmp/ansible 
+#RUN mkdir /tmp/ansible 
 
 # Install JDK 7 (latest edition)
 #RUN apt-get install -y --no-install-recommends openjdk-7-jdk
