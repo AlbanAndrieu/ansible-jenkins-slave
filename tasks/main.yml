@@ -242,9 +242,9 @@
 #  file: path={{ jenkins_home_dir }}/.ssh state=directory mode=0700  owner={{ jenkins_user }} group={{ jenkins_group }}
 #  ignore_errors: true
 
-#- include: ssh.yml
-#  when: jenkins_ssh_key_file != ""
-#  tags: [jenkins, jenkins-ssh]
+- include: ssh.yml
+  when: jenkins_ssh_key_file != ""
+  tags: [jenkins, jenkins-ssh]
   
 #- name: jenkins-slave | Add passwordless connection for jenkins (Alban Andrieu)
 #  authorized_key: user={{ jenkins_user }} key="ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIEAio3SOQ9yeK6QfKqSFNKyTasuzjStxWevG1Vz1wgJIxPF+KB0XoMAPD081J+Bzj2LCDRSWisNv2L4xv2jbFxW/Pl7NEakoX47eNx3U+Dxaf+szeWBTryYcDUGkduLV7G8Qncm0luIFd+HDIe/Qir1E2f56Qu2uuBNE6Tz5TFt1vc= Alban"
@@ -329,13 +329,13 @@
 #sudo update-java-alternatives -s java-7-oracle
 #sudo update-java-alternatives -s java-8-oracle
 
-#- name: jenkins-slave | Set java link
-#  action: command update-alternatives --install /usr/bin/java java {{ jvm_folder }}/jdk1.7.0/bin/java 1
-#  when: "jdk7_installed.changed == 'True'"
+- name: jenkins-slave | Set java link
+  action: command update-alternatives --install /usr/bin/java java {{ jvm_folder }}/jdk1.8.0/bin/java 1
+  when: "jdk8_installed.changed == 'True'"
 
-#- name: jenkins-slave | Set jar link
-#  action: command update-alternatives --install /usr/bin/jar jar {{ jvm_folder }}/jdk1.7.0/bin/jar 1
-#  when: "jdk7_installed.changed == 'True'"
+- name: jenkins-slave | Set jar link
+  action: command update-alternatives --install /usr/bin/jar jar {{ jvm_folder }}/jdk1.8.0/bin/jar 1
+  when: "jdk8_installed.changed == 'True'"
 
 #sudo update-alternatives --list mvn
 #sudo update-alternatives --remove mvn /usr/share/maven/bin/mvn
@@ -343,16 +343,16 @@
 #sudo update-alternatives --remove mvn /opt/maven3/bin/mvn
 
 #sudo update-alternatives --config mvn
-#- name: jenkins-slave | Set mvn link to Maven 3.0.5
-#  action: command update-alternatives --install /usr/bin/mvn mvn /opt/maven305/bin/mvn 1
+- name: jenkins-slave | Set mvn link to Maven 3.2.1
+  action: command update-alternatives --install /usr/bin/mvn mvn /opt/maven321/bin/mvn 1
 
 #- name: jenkins-slave | Set mvn local link to Maven 3.0.5
-#  action: command update-alternatives --install /usr/local/bin/mvn mvn /opt/maven305/bin/mvn 1
+#  action: command update-alternatives --install /usr/local/bin/mvn mvn /opt/maven321/bin/mvn 1
 
 #http://drupalcode.org/sandbox/franskuipers/1801378.git/blob/e0d2e3dd3f3b9ff7f9ace61f9e56c56a1f28e915:/ansible.yml  #
 
 #- name: jenkins-slave | Clone the application
-#  action: git repo=http://almtools/stash/scm/risk/buildmasters.git dest=/jenkins/buildmasters
+#  action: git repo=http://toto/stash/scm/risk/buildmasters.git dest=/jenkins/buildmasters
 
 - name: jenkins-slave | Cleanup temporary directory
   file: name={{ tempdir.stdout }} state=absent

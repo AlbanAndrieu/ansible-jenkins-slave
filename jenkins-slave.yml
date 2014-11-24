@@ -8,9 +8,7 @@
   roles:
     - { role: ./,
         docker_files_enable: yes,
-        jenkins_jdk7_enable: no
-        #user: "root",
-        #home: "/root"     
+        jenkins_jdk7_enable: yes
       }
 
 #- include: docker/integration-tests.yml
