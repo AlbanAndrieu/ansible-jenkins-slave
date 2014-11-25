@@ -8,7 +8,7 @@
   roles:
     - { role: ./,
         docker_files_enable: yes,
-        jenkins_jdk7_enable: yes
+        jenkins_jdk7_enable: no
       }
 
 #- include: docker/integration-tests.yml

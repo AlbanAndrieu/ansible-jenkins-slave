@@ -12,6 +12,18 @@
   sudo: yes    
   when: jenkins_ssh_key_file != ""
 
+- name: jenkins-ssh | Setup SSH hosts
+  lineinfile: 
+    line="{{item}}"
+    insertafter="EOF"
+    state="present"
+    create="yes"
+    mode="0644"
+    dest="{{jenkins_home}}/.ssh/known_hosts"
+    owner="{{jenkins_user}}"
+  sudo: yes    
+  with_items: jenkins_ssh_fingerprints
+
 - name: jenkins-ssh | Setup SSH authorized keys
   lineinfile: 
     line="{{item}}"

@@ -234,10 +234,10 @@
    - libxml-handler-yawriter-perl
    - libxml-simple-perl
 
-#- name: jenkins-slave | Create jenkins user
-#  user: name={{ jenkins_user }} comment="Jenkins user" home={{ jenkins_home_dir }} shell={{ jenkins_shell }}
+- name: jenkins-slave | Create jenkins user
+  user: name={{ jenkins_user }} password={{ jenkins_password }} update_password=always comment="Jenkins user" home={{ jenkins_home_dir }} shell={{ jenkins_shell }}
 #  ignore_errors: true
-#
+
 #- name: jenkins-slave | Create .ssh folder
 #  file: path={{ jenkins_home_dir }}/.ssh state=directory mode=0700  owner={{ jenkins_user }} group={{ jenkins_group }}
 #  ignore_errors: true
@@ -283,11 +283,11 @@
 #- name: jenkins-slave | Create {{ jenkins_slave_home }} directory
 #  file: path={{ jenkins_slave_home }} state=directory
 
-- name: jenkins-slave | Create /repository directory
-  file: path={{ jenkins_slave_home }}/repository state=directory owner=jenkins
+#- name: jenkins-slave | Create /repository directory
+#  file: path={{ jenkins_slave_home }}/repository state=directory owner=jenkins
 
-- name: jenkins-slave | Create Jenkins slave directory
-  file: path={{ jenkins_slave_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
+#- name: jenkins-slave | Create Jenkins slave directory
+  #file: path={{ jenkins_slave_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
 
 - name: jenkins-slave | Create Java directory link (legacy required)
   file: path={{ jenkins_slave_home }}/jdk src=/usr/lib/jvm/jdk1.7.0 state=link
