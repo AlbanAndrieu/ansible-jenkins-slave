@@ -41,7 +41,7 @@ RUN dpkg-divert --local --rename --add /sbin/initctl
 
 # Make sure the package repository is up to date.
 #RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
-RUN echo "deb http://archive.ubuntu.com/ubuntu trusty main universe" > /etc/apt/sources.list
+#RUN echo "deb http://archive.ubuntu.com/ubuntu trusty main universe" > /etc/apt/sources.list
 RUN apt-get clean && apt-get -y update
 # Install ansible
 RUN apt-get install -y python-dev python-yaml python-jinja2 git unzip python-pip
