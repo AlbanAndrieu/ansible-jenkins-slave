@@ -29,9 +29,9 @@ jdk_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be
 
 nexus_url: http://home.nabla.mobi:8081
 
-shell_git_machine: 127.0.0.1
+shell_git_machine: "127.0.0.1"
 shell_git_login: jenkins
-shell_git_name: {{ shell_git_login }}
+shell_git_name: "{{ shell_git_login }}"
 shell_git_password: jenkins
 shell_git_email: "root@localhost"
 shell_git_path: "/usr/bin"
