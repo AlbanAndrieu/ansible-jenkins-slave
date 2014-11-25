@@ -199,13 +199,23 @@
 ##
  # git
  #
-- name: jenkins-slave | Install git package
-  action: apt pkg='git' state=installed
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+# Moved to his own role
+#- name: jenkins-slave | Install git package
+#  action: apt pkg='git' state=installed
+#  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+#
+#- name: jenkins-slave | Install git package
+#  action: yum name='git' state=installed
+#  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  
+- name: Update git configuration (user.email)
+  action: command git config --global user.email "{{ shell_git_email }}"
 
-- name: jenkins-slave | Install git package
-  action: yum name='git' state=installed
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+- name: Update git configuration (user.name)
+  action: command git config --global user.name "{{ shell_git_name }}"
+    
+- name: Update git configuration (http.sslVerify)
+  action: command git config --global http.sslVerify {{ shell_git_ssl }}  
 
 - name: jenkins-slave | Install coverage and metrics tools
   apt: pkg={{ item }} state=present update_cache=yes

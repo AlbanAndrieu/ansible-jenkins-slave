@@ -29,10 +29,11 @@ jdk_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be
 
 nexus_url: http://home.nabla.mobi:8081
 
-git_machine: 82.231.208.223
-git_login: jenkins
-git_password: microsoft
-git_path: "/usr/bin"
+shell_git_machine: 82.231.208.223
+shell_git_login: jenkins
+shell_git_password: microsoft
+shell_git_path: "/usr/bin"
+shell_git_ssl: false
 
 docker_files_generated_directory: "./"
 docker_files_enable: no

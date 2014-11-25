@@ -4,7 +4,7 @@
 #
 
 - hosts: all
-  sudo: True
+  sudo: true
   tasks:
     # Tests
     - name: Check git
@@ -12,4 +12,4 @@
       register: git_path
     - debug: msg="Git was installed in {{git_path.stdout}}"
     - fail: msg="Git not found, tests failed."
-      when: git_path.stdout != "{{git_path}}/git"
+      when: git_path.stdout != "{{shell_git_path}}/git"
