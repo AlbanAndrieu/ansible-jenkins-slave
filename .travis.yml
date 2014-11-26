@@ -12,9 +12,12 @@ install:
   #- "printf '[defaults]\nroles_path = ../' > ansible.cfg"
 
   # Install dependencies.
-  - ansible-galaxy install alban.andrieu.subversion  
+  #- ansible-galaxy install alban.andrieu.subversion  
+  #- ansible-galaxy install alban.andrieu.xvbf    
+  - git clone https://github.com/AlbanAndrieu/ansible-subversion.git alban.andrieu.subversion  
   - git clone https://github.com/AlbanAndrieu/ansible-role-git.git geerlingguy.git
-  - ansible-galaxy install alban.andrieu.xvbf  
+  - git clone https://github.com/AlbanAndrieu/ansible-xvbf alban.andrieu.xvbf  
+
 script:
   - ansible --version
   - ls -lrta
