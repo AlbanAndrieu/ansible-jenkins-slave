@@ -270,12 +270,12 @@
 #- name: jenkins-slave | Update authorized_keys rights
 #  file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 #  ignore_errors: true
-#
-#- name: jenkins-slave | Copy the .netrc script for git credentials
-#  copy: src=.netrc dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-#
-#- name: jenkins-slave | Update git .netrc rights
-#  file: path={{ jenkins_home }}/.netrc state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+
+- name: jenkins-slave | Copy the .netrc script for git credentials
+  template: src=.netrc.j2 dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+
+- name: jenkins-slave | Update git .netrc rights
+  file: path={{ jenkins_home }}/.netrc state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 
 - name: jenkins-slave | Create .m2 folder
   file: path={{ jenkins_home }}/.m2 state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775

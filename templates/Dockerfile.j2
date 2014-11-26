@@ -69,7 +69,7 @@ RUN mkdir -p /var/run/sshd
 # Standard SSH port
 EXPOSE      22
 # Standard MySQL port for Sonar
-EXPOSE      3306
+#EXPOSE      3306
 
 #ENTRYPOINT  ["/etc/init.d/jenkins-swarm-client"]
 CMD ["/usr/sbin/sshd", "-D"]
