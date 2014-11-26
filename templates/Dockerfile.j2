@@ -34,7 +34,7 @@ ADD vars $WORKDIR/ansible-jenkins-slave/vars
 # there are a limited number of RUNs
 # allowed.
 ADD hosts /etc/ansible/hosts
-ADD jenkins-slave.yml $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml
+ADD jenkins-slave-docker.yml $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml
 
 # Because docker replaces /sbin/init: https://github.com/dotcloud/docker/issues/1024 
 RUN dpkg-divert --local --rename --add /sbin/initctl

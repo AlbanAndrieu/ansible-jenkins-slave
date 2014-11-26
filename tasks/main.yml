@@ -213,10 +213,12 @@
 
 - name: Update git configuration (user.name)
   action: command git config --global user.name "{{ shell_git_name }}"
-    
+  sudo: yes
+  
 - name: Update git configuration (http.sslVerify)
   action: command git config --global http.sslVerify {{ shell_git_ssl }}  
-
+  sudo: yes
+  
 - name: jenkins-slave | Install coverage and metrics tools
   apt: pkg={{ item }} state=present update_cache=yes
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
@@ -224,7 +226,8 @@
    - lcov
    - graphviz
    - doxygen
-
+  sudo: yes
+  
 #TODO opencl install
 #wget http://registrationcenter.intel.com/irc_nas/4181/intel_sdk_for_ocl_applications_2014_ubuntu_4.4.0.117_x64.tgz
 #tar zxvf intel_sdk_for_ocl_applications_2014_ubuntu_4.4.0.117_x64.tgz
@@ -243,9 +246,11 @@
    - libcrypt-ssleay-perl
    - libxml-handler-yawriter-perl
    - libxml-simple-perl
-
+  sudo: yes
+  
 - name: jenkins-slave | Create jenkins user
   user: name={{ jenkins_user }} password={{ jenkins_password }} update_password=always comment="Jenkins user" home={{ jenkins_home }} shell={{ jenkins_shell }}
+  sudo: yes  
 #  ignore_errors: true
 
 #- name: jenkins-slave | Create .ssh folder
@@ -285,7 +290,7 @@
 
 - name: jenkins-slave | Jenkins can run any command with no password
   lineinfile: "line='jenkins ALL=NOPASSWD: ALL' dest=/etc/sudoers regexp='^jenkins' validate='visudo -cf %s'" 
-  ignore_errors: true
+  sudo: yes
 
 - name: jenkins-slave | Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
@@ -302,6 +307,7 @@
 - name: jenkins-slave | Create Java directory link (legacy required)
   file: path={{ jenkins_slave_home }}/jdk src=/usr/lib/jvm/jdk1.7.0 state=link
   when: jenkins_jdk7_enable
+  sudo: yes
 
 #END OF TODO extract jenkins user to another script
 
@@ -342,10 +348,12 @@
 - name: jenkins-slave | Set java link
   action: command update-alternatives --install /usr/bin/java java {{ jvm_folder }}/jdk1.8.0/bin/java 1
   when: "jdk8_installed.changed == 'True'"
+  sudo: yes
 
 - name: jenkins-slave | Set jar link
   action: command update-alternatives --install /usr/bin/jar jar {{ jvm_folder }}/jdk1.8.0/bin/jar 1
   when: "jdk8_installed.changed == 'True'"
+  sudo: yes
 
 #sudo update-alternatives --list mvn
 #sudo update-alternatives --remove mvn /usr/share/maven/bin/mvn
@@ -355,6 +363,7 @@
 #sudo update-alternatives --config mvn
 - name: jenkins-slave | Set mvn link to Maven 3.2.1
   action: command update-alternatives --install /usr/bin/mvn mvn /opt/maven321/bin/mvn 1
+  sudo: yes
 
 #- name: jenkins-slave | Set mvn local link to Maven 3.0.5
 #  action: command update-alternatives --install /usr/local/bin/mvn mvn /opt/maven321/bin/mvn 1

@@ -34,7 +34,7 @@ ADD vars $WORKDIR/ansible-jenkins-slave/vars
 # there are a limited number of RUNs
 # allowed.
 ADD hosts /etc/ansible/hosts
-ADD jenkins-slave.yml $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml
+ADD jenkins-slave-docker.yml $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml
 
 # Because docker replaces /sbin/init: https://github.com/dotcloud/docker/issues/1024 
 RUN dpkg-divert --local --rename --add /sbin/initctl
@@ -69,7 +69,7 @@ RUN mkdir -p /var/run/sshd
 # Standard SSH port
 EXPOSE      22
 # Standard MySQL port for Sonar
-EXPOSE      3306
+#EXPOSE      3306
 
 #ENTRYPOINT  ["/etc/init.d/jenkins-swarm-client"]
 CMD ["/usr/sbin/sshd", "-D"]
