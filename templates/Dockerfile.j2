@@ -9,7 +9,7 @@ VOLUME      [{{ docker_volume_directory }}]
 MAINTAINER  Alban Andrieu "https://github.com/AlbanAndrieu"
 
 ENV			DEBIAN_FRONTEND noninteractive
-ENV         JENKINS_HOME {{ jenkins_home_dir }}
+ENV         JENKINS_HOME {{ jenkins_home }}
 ENV         WORKDIR /home/vagrant
 ENV         ANSIBLE_LIBRARY {{ docker_working_directory }}/library
 ENV         PYTHONPATH {{ docker_working_directory }}/lib:$PYTHON_PATH
@@ -53,7 +53,7 @@ RUN pip install paramiko PyYAML jinja2 httplib2 boto && pip install ansible
 #RUN apt-get install -y --no-install-recommends openjdk-7-jdk
 
 # Add user jenkins to the image
-#RUN         adduser --quiet jenkins --home {{ jenkins_home_dir }}
+#RUN         adduser --quiet jenkins --home {{ jenkins_home }}
 # Set password for the jenkins user (you may want to alter this).
 #RUN         echo jenkins:jenkins | chpasswd
 
@@ -68,6 +68,8 @@ RUN mkdir -p /var/run/sshd
 
 # Standard SSH port
 EXPOSE      22
+# Standard MySQL port for Sonar
+EXPOSE      3306
 
 #ENTRYPOINT  ["/etc/init.d/jenkins-swarm-client"]
 CMD ["/usr/sbin/sshd", "-D"]

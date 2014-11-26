@@ -25,9 +25,9 @@ List of default variables available in the inventory:
     jenkins_user: jenkins
     jenkins_group: jenkins
     jenkins_shell: "/bin/false"
-    #NIS issue jenkins_home_dir: /home/jenkins
-    jenkins_home_dir: /var/lib/jenkins
-    jenkins_slave_home: "{{ jenkins_home_dir }}"
+    #NIS issue jenkins_home: /home/jenkins
+    jenkins_home: /var/lib/jenkins
+    jenkins_slave_home: "{{ jenkins_home }}"
     jenkins_slave_directory: "{{ jenkins_slave_home }}/jenkins-slave"
     jenkins_jdk7_enable: no
     jenkins_jdk8_enable: yes
@@ -42,7 +42,7 @@ List of default variables available in the inventory:
     
     docker_files_generated_directory: "./"
     docker_files_enable: no
-    docker_volume_directory: "{{ jenkins_home_dir }}"
+    docker_volume_directory: "{{ jenkins_home }}"
     docker_working_directory: "/home/vagrant"
     docker_image_name: "nabla/ansible-jenkins-slave"
 ```

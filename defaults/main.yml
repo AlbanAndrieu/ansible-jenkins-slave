@@ -9,10 +9,10 @@ jenkins_password: "$6$rounds=40000$OvRtT6osJP89GLee$/cizemUXDAH.mW1ILNK1NGk64/TY
 jenkins_group: jenkins
 #jenkins_shell: "/bin/false"
 jenkins_shell: "/bin/bash"
-#NIS issue jenkins_home_dir: /home/jenkins
-#jenkins_home_dir: "/var/lib/jenkins"
-jenkins_home_dir: "/home/jenkins"
-jenkins_slave_home: "{{ jenkins_home_dir }}"
+#NIS issue jenkins_home: /home/jenkins
+#jenkins_home: "/var/lib/jenkins"
+jenkins_home: "/home/jenkins"
+jenkins_slave_home: "{{ jenkins_home }}"
 jenkins_slave_directory: "{{ jenkins_slave_home }}/jenkins-slave"
 jenkins_jdk7_enable: no
 jenkins_jdk8_enable: yes
@@ -39,7 +39,7 @@ shell_git_ssl: false
 
 docker_files_generated_directory: "./"
 docker_files_enable: no
-docker_volume_directory: "{{ jenkins_home_dir }}"
+docker_volume_directory: "{{ jenkins_home }}"
 docker_working_directory: "/tmp/ansible"
 #docker_working_directory: "{{ docker_volume_directory }}"
 docker_image_name: "nabla/ansible-jenkins-slave"
