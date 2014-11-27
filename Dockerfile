@@ -22,6 +22,10 @@ WORKDIR /tmp/ansible
 #COPY /workspace/users/albandri10/env/ansible/roles/jenkins-slave $WORKDIR
 
 # ADD
+ADD ../geerlingguy.git $WORKDIR/geerlingguy.git
+ADD ../alban.andrieu.subversion $WORKDIR/alban.andrieu.subversion
+ADD ../alban.andrieu.xvbf $WORKDIR/alban.andrieu.xvbf
+
 ADD defaults $WORKDIR/ansible-jenkins-slave/defaults
 ADD meta $WORKDIR/ansible-jenkins-slave/meta
 ADD files $WORKDIR/ansible-jenkins-slave/files

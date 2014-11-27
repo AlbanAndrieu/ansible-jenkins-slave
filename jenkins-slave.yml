@@ -1,7 +1,31 @@
 ---
+
+- name: Install git
+  hosts: all
+  sudo: true    
+  remote_user: root
+#  connection: local
+
+  roles:
+    - role: geerlingguy.git
+
+- name: Install subversion
+  hosts: all
+  remote_user: root
+#  connection: local
+
+  roles:
+    - role: alban.andrieu.subversion
+
+  vars:
+      subversion_rabbitvcs_enabled: no
+      subversion_diff_enabled: no
+      
+      
 - hosts: all
   sudo: true  
-
+  remote_user: root
+  
   vars_files:
   - [ "vars/{{ ansible_distribution }}-{{ ansible_architecture }}.yml", "vars/{{ ansible_distribution }}.yml" ]
     
@@ -11,4 +35,12 @@
         jenkins_jdk7_enable: no
       }
 
-#- include: docker/integration-tests.yml
+- name: Install xvbf
+  hosts: all
+  sudo: true    
+  remote_user: root
+#  connection: local
+
+  roles:
+    - alban.andrieu.xvbf
+
