@@ -1,6 +1,8 @@
 ---
 jdk7_archive: "jdk-7-linux-i586.rpm"
 jdk7_url: "http://download.oracle.com/otn-pub/java/jdk/7/{{ jdk7_archive }}"
+jdk7_archive_extracted: "jdk1.7.0_71"
 jdk8_archive: "jdk-8-linux-i586.rpm"
 jdk8_url: "http://download.oracle.com/otn-pub/java/jdk/8/{{ jdk8_archive }}"
+jdk8_archive_extracted: "jdk1.8.0"
 jvm_folder: /usr/lib/jvm/

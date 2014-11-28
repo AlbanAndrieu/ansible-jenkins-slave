@@ -1,6 +1,8 @@
 ---
 jdk7_archive: "jdk-7u71-linux-x64.tar.gz"
 jdk7_url: "http://download.oracle.com/otn-pub/java/jdk/7u71-b14/{{ jdk7_archive }}"
+jdk7_archive_extracted: "jdk1.7.0_71"
 jdk8_archive: "jdk-8-linux-x64.tar.gz"
 jdk8_url: "http://download.oracle.com/otn-pub/java/jdk/8-b132/{{ jdk8_archive }}"
-jvm_folder: /usr/lib/jvm/
+jdk8_archive_extracted: "jdk1.8.0"
+jvm_folder: "/usr/lib/jvm/"
