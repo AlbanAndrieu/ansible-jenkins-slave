@@ -30,6 +30,7 @@ galaxy_info:
 ansigenome_info:
   galaxy_id: '1998'
   galaxy_user:  'alban.andrieu'
+  galaxy_name: 'jenkins-slave'
   
   travis: True
   
