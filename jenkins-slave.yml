@@ -1,5 +1,13 @@
 ---
 
+#- name: Apply hostname configuration
+#  hosts: all
+#  remote_user: root
+##  connection: local
+#
+#  roles:
+#    - alban.andrieu.hostname
+
 #- name: Install git
 #  hosts: all
 #  sudo: true    
@@ -41,7 +49,7 @@
   roles:
     - { role: ./,
         docker_files_enable: no,
-        jenkins_jdk7_enable: no
+        jenkins_jdk7_enable: yes
       }
 
 #- name: Install xvbf

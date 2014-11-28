@@ -14,7 +14,7 @@ jenkins_shell: "/bin/bash"
 jenkins_home: "/home/jenkins"
 jenkins_slave_home: "{{ jenkins_home }}"
 jenkins_slave_directory: "{{ jenkins_slave_home }}/jenkins-slave"
-jenkins_jdk7_enable: no
+jenkins_jdk7_enable: yes
 jenkins_jdk8_enable: yes
 
 jenkins_ssh_key_file: ""                    # Set private ssh key for Jenkins user (path to local file)
