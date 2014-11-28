@@ -14,13 +14,12 @@ install:
   # Install dependencies.
   #- ansible-galaxy install alban.andrieu.subversion  
   #- ansible-galaxy install alban.andrieu.xvbf    
-  - git clone https://github.com/AlbanAndrieu/ansible-subversion.git alban.andrieu.subversion  
-  - git clone https://github.com/AlbanAndrieu/ansible-role-git.git geerlingguy.git
-  - git clone https://github.com/AlbanAndrieu/ansible-xvbf alban.andrieu.xvbf  
+  #- git clone https://github.com/AlbanAndrieu/ansible-subversion.git alban.andrieu.subversion  
+  #- git clone https://github.com/AlbanAndrieu/ansible-role-git.git geerlingguy.git
+  #- git clone https://github.com/AlbanAndrieu/ansible-xvbf alban.andrieu.xvbf  
 
 script:
   - ansible --version
-  - ls -lrta
 #  - export ANSIBLE_ROLES_PATH="../"
 #  - echo localhost > inventory
   - ansible-playbook -i hosts --syntax-check jenkins-slave.yml
