@@ -35,8 +35,8 @@
   sudo: true  
   remote_user: root
   
-  vars_files:
-  - [ "vars/{{ ansible_distribution }}-{{ ansible_architecture }}.yml", "vars/{{ ansible_distribution }}.yml" ]
+#  vars_files:
+#  - [ "vars/{{ ansible_distribution }}-{{ ansible_architecture }}.yml", "vars/{{ ansible_distribution }}.yml" ]
     
   roles:
     - { role: ./,

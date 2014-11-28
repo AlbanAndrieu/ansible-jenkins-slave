@@ -18,13 +18,23 @@ ENV         PATH {{ docker_working_directory }}/bin:/sbin:/usr/sbin:/usr/bin:/bi
 # Working dir
 WORKDIR {{ docker_working_directory }}
 
+# Because docker replaces /sbin/init: https://github.com/dotcloud/docker/issues/1024 
+RUN dpkg-divert --local --rename --add /sbin/initctl
+
+# Make sure the package repository is up to date.
+#RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+#RUN echo "deb http://archive.ubuntu.com/ubuntu trusty main universe" > /etc/apt/sources.list
+RUN apt-get clean && apt-get -y update
+
 # COPY
 #COPY /workspace/users/albandri10/env/ansible/roles/jenkins-slave $WORKDIR
 
-RUN git pull && git submodule init && git submodule update && git submodule status
-RUN git submodule foreach git checkout master
+#RUN git pull && git submodule init && git submodule update && git submodule status
+#RUN git submodule foreach git checkout master
 
 ADD roles $WORKDIR/roles
+
+RUN ls -lrta $WORKDIR/roles/*
 
 #ADD defaults $WORKDIR/ansible-jenkins-slave/defaults
 #ADD meta $WORKDIR/ansible-jenkins-slave/meta
@@ -38,15 +48,8 @@ ADD roles $WORKDIR/roles
 # there are a limited number of RUNs
 # allowed.
 ADD hosts /etc/ansible/hosts
-ADD jenkins-slave.yml $WORKDIR/jenkins-slave.yml
+ADD jenkins-slave-docker.yml $WORKDIR/jenkins-slave.yml
 
-# Because docker replaces /sbin/init: https://github.com/dotcloud/docker/issues/1024 
-RUN dpkg-divert --local --rename --add /sbin/initctl
-
-# Make sure the package repository is up to date.
-#RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
-#RUN echo "deb http://archive.ubuntu.com/ubuntu trusty main universe" > /etc/apt/sources.list
-RUN apt-get clean && apt-get -y update
 # Install ansible
 RUN apt-get install -y python-dev python-yaml python-jinja2 git unzip python-pip
 RUN pip install paramiko PyYAML jinja2 httplib2 boto && pip install ansible

@@ -1,5 +1,10 @@
 #ansible-playbook jenkins.yml --extra-vars "host=myhost user=myuser" -i hosts --ask-sudo-pass
 
+- name: Include OS-specific variables.
+  #include_vars: "{{ ansible_os_family }}.yml"
+  include_vars: "{{ ansible_distribution }}-{{ ansible_architecture }}.yml"
+  #include_vars: "{{ ansible_distribution }}.yml"
+  
 - name: jenkins-slave | Install wget package
   action: apt pkg='wget' state=installed
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
