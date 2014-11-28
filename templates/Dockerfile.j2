@@ -21,19 +21,24 @@ WORKDIR {{ docker_working_directory }}
 # COPY
 #COPY /workspace/users/albandri10/env/ansible/roles/jenkins-slave $WORKDIR
 
-ADD defaults $WORKDIR/ansible-jenkins-slave/defaults
-ADD meta $WORKDIR/ansible-jenkins-slave/meta
-ADD files $WORKDIR/ansible-jenkins-slave/files
-#ADD handlers $WORKDIR/ansible-jenkins-slave/handlers
-ADD tasks $WORKDIR/ansible-jenkins-slave/tasks
-ADD templates $WORKDIR/ansible-jenkins-slave/templates
-ADD vars $WORKDIR/ansible-jenkins-slave/vars
+RUN git pull && git submodule init && git submodule update && git submodule status
+RUN git submodule foreach git checkout master
+
+ADD roles $WORKDIR/roles
+
+#ADD defaults $WORKDIR/ansible-jenkins-slave/defaults
+#ADD meta $WORKDIR/ansible-jenkins-slave/meta
+#ADD files $WORKDIR/ansible-jenkins-slave/files
+##ADD handlers $WORKDIR/ansible-jenkins-slave/handlers
+#ADD tasks $WORKDIR/ansible-jenkins-slave/tasks
+#ADD templates $WORKDIR/ansible-jenkins-slave/templates
+#ADD vars $WORKDIR/ansible-jenkins-slave/vars
 
 # Here we continue to use add because
 # there are a limited number of RUNs
 # allowed.
 ADD hosts /etc/ansible/hosts
-ADD jenkins-slave.yml $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml
+ADD jenkins-slave.yml $WORKDIR/jenkins-slave.yml
 
 # Because docker replaces /sbin/init: https://github.com/dotcloud/docker/issues/1024 
 RUN dpkg-divert --local --rename --add /sbin/initctl
@@ -57,7 +62,7 @@ RUN pip install paramiko PyYAML jinja2 httplib2 boto && pip install ansible
 #RUN         echo jenkins:jenkins | chpasswd
 
 # Execute
-RUN         ansible-playbook $WORKDIR/ansible-jenkins-slave/jenkins-slave.yml -c local
+RUN         ansible-playbook $WORKDIR/jenkins-slave.yml -c local
 
 # Install a basic SSH server
 RUN apt-get install -y openssh-server
