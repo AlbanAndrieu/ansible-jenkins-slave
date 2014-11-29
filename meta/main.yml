@@ -1,6 +1,11 @@
 ---
 
-dependencies: []
+#dependencies: []
+dependencies:
+  - { role: alban.andrieu.subversion }
+  - { role: geerlingguy.git }
+  - { role: alban.andrieu.cpp }
+  - { role: alban.andrieu.xvbf }
 #dependencies:
 #  - { role: jenkins-master } #Stouts.jenkins
   

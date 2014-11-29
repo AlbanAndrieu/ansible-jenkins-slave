@@ -49,7 +49,19 @@
   roles:
     - { role: ./,
         docker_files_enable: no,
-        jenkins_jdk7_enable: yes
+        #jenkins_jdk7_enable: yes,
+        user: root,
+        home: /root,
+        subversion_owner_home: "/root/.subversion",
+        subversion_previous_enabled: true,
+        subversion_previous_codename: precise,
+        subversion_rabbitvcs_enabled: no,
+        subversion_diff_enabled: no,
+        subversion_major    : '1',
+        subversion_minor    : '6',
+        subversion_revision : '17',
+        subversion_version : "{{subversion_major}}.{{subversion_minor}}.{{subversion_revision}}",
+        subversion_ubuntu: '{{ subversion_version }}dfsg-3ubuntu3',
       }
 
 #- name: Install xvbf
@@ -60,4 +72,3 @@
 #
 #  roles:
 #    - alban.andrieu.xvbf
-
