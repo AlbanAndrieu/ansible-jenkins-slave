@@ -2,10 +2,24 @@
 
 #dependencies: []
 dependencies:
+  - { role: alban.andrieu.common }
+  #- { role: alban.andrieu.hostname }  
+  #- { role: geerlingguy.ntp }  
+  #- { role: locale }    
   - { role: alban.andrieu.subversion }
   - { role: geerlingguy.git }
   - { role: alban.andrieu.cpp }
   - { role: alban.andrieu.xvbf }
+  - { role: alban.andrieu.selenium }  
+  - { role: maven }
+#  - { role: java }
+  - { role: chrome }
+  #- { role: python }
+  #- { role: security }
+  - { role: nodejs }
+  - { role: alban.andrieu.tomcat }
+  - { role: alban.andrieu.jboss }
+
 #dependencies:
 #  - { role: jenkins-master } #Stouts.jenkins
   
@@ -34,7 +48,7 @@ galaxy_info:
 
 ansigenome_info:
   galaxy_id: '1998'
-  galaxy_user:  'alban.andrieu'
+  galaxy_user: 'alban.andrieu'
   galaxy_name: 'jenkins-slave'
   
   travis: True

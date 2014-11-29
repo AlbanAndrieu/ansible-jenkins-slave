@@ -12,16 +12,16 @@ To install it, run:
 
     ansible-galaxy install alban.andrieu.jenkins-slave
 
+### Role dependencies
 
+- `alban.andrieu.cpp`- `nodejs`- `chrome`- `alban.andrieu.subversion`- `maven`- `geerlingguy.git`- `alban.andrieu.xvbf`- `alban.andrieu.selenium`- `alban.andrieu.tomcat`- `alban.andrieu.jboss`- `alban.andrieu.common`
 
 ### Role variables
 
 List of default variables available in the inventory:
 
 ```yaml
-        ---
-    
-    jenkins_name: jenkins
+        jenkins_name: jenkins
     jenkins_user: jenkins
     # python -c 'import crypt; print crypt.crypt("This is my Password", "jenkins")'
     # python -c "from passlib.hash import sha512_crypt; import getpass; print sha512_crypt.encrypt(getpass.getpass())"

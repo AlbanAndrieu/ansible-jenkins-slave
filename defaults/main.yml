@@ -1,5 +1,3 @@
----
-
 jenkins_name: jenkins
 jenkins_user: jenkins
 # python -c 'import crypt; print crypt.crypt("This is my Password", "jenkins")'
