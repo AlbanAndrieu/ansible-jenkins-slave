@@ -30,7 +30,6 @@ install:
   - git clone https://github.com/AlbanAndrieu/ansible-maven.git maven
   #- git clone https://github.com/AlbanAndrieu/ansible-java.git java
   - git clone https://github.com/AlbanAndrieu/devbox.chrome.git chrome
-  - git clone https://github.com/Stouts/Stouts.python.git python
   #- git clone https://github.com/AlbanAndrieu/ansible-role-security.git security
   - git clone https://github.com/AlbanAndrieu/ansible-nodejs.git nodejs
   - git clone https://github.com/AlbanAndrieu/ansible-tomcat alban.andrieu.tomcat
