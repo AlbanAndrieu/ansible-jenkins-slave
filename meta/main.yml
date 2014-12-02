@@ -6,7 +6,7 @@ dependencies:
   #- { role: alban.andrieu.hostname }  
   #- { role: geerlingguy.ntp }  
   #- { role: locale }    
-  - { role: alban.andrieu.subversion }
+  #- { role: alban.andrieu.subversion }
   - { role: geerlingguy.git }
   - { role: alban.andrieu.cpp }
   - { role: alban.andrieu.xvbf }
