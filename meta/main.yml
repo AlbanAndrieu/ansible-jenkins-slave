@@ -17,7 +17,7 @@ dependencies:
   #- { role: python }
   #- { role: security }
   - { role: nodejs }
-  #- { role: alban.andrieu.tomcat }
+  - { role: alban.andrieu.tomcat }
   - { role: alban.andrieu.jboss }
 
 #dependencies:
