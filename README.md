@@ -14,7 +14,7 @@ To install it, run:
 
 ### Role dependencies
 
-- `alban.andrieu.cpp`- `nodejs`- `chrome`- `alban.andrieu.subversion`- `maven`- `geerlingguy.git`- `alban.andrieu.xvbf`- `alban.andrieu.selenium`- `alban.andrieu.tomcat`- `alban.andrieu.jboss`- `alban.andrieu.common`
+- `alban.andrieu.cpp`- `nodejs`- `chrome`- `maven`- `geerlingguy.git`- `alban.andrieu.xvbf`- `alban.andrieu.selenium`- `alban.andrieu.tomcat`- `alban.andrieu.jboss`- `alban.andrieu.common`
 
 ### Role variables
 
