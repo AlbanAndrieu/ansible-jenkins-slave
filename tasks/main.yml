@@ -4,7 +4,7 @@
   #include_vars: "{{ ansible_os_family }}.yml"
   include_vars: "{{ ansible_distribution }}-{{ ansible_architecture }}.yml"
   #include_vars: "{{ ansible_distribution }}.yml"
-  
+
 - name: jenkins-slave | Install wget package
   action: apt pkg='wget' state=installed
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
@@ -36,11 +36,11 @@
   sudo: true
   tags:
     - jenkins-slave
-  
+
 - name: jdk7 | Create {{ jvm_folder }} directory
   file: path={{ jvm_folder }} state=directory
   tags: jdk_setup
-  
+
 - name: jdk7 | Copy download JDK7 script
   copy: src=download-jdk7.sh dest={{ jdk_dir_tmp }} mode=0555
   when: jenkins_jdk7_enable
@@ -49,10 +49,10 @@
 - name: jdk7 | Download JDK7 (Ubuntu)
   action: command creates={{ jvm_folder }}/{{ jdk7_archive_extracted }} chdir={{ jvm_folder }} {{ jdk_dir_tmp }}/download-jdk7.sh {{ jdk7_url }} {{ jdk7_archive }}
   sudo: yes
-  register: jdk7_download  
+  register: jdk7_download
   when: jenkins_jdk7_enable
   tags: jdk_setup
-  
+
 - name: jdk7 | Unpack JDK7
   action: command creates={{ jvm_folder }}/{{ jdk7_archive_extracted }} chdir={{ jvm_folder }} tar zxvf {{ jvm_folder }}/{{ jdk7_archive }} --owner=root
   register: jdk7_installed
@@ -60,7 +60,7 @@
   sudo: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jdk7_download.changed and jenkins_jdk7_enable
   tags: jdk_setup
-  
+
 - name: jdk7 | Install JDK7 RPM package
   action: command creates={{ jvm_folder }}/{{ jdk7_archive_extracted }} chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk7_archive }}
   register: jdk7_installed
@@ -68,7 +68,7 @@
   sudo: yes
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and jdk7_download.changed and jenkins_jdk7_enable
   tags: jdk_setup
-  
+
 - name: jdk7 | Change archive jdk ownership
   file: path={{jvm_folder}}/{{jdk7_archive_extracted}} owner={{jdk_owner}} group={{jdk_group}} state=directory recurse=yes
   when: jdk7_download.changed and jenkins_jdk7_enable
@@ -86,29 +86,29 @@
 - fail: msg=" jdk7 | Whoops! file ownership has changed"
   when: jdk7_archive_extracted_present.stat.pw_name != '{{jdk_owner}}'
   tags: jdk_setup
-  
+
 #- debug: msg="jdk7_installed value is {{ jdk7_installed.stdout }} "
 
 - debug: msg=" jdk7 | jdk7_installed value is {{ jdk7_installed }} {{ jdk7_installed.skipped }} {{ jdk7_installed.changed }}"
   when: jenkins_jdk7_enable
   tags: jdk_setup
-  
+
 - include: jdk7-tasks.yml
   when: jenkins_jdk7_enable
   tags: jdk_setup
-  
+
 - name: jdk8 | Copy download JDK8 script
   copy: src=download-jdk8.sh dest={{ jdk_dir_tmp }} mode=0555
   when: jenkins_jdk8_enable
   tags: jdk_setup
-  
+
 - name: jdk8 | Download JDK8 (Ubuntu)
   action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} {{ jdk_dir_tmp }}/download-jdk8.sh {{ jdk8_url }} {{ jdk8_archive }}
-  sudo: yes  
-  register: jdk8_download    
+  sudo: yes
+  register: jdk8_download
   when: jenkins_jdk8_enable
   tags: jdk_setup
-  
+
 - name: jdk8 | Unpack JDK8
   action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} tar zxvf {{jvm_folder}}/{{ jdk8_archive }} --owner=root
   register: jdk8_installed
@@ -116,7 +116,7 @@
   sudo: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jdk8_download.changed and jenkins_jdk8_enable
   tags: jdk_setup
-  
+
 - name: jdk8 | Install JDK8 RPM package
   action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk8_archive }}
   register: jdk8_installed
@@ -124,7 +124,7 @@
   sudo: yes
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and jdk8_download.changed and jenkins_jdk8_enable
   tags: jdk_setup
-  
+
 - name: jdk8 | Change archive jdk ownership
   file: path={{jvm_folder}}/{{jdk8_archive_extracted}} owner={{jdk_owner}} group={{jdk_group}} state=directory recurse=yes
   when: jdk8_download.changed and jenkins_jdk8_enable
@@ -148,11 +148,11 @@
 - debug: msg=" jenkins-slave | jdk8_installed value is {{ jdk8_installed }} {{ jdk8_installed.skipped }} {{ jdk8_installed.changed }}"
   when: jenkins_jdk8_enable
   tags: jdk_setup
-  
+
 - include: jdk8-tasks.yml
   when: jenkins_jdk8_enable
   tags: jdk_setup
-  
+
 #######
 # MAVEN
 #
@@ -245,18 +245,18 @@
 #- name: jenkins-slave | Install git package
 #  action: yum name='git' state=installed
 #  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
-  
+
 - name: Update git configuration (user.email)
   action: command git config --global user.email "{{ shell_git_email }}"
 
 - name: Update git configuration (user.name)
   action: command git config --global user.name "{{ shell_git_name }}"
   sudo: yes
-  
+
 - name: Update git configuration (http.sslVerify)
-  action: command git config --global http.sslVerify {{ shell_git_ssl }}  
+  action: command git config --global http.sslVerify {{ shell_git_ssl }}
   sudo: yes
-  
+
 - name: jenkins-slave | Install coverage and metrics tools
   apt: pkg={{ item }} state=present update_cache=yes
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
@@ -265,7 +265,7 @@
    - graphviz
    - doxygen
   sudo: yes
-  
+
 #TODO opencl install
 #wget http://registrationcenter.intel.com/irc_nas/4181/intel_sdk_for_ocl_applications_2014_ubuntu_4.4.0.117_x64.tgz
 #tar zxvf intel_sdk_for_ocl_applications_2014_ubuntu_4.4.0.117_x64.tgz
@@ -285,10 +285,10 @@
    - libxml-handler-yawriter-perl
    - libxml-simple-perl
   sudo: yes
-  
+
 - name: jenkins-slave | Create jenkins user
   user: name={{ jenkins_user }} password={{ jenkins_password }} update_password=always comment="Jenkins user" home={{ jenkins_home }} shell={{ jenkins_shell }}
-  sudo: yes  
+  sudo: yes
 #  ignore_errors: true
 
 #- name: jenkins-slave | Create .ssh folder
@@ -298,7 +298,7 @@
 - include: ssh.yml
   when: jenkins_ssh_key_file != ""
   tags: [jenkins, jenkins-ssh]
-  
+
 #- name: jenkins-slave | Add passwordless connection for jenkins (Alban Andrieu)
 #  authorized_key: user={{ jenkins_user }} key="ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIEAio3SOQ9yeK6QfKqSFNKyTasuzjStxWevG1Vz1wgJIxPF+KB0XoMAPD081J+Bzj2LCDRSWisNv2L4xv2jbFxW/Pl7NEakoX47eNx3U+Dxaf+szeWBTryYcDUGkduLV7G8Qncm0luIFd+HDIe/Qir1E2f56Qu2uuBNE6Tz5TFt1vc= Alban"
 
@@ -327,11 +327,17 @@
   template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0700
 
 - name: jenkins-slave | Jenkins can run any command with no password
-  lineinfile: "line='jenkins ALL=NOPASSWD: ALL' dest=/etc/sudoers regexp='^jenkins' validate='visudo -cf %s'" 
+  lineinfile: "line='jenkins ALL=NOPASSWD: ALL' dest=/etc/sudoers regexp='^jenkins' validate='visudo -cf %s'"
   sudo: yes
 
 - name: jenkins-slave | Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
+
+#- name: jenkins-slave | Ensure npm settings
+#  command: chdir=/usr/bin npm config set registry {{ nexus_npm_url }}
+
+- name: jenkins-slave | Copy the .npmrc script for git credentials
+  template: src=.npmrc.j2 dest={{ jenkins_home }}/.npmrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 
 #- name: jenkins-slave | Create {{ jenkins_slave_home }} directory
 #  file: path={{ jenkins_slave_home }} state=directory
