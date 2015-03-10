@@ -50,7 +50,8 @@ List of default variables available in the inventory:
     jdk_owner: "root"
     jdk_group: "{{ jdk_owner }}"
     
-    nexus_url: http://home.nabla.mobi:8081
+    nexus_url: "http://home.nabla.mobi:8081"
+    nexus_npm_url: "{{ nexus_url }}/nexus/content/npm/registry.npmjs.org/"
     
     shell_git_machine: "127.0.0.1"
     shell_git_login: jenkins
