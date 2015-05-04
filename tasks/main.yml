@@ -6,11 +6,11 @@
   #include_vars: "{{ ansible_distribution }}.yml"
 
 - name: jenkins-slave | Install wget package
-  action: apt pkg='wget' state=installed
+  action: apt pkg='wget' state={{ jenkins_pkg_state }}
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: jenkins-slave | Install wget package
-  action: yum name='wget' state=installed
+  action: yum name='wget' state={{ jenkins_pkg_state }}
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 ######
@@ -18,7 +18,7 @@
 #
 
 #- name: jenkins-slave | Install JDK
-#  apt: pkg={{ item }} state=present update_cache=yes
+#  apt: pkg={{ item }} state={{ jenkins_pkg_state }} update_cache=yes
 #  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 #  tags: package
 #  with_items:
@@ -239,11 +239,11 @@
  #
 # Moved to his own role
 #- name: jenkins-slave | Install git package
-#  action: apt pkg='git' state=installed
+#  action: apt pkg='git' state={{ jenkins_pkg_state }}
 #  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 #
 #- name: jenkins-slave | Install git package
-#  action: yum name='git' state=installed
+#  action: yum name='git' state={{ jenkins_pkg_state }}
 #  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Update git configuration (user.email)
@@ -258,7 +258,7 @@
   sudo: yes
 
 - name: jenkins-slave | Install coverage and metrics tools
-  apt: pkg={{ item }} state=present update_cache=yes
+  apt: pkg={{ item }} state={{ jenkins_pkg_state }} update_cache=yes
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:
    - lcov
@@ -273,7 +273,7 @@
 #ll /usr/lib/x86_64-linux-gnu/libOpenCL.so
 
 - name: jenkins-slave | Install tools needed by cpp generator
-  apt: pkg={{ item }} state=present update_cache=yes
+  apt: pkg={{ item }} state={{ jenkins_pkg_state }} update_cache=yes
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:
    - libxml-dom-perl
@@ -287,7 +287,7 @@
   sudo: yes
 
 - name: jenkins-slave | Install tools needed by grunt-zaproxy html report
-  apt: pkg={{ item }} state=present update_cache=yes
+  apt: pkg={{ item }} state={{ jenkins_pkg_state }} update_cache=yes
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:
    - libxml2-dev #Needed for having /usr/bin/xml2-config in the PATH
@@ -295,7 +295,7 @@
   sudo: yes
 
 - name: jenkins-slave | Install tools needed by grunt-zaproxy html report
-  action: yum name='{{ item }}' state=installed
+  action: yum name='{{ item }}' state={{ jenkins_pkg_state }}
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
   with_items:
    - libxml2 #Needed for having /usr/bin/xml2-config in the PATH
@@ -311,7 +311,7 @@
     - ansible-lint
 
 - name: workstation | Install security basic tools for Ansible check
-  apt: pkg={{ item }} update_cache=yes state={{ workstation_pkg_state }}
+  apt: pkg={{ item }} update_cache=yes state={{ jenkins_pkg_state }}
   sudo: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
