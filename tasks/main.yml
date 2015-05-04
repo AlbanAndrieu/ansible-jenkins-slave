@@ -286,6 +286,37 @@
    - libxml-simple-perl
   sudo: yes
 
+- name: jenkins-slave | Install tools needed by grunt-zaproxy html report
+  apt: pkg={{ item }} state=present update_cache=yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+   - libxml2-dev #Needed for having /usr/bin/xml2-config in the PATH
+   - libxslt-dev
+  sudo: yes
+
+- name: jenkins-slave | Install tools needed by grunt-zaproxy html report
+  action: yum name='{{ item }}' state=installed
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  with_items:
+   - libxml2 #Needed for having /usr/bin/xml2-config in the PATH
+   - libxslt
+   - libexslt
+  sudo: yes
+
+- name: jenkins-slave | Install Ansible syntax check
+  pip: name={{ item }}
+  sudo: yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - ansible-lint
+
+- name: workstation | Install security basic tools for Ansible check
+  apt: pkg={{ item }} update_cache=yes state={{ workstation_pkg_state }}
+  sudo: yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - chkrootkit
+
 - name: jenkins-slave | Create jenkins user
   user: name={{ jenkins_user }} password={{ jenkins_password }} update_password=always comment="Jenkins user" home={{ jenkins_home }} shell={{ jenkins_shell }}
   sudo: yes
