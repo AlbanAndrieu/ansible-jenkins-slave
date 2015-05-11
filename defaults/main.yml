@@ -32,8 +32,20 @@ jdk_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be
 jdk_owner: "root"
 jdk_group: "{{ jdk_owner }}"
 
-nexus_url: "http://home.nabla.mobi:8081"
-nexus_npm_url: "{{ nexus_url }}/nexus/content/npm/registry.npmjs.org/"
+home_url: "http://home.nabla.mobi"
+nexus_url: "{{ home_url }}:8081"
+npm_nexus_npm_url: "{{ nexus_url }}/nexus/content/npm/registry.npmjs.org/"
+#npm_phantomjs_cdnurl: "{{ home_url }}/download/phantomjs"
+npm_strict_ssl: "false"
+npm_prefix: "/usr/local"
+
+bower_directory: "bower_components"
+bower_analytics: "false"
+bower_timeout: 120000
+bower_url: "{{ home_url }}:5678"
+bower_registry_url: "{{ bower_url }}"
+bower_register_url: "{{ bower_url }}"
+bower_rpublish_url: "{{ bower_url }}"
 
 shell_git_machine: "127.0.0.1"
 shell_git_login: jenkins

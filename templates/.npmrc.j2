@@ -1,3 +1,14 @@
-registry = {{ nexus_npm_url }}
-prefix = /usr/local
-strict-ssl = false
+cache = .node_cache
+tmp = .node_tmp
+{% if npm_nexus_npm_url is defined %}
+registry = {{ npm_nexus_npm_url }}
+{% endif %}
+{% if npm_prefix is defined %}
+prefix = {{ npm_prefix }}
+{% endif %}
+{% if npm_strict_ssl is defined %}
+strict-ssl = {{ npm_strict_ssl }}
+{% endif %}
+{% if npm_phantomjs_cdnurl is defined %}
+phantomjs_cdnurl = {{ npm_phantomjs_cdnurl }}
+{% endif %}

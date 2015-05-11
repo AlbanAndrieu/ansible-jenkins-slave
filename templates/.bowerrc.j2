@@ -1,0 +1,25 @@
+{
+{% if bower_directory is defined %}
+  "directory": "{{ bower_directory }}",
+{% endif %}
+{% if bower_analytics is defined %}
+  "analytics": {{ bower_analytics }},
+{% endif %}
+{% if bower_timeout is defined %}
+  "timeout": {{ bower_timeout }},
+{% endif %}
+{% if bower_registry_url is defined %}
+  "registry": "{{ bower_registry_url }}",
+{% endif %}
+{% if bower_register_url is defined %}
+  "register": "{{ bower_register_url }}",
+{% endif %}
+{% if bower_rpublish_url is defined %}
+  "publish": "{{ bower_publish_url }}",
+{% endif %}
+  "storage": {
+    "packages" : ".bower/packages",
+    "registry" : ".bower/registry"
+  },
+  "tmp": ".bower/tmp"
+}

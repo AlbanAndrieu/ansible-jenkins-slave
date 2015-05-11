@@ -367,8 +367,11 @@
 #- name: jenkins-slave | Ensure npm settings
 #  command: chdir=/usr/bin npm config set registry {{ nexus_npm_url }}
 
-- name: jenkins-slave | Copy the .npmrc script for git credentials
+- name: jenkins-slave | Copy the .npmrc script
   template: src=.npmrc.j2 dest={{ jenkins_home }}/.npmrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+
+- name: jenkins-slave | Copy the .bowerrc script
+  template: src=.bowerrc.j2 dest={{ jenkins_home }}/.bowerrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 
 #- name: jenkins-slave | Create {{ jenkins_slave_home }} directory
 #  file: path={{ jenkins_slave_home }} state=directory
