@@ -345,6 +345,10 @@
 #  file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 #  ignore_errors: true
 
+
+- name: jenkins-slave | Copy the deploy-log-parsing-rules for jenkins log parsing
+  template: src=deploy-log-parsing-rules dest={{ jenkins_home }}/deploy-log-parsing-rules mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+
 - name: jenkins-slave | Copy the .netrc script for git credentials
   template: src=.netrc.j2 dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 

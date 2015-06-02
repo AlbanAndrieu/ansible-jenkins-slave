@@ -1,0 +1,47 @@
+ok /Warning: Permanently added/
+ok /Warning: Cannot set console to nonblocking mode, switching to blocking mode/
+ok /Administrator group not found, created with default member./
+ok /Administrator user not found, created with default password./
+# below warning removal need to be investigate
+ok /\[WARNING\] To Use Release/
+ok /cp: cannot stat/
+ok /ERROR: Binding connection to TCP port 9000 failed:125 \(Address already in use\)./
+ok /ERROR: Cannot boot a running zone/
+ok /ERROR: Cannot boot a running zone/
+ok /warningOnly/
+warning /^kernel Attempt to set zfs file/
+
+error /ERROR:/
+error /FAILED/
+error /ERROR :/
+error /Invalid or corrupt jarfile/
+error /No such file or directory/
+
+#ansible
+ok /^Searching for Suckit rootkit/
+error /INFECTED/
+warning /^\[ANSIBLE/
+warning /Permission denied/
+
+# match line starting with 'error ', case-insensitive
+error /(?i)^error/
+# each Sybase error is prefixed with Msg
+error /^Msg/
+# object does not exists
+error /Specify owner.objectname or use sp_help to/
+
+error /Cannot create an index on table/
+error /No group with the specified name exists/
+error /Error\(s\)/
+
+# list of warnings here...
+warning /[Ww]arning/
+warning /WARNING/
+
+# create a quick access link to lines in the report containing 'INFO'
+info /INFO/
+info /TODO/
+
+# each line containing 'BUILD' represents the start of a section for grouping errors and warnings found after the line.
+# also creates a quick access link.
+start /BUILD/
