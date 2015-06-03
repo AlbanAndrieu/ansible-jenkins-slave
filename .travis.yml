@@ -24,7 +24,7 @@ install:
   - git clone https://github.com/AlbanAndrieu/ansible-subversion.git alban.andrieu.subversion
   - git clone https://github.com/AlbanAndrieu/ansible-role-git.git geerlingguy.git
   - git clone https://github.com/AlbanAndrieu/ansible-cmake.git alban.andrieu.cmake
-  - git clone https://github.com/AlbanAndrieu/ansible-cpp.git alban.andrieu.cpp    
+  - git clone https://github.com/AlbanAndrieu/ansible-cpp.git alban.andrieu.cpp
   - git clone https://github.com/AlbanAndrieu/ansible-xvbf alban.andrieu.xvbf
   - git clone https://github.com/AlbanAndrieu/ansible-selenium alban.andrieu.selenium
   - git clone https://github.com/AlbanAndrieu/ansible-maven.git maven
@@ -34,10 +34,15 @@ install:
   - git clone https://github.com/AlbanAndrieu/ansible-nodejs.git nodejs
   - git clone https://github.com/AlbanAndrieu/ansible-tomcat alban.andrieu.tomcat
   - git clone https://github.com/AlbanAndrieu/ansible-jboss alban.andrieu.jboss
-          
+
 script:
   - ansible --version
 #  - export ANSIBLE_ROLES_PATH="../"
 #  - echo localhost > inventory
   - ansible-playbook -i hosts --syntax-check jenkins-slave.yml
-  - ansible-playbook -i hosts --connection=local --sudo -vvvv jenkins-slave.yml
+  # Run the role/playbook again, checking to make sure it's idempotent.
+  - >
+    ansible-playbook -i hosts jenkins-slave.yml --connection=local --sudo -vvvv
+    | grep -q 'changed=0.*failed=0'
+    && (echo 'Idempotence test: pass' && exit 0)
+    || (echo 'Idempotence test: fail' && exit 0)
