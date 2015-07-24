@@ -377,6 +377,24 @@
 - name: jenkins-slave | Copy the .bowerrc script
   template: src=.bowerrc.j2 dest={{ jenkins_home }}/.bowerrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
 
+- name: workstation | Install requirement for phantomas
+  apt: pkg={{ item }} update_cache=yes state={{ jenkins_pkg_state }}
+  sudo: yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - libfontconfig1
+
+- name: npm | Ensure the phantomas npm dependencies are installed
+  npm: >
+    name={{ item }}
+    state=present
+    global=yes
+  with_items:
+    - phantomjs
+    - phantomas
+  sudo: yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and nodejs_enabled
+
 #- name: jenkins-slave | Create {{ jenkins_slave_home }} directory
 #  file: path={{ jenkins_slave_home }} state=directory
 
@@ -441,6 +459,7 @@
 #sudo update-alternatives --remove mvn /usr/share/maven/bin/mvn
 #sudo update-alternatives --remove mvn /opt/maven321/bin/mvn
 #sudo update-alternatives --remove mvn /opt/maven3/bin/mvn
+#sudo update-alternatives --config mvn
 
 #sudo update-alternatives --config mvn
 - name: jenkins-slave | Set mvn link to Maven 3.2.1
