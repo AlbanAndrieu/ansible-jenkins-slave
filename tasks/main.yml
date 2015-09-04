@@ -159,6 +159,18 @@
 - name: jenkins-slave | Create /opt directory
   file: path=/opt state=directory
 
+- name: jenkins-slave | Download Maven 3.3.3
+  get_url: dest=/opt/maven333.tar.gz url=http://www.eu.apache.org/dist/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz
+
+- name: jenkins-slave | Unpack Maven 3.3.3
+  action: command creates=/opt/maven333 chdir=/opt tar zxvf /opt/maven333.tar.gz
+
+- name: jenkins-slave | Create Maven 3.3.3 directory link
+  file: path=/opt/maven333 src=/opt/apache-maven-3.3.3 state=link
+
+- name: jenkins-slave | Create Maven 3.3.3 directory link (legacy required)
+  file: path=/usr/local/apache-maven-3.3.3 src=/opt/apache-maven-3.3.3 state=link
+
 - name: jenkins-slave | Download Maven 3.2.1
   get_url: dest=/opt/maven321.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.2.1-bin.tar.gz
 
@@ -218,6 +230,9 @@
 
 #- name: jenkins-slave | Create Maven 2.0.9 directory link (legacy required)
 #  file: path=/usr/local/apache-maven-2.0.9 src=/opt/apache-maven-2.0.9 state=link
+
+- name: jenkins-slave | Remove Maven333 archive
+  file: path=/opt/maven333.tar.gz state=absent
 
 - name: jenkins-slave | Remove Maven321 archive
   file: path=/opt/maven321.tar.gz state=absent
@@ -384,16 +399,17 @@
   with_items:
     - libfontconfig1
 
-- name: npm | Ensure the phantomas npm dependencies are installed
-  npm: >
-    name={{ item }}
-    state=present
-    global=yes
-  with_items:
-    - phantomjs
-    - phantomas
-  sudo: yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and nodejs_enabled
+#TODO use jenkins to install phantomjs
+#- name: npm | Ensure the phantomas npm dependencies are installed
+#  npm: >
+#    name={{ item }}
+#    state=present
+#    global=yes
+#  with_items:
+#    - phantomjs
+#    - phantomas
+#  sudo: yes
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and nodejs_enabled
 
 #- name: jenkins-slave | Create {{ jenkins_slave_home }} directory
 #  file: path={{ jenkins_slave_home }} state=directory
@@ -457,17 +473,18 @@
 
 #sudo update-alternatives --list mvn
 #sudo update-alternatives --remove mvn /usr/share/maven/bin/mvn
+#sudo update-alternatives --remove mvn /opt/maven333/bin/mvn
 #sudo update-alternatives --remove mvn /opt/maven321/bin/mvn
 #sudo update-alternatives --remove mvn /opt/maven3/bin/mvn
 #sudo update-alternatives --config mvn
 
 #sudo update-alternatives --config mvn
-- name: jenkins-slave | Set mvn link to Maven 3.2.1
-  action: command update-alternatives --install /usr/bin/mvn mvn /opt/maven321/bin/mvn 1
+- name: jenkins-slave | Set mvn link to Maven 3.3.3
+  action: command update-alternatives --install /usr/bin/mvn mvn /opt/maven333/bin/mvn 1
   sudo: yes
 
 #- name: jenkins-slave | Set mvn local link to Maven 3.0.5
-#  action: command update-alternatives --install /usr/local/bin/mvn mvn /opt/maven321/bin/mvn 1
+#  action: command update-alternatives --install /usr/local/bin/mvn mvn /opt/maven333/bin/mvn 1
 
 #http://drupalcode.org/sandbox/franskuipers/1801378.git/blob/e0d2e3dd3f3b9ff7f9ace61f9e56c56a1f28e915:/ansible.yml  #
 

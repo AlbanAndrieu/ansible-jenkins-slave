@@ -32,10 +32,10 @@ jdk_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be
 jdk_owner: "root"
 jdk_group: "{{ jdk_owner }}"
 
-home_url: "http://home.nabla.mobi"
+home_url: "http://localhost"
 nexus_url: "{{ home_url }}:8081"
 npm_nexus_npm_url: "{{ nexus_url }}/nexus/content/npm/registry.npmjs.org/"
-#npm_phantomjs_cdnurl: "{{ home_url }}/download/phantomjs"
+#npm_phantomjs_cdnurl: "{{ home_url }}:7070/download/phantomjs"
 npm_strict_ssl: "false"
 npm_prefix: "/usr/local"
 
