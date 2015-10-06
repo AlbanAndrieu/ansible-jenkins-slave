@@ -436,6 +436,7 @@
 #sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.6.0_32/bin/javac 1
 #sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.6.0_32/bin/java 1
 #sudo update-alternatives --install /usr/bin/javaws javaws /usr/lib/jvm/jdk1.6.0_32/bin/javaws 1
+#sudo update-alternatives --install java_vm
 #- name: Set java link
 #  action: command update-alternatives --install /usr/bin/java java {{ jvm_folder }}/{{ jdk8_archive_extracted }}/bin/java 1
 #  when: "jdk8_installed.changed == 'True'"
