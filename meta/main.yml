@@ -1,6 +1,4 @@
 ---
-
-#dependencies: []
 dependencies:
   - { role: alban.andrieu.common }
   #- { role: alban.andrieu.hostname }
@@ -12,16 +10,13 @@ dependencies:
   - { role: alban.andrieu.xvbf }
   - { role: alban.andrieu.selenium }
   - { role: maven }
-#  - { role: java }
+  #- { role: java }
   - { role: chrome }
   #- { role: python }
   #- { role: security }
-#  - { role: nodejs }
+  #- { role: nodejs }
   - { role: alban.andrieu.tomcat }
   - { role: alban.andrieu.jboss }
-
-#dependencies:
-#  - { role: jenkins-master } #Stouts.jenkins
 
 galaxy_info:
   author: Alban Andrieu
