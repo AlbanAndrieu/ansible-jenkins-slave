@@ -1,3 +1,5 @@
+---
+
 jenkins_name: jenkins
 jenkins_user: jenkins
 # python -c 'import crypt; print crypt.crypt("This is my Password", "jenkins")'
@@ -7,37 +9,45 @@ jenkins_password: "$6$rounds=40000$OvRtT6osJP89GLee$/cizemUXDAH.mW1ILNK1NGk64/TY
 jenkins_group: jenkins
 #jenkins_shell: "/bin/false"
 jenkins_shell: "/bin/bash"
+jenkins_home: /var/lib/jenkins              # Jenkins home location
 #NIS issue jenkins_home: /home/jenkins
-#jenkins_home: "/var/lib/jenkins"
-jenkins_home: "/home/jenkins"
+#jenkins_home: "/home/jenkins"
 jenkins_slave_home: "{{ jenkins_home }}"
 jenkins_slave_directory: "{{ jenkins_slave_home }}/jenkins-slave"
+
 jenkins_jdk7_enable: yes
 jenkins_jdk8_enable: yes
+jdk_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
+jdk_owner: "root"
+jdk_group: "{{ jdk_owner }}"
+
+jenkins_http_host: 127.0.0.1                # Set HTTP host
+jenkins_http_port: 8000                     # Set HTTP port
+jenkins_prefix: "/"
+jenkins_url: "http://{{ jenkins_http_host }}:{{ jenkins_http_port }}{{jenkins_prefix}}"
+jenkins_slave_name: swarm-{{ ansible_hostname }}
 
 # Package states: present or installed or latest
 jenkins_pkg_state: present
 # Repository states: present or absent
 jenkins_repository_state: present
 
-jenkins_ssh_key_file: ""                    # Set private ssh key for Jenkins user (path to local file)
+jenkins_ssh_key_file: "~/.ssh/id_rsa"        # Set private ssh key for Jenkins user (path to local file)
+jenkins_ssh_authorized_keys_fingerprints: [] # Set known authorized keys for ssh
+# Alban Andrieu
+#  - "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIEAio3SOQ9yeK6QfKqSFNKyTasuzjStxWevG1Vz1wgJIxPF+KB0XoMAPD081J+Bzj2LCDRSWisNv2L4xv2jbFxW/Pl7NEakoX47eNx3U+Dxaf+szeWBTryYcDUGkduLV7G8Qncm0luIFd+HDIe/Qir1E2f56Qu2uuBNE6Tz5TFt1vc= Alban"
+#ssh-keygen -F $IP
+#ssh-keyscan -H $IP
 jenkins_ssh_fingerprints:                   # Set known hosts for ssh
   - "bitbucket.org,131.103.20.167 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw=="
   - "github.com,204.232.175.90 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=="
-jenkins_ssh_authorized_keys_fingerprints:   # Set known authorized keys for ssh
-# Alban Andrieu
-  - "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIEAio3SOQ9yeK6QfKqSFNKyTasuzjStxWevG1Vz1wgJIxPF+KB0XoMAPD081J+Bzj2LCDRSWisNv2L4xv2jbFxW/Pl7NEakoX47eNx3U+Dxaf+szeWBTryYcDUGkduLV7G8Qncm0luIFd+HDIe/Qir1E2f56Qu2uuBNE6Tz5TFt1vc= Alban"
-
-jdk_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
-jdk_owner: "root"
-jdk_group: "{{ jdk_owner }}"
 
 home_url: "http://localhost"
 nexus_url: "{{ home_url }}:8081"
 npm_nexus_npm_url: "{{ nexus_url }}/nexus/content/npm/registry.npmjs.org/"
 #npm_phantomjs_cdnurl: "{{ home_url }}:7070/download/phantomjs"
 npm_strict_ssl: "false"
-npm_prefix: "/usr/local"
+#npm_prefix: "/usr/local"
 
 bower_directory: "bower_components"
 bower_analytics: "false"
@@ -47,13 +57,21 @@ bower_registry_url: "{{ bower_url }}"
 bower_register_url: "{{ bower_url }}"
 bower_publish_url: "{{ bower_url }}"
 
-shell_git_machine: "127.0.0.1"
-shell_git_login: jenkins
-shell_git_name: "{{ shell_git_login }}"
-shell_git_password: jenkins
-shell_git_email: "root@localhost"
-shell_git_path: "/usr/bin"
-shell_git_ssl: false
+shell_git_configure_enabled: yes         # Enable git configuration
+shell_git: []
+  # Additional properties: 'shell_git_machine, shell_git_login, shell_git_email, shell_git_password, shell_git_name, shell_git_path, shell_git_ssl, shell_git_meld_enabled, shell_git_editor'
+  # - shell_git_machine: 'localhost',
+  #   shell_git_login: 'jenkins',
+  #   shell_git_email: 'jenkins@localhost',
+  #   shell_git_password: 'todo',
+  #   # Optional.
+  #   shell_git_name: '{{ shell_git_login }}',
+  #   shell_git_path: '/usr/bin',
+  #   shell_git_ssl: false,
+  #   shell_git_meld_enabled: yes,
+  #   shell_git_editor: "gedit",
+
+proxy_repo_server: localhost
 
 docker_files_generated_directory: "./"
 docker_files_enable: no

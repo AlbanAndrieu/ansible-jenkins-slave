@@ -1,25 +1,24 @@
 #ansible-playbook jenkins.yml --extra-vars "host=myhost user=myuser" -i hosts --ask-sudo-pass
 
+- name: Assert platform is supported
+  assert:
+    that:
+      - ansible_os_family in ['Debian', 'RedHat', 'Windows','Solaris']
+      - ansible_architecture in ['x86_64']
+
 - name: Include OS-specific variables.
-  #include_vars: "{{ ansible_os_family }}.yml"
   include_vars: "{{ ansible_distribution }}-{{ ansible_architecture }}.yml"
-  #include_vars: "{{ ansible_distribution }}.yml"
 
 - name: jenkins-slave | Install wget package
-  action: apt pkg='wget' state={{ jenkins_pkg_state }}
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-
-- name: jenkins-slave | Install wget package
-  action: yum name='wget' state={{ jenkins_pkg_state }}
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  action: "{{ ansible_pkg_mgr}} name='wget' state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
 
 ######
 # JAVA
 #
 
 #- name: jenkins-slave | Install JDK
-#  apt: pkg={{ item }} state={{ jenkins_pkg_state }} update_cache=yes
-#  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+#  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
 #  tags: package
 #  with_items:
 #   - openjdk-6-jdk
@@ -33,7 +32,8 @@
 - name: jenkins-slave | Create temporary directory
   shell: mktemp -d
   register: tempdir
-  sudo: true
+  changed_when: false
+  become: yes
   tags:
     - jenkins-slave
 
@@ -48,7 +48,7 @@
 
 - name: jdk7 | Download JDK7 (Ubuntu)
   action: command creates={{ jvm_folder }}/{{ jdk7_archive_extracted }} chdir={{ jvm_folder }} {{ jdk_dir_tmp }}/download-jdk7.sh {{ jdk7_url }} {{ jdk7_archive }}
-  sudo: yes
+  become: yes
   register: jdk7_download
   when: jenkins_jdk7_enable
   tags: jdk_setup
@@ -57,7 +57,7 @@
   action: command creates={{ jvm_folder }}/{{ jdk7_archive_extracted }} chdir={{ jvm_folder }} tar zxvf {{ jvm_folder }}/{{ jdk7_archive }} --owner=root
   register: jdk7_installed
 #  ignore_errors: true
-  sudo: yes
+  become: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jdk7_download.changed and jenkins_jdk7_enable
   tags: jdk_setup
 
@@ -65,7 +65,7 @@
   action: command creates={{ jvm_folder }}/{{ jdk7_archive_extracted }} chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk7_archive }}
   register: jdk7_installed
 #  ignore_errors: true
-  sudo: yes
+  become: yes
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and jdk7_download.changed and jenkins_jdk7_enable
   tags: jdk_setup
 
@@ -84,7 +84,7 @@
   tags: jdk_setup
 
 - fail: msg=" jdk7 | Whoops! file ownership has changed"
-  when: jdk7_archive_extracted_present.stat.pw_name != '{{jdk_owner}}'
+  when: jenkins_jdk7_enable and jdk7_archive_extracted_present.stat.pw_name != '{{jdk_owner}}'
   tags: jdk_setup
 
 #- debug: msg="jdk7_installed value is {{ jdk7_installed.stdout }} "
@@ -104,7 +104,7 @@
 
 - name: jdk8 | Download JDK8 (Ubuntu)
   action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} {{ jdk_dir_tmp }}/download-jdk8.sh {{ jdk8_url }} {{ jdk8_archive }}
-  sudo: yes
+  become: yes
   register: jdk8_download
   when: jenkins_jdk8_enable
   tags: jdk_setup
@@ -113,7 +113,7 @@
   action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} tar zxvf {{jvm_folder}}/{{ jdk8_archive }} --owner=root
   register: jdk8_installed
 #  ignore_errors: true
-  sudo: yes
+  become: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jdk8_download.changed and jenkins_jdk8_enable
   tags: jdk_setup
 
@@ -121,7 +121,7 @@
   action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk8_archive }}
   register: jdk8_installed
 #  ignore_errors: true
-  sudo: yes
+  become: yes
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and jdk8_download.changed and jenkins_jdk8_enable
   tags: jdk_setup
 
@@ -140,7 +140,7 @@
   tags: jdk_setup
 
 - fail: msg=" jdk8 | Whoops! file ownership has changed"
-  when: jdk8_archive_extracted_present.stat.pw_name != '{{jdk_owner}}'
+  when: jenkins_jdk8_enable and jdk8_archive_extracted_present.stat.pw_name != '{{jdk_owner}}'
   tags: jdk_setup
 
 #- debug: msg=" jenkins-slave | jdk8_installed value is {{ jdk8_installed.stdout }} "
@@ -158,139 +158,209 @@
 #
 - name: jenkins-slave | Create /opt directory
   file: path=/opt state=directory
+  become: yes
 
 - name: jenkins-slave | Download Maven 3.3.3
-  get_url: dest=/opt/maven333.tar.gz url=http://www.eu.apache.org/dist/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz
+  get_url: dest=/opt/maven333.tar.gz url=https://archive.apache.org/dist/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz
+  become: yes
 
 - name: jenkins-slave | Unpack Maven 3.3.3
   action: command creates=/opt/maven333 chdir=/opt tar zxvf /opt/maven333.tar.gz
+  become: yes
 
 - name: jenkins-slave | Create Maven 3.3.3 directory link
   file: path=/opt/maven333 src=/opt/apache-maven-3.3.3 state=link
+  become: yes
 
 - name: jenkins-slave | Create Maven 3.3.3 directory link (legacy required)
   file: path=/usr/local/apache-maven-3.3.3 src=/opt/apache-maven-3.3.3 state=link
+  become: yes
 
 - name: jenkins-slave | Download Maven 3.2.1
   get_url: dest=/opt/maven321.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.2.1-bin.tar.gz
+  become: yes
 
 - name: jenkins-slave | Unpack Maven 3.2.1
   action: command creates=/opt/maven321 chdir=/opt tar zxvf /opt/maven321.tar.gz
+  become: yes
 
 - name: jenkins-slave | Create Maven 3.2.1 directory link
   file: path=/opt/maven321 src=/opt/apache-maven-3.2.1 state=link
+  become: yes
 
 - name: jenkins-slave | Create Maven 3.2.1 directory link (legacy required)
   file: path=/usr/local/apache-maven-3.2.1 src=/opt/apache-maven-3.2.1 state=link
+  become: yes
 
 #- name: jenkins-slave | Download Maven 3.0.5
 #  get_url: dest=/opt/maven305.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.0.5-bin.tar.gz
+#  become: yes
 
 #- name: jenkins-slave | Unpack Maven 3.0.5
 #  action: command creates=/opt/maven305 chdir=/opt tar zxvf /opt/maven305.tar.gz
+#  become: yes
 
 #- name: jenkins-slave | Create Maven 3.0.5 directory link
 #  file: path=/opt/maven305 src=/opt/apache-maven-3.0.5 state=link
+#  become: yes
 
 #- name: jenkins-slave | Create Maven 3.0.5 directory link (legacy required)
 #  file: path=/usr/local/apache-maven-3.0.5 src=/opt/apache-maven-3.0.5 state=link
+#  become: yes
 
 #- name: jenkins-slave | Download Maven 3.0.4
 #  get_url: dest=/opt/maven3.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.0.4-bin.tar.gz
+#  become: yes
 
 #- name: jenkins-slave | Unpack Maven 3.0.4
 #  action: command creates=/opt/maven3 chdir=/opt tar zxvf /opt/maven3.tar.gz
+#  become: yes
 
 #- name: jenkins-slave | Create Maven 3.0.4 directory link
 #  file: path=/opt/maven3 src=/opt/apache-maven-3.0.4 state=link
+#  become: yes
 
 #- name: jenkins-slave | Create Maven 3.0.4 directory link (legacy required)
 #  file: path=/usr/local/apache-maven-3.0.4 src=/opt/apache-maven-3.0.4 state=link
+#  become: yes
 
 #- name: jenkins-slave | Download Maven 2.2.1
 #  get_url: dest=/opt/maven2.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-2.2.1-bin.tar.gz
+#  become: yes
 
 #- name: jenkins-slave | Unpack Maven 2.2.1
 #  action: command creates=/opt/maven2 chdir=/opt tar zxvf /opt/maven2.tar.gz
+#  become: yes
 
 #- name: jenkins-slave | Create Maven 2.2.1 directory link
 #  file: path=/opt/maven2 src=/opt/apache-maven-2.2.1 state=link
+#  become: yes
 
 #- name: jenkins-slave | Create Maven 2.2.1 directory link (legacy required)
 #  file: path=/usr/local/apache-maven-2.2.1 src=/opt/apache-maven-2.2.1 state=link
+#  become: yes
 
 #- name: jenkins-slave | Download Maven 2.0.9
 #  get_url: dest=/opt/maven209.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-2.0.9-bin.tar.gz
+#  become: yes
 
 #- name: jenkins-slave | Unpack Maven 2.0.9
 #  action: command creates=/opt/maven209 chdir=/opt tar zxvf /opt/maven209.tar.gz
+#  become: yes
 
 #- name: jenkins-slave | Create Maven 2.0.9 directory link
 #  file: path=/opt/maven209 src=/opt/apache-maven-2.0.9 state=link
+#  become: yes
 
 #- name: jenkins-slave | Create Maven 2.0.9 directory link (legacy required)
 #  file: path=/usr/local/apache-maven-2.0.9 src=/opt/apache-maven-2.0.9 state=link
+#  become: yes
 
 - name: jenkins-slave | Remove Maven333 archive
   file: path=/opt/maven333.tar.gz state=absent
+  become: yes
 
 - name: jenkins-slave | Remove Maven321 archive
   file: path=/opt/maven321.tar.gz state=absent
+  become: yes
 
 - name: jenkins-slave | Remove Maven305 archive
   file: path=/opt/maven305.tar.gz state=absent
+  become: yes
 
 - name: jenkins-slave | Remove Maven3 archive
   file: path=/opt/maven3.tar.gz state=absent
+  become: yes
 
 - name: jenkins-slave | Remove Maven2 archive
   file: path=/opt/maven2.tar.gz state=absent
+  become: yes
 
 - name: jenkins-slave | Remove Maven209 archive
   file: path=/opt/maven209.tar.gz state=absent
+  become: yes
+
+##
+ # subversion
+ #
+#TODO move to its own role
+- name: Install subversion package
+  action: "{{ ansible_pkg_mgr}} name='subversion' state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  become: yes
 
 ##
  # git
  #
 # Moved to his own role
-#- name: jenkins-slave | Install git package
-#  action: apt pkg='git' state={{ jenkins_pkg_state }}
-#  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-#
-#- name: jenkins-slave | Install git package
-#  action: yum name='git' state={{ jenkins_pkg_state }}
-#  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+- name: jenkins-slave | Install GIT
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+   - git-core
+   - git
+  become: yes
 
-- name: Update git configuration (user.email)
-  action: command git config --global user.email "{{ shell_git_email }}"
-
-- name: Update git configuration (user.name)
-  action: command git config --global user.name "{{ shell_git_name }}"
-  sudo: yes
-
-- name: Update git configuration (http.sslVerify)
-  action: command git config --global http.sslVerify {{ shell_git_ssl }}
-  sudo: yes
-
+##
+ # other
+ #
 - name: jenkins-slave | Install coverage and metrics tools
-  apt: pkg={{ item }} state={{ jenkins_pkg_state }} update_cache=yes
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:
    - lcov
    - graphviz
    - doxygen
-  sudo: yes
+  become: yes
 
-#TODO opencl install
-#wget http://registrationcenter.intel.com/irc_nas/4181/intel_sdk_for_ocl_applications_2014_ubuntu_4.4.0.117_x64.tgz
-#tar zxvf intel_sdk_for_ocl_applications_2014_ubuntu_4.4.0.117_x64.tgz
-#./install-cpu.sh
-#ll /usr/lib/x86_64-linux-gnu/libOpenCL.so
-
-- name: jenkins-slave | Install tools needed by cpp generator
-  apt: pkg={{ item }} state={{ jenkins_pkg_state }} update_cache=yes
+- name: jenkins-slave | Install tools needed by grunt-zaproxy html report
+  action: "{{ ansible_pkg_mgr}} name=={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:
+   - libxml2-dev #Needed for having /usr/bin/xml2-config in the PATH
+   - libxslt-dev
+  become: yes
+
+- name: jenkins-slave | Install tools needed by grunt-zaproxy html report
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  with_items:
+   - libxml2 #Needed for having /usr/bin/xml2-config in the PATH
+   - libxslt
+   - libexslt
+  become: yes
+
+- name: jenkins-slave | Install Ansible syntax check
+  pip: name={{ item }}
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - ansible-lint
+  become: yes
+
+- name: jenkins-slave | Install security basic tools for Ansible check
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - chkrootkit
+  become: yes
+
+##
+ # C++
+ #
+
+- name: jenkins-slave | Install CPP build tools
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - scons
+  become: yes
+
+##
+ # Perl
+ #
+- name: jenkins-slave | Install tools needed by cpp generator (Debian based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+   - libwww-perl
    - libxml-dom-perl
    - libfile-find-rule-perl
    - libjson-perl
@@ -299,105 +369,226 @@
    - libcrypt-ssleay-perl
    - libxml-handler-yawriter-perl
    - libxml-simple-perl
-  sudo: yes
+  become: yes
 
-- name: jenkins-slave | Install tools needed by grunt-zaproxy html report
-  apt: pkg={{ item }} state={{ jenkins_pkg_state }} update_cache=yes
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-  with_items:
-   - libxml2-dev #Needed for having /usr/bin/xml2-config in the PATH
-   - libxslt-dev
-  sudo: yes
-
-- name: jenkins-slave | Install tools needed by grunt-zaproxy html report
-  action: yum name='{{ item }}' state={{ jenkins_pkg_state }}
+- name: jenkins-slave | Install tools needed by cpp generator (RedHat based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  become: yes
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
   with_items:
-   - libxml2 #Needed for having /usr/bin/xml2-config in the PATH
-   - libxslt
-   - libexslt
-  sudo: yes
+   - perl-libwww-perl
+   - perl-XML-DOM-XPath
+   - perl-XML-Simple
+   - perl-File-Copy-Recursive
+   - perl-File-Find-Rule
 
-- name: jenkins-slave | Install Ansible syntax check
-  pip: name={{ item }}
-  sudo: yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  with_items:
-    - ansible-lint
-
-- name: workstation | Install security basic tools for Ansible check
-  apt: pkg={{ item }} update_cache=yes state={{ jenkins_pkg_state }}
-  sudo: yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  with_items:
-    - chkrootkit
+##
+ # Jenkins user
+ #
+- name: Kill connection used by user jenkins
+  action: shell killall -u {{ jenkins_user }} || true
+  changed_when: false
+  become: yes
+  ignore_errors: true
 
 - name: jenkins-slave | Create jenkins user
   user: name={{ jenkins_user }} password={{ jenkins_password }} update_password=always comment="Jenkins user" home={{ jenkins_home }} shell={{ jenkins_shell }}
-  sudo: yes
+  become: yes
 #  ignore_errors: true
 
-#- name: jenkins-slave | Create .ssh folder
-#  file: path={{ jenkins_home }}/.ssh state=directory mode=0700  owner={{ jenkins_user }} group={{ jenkins_group }}
-#  ignore_errors: true
+- name: jenkins-slave | Create .ssh folder
+  file: path={{ jenkins_home }}/.ssh state=directory mode=0700 owner={{ jenkins_user }} group={{ jenkins_group }}
+  ignore_errors: true
 
 - include: ssh.yml
   when: jenkins_ssh_key_file != ""
   tags: [jenkins, jenkins-ssh]
 
-#- name: jenkins-slave | Add passwordless connection for jenkins (Alban Andrieu)
-#  authorized_key: user={{ jenkins_user }} key="ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIEAio3SOQ9yeK6QfKqSFNKyTasuzjStxWevG1Vz1wgJIxPF+KB0XoMAPD081J+Bzj2LCDRSWisNv2L4xv2jbFxW/Pl7NEakoX47eNx3U+Dxaf+szeWBTryYcDUGkduLV7G8Qncm0luIFd+HDIe/Qir1E2f56Qu2uuBNE6Tz5TFt1vc= Alban"
+- name: jenkins-slave | Update authorized_keys rights
+  file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+  ignore_errors: true
 
-#TODO use authorized_key instead of copy-keys.yml
-#http://brokenbad.com/better-handling-of-public-ssh-keys-using-ansible/
-#- name: Checking public keys list
-#  authorized_key:
-#    user: "{{ base_admin_username }}"
-#    key: "{{ item }}"
-#  with_items: base_admin_keys
+- name: jenkins-slave | Copy the .netrc script for git credentials
+  template: src=.netrc.j2 dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+  when: shell_git_configure_enabled
+  changed_when: false
+  tags: git
 
-#- name: jenkins-slave | Update authorized_keys rights
-#  file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-#  ignore_errors: true
+- name: jenkins-slave | Configure git
+  template:
+    src: .gitconfig.j2
+    dest: '{{ jenkins_home }}/.gitconfig'
+    owner: '{{ jenkins_user }}'
+    group: '{{ jenkins_group }}'
+    mode: 0600
+  when: shell_git_configure_enabled
+  changed_when: false
+  tags: git
 
+#- name: jenkins-slave | Update git configuration (user.email)
+#  action: command git config --global user.email "{{ shell_git_email }}"
+##  sudo_user: "{{ jenkins_user }}"
+#  become_user: "{{ jenkins_user }}"
+#  become: yes
+##  become_method: '{{ jenkins_become_method }}'
+#  changed_when: false
+#  tags: git
+#
+#- name: jenkins-slave | Update git configuration (user.name)
+#  action: command git config --global user.name "{{ shell_git_name }}"
+##  sudo_user: "{{ jenkins_user }}"
+#  become_user: "{{ jenkins_user }}"
+#  become: yes
+##  become_method: '{{ jenkins_become_method }}'
+#  changed_when: false
+#  tags: git
+#
+#- name: jenkins-slave | Update git configuration (http.sslVerify)
+#  action: command git config --global http.sslVerify {{ shell_git_ssl }}
+##  sudo_user: "{{ jenkins_user }}"
+#  become_user: "{{ jenkins_user }}"
+#  become: yes
+##  become_method: '{{ jenkins_become_method }}'
+#  changed_when: false
+#  tags: git
 
 - name: jenkins-slave | Copy the deploy-log-parsing-rules for jenkins log parsing configuration
   copy: src=deploy-log-parsing-rules dest={{ jenkins_home }}/deploy-log-parsing-rules backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
 
-- name: jenkins-slave | Copy the .netrc script for git credentials
-  template: src=.netrc.j2 dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-
-- name: jenkins-slave | Update git .netrc rights
-  file: path={{ jenkins_home }}/.netrc state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-
 - name: jenkins-slave | Create .m2 folder
   file: path={{ jenkins_home }}/.m2 state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
+  changed_when: false
 
 - name: jenkins-slave | Copy maven configuration
   template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0700
+  changed_when: false
 
 - name: jenkins-slave | Jenkins can run any command with no password
-  lineinfile: "line='jenkins ALL=NOPASSWD: ALL' dest=/etc/sudoers regexp='^jenkins' validate='visudo -cf %s'"
-  sudo: yes
+  lineinfile: dest=/etc/sudoers line="{{item}}" validate='visudo -cf %s'
+  with_items:
+    - "Defaults:jenkins    !requiretty"
+    - "jenkins ALL=NOPASSWD: ALL"
+#    - "jenkins ALL=(ALL)   NOPASSWD: /usr/local/bin/test.py"
+    - "Defaults:jenkins    secure_path=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\""
+  become: yes
+  changed_when: false
+
+- name: jenkins-slave | Disable env_reset
+  lineinfile: dest=/etc/sudoers regexp="^Defaults    env_reset.*"
+    line="Defaults    !env_reset"
+    backrefs=yes
+    validate='visudo -cf %s'
+  become: yes
+  changed_when: false
+
+- name: jenkins-slave | Set limits
+  lineinfile: dest=/etc/security/limits.conf line="{{item.key}}" regexp="{{item.value}}"
+  with_dict:
+     "*               soft    nofile          65536" : '\*\s+soft\s+nofile'
+     "*               hard    nofile          65536" : '\*\s+hard\s+nofile'
+     "root            soft    nofile          16384" : 'root\s+soft\s+nofile'
+     "root            hard    nofile          65536" : 'root\s+hard\s+nofile'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  become: yes
+  changed_when: false
+
+- name: jenkins-slave | Set limits
+  lineinfile: dest=/etc/security/limits.conf line="{{item.key}}" regexp="{{item.value}}"
+  with_dict:
+     "*               soft    nofile          65536" : '\*\s+soft\s+nofile'
+     "*               hard    nofile          65536" : '\*\s+hard\s+nofile'
+     "root            soft    nofile          65536" : 'root\s+soft\s+nofile'
+     "root            hard    nofile          65536" : 'root\s+hard\s+nofile'
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  become: yes
+  changed_when: false
+
+- name: jenkins-slave | Set nproc limits for Jenkins
+  lineinfile: dest="/etc/security/limits.d/90-nproc.conf" line='jenkins    soft    nproc     unlimited'
+#/etc/security/limits.d/20-nproc.conf RedHat 7
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  become: yes
+  changed_when: false
+
+- name: jenkins-slave | Set core limits for Jenkins
+  lineinfile: dest="/etc/security/limits.conf" line='jenkins    soft    core     unlimited'
+  become: yes
+  changed_when: false
+
+- name: jenkins-slave | Create {{ jenkins_slave_home }} directory
+  file: path={{ jenkins_slave_home }} state=directory
+  changed_when: false
+
+- name: jenkins-slave | Create repository directory
+  file: path={{ jenkins_slave_home }}/repository state=directory owner={{ jenkins_user }} group={{ jenkins_group }}
+  changed_when: false
+
+- name: jenkins-slave | Create Jenkins slave directory
+  file: path={{ jenkins_slave_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
+  changed_when: false
 
 - name: jenkins-slave | Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
+  changed_when: false
 
 #- name: jenkins-slave | Ensure npm settings
 #  command: chdir=/usr/bin npm config set registry {{ nexus_npm_url }}
 
 - name: jenkins-slave | Copy the .npmrc script
   template: src=.npmrc.j2 dest={{ jenkins_home }}/.npmrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+  changed_when: false
 
 - name: jenkins-slave | Copy the .bowerrc script
   template: src=.bowerrc.j2 dest={{ jenkins_home }}/.bowerrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+  changed_when: false
 
 - name: workstation | Install requirement for phantomas
-  apt: pkg={{ item }} update_cache=yes state={{ jenkins_pkg_state }}
-  sudo: yes
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - libfontconfig1
+
+#TODO
+#http://www.thegeekstuff.com/2013/10/tmpreaper-examples/
+- name: jenkins-slave | Install tmpreaper package
+  action: "{{ ansible_pkg_mgr}} name='tmpreaper' state={{ jenkins_pkg_state|default('present') }}"
+#TODO install epel repo first
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  become: yes
+
+#it adds itself to /etc/cron.daily
+#but you need to configure it (comment out or remove one line in /etc/tmpreaper.conf #SHOWWARNING=true
+
+- name: jenkins-slave | Add sanitary job in cron
+  cron: name="tmp cleanup" hour="1" minute="0" job="find /tmp -user {{ jenkins_user }} -atime +7 -exec rm -rf {} +" user={{ jenkins_user }}
+  become: yes
+  tags: cron
+#sudo service cron restart
+
+#Fix jetty filling tmp
+- name: jenkins-slave | Add JAVA_OPTS in /etc/profile
+  lineinfile: dest=/etc/profile line="export JAVA_OPTS=-Djava.io.tmpdir=$WORKSPACE/target/tmp" insertafter=EOF
+#or ~.bash_profile
+  become: yes
+  changed_when: false
+
+#TODO add JAVA_HOME
+
+- name: jenkins-slave | Add options in /etc/bashrc
+#    regexp: "{{ item.regexp }}"
+  lineinfile:
+    dest: /etc/bashrc
+    line: "{{ item.line }}"
+    insertafter: EOF
+  with_items:
+    - { regexp: '', line: 'export SCONS=/usr/bin/scons' }
+    - { regexp: '', line: 'export TAR=/bin/gtar' }
+    - { regexp: '', line: '\n' }
+  become: yes
+  changed_when: false
+
+#TODO Add source /etc/profile for RedHat to find lsof command
 
 #TODO use jenkins to install phantomjs
 #- name: npm | Ensure the phantomas npm dependencies are installed
@@ -408,52 +599,16 @@
 #  with_items:
 #    - phantomjs
 #    - phantomas
-#  sudo: yes
+#  become: yes
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and nodejs_enabled
 
-#- name: jenkins-slave | Create {{ jenkins_slave_home }} directory
-#  file: path={{ jenkins_slave_home }} state=directory
-
-#- name: jenkins-slave | Create /repository directory
-#  file: path={{ jenkins_slave_home }}/repository state=directory owner=jenkins
-
-#- name: jenkins-slave | Create Jenkins slave directory
-  #file: path={{ jenkins_slave_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
-
-#- name: jenkins-slave | Create Java directory link (legacy required)
-#  file: path={{ jenkins_slave_home }}/jdk1.7 src={{ jvm_folder }}/{{ jdk7_archive_extracted }} state=link
-#  when: jenkins_jdk7_enable
-#  sudo: yes
+- name: jenkins-slave | Create Java directory link (legacy required)
+  file: path={{ jenkins_slave_home }}/jdk1.7 src={{ jvm_folder }}/{{ jdk7_archive_extracted }} state=link
+  when: jenkins_jdk7_enable
+  become: yes
 
 #END OF TODO extract jenkins user to another script
 
-#sudo update-alternatives --list java
-#sudo update-alternatives --remove java /usr/lib/jvm/{{ jdk7_archive_extracted }}/bin/java
-#sudo update-alternatives --remove java /usr/lib/jvm/java-6-openjdk-amd64/jre/bin/java
-#sudo update-alternatives --remove java /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
-
-#TODO
-#sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.6.0_32/bin/javac 1
-#sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.6.0_32/bin/java 1
-#sudo update-alternatives --install /usr/bin/javaws javaws /usr/lib/jvm/jdk1.6.0_32/bin/javaws 1
-#sudo update-alternatives --install java_vm
-#- name: Set java link
-#  action: command update-alternatives --install /usr/bin/java java {{ jvm_folder }}/{{ jdk8_archive_extracted }}/bin/java 1
-#  when: "jdk8_installed.changed == 'True'"
-
-#TODO
-#sudo update-alternatives --config javac
-#sudo update-alternatives --config java
-#sudo update-alternatives --config javaws
-#sudo update-alternatives --config javadoc
-#sudo update-alternatives --config javafxpackager
-#sudo update-alternatives --config javah
-#sudo update-alternatives --config javap
-
-#TODO Verify the symlinks all point to the new java location:
-#ls -la /etc/alternatives/java*
-
-#------------------------------
 
 #Setting Java environment variables
 #sudo apt-get install oracle-java8-set-default
@@ -462,38 +617,92 @@
 #sudo update-java-alternatives -s java-7-oracle
 #sudo update-java-alternatives -s java-8-oracle
 
-- name: jenkins-slave | Set java link
-  action: command update-alternatives --install /usr/bin/java java {{ jvm_folder }}/{{ jdk8_archive_extracted }}/bin/java 1
+- name: jenkins-slave | Set mvn link to Java 7
+  set_fact: jdk_dir={{ jvm_folder }}/{{ jdk7_archive_extracted }}
+  when: "jdk7_installed.changed == 'True'"
+
+- name: jenkins-slave | Set mvn link to Java 8
+  set_fact: jdk_dir={{ jvm_folder }}/{{ jdk8_archive_extracted }}
   when: "jdk8_installed.changed == 'True'"
-  sudo: yes
 
-- name: jenkins-slave | Set jar link
-  action: command update-alternatives --install /usr/bin/jar jar {{ jvm_folder }}/{{ jdk8_archive_extracted }}/bin/jar 1
-  when: "jdk8_installed.changed == 'True'"
-  sudo: yes
+- name: jenkins-slave | Display java link before
+  action: command update-alternatives --display java
+  changed_when: false
+  become: yes
+  ignore_errors: true
 
-#sudo update-alternatives --list mvn
-#sudo update-alternatives --remove mvn /usr/share/maven/bin/mvn
-#sudo update-alternatives --remove mvn /opt/maven333/bin/mvn
-#sudo update-alternatives --remove mvn /opt/maven321/bin/mvn
-#sudo update-alternatives --remove mvn /opt/maven3/bin/mvn
-#sudo update-alternatives --config mvn
+#TODO
+#sudo update-alternatives --remove-all java
 
-#sudo update-alternatives --config mvn
+#sudo update-alternatives --remove java /usr/lib/jvm/{{ jdk7_archive_extracted }}/bin/java
+#sudo update-alternatives --remove java /usr/lib/jvm/java-6-openjdk-amd64/jre/bin/java
+#sudo update-alternatives --remove java /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
+
+- name: jenkins-slave | Configure Java alternatives
+  alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }}
+  with_items:
+  - { name: jar, link: /usr/bin/jar, path: "{{ jdk_dir }}/bin/jar" }
+  - { name: jps, link: /usr/bin/jps, path: "{{ jdk_dir }}/bin/jps" }
+  - { name: java, link: /usr/bin/java, path: "{{ jdk_dir }}/bin/java" }
+  - { name: jmap, link: /usr/bin/jmap, path: "{{ jdk_dir }}/bin/jmap" }
+  - { name: javac, link: /usr/bin/javac, path: "{{ jdk_dir }}/bin/javac" }
+  - { name: javaws, link: /usr/bin/javaws, path: "{{ jdk_dir }}/bin/javaws" }
+  - { name: jstack, link: /usr/bin/jstack, path: "{{ jdk_dir }}/bin/jstack" }
+  - { name: javadoc, link: /usr/bin/javadoc, path: "{{ jdk_dir }}/bin/javadoc" }
+  - { name: javafxpackager, link: /usr/bin/javafxpackager, path: "{{ jdk_dir }}/bin/javafxpackager" }
+  - { name: javah, link: /usr/bin/javah, path: "{{ jdk_dir }}/bin/javah" }
+  - { name: javap, link: /usr/bin/javap, path: "{{ jdk_dir }}/bin/javap" }
+  - { name: java_vm, link: /usr/bin/java_vm, path: "{{ jdk_dir }}/bin/java_vm" }
+  - { name: jvisualvm, link: /usr/bin/jvisualvm, path: "{{ jdk_dir }}/bin/jvisualvm" }
+  when: not( (jdk_dir is undefined) or (jdk_dir is none) or (jdk_dir | trim == '') )
+  become: yes
+
+#TODO Verify the symlinks all point to the new java location:
+
+#ls -la /etc/alternatives/java*
+- name: jenkins-slave | Display java link after
+  action: command update-alternatives --display java
+  when: not( (jdk_dir is undefined) or (jdk_dir is none) or (jdk_dir | trim == '') )
+  become: yes
+
+#------------------------------
+
+#/opt/maven305
 - name: jenkins-slave | Set mvn link to Maven 3.3.3
-  action: command update-alternatives --install /usr/bin/mvn mvn /opt/maven333/bin/mvn 1
-  sudo: yes
+  set_fact: mvn_dir=/opt/maven333
 
-#- name: jenkins-slave | Set mvn local link to Maven 3.0.5
-#  action: command update-alternatives --install /usr/local/bin/mvn mvn /opt/maven333/bin/mvn 1
+- name: jenkins-slave | Display mvn link before
+  action: command update-alternatives --display mvn
+  changed_when: false
+  become: yes
+  ignore_errors: true
 
-#http://drupalcode.org/sandbox/franskuipers/1801378.git/blob/e0d2e3dd3f3b9ff7f9ace61f9e56c56a1f28e915:/ansible.yml  #
+#TODO
+#sudo update-alternatives --remove-all mvn
+
+- name: jenkins-slave | Configure Maven alternatives
+  alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }}
+  with_items:
+  - { name: mvn, link: /usr/bin/mvn, path: "{{ mvn_dir }}/bin/mvn" }
+  when: not( (mvn_dir is undefined) or (mvn_dir is none) or (mvn_dir | trim == '') )
+  become: yes
+
+#TODO Verify the symlinks all point to the new mvn location:
+
+#ls -la /etc/alternatives/mvn*
+- name: jenkins-slave | Display mvn link after
+  action: command update-alternatives --display mvn
+  when: not( (mvn_dir is undefined) or (mvn_dir is none) or (mvn_dir | trim == '') )
+  become: yes
+
+#------------------------------
 
 #- name: jenkins-slave | Clone the application
-#  action: git repo=http://toto/stash/scm/risk/buildmasters.git dest=/jenkins/buildmasters
+#  action: git repo=https://github.com/AlbanAndrieu/nabla.git dest=/jenkins/nabla
 
 - name: jenkins-slave | Cleanup temporary directory
   file: name={{ tempdir.stdout }} state=absent
+  changed_when: false
   tags:
     - jenkins-slave
 

@@ -17,6 +17,7 @@ error /No group with the specified name exists/
 error /Error\(s\)/
 error /An error occured while updating fs:/
 error /ERROR:/
+error /SEVERE:/
 error /FAILED/
 error /ERROR :/
 error /Invalid or corrupt jarfile/
@@ -24,6 +25,10 @@ error /No such file or directory/
 error /Syntax error/
 error /Connection refused/
 error /return is : 000/
+error /Error\(s\)/
+
+#maven cargo
+error /Exception thrown by the agent : java.net.MalformedURLException: Local host name unknown/
 
 #security
 warning /Warning: \/sbin\/init INFECTED/
@@ -40,6 +45,17 @@ ok /^Searching for Suckit rootkit/
 error /INFECTED/
 warning /^\[ANSIBLE/
 warning /Permission denied/
+error /unreachable=1/
+error /unreachable=2/
+error /unreachable=3/
+error /failed=1/
+error /failed=2/
+error /failed=3/
+
+error /Connection refused/
+error /return is : 000/
+
+warning /error: pathspec/
 
 # list of warnings here...
 warning /[Ww]arning/
@@ -59,3 +75,4 @@ info /TODO/
 start /====/
 start /###/
 start /---/
+start /TASK: /

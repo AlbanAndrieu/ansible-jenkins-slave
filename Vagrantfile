@@ -10,9 +10,10 @@ current_version = Gem::Version.new(Vagrant::VERSION)
 windows_version = Gem::Version.new("1.6.0")
 
 hosts_ubuntu = {
-  "jenkins-slave-create-image-docker" => "192.168.33.10",
-#  "host1" => "192.168.33.11",
-#  "host2" => "192.168.33.12"
+  "slave01" => "51",
+#  "slave02" => "52",
+#  "slave03" => "53",
+#  "slave03" => "54"
 }
 
 hosts_solaris = {
@@ -21,12 +22,30 @@ hosts_solaris = {
 #  "host2" => "192.168.33.12"
 }
 
+HOSTNAME_01 = "slave01"
+VAGRANT_BASE_PORT_01 = "51"
+VAGRANT_SSH_PORT_01 = "22" + VAGRANT_BASE_PORT_01
+VAGRANT_NETWORK_IP_01 = "192.168.11." + VAGRANT_BASE_PORT_01
+
+HOSTNAME_02 = "slave02"
+VAGRANT_BASE_PORT_02 = "52"
+VAGRANT_SSH_PORT_02 = "22" + VAGRANT_BASE_PORT_02
+VAGRANT_NETWORK_IP_02 = "192.168.11." + VAGRANT_BASE_PORT_02
+
+HOSTNAME_03 = "slave03"
+VAGRANT_BASE_PORT_03 = "53"
+VAGRANT_SSH_PORT_03 = "22" + VAGRANT_BASE_PORT_03
+VAGRANT_NETWORK_IP_03 = "192.168.11." + VAGRANT_BASE_PORT_03
+
+HOSTNAME_04 = "slave04"
+VAGRANT_BASE_PORT_04 = "54"
+VAGRANT_SSH_PORT_04 = "22" + VAGRANT_BASE_PORT_04
+VAGRANT_NETWORK_IP_04 = "192.168.11." + VAGRANT_BASE_PORT_04
+
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-
-  #config.vm.network "public_network"
 
   hosts_ubuntu.each do |name, ip|
     config.vm.define name do |machine|
@@ -42,7 +61,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       #machine.vm.box_url = "ubuntu/trusty64"
 
       machine.vm.hostname = "%s.example.org" % name
-      machine.vm.network :private_network, ip: ip
+      machine.vm.network :private_network, ip: "192.168.11." + ip
       # Create a forwarded port mapping which allows access to a specific port
       # within the machine from a port on the host machine.
       config.vm.network :forwarded_port, guest: 8080, host: 8080, auto_correct:true
@@ -93,138 +112,188 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       #   images: ["ubuntu"]
       #end
     end
+
+  config.vm.define :slave01 do |vagrant|
+
+    #vagrant.vm.box = "hfm4/centos5"
+    vagrant.vm.box = "hfm4/centos6"
+    #vagrant.vm.box = "hfm4/centos7"
+    vagrant.vm.boot_timeout = 600
+
+    vagrant.vm.hostname = HOSTNAME_01
+    vagrant.vm.network :private_network, ip: VAGRANT_NETWORK_IP_01
+    vagrant.vm.provider :virtualbox do |vb|
+      vb.name = HOSTNAME_01
+      #vb.customize ["modifyvm", :id, "--memory", "8192"]
+      vb.memory = 8192
+      vb.cpus = 4
+    end
+
+    #vagrant.vm.provision "file", source: "../keys/id_rsa", destination: "id_rsa"
+    #vagrant.vm.provision "file", source: "../keys/id_rsa.pub", destination: "id_rsa.pub"
+    #vagrant.vm.provision "file", source: "../keys/mgr.jenkins.pub", destination: "mgr.jenkins.pub"
+
+    vagrant.vm.provision :shell, :path => "buildup.sh"
+
+    #See issue vagrant forward port 22 unable to force
+    #https://stackoverflow.com/questions/30669183/forwarding-the-ssh-port-fails-when-running-two-vagrant-instances-from-the-same-h
+    #vagrant.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: "true"
+    vagrant.vm.network "forwarded_port", guest: 22, host: VAGRANT_SSH_PORT_01, id: 'ssh', auto_correct: "true"
+    # Generate a random port number
+    #r = Random.new
+    #ssh_port = r.rand(1000...5000)
+    #vagrant.vm.network "forwarded_port", guest: 22, host: "#{ssh_port}", id: 'ssh', auto_correct: true
+    #vagrant.vm.network "forwarded_port", guest: 8380, host: 8380, auto_correct: true
+    vagrant.vm.network "forwarded_port", guest: 33224, host: 33224, auto_correct: true
+
+    # Do not use a shared folder. We will fetch sources in other ways.
+    # This allows us (eventually) to export the VM and move it around.
+    vagrant.vm.synced_folder ".", "/vagrant", disabled: true
+
+    #vagrant.ssh.private_key_path = "../keys/id_rsa"
+    #vagrant.ssh.forward_agent = true
+    #vagrant.ssh.host = VAGRANT_NETWORK_IP_01
+    #vagrant.ssh.port = VAGRANT_SSH_PORT_01
+    #vagrant.ssh.forward_agent = true
+
+    #config.vm.provision "ansible" do |ansible|
+    #  #see https://docs.vagrantup.com/v2/provisioning/ansible.html
+    #  ansible.playbook = "../../ansible/jenkins-UAT-slave.yml"
+    #  ansible.inventory_path = "../../ansible/hosts"
+    #  ansible.verbose = "vvvv"
+    #  ansible.sudo = true
+    #  ansible.host_key_checking = false
+    #  ansible.extra_vars = { ansible_ssh_user: 'vagrant' }
+    #  # Disable default limit (required with Vagrant 1.5+)
+    #  ansible.limit = 'all'
+    #end
   end
 
-  #solaris11
-  #
-  #hosts_solaris.each do |name, ip|
-  #  config.vm.define name do |machine|
-  #    machine.vm.box = "solaris11"
-  #    #machine.vm.box_url = "http://www.benden.us/vagrant/solaris-11.1.box"
-  #    machine.vm.box_url = "solaris-11.1.box"
-  #    
-  #    machine.vm.hostname = "%s.example.org" % name
-  #    machine.vm.network :private_network, ip: ip
-  #    # Create a forwarded port mapping which allows access to a specific port
-  #    # within the machine from a port on the host machine.
-  #    config.vm.network :forwarded_port, guest: 8080, host: 8080, auto_correct:true
-  #    
-  #    machine.vm.provider "virtualbox" do |v|
-  #        v.name = name
-  #        v.customize ["modifyvm", :id, "--memory", 1024]
-  #        # v.customize ["modifyvm", :id, "--memory", "4096", "--cpus", "4"]
-  #    end
-  #  end
-  #end
+  config.vm.define :slave02 do |vagrant|
 
-  # All Vagrant configuration is done here. The most common configuration
-  # options are documented and commented below. For a complete reference,
-  # please see the online documentation at vagrantup.com.
+    #vagrant.vm.box = "hfm4/centos5"
+    #vagrant.vm.box = "hfm4/centos6"
+    vagrant.vm.box = "hfm4/centos7"
+    vagrant.vm.boot_timeout = 600
 
-  # Every Vagrant virtual environment requires a box to build off of.
-  #config.vm.box = "base"
+    vagrant.vm.hostname = HOSTNAME_02
+    vagrant.vm.network :private_network, ip: VAGRANT_NETWORK_IP_02
+    vagrant.vm.provider :virtualbox do |vb|
+      vb.name = HOSTNAME_02
+      #vb.customize ["modifyvm", :id, "--memory", "8192"]
+      vb.memory = 8192
+      vb.cpus = 4
+    end
 
-  # The url from where the 'config.vm.box' box will be fetched if it
-  # doesn't already exist on the user's system.
-  # config.vm.box_url = "http://domain.com/path/to/above.box"
+    #vagrant.vm.provision "file", source: "../keys/id_rsa", destination: "id_rsa"
+    #vagrant.vm.provision "file", source: "../keys/id_rsa.pub", destination: "id_rsa.pub"
+    #vagrant.vm.provision "file", source: "../keys/mgr.jenkins.pub", destination: "mgr.jenkins.pub"
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network :forwarded_port, guest: 80, host: 8080
+    #vagrant.vm.provision :shell, :path => "buildup.sh"
 
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  # config.vm.network :private_network, ip: "192.168.33.10"
+    #See issue vagrant forward port 22 unable to force
+    #https://stackoverflow.com/questions/30669183/forwarding-the-ssh-port-fails-when-running-two-vagrant-instances-from-the-same-h
+    #vagrant.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: "true"
+    vagrant.vm.network "forwarded_port", guest: 22, host: VAGRANT_SSH_PORT_02, id: 'ssh', auto_correct: "true"
+    vagrant.vm.network "forwarded_port", guest: 33224, host: 33224, auto_correct: true
 
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network :public_network
+    # Do not use a shared folder. We will fetch sources in other ways.
+    # This allows us (eventually) to export the VM and move it around.
+    vagrant.vm.synced_folder ".", "/vagrant", disabled: true
 
-  # If true, then any SSH connections made will enable agent forwarding.
-  # Default value: false
-  # config.ssh.forward_agent = true
+  end
 
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
+  config.vm.define :slave03 do |vagrant|
 
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-  # config.vm.provider :virtualbox do |vb|
-  #   # Don't boot with headless mode
-  #   vb.gui = true
-  #
-  #   # Use VBoxManage to customize the VM. For example to change memory:
-  #   vb.customize ["modifyvm", :id, "--memory", "1024"]
-  # end
-  #
-  # View the documentation for the provider you're using for more
-  # information on available options.
+    #vagrant.vm.box = "precise32"
+    ##vagrant.vm.box_url = "http://files.vagrantup.com/precise32.box"
+    #vagrant.vm.box_url = "http://download.parallels.com/desktop/vagrant/precise64.box"
+    #vagrant.vm.box = "saucy64"
+    #vagrant.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/saucy/current/saucy-server-cloudimg-i386-vagrant-disk1.box"
+    #vagrant.vm.box_url = "http://download.parallels.com/desktop/vagrant/saucy64.box"
+    #vagrant.vm.box = "trusty64"
+    #vagrant.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-i386-vagrant-disk1.box"
+    #vagrant.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
+    #vagrant.vm.box_url = "ubuntu/trusty64"
 
-  # Enable provisioning with Puppet stand alone.  Puppet manifests
-  # are contained in a directory path relative to this Vagrantfile.
-  # You will need to create the manifests directory and a manifest in
-  # the file base.pp in the manifests_path directory.
-  #
-  # An example Puppet manifest to provision the message of the day:
-  #
-  # # group { "puppet":
-  # #   ensure => "present",
-  # # }
-  # #
-  # # File { owner => 0, group => 0, mode => 0644 }
-  # #
-  # # file { '/etc/motd':
-  # #   content => "Welcome to your Vagrant-built virtual machine!
-  # #               Managed by Puppet.\n"
-  # # }
-  #
-  # config.vm.provision :puppet do |puppet|
-  #   puppet.manifests_path = "manifests"
-  #   puppet.manifest_file  = "site.pp"
-  # end
+    #https://atlas.hashicorp.com/ubuntu/boxes/trusty64
+    vagrant.vm.box = "ubuntu/trusty64"
+    #https://atlas.hashicorp.com/ubuntu/boxes/xenial64
+    #vagrant.vm.box = "ubuntu/xenial64"
+    vagrant.vm.boot_timeout = 600
 
-  # Enable provisioning with chef solo, specifying a cookbooks path, roles
-  # path, and data_bags path (all relative to this Vagrantfile), and adding
-  # some recipes and/or roles.
-  #
-  # config.vm.provision :chef_solo do |chef|
-  #   chef.cookbooks_path = "../my-recipes/cookbooks"
-  #   chef.roles_path = "../my-recipes/roles"
-  #   chef.data_bags_path = "../my-recipes/data_bags"
-  #   chef.add_recipe "mysql"
-  #   chef.add_role "web"
-  #
-  #   # You may also specify custom JSON attributes:
-  #   chef.json = { :mysql_password => "foo" }
-  # end
+    vagrant.vm.hostname = HOSTNAME_03
+    vagrant.vm.network :private_network, ip: VAGRANT_NETWORK_IP_03
+    vagrant.vm.provider :virtualbox do |vb|
+      vb.name = HOSTNAME_03
+      #vb.customize ["modifyvm", :id, "--memory", "8192"]
+      vb.memory = 8192
+      vb.cpus = 4
+    end
 
-  # Enable provisioning with chef server, specifying the chef server URL,
-  # and the path to the validation key (relative to this Vagrantfile).
-  #
-  # The Opscode Platform uses HTTPS. Substitute your organization for
-  # ORGNAME in the URL and validation key.
-  #
-  # If you have your own Chef Server, use the appropriate URL, which may be
-  # HTTP instead of HTTPS depending on your configuration. Also change the
-  # validation key to validation.pem.
-  #
-  # config.vm.provision :chef_client do |chef|
-  #   chef.chef_server_url = "https://api.opscode.com/organizations/ORGNAME"
-  #   chef.validation_key_path = "ORGNAME-validator.pem"
-  # end
-  #
-  # If you're using the Opscode platform, your validator client is
-  # ORGNAME-validator, replacing ORGNAME with your organization name.
-  #
-  # If you have your own Chef Server, the default validation client name is
-  # chef-validator, unless you changed the configuration.
-  #
-  #   chef.validation_client_name = "ORGNAME-validator"
+    #vagrant.vm.provision "file", source: "../keys/id_rsa", destination: "id_rsa"
+    #vagrant.vm.provision "file", source: "../keys/id_rsa.pub", destination: "id_rsa.pub"
+    #vagrant.vm.provision "file", source: "../keys/mgr.jenkins.pub", destination: "mgr.jenkins.pub"
+
+    #vagrant.vm.provision :shell, :path => "buildup.sh"
+
+    #See issue vagrant forward port 22 unable to force
+    #https://stackoverflow.com/questions/30669183/forwarding-the-ssh-port-fails-when-running-two-vagrant-instances-from-the-same-h
+    #vagrant.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: "true"
+    vagrant.vm.network "forwarded_port", guest: 22, host: VAGRANT_SSH_PORT_03, id: 'ssh', auto_correct: "true"
+    vagrant.vm.network "forwarded_port", guest: 33224, host: 33224, auto_correct: true
+
+    # Do not use a shared folder. We will fetch sources in other ways.
+    # This allows us (eventually) to export the VM and move it around.
+    vagrant.vm.synced_folder ".", "/vagrant", disabled: true
+
+  end
+
+  config.vm.define :slave04 do |vagrant|
+
+    #https://atlas.hashicorp.com/ubuntu/boxes/trusty64
+    #vagrant.vm.box = "ubuntu/trusty64"
+    #https://atlas.hashicorp.com/ubuntu/boxes/xenial64
+    vagrant.vm.box = "ubuntu/xenial64"
+    vagrant.vm.boot_timeout = 600
+
+    vagrant.vm.hostname = HOSTNAME_04
+    vagrant.vm.network :private_network, ip: VAGRANT_NETWORK_IP_04
+    vagrant.vm.provider :virtualbox do |vb|
+      vb.name = HOSTNAME_04
+      #vb.customize ["modifyvm", :id, "--memory", "8192"]
+      vb.memory = 8192
+      vb.cpus = 4
+    end
+
+    #vagrant.vm.provision "file", source: "../keys/id_rsa", destination: "id_rsa"
+    #vagrant.vm.provision "file", source: "../keys/id_rsa.pub", destination: "id_rsa.pub"
+    #vagrant.vm.provision "file", source: "../keys/mgr.jenkins.pub", destination: "mgr.jenkins.pub"
+
+    #vagrant.vm.provision :shell, :path => "buildup.sh"
+
+    #See issue vagrant forward port 22 unable to force
+    #https://stackoverflow.com/questions/30669183/forwarding-the-ssh-port-fails-when-running-two-vagrant-instances-from-the-same-h
+    #vagrant.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: "true"
+    vagrant.vm.network "forwarded_port", guest: 22, host: VAGRANT_SSH_PORT_04, id: 'ssh', auto_correct: "true"
+    vagrant.vm.network "forwarded_port", guest: 33224, host: 33224, auto_correct: true
+
+    # Do not use a shared folder. We will fetch sources in other ways.
+    # This allows us (eventually) to export the VM and move it around.
+    vagrant.vm.synced_folder ".", "/vagrant", disabled: true
+
+  end
+
 end
+
+#Connect doing
+#from outside host
+#ssh -p 2251 vagrant@test
+#ssh -p 2252 vagrant@test
+#ssh -p 2253 vagrant@test
+#ssh -p 2254 vagrant@test
+#from inside host
+#ssh -p 22 vagrant@192.168.11.51
+#ssh -p 22 vagrant@192.168.11.52
+#ssh -p 22 vagrant@192.168.11.53
+#ssh -p 22 vagrant@192.168.11.54

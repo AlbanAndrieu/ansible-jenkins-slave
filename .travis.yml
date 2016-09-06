@@ -2,7 +2,7 @@
 language: python
 python: "2.7"
 env:
-  - ANSIBLE_VERSION=1.9.2
+  - ANSIBLE_VERSION=2.1.1.0
 cache: bundler
 #sudo: false
 sudo: required
@@ -20,12 +20,12 @@ install:
   # Install dependencies.
   #- ansible-galaxy install alban.andrieu.subversion
   #- ansible-galaxy install alban.andrieu.xvbf
-  - git clone https://github.com/Stouts/Stouts.python.git python
-  - git clone https://github.com/debops/ansible-role-ansible.git ansible
-  - git clone https://github.com/geerlingguy/ansible-role-ntp.git geerlingguy.ntp
+  - git clone https://github.com/AlbanAndrieu/Stouts.python.git python
+  - git clone https://github.com/AlbanAndrieu/ansible-role-ntp.git geerlingguy.ntp
   - git clone https://github.com/AlbanAndrieu/ansible-locale.git locale
   - git clone https://github.com/AlbanAndrieu/ansible-hostname.git alban.andrieu.hostname
   - git clone https://github.com/AlbanAndrieu/ansible-util.git silpion.util
+  - git clone https://github.com/AlbanAndrieu/ansible-lib silpion.lib
   - git clone https://github.com/AlbanAndrieu/ansible-java.git java
   - git clone https://github.com/AlbanAndrieu/ansible-common.git alban.andrieu.common
   - git clone https://github.com/AlbanAndrieu/ansible-subversion.git alban.andrieu.subversion
@@ -43,13 +43,17 @@ install:
   - git clone https://github.com/AlbanAndrieu/ansible-jboss alban.andrieu.jboss
 
 script:
-  - ansible --version
-#  - export ANSIBLE_ROLES_PATH="../"
-#  - echo localhost > inventory
-  - ansible-playbook -i hosts --syntax-check jenkins-slave.yml
+  - sudo ansible --version
+
+  # Prepare tests
+  #- echo localhost > hosts
+
+  # Check syntax
+  - sudo ansible-playbook -i hosts --syntax-check jenkins-slave.yml
+
   # Run the role/playbook again, checking to make sure it's idempotent.
   - >
-    ansible-playbook -i hosts jenkins-slave.yml --connection=local --sudo -vvvv
+    sudo ansible-playbook -i hosts jenkins-slave.yml --connection=local --sudo -vvvv
 #    | grep -q 'changed=0.*failed=0'
 #    && (echo 'Idempotence test: pass' && exit 0)
 #    || (echo 'Idempotence test: fail' && exit 0)
