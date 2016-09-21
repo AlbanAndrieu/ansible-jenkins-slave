@@ -1,5 +1,5 @@
-# {{ ansible_managed }}
 {
+  "_comment": "{{ ansible_managed }}",
 {% if bower_directory is defined %}
   "directory": "{{ bower_directory }}",
 {% endif %}
@@ -15,7 +15,7 @@
 {% if bower_register_url is defined %}
   "register": "{{ bower_register_url }}",
 {% endif %}
-{% if bower_rpublish_url is defined %}
+{% if bower_publish_url is defined %}
   "publish": "{{ bower_publish_url }}",
 {% endif %}
   "storage": {
