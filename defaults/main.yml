@@ -32,7 +32,7 @@ jenkins_pkg_state: present
 # Repository states: present or absent
 jenkins_repository_state: present
 
-jenkins_ssh_key_file: "~/.ssh/id_rsa"        # Set private ssh key for Jenkins user (path to local file)
+jenkins_ssh_key_file: ""        # Set private ssh key for Jenkins user (path to local file) for instance ~/.ssh/id_rsa
 jenkins_ssh_authorized_keys_fingerprints: [] # Set known authorized keys for ssh
 # Alban Andrieu
 #  - "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIEAio3SOQ9yeK6QfKqSFNKyTasuzjStxWevG1Vz1wgJIxPF+KB0XoMAPD081J+Bzj2LCDRSWisNv2L4xv2jbFxW/Pl7NEakoX47eNx3U+Dxaf+szeWBTryYcDUGkduLV7G8Qncm0luIFd+HDIe/Qir1E2f56Qu2uuBNE6Tz5TFt1vc= Alban"
