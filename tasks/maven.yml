@@ -1,0 +1,156 @@
+
+#######
+# MAVEN
+#
+
+- name: jenkins-slave | Create /opt directory
+  file: path=/opt state=directory
+  become: yes
+
+- name: jenkins-slave | Download Maven 3.3.3
+  get_url: dest=/opt/maven333.tar.gz url=https://archive.apache.org/dist/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz
+  become: yes
+
+- name: jenkins-slave | Unpack Maven 3.3.3
+  action: command creates=/opt/maven333 chdir=/opt tar zxvf /opt/maven333.tar.gz
+  become: yes
+
+- name: jenkins-slave | Create Maven 3.3.3 directory link
+  file: path=/opt/maven333 src=/opt/apache-maven-3.3.3 state=link
+  become: yes
+
+- name: jenkins-slave | Create Maven 3.3.3 directory link (legacy required)
+  file: path=/usr/local/apache-maven-3.3.3 src=/opt/apache-maven-3.3.3 state=link
+  become: yes
+
+- name: jenkins-slave | Download Maven 3.2.1
+  get_url: dest=/opt/maven321.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.2.1-bin.tar.gz
+  become: yes
+
+- name: jenkins-slave | Unpack Maven 3.2.1
+  action: command creates=/opt/maven321 chdir=/opt tar zxvf /opt/maven321.tar.gz
+  become: yes
+
+- name: jenkins-slave | Create Maven 3.2.1 directory link
+  file: path=/opt/maven321 src=/opt/apache-maven-3.2.1 state=link
+  become: yes
+
+- name: jenkins-slave | Create Maven 3.2.1 directory link (legacy required)
+  file: path=/usr/local/apache-maven-3.2.1 src=/opt/apache-maven-3.2.1 state=link
+  become: yes
+
+- name: jenkins-slave | Download Maven 3.0.5
+  get_url: dest=/opt/maven305.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.0.5-bin.tar.gz
+  become: yes
+
+- name: jenkins-slave | Unpack Maven 3.0.5
+  action: command creates=/opt/maven305 chdir=/opt tar zxvf /opt/maven305.tar.gz
+  become: yes
+
+- name: jenkins-slave | Create Maven 3.0.5 directory link
+  file: path=/opt/maven305 src=/opt/apache-maven-3.0.5 state=link
+  become: yes
+
+- name: jenkins-slave | Create Maven 3.0.5 directory link (legacy required)
+  file: path=/usr/local/apache-maven-3.0.5 src=/opt/apache-maven-3.0.5 state=link
+  become: yes
+
+- name: jenkins-slave | Download Maven 3.0.4
+  get_url: dest=/opt/maven3.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.0.4-bin.tar.gz
+  become: yes
+
+- name: jenkins-slave | Unpack Maven 3.0.4
+  action: command creates=/opt/maven3 chdir=/opt tar zxvf /opt/maven3.tar.gz
+  become: yes
+
+- name: jenkins-slave | Create Maven 3.0.4 directory link
+  file: path=/opt/maven3 src=/opt/apache-maven-3.0.4 state=link
+  become: yes
+
+- name: jenkins-slave | Create Maven 3.0.4 directory link (legacy required)
+  file: path=/usr/local/apache-maven-3.0.4 src=/opt/apache-maven-3.0.4 state=link
+  become: yes
+
+- name: jenkins-slave | Download Maven 2.2.1
+  get_url: dest=/opt/maven2.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-2.2.1-bin.tar.gz
+  become: yes
+
+- name: jenkins-slave | Unpack Maven 2.2.1
+  action: command creates=/opt/maven2 chdir=/opt tar zxvf /opt/maven2.tar.gz
+  become: yes
+
+- name: jenkins-slave | Create Maven 2.2.1 directory link
+  file: path=/opt/maven2 src=/opt/apache-maven-2.2.1 state=link
+  become: yes
+
+- name: jenkins-slave | Create Maven 2.2.1 directory link (legacy required)
+  file: path=/usr/local/apache-maven-2.2.1 src=/opt/apache-maven-2.2.1 state=link
+  become: yes
+
+- name: jenkins-slave | Download Maven 2.0.9
+  get_url: dest=/opt/maven209.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-2.0.9-bin.tar.gz
+  become: yes
+
+- name: jenkins-slave | Unpack Maven 2.0.9
+  action: command creates=/opt/maven209 chdir=/opt tar zxvf /opt/maven209.tar.gz
+  become: yes
+
+- name: jenkins-slave | Create Maven 2.0.9 directory link
+  file: path=/opt/maven209 src=/opt/apache-maven-2.0.9 state=link
+  become: yes
+
+- name: jenkins-slave | Create Maven 2.0.9 directory link (legacy required)
+  file: path=/usr/local/apache-maven-2.0.9 src=/opt/apache-maven-2.0.9 state=link
+  become: yes
+
+- name: jenkins-slave | Remove Maven333 archive
+  file: path=/opt/maven333.tar.gz state=absent
+  become: yes
+
+- name: jenkins-slave | Remove Maven321 archive
+  file: path=/opt/maven321.tar.gz state=absent
+  become: yes
+
+- name: jenkins-slave | Remove Maven305 archive
+  file: path=/opt/maven305.tar.gz state=absent
+  become: yes
+
+- name: jenkins-slave | Remove Maven3 archive
+  file: path=/opt/maven3.tar.gz state=absent
+  become: yes
+
+- name: jenkins-slave | Remove Maven2 archive
+  file: path=/opt/maven2.tar.gz state=absent
+  become: yes
+
+- name: jenkins-slave | Remove Maven209 archive
+  file: path=/opt/maven209.tar.gz state=absent
+  become: yes
+
+#/opt/maven305
+- name: jenkins-slave | Set mvn link to Maven 3.3.3
+  set_fact: mvn_dir=/opt/maven333
+
+- name: jenkins-slave | Display mvn link before
+  action: command update-alternatives --display mvn
+  changed_when: false
+  become: yes
+  ignore_errors: true
+
+#TODO
+#sudo update-alternatives --remove-all mvn
+
+- name: jenkins-slave | Configure Maven alternatives
+  alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }}
+  with_items:
+  - { name: mvn, link: /usr/bin/mvn, path: "{{ mvn_dir }}/bin/mvn" }
+  when: not( (mvn_dir is undefined) or (mvn_dir is none) or (mvn_dir | trim == '') )
+  become: yes
+
+#TODO Verify the symlinks all point to the new mvn location:
+
+#ls -la /etc/alternatives/mvn*
+- name: jenkins-slave | Display mvn link after
+  action: command update-alternatives --display mvn
+  when: not( (mvn_dir is undefined) or (mvn_dir is none) or (mvn_dir | trim == '') )
+  become: yes

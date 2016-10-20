@@ -1,0 +1,103 @@
+
+##
+ # C++
+ #
+- name: cpp | Install C++ compiler (Debian based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  become: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+#   - gcc-5
+#   - g++-5
+#   - gcc-4.9
+#   - g++-4.9
+   - gcc-4.8
+   - g++-4.8
+   - gcc-4.7
+   - g++-4.7
+   - gcc-4.6
+   - g++-4.6
+
+#SEE https://www.vultr.com/docs/how-to-install-gcc-on-centos-6
+- name: cpp | Install C++ compiler (RedHat based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  become: yes
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  with_items:
+   - gcc
+   - gcc-c++
+#TODO add all required versions
+#   - compat-libstdc++-33
+#   - glibc-devel.i386
+#   - glibc-devel
+
+- name: cpp | Set cpp link to gcc
+  set_fact: cpp_dir=/usr/bin/
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: cpp | Set cpp link to gcc version
+  set_fact: cpp_version=4.8
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+#- name: cpp | Set cpp link to gcc version
+#  set_fact: cpp_version=4.4.7
+#  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: cpp | Display cpp link before
+  action: command update-alternatives --display gcc
+  changed_when: false
+  become: yes
+  ignore_errors: true
+
+#sudo update-alternatives --remove-all gcc
+#sudo update-alternatives --remove-all cpp
+#sudo update-alternatives --remove-all g++
+
+#TODO : Waiting ansible 2.2 to manage priority https://docs.ansible.com/ansible/alternatives_module.html
+- name: cpp | Configure cpp alternatives
+  alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }}
+  with_items:
+  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-{{ cpp_version }}" }
+  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-{{ cpp_version }}" }
+  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-{{ cpp_version }}" }
+#  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-4.8" }
+#  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-4.8" }
+#  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-4.8" }
+  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-4.7" }
+  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-4.7" }
+  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-4.7" }
+  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-4.6" }
+  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-4.6" }
+  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-4.6" }
+  when: not( (cpp_dir is undefined) or (cpp_dir is none) or (cpp_dir | trim == '') )
+        and
+        not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )
+  become: yes
+
+#sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 40 --slave /usr/bin/gcc gcc /usr/bin/gcc-4.9
+#sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.9 40 --slave /usr/bin/cpp cpp /usr/bin/cpp-4.9
+#sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 40 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
+
+#sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 30 --slave /usr/bin/gcc gcc /usr/bin/gcc-4.8
+#sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.8 30 --slave /usr/bin/cpp cpp /usr/bin/cpp-4.8
+#sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 30 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
+
+#sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 20 --slave /usr/bin/gcc gcc /usr/bin/gcc-4.7
+#sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.7 20 --slave /usr/bin/cpp cpp /usr/bin/cpp-4.7
+#sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.7 20 --slave /usr/bin/g++ g++ /usr/bin/g++-4.7
+
+#sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 10 --slave /usr/bin/gcc gcc /usr/bin/gcc-4.6
+#sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.6 10 --slave /usr/bin/cpp cpp /usr/bin/cpp-4.6
+#sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.6 10 --slave /usr/bin/g++ g++ /usr/bin/g++-4.6
+
+#sudo update-alternatives --config gcc
+#sudo update-alternatives --config cpp
+#sudo update-alternatives --config g++
+
+#ls -la /etc/alternatives/gcc*
+- name: cpp | Display cpp link after
+  action: command update-alternatives --display gcc
+  when: not( (cpp_dir is undefined) or (cpp_dir is none) or (cpp_dir | trim == '') )
+        and
+        not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )
+  become: yes

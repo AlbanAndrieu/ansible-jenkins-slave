@@ -1,22 +1,24 @@
 ---
-dependencies:
-  - { role: alban.andrieu.common }
+dependencies: []
+#  - { role: alban.andrieu.common }
+#  - { role: geerlingguy.git }
+#  - { role: alban.andrieu.cpp }
+#  - { role: alban.andrieu.xvbf }
+#  - { role: alban.andrieu.selenium }
+#  - { role: maven }
+#  - { role: chrome }
+#  - { role: alban.andrieu.tomcat }
+#  - { role: alban.andrieu.jboss }
   #- { role: alban.andrieu.hostname }
   #- { role: geerlingguy.ntp }
   #- { role: locale }
   #- { role: alban.andrieu.subversion }
-  - { role: geerlingguy.git }
-  - { role: alban.andrieu.cpp }
-  - { role: alban.andrieu.xvbf }
-  - { role: alban.andrieu.selenium }
-  - { role: maven }
-  #- { role: java }
-  - { role: chrome }
   #- { role: python }
   #- { role: security }
   #- { role: nodejs }
-  - { role: alban.andrieu.tomcat }
-  - { role: alban.andrieu.jboss }
+  #- { role: python }
+  #- { role: security }
+  #- { role: nodejs }
 
 galaxy_info:
   author: Alban Andrieu

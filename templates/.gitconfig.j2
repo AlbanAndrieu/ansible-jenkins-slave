@@ -13,24 +13,24 @@
 {% if machine.shell_git_editor is defined %}
 	editor = {{ machine.shell_git_editor }}
 {% endif %}
-[credential]
-	helper = cache --timeout=86400
-[alias]
-	co = checkout
-	br = branch
-	ci = commit
-	st = status
-	pl = pull —rebase
-	di = diff --ignore-space-at-eol -b -w
-	lo = log --graph
-	unstage = reset HEAD --
-	last = log -1 HEAD
-[help]
-	autocorrect = 1
-[color]
-	ui = auto
-[branch "master"]
-	rebase = true
-[branch]
-	autosetuprebase = always
+#[credential]
+#	helper = cache --timeout=86400
+#[alias]
+#	co = checkout
+#	br = branch
+#	ci = commit
+#	st = status
+#	pl = pull —rebase
+#	di = diff --ignore-space-at-eol -b -w
+#	lo = log --graph
+#	unstage = reset HEAD --
+#	last = log -1 HEAD
+#[help]
+#	autocorrect = 1
+#[color]
+#	ui = auto
+#[branch "master"]
+#	rebase = true
+#[branch]
+#	autosetuprebase = always
 {% endfor %}

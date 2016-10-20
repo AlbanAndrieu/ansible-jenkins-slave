@@ -1,0 +1,30 @@
+
+##
+ # Perl
+ #
+- name: jenkins-slave | Install tools needed by cpp generator (Debian based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+   - libwww-perl
+   - libxml-dom-perl
+   - libfile-find-rule-perl
+   - libjson-perl
+   - libdate-calc-perl
+   - libdate-manip-perl
+   - libcrypt-ssleay-perl
+   - libxml-handler-yawriter-perl
+   - libxml-simple-perl
+#   - build-essential # do we need it?
+  become: yes
+
+- name: jenkins-slave | Install tools needed by cpp generator (RedHat based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  become: yes
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  with_items:
+   - perl-libwww-perl
+   - perl-XML-DOM-XPath
+   - perl-XML-Simple
+   - perl-File-Copy-Recursive
+   - perl-File-Find-Rule

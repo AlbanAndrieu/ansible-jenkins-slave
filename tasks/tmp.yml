@@ -1,0 +1,30 @@
+
+#TODO
+#http://www.thegeekstuff.com/2013/10/tmpreaper-examples/
+- name: jenkins-slave | Install tmpreaper package
+  action: "{{ ansible_pkg_mgr}} name='tmpreaper' state={{ jenkins_pkg_state|default('present') }}"
+#TODO install epel repo first
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or epel_repo_enabled
+  become: yes
+
+#it adds itself to /etc/cron.daily
+#but you need to configure it (comment out or remove one line in /etc/tmpreaper.conf #SHOWWARNING=true
+- name: jenkins-slave | Enable tmpreaper package
+  lineinfile: dest=/etc/tmpreaper.conf line='SHOWWARNING=true' regexp='^#SHOWWARNING=true'
+#TODO install epel repo first
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or epel_repo_enabled
+  become: yes
+  changed_when: false
+
+- name: jenkins-slave | Add sanitary job in cron
+  cron: name="tmp cleanup" hour="1" minute="0" job="find /tmp -user {{ jenkins_user }} -atime +7 -exec rm -rf {} +" user={{ jenkins_user }}
+  become: yes
+  tags: cron
+#sudo service cron restart
+
+#Fix jetty filling tmp
+- name: jenkins-slave | Add JAVA_OPTS in /etc/profile
+  lineinfile: dest=/etc/profile line="export JAVA_OPTS=-Djava.io.tmpdir=$WORKSPACE/target/tmp" insertafter=EOF
+#or ~.bash_profile
+  become: yes
+  changed_when: false

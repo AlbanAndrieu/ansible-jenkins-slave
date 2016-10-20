@@ -1,3 +1,45 @@
+---
+dependencies:
+  - { role: alban.andrieu.common }
+  #- { role: alban.andrieu.hostname }
+  #- { role: geerlingguy.ntp }
+  #- { role: locale }
+  #- { role: alban.andrieu.subversion }
+  - { role: geerlingguy.git }
+  - { role: alban.andrieu.cpp }
+  - { role: alban.andrieu.xvbf }
+  - { role: alban.andrieu.selenium }
+  - { role: maven }
+  #- { role: java }
+  - { role: chrome }
+  #- { role: python }
+  #- { role: security }
+  #- { role: nodejs }
+  - { role: alban.andrieu.tomcat }
+  - { role: alban.andrieu.jboss }
+
+galaxy_info:
+  author: Alban Andrieu
+  description: A role for installing jenkins-slave
+  company: Nabla
+  license: GPLv3
+  min_ansible_version: 1.6.3
+  platforms:
+  - name: Ubuntu
+    versions:
+    - all
+    - lucid
+    - maverick
+    - natty
+    - oneiric
+    - precise
+    - quantal
+    - raring
+    - saucy
+    - trusty
+  categories:
+  - development
+  - jenkins
 
 ansigenome_info:
   galaxy_id: '1998'

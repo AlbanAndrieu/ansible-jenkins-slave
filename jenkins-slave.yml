@@ -10,7 +10,7 @@
 
 #- name: Install git
 #  hosts: all
-#  sudo: true    
+#  become: true
 #  remote_user: root
 ##  connection: local
 #
@@ -29,7 +29,7 @@
 #      user: root
 #      home: /root
 #      subversion_owner_home: "/root/.subversion"
-#      subversion_previous_enabled: true   
+#      subversion_previous_enabled: true
 #      subversion_previous_codename: precise
 #      subversion_rabbitvcs_enabled: no
 #      subversion_diff_enabled: no
@@ -38,14 +38,14 @@
 #      subversion_revision : '17'
 #      subversion_version : "{{subversion_major}}.{{subversion_minor}}.{{subversion_revision}}"
 #      subversion_ubuntu: '{{ subversion_version }}dfsg-3ubuntu3'
-      
+
 - hosts: all
-  sudo: true  
+  become: true
   remote_user: root
-  
+
 #  vars_files:
 #  - [ "vars/{{ ansible_distribution }}-{{ ansible_architecture }}.yml", "vars/{{ ansible_distribution }}.yml" ]
-    
+
   roles:
     - { role: ./,
         docker_files_enable: no,
@@ -63,12 +63,3 @@
         subversion_version : "{{subversion_major}}.{{subversion_minor}}.{{subversion_revision}}",
         subversion_ubuntu: '{{ subversion_version }}dfsg-3ubuntu3',
       }
-
-#- name: Install xvbf
-#  hosts: all
-#  sudo: true    
-#  remote_user: root
-##  connection: local
-#
-#  roles:
-#    - alban.andrieu.xvbf

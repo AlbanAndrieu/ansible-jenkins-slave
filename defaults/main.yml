@@ -15,8 +15,8 @@ jenkins_home: /var/lib/jenkins              # Jenkins home location
 jenkins_slave_home: "{{ jenkins_home }}"
 jenkins_slave_directory: "{{ jenkins_slave_home }}/jenkins-slave"
 
-jenkins_jdk7_enable: yes
-jenkins_jdk8_enable: yes
+jenkins_jdk7_enable: no
+jenkins_jdk8_enable: no
 jdk_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
 jdk_owner: "root"
 jdk_group: "{{ jdk_owner }}"
@@ -62,7 +62,7 @@ shell_git: []
   # Additional properties: 'shell_git_machine, shell_git_login, shell_git_email, shell_git_password, shell_git_name, shell_git_path, shell_git_ssl, shell_git_meld_enabled, shell_git_editor'
   # - shell_git_machine: 'localhost',
   #   shell_git_login: 'jenkins',
-  #   shell_git_email: 'jenkins@localhost',
+  #   shell_git_email: 'jenkins@localhost.com',
   #   shell_git_password: 'todo',
   #   # Optional.
   #   shell_git_name: '{{ shell_git_login }}',
@@ -71,7 +71,13 @@ shell_git: []
   #   shell_git_meld_enabled: yes,
   #   shell_git_editor: "gedit",
 
-proxy_repo_server: localhost
+nodejs_version: "6.4.0"
+nodejs_enabled: true
+epel_repo_enabled: false
+
+proxy_repo_enabled: false
+proxy_repo_server: "localhost"
+proxy_repo_url: "http://{{ proxy_repo_server }}:3142"
 
 docker_files_generated_directory: "./"
 docker_files_enable: no

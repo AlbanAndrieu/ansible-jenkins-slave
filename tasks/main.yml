@@ -9,25 +9,10 @@
 - name: Include OS-specific variables.
   include_vars: "{{ ansible_distribution }}-{{ ansible_architecture }}.yml"
 
-- name: jenkins-slave | Install wget package
-  action: "{{ ansible_pkg_mgr}} name='wget' state={{ jenkins_pkg_state|default('present') }}"
+- name: jenkins-slave | Update the apt cache (in case of issue)
+  action: apt update-cache=yes
   become: yes
-
-######
-# JAVA
-#
-
-#- name: jenkins-slave | Install JDK
-#  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-#  tags: package
-#  with_items:
-#   - openjdk-6-jdk
-#   - openjdk-7-jdk
-
-#sudo add-apt-repository ppa:webupd8team/java
-#sudo apt-get update
-#sudo apt-get install oracle-java7-installer
-#sudo apt-get install oracle-java8-installer
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 
 - name: jenkins-slave | Create temporary directory
   shell: mktemp -d
@@ -37,248 +22,9 @@
   tags:
     - jenkins-slave
 
-- name: jdk7 | Create {{ jvm_folder }} directory
-  file: path={{ jvm_folder }} state=directory
-  tags: jdk_setup
+#- include: java.yml
 
-- name: jdk7 | Copy download JDK7 script
-  copy: src=download-jdk7.sh dest={{ jdk_dir_tmp }} mode=0555
-  when: jenkins_jdk7_enable
-  tags: jdk_setup
-
-- name: jdk7 | Download JDK7 (Ubuntu)
-  action: command creates={{ jvm_folder }}/{{ jdk7_archive_extracted }} chdir={{ jvm_folder }} {{ jdk_dir_tmp }}/download-jdk7.sh {{ jdk7_url }} {{ jdk7_archive }}
-  become: yes
-  register: jdk7_download
-  when: jenkins_jdk7_enable
-  tags: jdk_setup
-
-- name: jdk7 | Unpack JDK7
-  action: command creates={{ jvm_folder }}/{{ jdk7_archive_extracted }} chdir={{ jvm_folder }} tar zxvf {{ jvm_folder }}/{{ jdk7_archive }} --owner=root
-  register: jdk7_installed
-#  ignore_errors: true
-  become: yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jdk7_download.changed and jenkins_jdk7_enable
-  tags: jdk_setup
-
-- name: jdk7 | Install JDK7 RPM package
-  action: command creates={{ jvm_folder }}/{{ jdk7_archive_extracted }} chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk7_archive }}
-  register: jdk7_installed
-#  ignore_errors: true
-  become: yes
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and jdk7_download.changed and jenkins_jdk7_enable
-  tags: jdk_setup
-
-- name: jdk7 | Change archive jdk ownership
-  file: path={{jvm_folder}}/{{jdk7_archive_extracted}} owner={{jdk_owner}} group={{jdk_group}} state=directory recurse=yes
-  when: jdk7_download.changed and jenkins_jdk7_enable
-  tags: jdk_setup
-
-- name: jdk7 | Stat {{jvm_folder}}/{{jdk7_archive_extracted}}
-  stat: path={{jvm_folder}}/{{jdk7_archive_extracted}}
-  register: jdk7_archive_extracted_present
-  tags: jdk_setup
-
-- debug: msg=" jdk7 | Path exists and is a directory"
-  when: jdk7_archive_extracted_present.stat.isdir is defined and jdk7_archive_extracted_present.stat.isdir == true
-  tags: jdk_setup
-
-- fail: msg=" jdk7 | Whoops! file ownership has changed"
-  when: jenkins_jdk7_enable and jdk7_archive_extracted_present.stat.pw_name != '{{jdk_owner}}'
-  tags: jdk_setup
-
-#- debug: msg="jdk7_installed value is {{ jdk7_installed.stdout }} "
-
-- debug: msg=" jdk7 | jdk7_installed value is {{ jdk7_installed }} {{ jdk7_installed.skipped }} {{ jdk7_installed.changed }}"
-  when: jenkins_jdk7_enable
-  tags: jdk_setup
-
-- include: jdk7-tasks.yml
-  when: jenkins_jdk7_enable
-  tags: jdk_setup
-
-- name: jdk8 | Copy download JDK8 script
-  copy: src=download-jdk8.sh dest={{ jdk_dir_tmp }} mode=0555
-  when: jenkins_jdk8_enable
-  tags: jdk_setup
-
-- name: jdk8 | Download JDK8 (Ubuntu)
-  action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} {{ jdk_dir_tmp }}/download-jdk8.sh {{ jdk8_url }} {{ jdk8_archive }}
-  become: yes
-  register: jdk8_download
-  when: jenkins_jdk8_enable
-  tags: jdk_setup
-
-- name: jdk8 | Unpack JDK8
-  action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} tar zxvf {{jvm_folder}}/{{ jdk8_archive }} --owner=root
-  register: jdk8_installed
-#  ignore_errors: true
-  become: yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jdk8_download.changed and jenkins_jdk8_enable
-  tags: jdk_setup
-
-- name: jdk8 | Install JDK8 RPM package
-  action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk8_archive }}
-  register: jdk8_installed
-#  ignore_errors: true
-  become: yes
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and jdk8_download.changed and jenkins_jdk8_enable
-  tags: jdk_setup
-
-- name: jdk8 | Change archive jdk ownership
-  file: path={{jvm_folder}}/{{jdk8_archive_extracted}} owner={{jdk_owner}} group={{jdk_group}} state=directory recurse=yes
-  when: jdk8_download.changed and jenkins_jdk8_enable
-  tags: jdk_setup
-
-- name: jdk8 | Stat {{jvm_folder}}/{{jdk8_archive_extracted}}
-  stat: path={{jvm_folder}}/{{jdk8_archive_extracted}}
-  register: jdk8_archive_extracted_present
-  tags: jdk_setup
-
-- debug: msg=" jdk8 | Path exists and is a directory"
-  when: jdk8_archive_extracted_present.stat.isdir is defined and jdk8_archive_extracted_present.stat.isdir == true
-  tags: jdk_setup
-
-- fail: msg=" jdk8 | Whoops! file ownership has changed"
-  when: jenkins_jdk8_enable and jdk8_archive_extracted_present.stat.pw_name != '{{jdk_owner}}'
-  tags: jdk_setup
-
-#- debug: msg=" jenkins-slave | jdk8_installed value is {{ jdk8_installed.stdout }} "
-
-- debug: msg=" jenkins-slave | jdk8_installed value is {{ jdk8_installed }} {{ jdk8_installed.skipped }} {{ jdk8_installed.changed }}"
-  when: jenkins_jdk8_enable
-  tags: jdk_setup
-
-- include: jdk8-tasks.yml
-  when: jenkins_jdk8_enable
-  tags: jdk_setup
-
-#######
-# MAVEN
-#
-- name: jenkins-slave | Create /opt directory
-  file: path=/opt state=directory
-  become: yes
-
-- name: jenkins-slave | Download Maven 3.3.3
-  get_url: dest=/opt/maven333.tar.gz url=https://archive.apache.org/dist/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz
-  become: yes
-
-- name: jenkins-slave | Unpack Maven 3.3.3
-  action: command creates=/opt/maven333 chdir=/opt tar zxvf /opt/maven333.tar.gz
-  become: yes
-
-- name: jenkins-slave | Create Maven 3.3.3 directory link
-  file: path=/opt/maven333 src=/opt/apache-maven-3.3.3 state=link
-  become: yes
-
-- name: jenkins-slave | Create Maven 3.3.3 directory link (legacy required)
-  file: path=/usr/local/apache-maven-3.3.3 src=/opt/apache-maven-3.3.3 state=link
-  become: yes
-
-- name: jenkins-slave | Download Maven 3.2.1
-  get_url: dest=/opt/maven321.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.2.1-bin.tar.gz
-  become: yes
-
-- name: jenkins-slave | Unpack Maven 3.2.1
-  action: command creates=/opt/maven321 chdir=/opt tar zxvf /opt/maven321.tar.gz
-  become: yes
-
-- name: jenkins-slave | Create Maven 3.2.1 directory link
-  file: path=/opt/maven321 src=/opt/apache-maven-3.2.1 state=link
-  become: yes
-
-- name: jenkins-slave | Create Maven 3.2.1 directory link (legacy required)
-  file: path=/usr/local/apache-maven-3.2.1 src=/opt/apache-maven-3.2.1 state=link
-  become: yes
-
-#- name: jenkins-slave | Download Maven 3.0.5
-#  get_url: dest=/opt/maven305.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.0.5-bin.tar.gz
-#  become: yes
-
-#- name: jenkins-slave | Unpack Maven 3.0.5
-#  action: command creates=/opt/maven305 chdir=/opt tar zxvf /opt/maven305.tar.gz
-#  become: yes
-
-#- name: jenkins-slave | Create Maven 3.0.5 directory link
-#  file: path=/opt/maven305 src=/opt/apache-maven-3.0.5 state=link
-#  become: yes
-
-#- name: jenkins-slave | Create Maven 3.0.5 directory link (legacy required)
-#  file: path=/usr/local/apache-maven-3.0.5 src=/opt/apache-maven-3.0.5 state=link
-#  become: yes
-
-#- name: jenkins-slave | Download Maven 3.0.4
-#  get_url: dest=/opt/maven3.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-3.0.4-bin.tar.gz
-#  become: yes
-
-#- name: jenkins-slave | Unpack Maven 3.0.4
-#  action: command creates=/opt/maven3 chdir=/opt tar zxvf /opt/maven3.tar.gz
-#  become: yes
-
-#- name: jenkins-slave | Create Maven 3.0.4 directory link
-#  file: path=/opt/maven3 src=/opt/apache-maven-3.0.4 state=link
-#  become: yes
-
-#- name: jenkins-slave | Create Maven 3.0.4 directory link (legacy required)
-#  file: path=/usr/local/apache-maven-3.0.4 src=/opt/apache-maven-3.0.4 state=link
-#  become: yes
-
-#- name: jenkins-slave | Download Maven 2.2.1
-#  get_url: dest=/opt/maven2.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-2.2.1-bin.tar.gz
-#  become: yes
-
-#- name: jenkins-slave | Unpack Maven 2.2.1
-#  action: command creates=/opt/maven2 chdir=/opt tar zxvf /opt/maven2.tar.gz
-#  become: yes
-
-#- name: jenkins-slave | Create Maven 2.2.1 directory link
-#  file: path=/opt/maven2 src=/opt/apache-maven-2.2.1 state=link
-#  become: yes
-
-#- name: jenkins-slave | Create Maven 2.2.1 directory link (legacy required)
-#  file: path=/usr/local/apache-maven-2.2.1 src=/opt/apache-maven-2.2.1 state=link
-#  become: yes
-
-#- name: jenkins-slave | Download Maven 2.0.9
-#  get_url: dest=/opt/maven209.tar.gz url=http://archive.apache.org/dist/maven/binaries/apache-maven-2.0.9-bin.tar.gz
-#  become: yes
-
-#- name: jenkins-slave | Unpack Maven 2.0.9
-#  action: command creates=/opt/maven209 chdir=/opt tar zxvf /opt/maven209.tar.gz
-#  become: yes
-
-#- name: jenkins-slave | Create Maven 2.0.9 directory link
-#  file: path=/opt/maven209 src=/opt/apache-maven-2.0.9 state=link
-#  become: yes
-
-#- name: jenkins-slave | Create Maven 2.0.9 directory link (legacy required)
-#  file: path=/usr/local/apache-maven-2.0.9 src=/opt/apache-maven-2.0.9 state=link
-#  become: yes
-
-- name: jenkins-slave | Remove Maven333 archive
-  file: path=/opt/maven333.tar.gz state=absent
-  become: yes
-
-- name: jenkins-slave | Remove Maven321 archive
-  file: path=/opt/maven321.tar.gz state=absent
-  become: yes
-
-- name: jenkins-slave | Remove Maven305 archive
-  file: path=/opt/maven305.tar.gz state=absent
-  become: yes
-
-- name: jenkins-slave | Remove Maven3 archive
-  file: path=/opt/maven3.tar.gz state=absent
-  become: yes
-
-- name: jenkins-slave | Remove Maven2 archive
-  file: path=/opt/maven2.tar.gz state=absent
-  become: yes
-
-- name: jenkins-slave | Remove Maven209 archive
-  file: path=/opt/maven209.tar.gz state=absent
-  become: yes
+#- include: maven.yml
 
 ##
  # subversion
@@ -304,7 +50,8 @@
  #
 - name: jenkins-slave | Install coverage and metrics tools
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+#TODO install epel repo first for RedHat
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or epel_repo_enabled
   with_items:
    - lcov
    - graphviz
@@ -328,59 +75,32 @@
    - libexslt
   become: yes
 
-- name: jenkins-slave | Install Ansible syntax check
-  pip: name={{ item }}
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  with_items:
-    - ansible-lint
+#TODO first install pip on RedHat and Ubuntu
+#- name: jenkins-slave | Install Ansible syntax check (Debian based)
+#  pip: name={{ item }}
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+#  with_items:
+#    - ansible-lint
+#  become: yes
+
+- name: jenkins-slave | Install Ansible syntax check (RedHat based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   become: yes
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and epel_repo_enabled
+  with_items:
+   - ansible-lint
 
 - name: jenkins-slave | Install security basic tools for Ansible check
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+#TODO install epel repo first for RedHat
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and epel_repo_enabled
   with_items:
     - chkrootkit
   become: yes
 
-##
- # C++
- #
+#- include: gcc.yml
 
-- name: jenkins-slave | Install CPP build tools
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  tags: package
-  with_items:
-   - scons
-  become: yes
-
-##
- # Perl
- #
-- name: jenkins-slave | Install tools needed by cpp generator (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-  with_items:
-   - libwww-perl
-   - libxml-dom-perl
-   - libfile-find-rule-perl
-   - libjson-perl
-   - libdate-calc-perl
-   - libdate-manip-perl
-   - libcrypt-ssleay-perl
-   - libxml-handler-yawriter-perl
-   - libxml-simple-perl
-  become: yes
-
-- name: jenkins-slave | Install tools needed by cpp generator (RedHat based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  become: yes
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
-  with_items:
-   - perl-libwww-perl
-   - perl-XML-DOM-XPath
-   - perl-XML-Simple
-   - perl-File-Copy-Recursive
-   - perl-File-Find-Rule
+- include: perl.yml
 
 ##
  # Jenkins user
@@ -451,6 +171,10 @@
 ##  become_method: '{{ jenkins_become_method }}'
 #  changed_when: false
 #  tags: git
+
+#TODO
+#git config --global maven-scm.maildomain misys.com
+#git config --global maven-scm.forceUsername true
 
 - name: jenkins-slave | Copy the deploy-log-parsing-rules for jenkins log parsing configuration
   copy: src=deploy-log-parsing-rules dest={{ jenkins_home }}/deploy-log-parsing-rules backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
@@ -534,6 +258,8 @@
 #- name: jenkins-slave | Ensure npm settings
 #  command: chdir=/usr/bin npm config set registry {{ nexus_npm_url }}
 
+#- include: nodejs.yml
+
 - name: jenkins-slave | Copy the .npmrc script
   template: src=.npmrc.j2 dest={{ jenkins_home }}/.npmrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   changed_when: false
@@ -541,6 +267,8 @@
 - name: jenkins-slave | Copy the .bowerrc script
   template: src=.bowerrc.j2 dest={{ jenkins_home }}/.bowerrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   changed_when: false
+
+- include: tmp.yml
 
 - name: workstation | Install requirement for phantomas
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
@@ -575,10 +303,10 @@
 
 #TODO add JAVA_HOME
 
-- name: jenkins-slave | Add options in /etc/bashrc
+- name: jenkins-slave | Add options in ~/.bashrc
 #    regexp: "{{ item.regexp }}"
   lineinfile:
-    dest: /etc/bashrc
+    dest: ~/.bashrc
     line: "{{ item.line }}"
     insertafter: EOF
   with_items:
@@ -606,96 +334,6 @@
   file: path={{ jenkins_slave_home }}/jdk1.7 src={{ jvm_folder }}/{{ jdk7_archive_extracted }} state=link
   when: jenkins_jdk7_enable
   become: yes
-
-#END OF TODO extract jenkins user to another script
-
-
-#Setting Java environment variables
-#sudo apt-get install oracle-java8-set-default
-
-#Switching between Oracle Java 8 and Java 7
-#sudo update-java-alternatives -s java-7-oracle
-#sudo update-java-alternatives -s java-8-oracle
-
-- name: jenkins-slave | Set mvn link to Java 7
-  set_fact: jdk_dir={{ jvm_folder }}/{{ jdk7_archive_extracted }}
-  when: "jdk7_installed.changed == 'True'"
-
-- name: jenkins-slave | Set mvn link to Java 8
-  set_fact: jdk_dir={{ jvm_folder }}/{{ jdk8_archive_extracted }}
-  when: "jdk8_installed.changed == 'True'"
-
-- name: jenkins-slave | Display java link before
-  action: command update-alternatives --display java
-  changed_when: false
-  become: yes
-  ignore_errors: true
-
-#TODO
-#sudo update-alternatives --remove-all java
-
-#sudo update-alternatives --remove java /usr/lib/jvm/{{ jdk7_archive_extracted }}/bin/java
-#sudo update-alternatives --remove java /usr/lib/jvm/java-6-openjdk-amd64/jre/bin/java
-#sudo update-alternatives --remove java /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
-
-- name: jenkins-slave | Configure Java alternatives
-  alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }}
-  with_items:
-  - { name: jar, link: /usr/bin/jar, path: "{{ jdk_dir }}/bin/jar" }
-  - { name: jps, link: /usr/bin/jps, path: "{{ jdk_dir }}/bin/jps" }
-  - { name: java, link: /usr/bin/java, path: "{{ jdk_dir }}/bin/java" }
-  - { name: jmap, link: /usr/bin/jmap, path: "{{ jdk_dir }}/bin/jmap" }
-  - { name: javac, link: /usr/bin/javac, path: "{{ jdk_dir }}/bin/javac" }
-  - { name: javaws, link: /usr/bin/javaws, path: "{{ jdk_dir }}/bin/javaws" }
-  - { name: jstack, link: /usr/bin/jstack, path: "{{ jdk_dir }}/bin/jstack" }
-  - { name: javadoc, link: /usr/bin/javadoc, path: "{{ jdk_dir }}/bin/javadoc" }
-  - { name: javafxpackager, link: /usr/bin/javafxpackager, path: "{{ jdk_dir }}/bin/javafxpackager" }
-  - { name: javah, link: /usr/bin/javah, path: "{{ jdk_dir }}/bin/javah" }
-  - { name: javap, link: /usr/bin/javap, path: "{{ jdk_dir }}/bin/javap" }
-  - { name: java_vm, link: /usr/bin/java_vm, path: "{{ jdk_dir }}/bin/java_vm" }
-  - { name: jvisualvm, link: /usr/bin/jvisualvm, path: "{{ jdk_dir }}/bin/jvisualvm" }
-  when: not( (jdk_dir is undefined) or (jdk_dir is none) or (jdk_dir | trim == '') )
-  become: yes
-
-#TODO Verify the symlinks all point to the new java location:
-
-#ls -la /etc/alternatives/java*
-- name: jenkins-slave | Display java link after
-  action: command update-alternatives --display java
-  when: not( (jdk_dir is undefined) or (jdk_dir is none) or (jdk_dir | trim == '') )
-  become: yes
-
-#------------------------------
-
-#/opt/maven305
-- name: jenkins-slave | Set mvn link to Maven 3.3.3
-  set_fact: mvn_dir=/opt/maven333
-
-- name: jenkins-slave | Display mvn link before
-  action: command update-alternatives --display mvn
-  changed_when: false
-  become: yes
-  ignore_errors: true
-
-#TODO
-#sudo update-alternatives --remove-all mvn
-
-- name: jenkins-slave | Configure Maven alternatives
-  alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }}
-  with_items:
-  - { name: mvn, link: /usr/bin/mvn, path: "{{ mvn_dir }}/bin/mvn" }
-  when: not( (mvn_dir is undefined) or (mvn_dir is none) or (mvn_dir | trim == '') )
-  become: yes
-
-#TODO Verify the symlinks all point to the new mvn location:
-
-#ls -la /etc/alternatives/mvn*
-- name: jenkins-slave | Display mvn link after
-  action: command update-alternatives --display mvn
-  when: not( (mvn_dir is undefined) or (mvn_dir is none) or (mvn_dir | trim == '') )
-  become: yes
-
-#------------------------------
 
 #- name: jenkins-slave | Clone the application
 #  action: git repo=https://github.com/AlbanAndrieu/nabla.git dest=/jenkins/nabla
