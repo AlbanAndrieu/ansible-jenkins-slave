@@ -1,0 +1,311 @@
+<STYLE>
+BODY, TABLE, TD, TH, P {
+  font-family:Verdana,Helvetica,sans serif;
+  font-size:11px;
+  color:black;
+}
+h1 { color:black; }
+h2 { color:black; }
+h3 { color:black; }
+TD.bg1 { color:white; background-color:#0000C0; font-size:120% }
+TD.bg2 { color:white; background-color:#4040FF; font-size:110% }
+TD.bg3 { color:white; background-color:#8080FF; }
+TD.test_passed { color:blue; }
+TD.test_failed { color:red; }
+TD.console { font-family:Courier New; }
+</STYLE>
+<BODY>
+
+<div class="round_border">
+<TABLE>
+  <TR><TD align="right"><IMG SRC="${rooturl}static/e59dfe28/images/32x32/<%= build.result.toString() == 'SUCCESS' ? "blue.gif" : build.result.toString() == 'FAILURE' ? 'red.gif' : 'yellow.gif' %>" />
+  </TD><TD valign="center"><B style="font-size: 200%;">BUILD ${build.result}</B></TD></TR>
+  <TR><TD>URL</TD><TD><A href="${rooturl}${build.url}">${rooturl}${build.url}</A></TD></TR>
+  <TR><TD>Project:</TD><TD>${project.name}</TD></TR>
+  <TR><TD>Date:</TD><TD>${it.timestampString}</TD></TR>
+  <TR><TD>Duration:</TD><TD>${build.durationString}</TD></TR>
+  <TR><TD>Cause:</TD><TD><% build.causes.each() { cause -> %> ${cause.shortDescription} <%  } %></TD></TR>
+</TABLE>
+<BR/>
+</div>
+
+<BR/>
+Hi
+<BR/>
+<BR/>
+Project ${build.getEnvironment(listener).get('RELEASE_VERSION')} cut on develop is available.<BR/>
+All the cut details can be find here:
+<A href="${rooturl}${build.url}">Cut</A>
+<A href="${rooturl}${build.url}/downstreambuildview/">Downstream</A>
+Tag are available on <A href="https://stash/projects/PRJ">Stash</A>
+<BR/>
+<BR/>
+<pre>
+<B>NEXT RELEASE SCHEDULE:</B>
+    Next cut will happen next Friday. Jobs will be disabled around midday and release process will start around 3 p.m
+    Dates of new releases you can find here:
+    <a href="http://jira/secure/Dashboard.jspa?selectPageId=38202">Project Release Calendar</a>
+<BR/>
+</pre>
+<pre>
+<!-- INSTALLER -->
+<%
+threshold = Result.SUCCESS
+
+void aggregate_results() {
+    failed = false
+
+    mainJob = build.getProject().getName()
+    job = hudson.model.Hudson.instance.getItem(mainJob)
+
+    //${project.name}
+    //#${build.getNumber()} - ${build.getResult()}
+
+    job.getLastBuild().getSubBuilds().each { subBuild->
+      subJob = subBuild.getJobName()
+      subJobNumber = subBuild.getBuildNumber()
+      job = hudson.model.Hudson.instance.getItem(subBuild.getJobName())
+
+      if( subJob.equals("FR_DEV_PACKAGE-INSTALLER") ) {
+%><i>Project installer can be find here:</i>
+<ul><li><a href="${rooturl}job/${subJob}/ARCH=sun4sol,PRODUCTS=standard,label=kgrdb01/${subJobNumber}/">sun4sol</a></li>
+<li><a href="${rooturl}job/${subJob}/ARCH=x86sol,PRODUCTS=standard,label=kgrdb01/${subJobNumber}/">x86sol</a></li>
+<li><a href="${rooturl}job/${subJob}/ARCH=x86Linux,PRODUCTS=standard,label=kgrdb01/${subJobNumber}/">x86Linux</a></li>
+<li><a href="${rooturl}job/${subJob}/ARCH=winnt,PRODUCTS=standard,label=kgrdb01/${subJobNumber}/">winnt</a></li>
+</ul><%
+      }
+
+      if( subJob.equals("FR_DEV_PACKAGE-PRICER_INSTALLER")) {
+%><i>Project pricer installer can be find here:</i>
+<ul><li><a href="${rooturl}job/${subJob}/${subJobNumber}/">pricer</a></li>
+</ul><%
+      }
+
+      //${job.getBuildByNumber(subJobNumber).getResult()} --
+      //${job} ${job.getLastCompletedBuild().getResult()}
+
+      //${job.getLastCompletedBuild().getLog()}
+
+      //println subBuild
+      //dePhaseJob = hudson.model.Hudson.instance.getItem(subBuild.getJobName())
+      //dePhaseJobBuild = dePhaseJob.getBuildByNumber(subBuild.getBuildNumber())
+      //${dePhaseJobBuild.number}
+      //dePhaseJobBuild.getSubBuilds().each { childSubBuild ->
+      //for (SubBuild childSubBuild : dePhaseJobBuild.getSubBuilds()) {
+        try {
+
+            //if (childSubBuild == null)
+            //childSubBuild = new CopyOnWriteArrayList<SubBuild>();
+
+            //${childSubBuild.jobName}
+            //job = hudson.model.Hudson.instance.getItem(childSubBuild.getJobName())
+            //build = job.getBuildByNumber(childSubBuild.getBuildNumber())
+
+            indent = '  '
+
+            //${indent} #${build.getNumber()}  - ${build.getResult()}
+
+            //${build.getLog()}
+            if(!failed && build.getResult().isWorseThan(threshold) ) {
+              failed = true
+            }
+        } catch (Exception e) {
+          %>ERROR: ${e.getMessage()}<%
+          //failed = true
+        }
+      //}
+    }
+
+    //if(failed) {manager.build.setResult(hudson.model.Result.FAILURE)}
+}%><pre>
+<B>INSTALLER:</B>
+<%
+try {
+  aggregate_results()
+} catch(Exception e) {
+  %>ERROR: ${e.message}
+  ERROR: Failed Status report aggregation<%
+}
+%></pre>
+<pre>
+<B>ZONE:</B>
+Project installer has been deployed on dataset:</BR>
+home.test.10.push
+syb157.test.10.push
+</BR>
+Integration zone <a href="https://zone:8080/test/">016</a> is available on <a href="https://openstack/#">Openstack</a>
+<BR/>
+</pre>
+<pre>
+<B>QUALITY:</B>
+Project quality reports are available:</BR>
+On <a href="https://sonar:8999/">Sonar</a>
+On <a href="${rooturl}job/MGR_ZaProxy_Sample/lastSuccessfulBuild/ZaProxy_Report/">ZaProxy</a>
+On <a href="${rooturl}job/MGR_ZaProxy_Sample/Phantomas_KGR_Report/">Phantomas KGR</a>
+On <a href="${rooturl}job/MGR_ZaProxy_Sample/Phantomas_RiskInsight_Report/">Phantomas RiskInsight</a>
+On <a href="${rooturl}job/MGR_ZaProxy_Sample/lastSuccessfulBuild/ZaProxy_Report/">ZaProxy</a>
+On <a href="${rooturl}job/MGR_All_Dependency_check/lastSuccessfulBuild/dependency-check-jenkins-pluginResult/">DependencyCheck</a>
+On <a href="https://checkmarx/CxWebClient/">Checkmarx</a>
+</pre>
+<!-- CHANGE SET
+<%
+//def changeSet = build.changeSet
+def lastSuccessfulBuild = project.lastSuccessfulBuild
+
+for(int i = lastSuccessfulBuild.number; i <= build.number; i++)
+{
+  changeSet = project.getBuildByNumber(i).changeSet
+
+  if(changeSet != null) {
+	def hadChanges = false %>
+	<TABLE width="100%">
+    <TR><TD class="bg1" colspan="2"><B>CHANGES</B></TD></TR>
+<% 	changeSet.each() { cs ->
+		hadChanges = true %>
+      <TR>
+        <TD colspan="2" class="bg2">&nbsp;&nbsp;Revision <B><%= cs.metaClass.hasProperty('commitId') ? cs.commitId : cs.metaClass.hasProperty('revision') ? cs.revision :
+        cs.metaClass.hasProperty('changeNumber') ? cs.changeNumber : "" %></B> by
+          <B><%= cs.author %>: </B>
+
+%>          <B>(${cs.msgAnnotated})</B>
+         </TD>
+      </TR>
+<%		cs.affectedFiles.each() { p -> %>
+        <TR>
+          <TD width="10%">&nbsp;&nbsp;${p.editType.name}</TD>
+          <TD>${p.path}</TD>
+        </TR>
+<%		}
+	}
+
+	if(!hadChanges) { %>
+        <TR><TD colspan="2">No Changes</TD></TR>
+<%	} %>
+  </TABLE>
+<BR/>
+<%
+  }
+}
+%>
+-->
+<!-- ARTIFACTS -->
+<% def artifacts = build.artifacts
+if(artifacts != null && artifacts.size() > 0) { %>
+  <TABLE width="100%">
+    <TR><TD class="bg1"><B>BUILD ARTIFACTS</B></TD></TR>
+    <TR>
+      <TD>
+<% 		artifacts.each() { f -> %>
+      	  <li>
+      	    <a href="${rooturl}${build.url}artifact/${f}">${f}</a>
+      	  </li>
+<%		} %>
+      </TD>
+    </TR>
+  </TABLE>
+<BR/>
+<% } %>
+
+<!-- MAVEN ARTIFACTS -->
+<%
+try {
+  def mbuilds = build.moduleBuilds
+  if(mbuilds != null) { %>
+  <TABLE width="100%">
+      <TR><TD class="bg1"><B>BUILD ARTIFACTS</B></TD></TR>
+<%
+    try {
+        mbuilds.each() { m -> %>
+        <TR><TD class="bg2"><B>${m.key.displayName}</B></TD></TR>
+<%		m.value.each() { mvnbld ->
+			def artifactz = mvnbld.artifacts
+			if(artifactz != null && artifactz.size() > 0) { %>
+      <TR>
+        <TD>
+<%				artifactz.each() { f -> %>
+      	    <li>
+      	      <a href="${rooturl}${mvnbld.url}artifact/${f}">${f}</a>
+      	    </li>
+<%				} %>
+      	</TD>
+      </TR>
+<%			}
+		}
+       }
+    } catch(e) {
+	// we don't do anything
+    }  %>
+  </TABLE>
+<BR/>
+<% }
+
+}catch(e) {
+	// we don't do anything
+}
+%>
+
+<!-- JUnit TEMPLATE -->
+
+<% def junitResultList = it.JUnitTestResult
+try {
+ def cucumberTestResultAction = it.getAction("org.jenkinsci.plugins.cucumber.jsontestsupport.CucumberTestResultAction")
+ junitResultList.add(cucumberTestResultAction.getResult())
+} catch(e) {
+        //cucumberTestResultAction not exist in this build
+}
+if (junitResultList.size() > 0) { %>
+ <TABLE width="100%">
+ <TR><TD class="bg1" colspan="2"><B>${junitResultList.first().displayName}</B></TD></TR>
+ <% junitResultList.each{
+  junitResult -> %>
+     <% junitResult.getChildren().each { packageResult -> %>
+        <TR><TD class="bg2" colspan="2"> Name: ${packageResult.getName()} Failed: ${packageResult.getFailCount()} test(s), Passed: ${packageResult.getPassCount()} test(s), Skipped: ${packageResult.getSkipCount()} test(s), Total: ${packageResult.getPassCount()+packageResult.getFailCount()+packageResult.getSkipCount()} test(s)</TD></TR>
+        <% packageResult.getFailedTests().each{ failed_test -> %>
+          <TR bgcolor="white"><TD class="test_failed" colspan="2"><B><li>Failed: ${failed_test.getFullName()} </li></B></TD></TR>
+        <% }
+      }
+ } %>
+ </TABLE>
+ <BR/>
+<%
+} %>
+
+<!-- CONSOLE OUTPUT -->
+<% if(build.result==hudson.model.Result.FAILURE) { %>
+<TABLE width="100%" cellpadding="0" cellspacing="0">
+<TR><TD class="bg1"><B>CONSOLE OUTPUT</B></TD></TR>
+<% 	build.getLog(100).each() { line -> %>
+	<TR><TD class="console">${org.apache.commons.lang.StringEscapeUtils.escapeHtml(line)}</TD></TR>
+<% 	} %>
+</TABLE>
+<BR/>
+<% } %>
+
+<!--
+<% if(build.result==hudson.model.Result.SUCCESS) { %>
+<TABLE width="100%" cellpadding="0" cellspacing="0">
+<TR><TD class="bg1"><B>CONSOLE OUTPUT</B></TD></TR>
+<%	build.getLog(100).each() { line -> %>
+        <TR><TD class="console">${org.apache.commons.lang.StringEscapeUtils.escapeHtml(line)}</TD></TR>
+<%	} %>
+</TABLE>
+<BR/>
+<% } %>
+-->
+
+<pre>
+<!-- BUTTOM MESAGE -->
+<table class="bottom-message" align="left">
+  <tr>
+    <td class="message">Please do not hesitate to contact us at <a href="admin@localhost">admin@localhost</a> regarding any issues.
+    </td>
+  </tr>
+  <tr>
+    <td class="message">Or fill an issue in our <a href="http://jira/secure/RapidBoard.jspa?rapidView=31&quickFilter=799">JIRA</a> Kanban.
+    </td>
+  </tr>
+</table>
+</pre>
+
+</BODY>
+

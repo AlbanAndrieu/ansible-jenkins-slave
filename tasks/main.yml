@@ -77,6 +77,14 @@
   become: yes
 
 #TODO first install pip on RedHat and Ubuntu
+
+#- name: jenkins-slave | Install Docker tool (Debian based)
+#  pip: name={{ item }}
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+#  with_items:
+#    - docker-py
+#  become: yes
+
 #- name: jenkins-slave | Install Ansible syntax check (Debian based)
 #  pip: name={{ item }}
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
@@ -179,6 +187,9 @@
 
 - name: jenkins-slave | Copy the deploy-log-parsing-rules for jenkins log parsing configuration
   copy: src=deploy-log-parsing-rules dest={{ jenkins_home }}/deploy-log-parsing-rules backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
+
+- name: jenkins-slave | Copy the email template for jenkins email ext configuration
+  copy: src=groovy-html-main.template dest={{ jenkins_home }}/email-templates/groovy-html-cut.template backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
 
 - name: jenkins-slave | Create .m2 folder
   file: path={{ jenkins_home }}/.m2 state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
