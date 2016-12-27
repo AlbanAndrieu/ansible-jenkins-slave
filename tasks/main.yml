@@ -35,17 +35,6 @@
   become: yes
 
 ##
- # git
- #
-# Moved to his own role
-- name: jenkins-slave | Install GIT
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  with_items:
-   - git-core
-   - git
-  become: yes
-
-##
  # other
  #
 - name: jenkins-slave | Install coverage and metrics tools
@@ -78,6 +67,14 @@
 
 #TODO first install pip on RedHat and Ubuntu
 
+#TODO first install pip on RedHat and Ubuntu
+#- name: jenkins-slave | Install Ansible syntax check (Debian based)
+#  pip: name={{ item }}
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+#  with_items:
+#    - ansible-lint
+#  become: yes
+
 #- name: jenkins-slave | Install Docker tool (Debian based)
 #  pip: name={{ item }}
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
@@ -85,12 +82,8 @@
 #    - docker-py
 #  become: yes
 
-#- name: jenkins-slave | Install Ansible syntax check (Debian based)
-#  pip: name={{ item }}
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-#  with_items:
-#    - ansible-lint
-#  become: yes
+#sudo apt-get install apt-transport-https ca-certificates
+#See https://docs.docker.com/engine/installation/linux/ubuntulinux/
 
 - name: jenkins-slave | Install Ansible syntax check (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -114,16 +107,16 @@
 ##
  # Jenkins user
  #
-- name: Kill connection used by user jenkins
-  action: shell killall -u {{ jenkins_user }} || true
-  changed_when: false
-  become: yes
-  ignore_errors: true
+#- name: Kill connection used by user jenkins
+#  action: shell killall -u {{ jenkins_user }} || true
+#  changed_when: false
+#  become: yes
+#  ignore_errors: true
 
 - name: jenkins-slave | Create jenkins user
   user: name={{ jenkins_user }} password={{ jenkins_password }} update_password=always comment="Jenkins user" home={{ jenkins_home }} shell={{ jenkins_shell }}
   become: yes
-#  ignore_errors: true
+  ignore_errors: true
 
 - name: jenkins-slave | Create .ssh folder
   file: path={{ jenkins_home }}/.ssh state=directory mode=0700 owner={{ jenkins_user }} group={{ jenkins_group }}
@@ -137,53 +130,7 @@
   file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: true
 
-- name: jenkins-slave | Copy the .netrc script for git credentials
-  template: src=.netrc.j2 dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-  when: shell_git_configure_enabled
-  changed_when: false
-  tags: git
-
-- name: jenkins-slave | Configure git
-  template:
-    src: .gitconfig.j2
-    dest: '{{ jenkins_home }}/.gitconfig'
-    owner: '{{ jenkins_user }}'
-    group: '{{ jenkins_group }}'
-    mode: 0600
-  when: shell_git_configure_enabled
-  changed_when: false
-  tags: git
-
-#- name: jenkins-slave | Update git configuration (user.email)
-#  action: command git config --global user.email "{{ shell_git_email }}"
-##  sudo_user: "{{ jenkins_user }}"
-#  become_user: "{{ jenkins_user }}"
-#  become: yes
-##  become_method: '{{ jenkins_become_method }}'
-#  changed_when: false
-#  tags: git
-#
-#- name: jenkins-slave | Update git configuration (user.name)
-#  action: command git config --global user.name "{{ shell_git_name }}"
-##  sudo_user: "{{ jenkins_user }}"
-#  become_user: "{{ jenkins_user }}"
-#  become: yes
-##  become_method: '{{ jenkins_become_method }}'
-#  changed_when: false
-#  tags: git
-#
-#- name: jenkins-slave | Update git configuration (http.sslVerify)
-#  action: command git config --global http.sslVerify {{ shell_git_ssl }}
-##  sudo_user: "{{ jenkins_user }}"
-#  become_user: "{{ jenkins_user }}"
-#  become: yes
-##  become_method: '{{ jenkins_become_method }}'
-#  changed_when: false
-#  tags: git
-
-#TODO
-#git config --global maven-scm.maildomain misys.com
-#git config --global maven-scm.forceUsername true
+- include: git.yml
 
 - name: jenkins-slave | Copy the deploy-log-parsing-rules for jenkins log parsing configuration
   copy: src=deploy-log-parsing-rules dest={{ jenkins_home }}/deploy-log-parsing-rules backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
@@ -196,7 +143,7 @@
   changed_when: false
 
 - name: jenkins-slave | Copy maven configuration
-  template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0700
+  template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   changed_when: false
 
 - name: jenkins-slave | Jenkins can run any command with no password
@@ -262,6 +209,10 @@
 - name: jenkins-slave | Create Jenkins slave directory
   file: path={{ jenkins_slave_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
   changed_when: false
+  
+- name: jenkins-slave | Create Jenkins thin backup directory
+  file: path={{ jenkins_remote_thinbackup }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
+  changed_when: false  
 
 - name: jenkins-slave | Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
