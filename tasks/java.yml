@@ -1,5 +1,6 @@
 
 #Setting Java environment variables
+
 #sudo add-apt-repository ppa:webupd8team/java
 #sudo apt-get update
 #sudo apt-get install oracle-java7-set-default
@@ -14,7 +15,7 @@
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version in ['16.04'])
   tags: jdk_setup
   become: yes
-    
+  
 - name: jdk7 | Install default oracle
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   tags: jdk_setup

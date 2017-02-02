@@ -69,7 +69,7 @@
 #  pip: name={{ item }}
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 #  with_items:
-#    - ansible-lint
+#    - docker-py
 #  become: yes
 
 #sudo pip2 install ansible==2.1.1
@@ -168,7 +168,7 @@
       name=jenkins 
       state=present
   become: yes
-
+  
 - name: jenkins-slave | Create jenkins user
   user: name={{ jenkins_user }} password={{ jenkins_password }} update_password=always comment="Jenkins user" home={{ jenkins_home }} shell={{ jenkins_shell }} groups=docker,{{ jenkins_group }}
   become: yes
@@ -271,6 +271,10 @@
 - name: jenkins-slave | Create Jenkins slave directory
   file: path={{ jenkins_slave_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
   changed_when: false
+  
+- name: jenkins-slave | Create Jenkins thin backup directory
+  file: path={{ jenkins_remote_thinbackup }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
+  changed_when: false  
 
 #- name: jenkins-slave | Create Jenkins thin backup directory
 #  file: path={{ jenkins_remote_thinbackup }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775

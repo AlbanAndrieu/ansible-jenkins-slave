@@ -6,13 +6,6 @@
 - name: jenkins-slave | Install GIT
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   - bmt-git-completion
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  become: yes
-
-- name: jenkins-slave | Install GIT
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  with_items:
    - git-core
    - git
   become: yes
