@@ -1,0 +1,78 @@
+
+##
+ # git
+ #
+# Moved to his own role
+- name: jenkins-slave | Install GIT
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+   - bmt-git-completion
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  become: yes
+
+- name: jenkins-slave | Install GIT
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+   - git-core
+   - git
+  become: yes
+
+- name: jenkins-slave | Copy the .netrc script for git credentials
+  template: src=.netrc.j2 dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+  when: shell_git_configure_enabled
+  changed_when: false
+  tags: git
+
+- name: jenkins-slave | Configure git
+  template:
+    src: .gitconfig.j2
+    dest: '{{ jenkins_home }}/.gitconfig'
+    owner: '{{ jenkins_user }}'
+    group: '{{ jenkins_group }}'
+    mode: 0600
+  when: shell_git_configure_enabled
+  changed_when: false
+  tags: git
+
+#- name: jenkins-slave | Update git configuration (user.email)
+#  action: command git config --global user.email "{{ shell_git_email }}"
+##  sudo_user: "{{ jenkins_user }}"
+#  become_user: "{{ jenkins_user }}"
+#  become: yes
+##  become_method: '{{ jenkins_become_method }}'
+#  changed_when: false
+#  tags: git
+#
+#- name: jenkins-slave | Update git configuration (user.name)
+#  action: command git config --global user.name "{{ shell_git_name }}"
+##  sudo_user: "{{ jenkins_user }}"
+#  become_user: "{{ jenkins_user }}"
+#  become: yes
+##  become_method: '{{ jenkins_become_method }}'
+#  changed_when: false
+#  tags: git
+#
+#- name: jenkins-slave | Update git configuration (http.sslVerify)
+#  action: command git config --global http.sslVerify {{ shell_git_ssl }}
+##  sudo_user: "{{ jenkins_user }}"
+#  become_user: "{{ jenkins_user }}"
+#  become: yes
+##  become_method: '{{ jenkins_become_method }}'
+#  changed_when: false
+#  tags: git
+
+#- git_config: name=user.email scope=global value="{{ shell_git_email }}"
+#- git_config: name=user.name scope=global value="{{ shell_git_name }}"
+#- git_config: name=http.sslVerify scope=global value="{{ shell_git_ssl }}"
+#- git_config: name=maven-scm.maildomain scope=global value="misys.com"
+#- git_config: name=maven-scm.forceUsername scope=global value="true"
+#- git_config: name=push.default scope=global value="simple"
+#- git_config: name=http.postBuffer scope=global value="157286400"
+#
+#- git_config: name=alias.ci scope=global value=commit
+#- git_config: name=alias.st scope=global value=status
+#- git_config: name=color.ui scope=global value=auto
+#
+##See https://docs.ansible.com/ansible/git_config_module.html
+#- name: jenkins-slave | Read all values from git config
+#  git_config: list_all=yes scope=global

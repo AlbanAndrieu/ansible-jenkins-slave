@@ -1,20 +1,39 @@
 
-######
-# JAVA
-#
-
-#- name: jenkins-slave | Install JDK
-#  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-#  tags: package
-#  with_items:
-#   - openjdk-6-jdk
-#   - openjdk-7-jdk
-
+#Setting Java environment variables
 #sudo add-apt-repository ppa:webupd8team/java
 #sudo apt-get update
-#sudo apt-get install oracle-java7-installer
-#sudo apt-get install oracle-java8-installer
+#sudo apt-get install oracle-java7-set-default
+#sudo apt-get install oracle-java8-set-default
 
+#Switching between Oracle Java 8 and Java 7
+#sudo update-java-alternatives -s java-7-oracle
+#sudo update-java-alternatives -s java-8-oracle
+
+- name: jdk | Install ppa
+  apt_repository: repo="ppa:webupd8team/java" state={{ util_repository_state|default('present') }} update_cache=yes
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version in ['16.04'])
+  tags: jdk_setup
+  become: yes
+    
+- name: jdk7 | Install default oracle
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  tags: jdk_setup
+  with_items:
+   - oracle-java7-set-default
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04']) and jenkins_jdk7_enable   
+  become: yes
+
+- name: jdk8 | Install default oracle
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  tags: jdk_setup
+  with_items:
+   - oracle-java8-set-default
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04']) and jenkins_jdk8_enable   
+  become: yes
+
+#######
+# JAVA
+#
 - name: jdk7 | Create {{ jvm_folder }} directory
   file: path={{ jvm_folder }} state=directory
   tags: jdk_setup
@@ -138,20 +157,13 @@
 
 #END OF TODO extract jenkins user to another script
 
-#Setting Java environment variables
-#sudo apt-get install oracle-java8-set-default
-
-#Switching between Oracle Java 8 and Java 7
-#sudo update-java-alternatives -s java-7-oracle
-#sudo update-java-alternatives -s java-8-oracle
-
 - name: jenkins-slave | Set mvn link to Java 7
   set_fact: jdk_dir={{ jvm_folder }}/{{ jdk7_archive_extracted }}
   when: "jdk7_installed.changed == 'True'"
 
 - name: jenkins-slave | Set mvn link to Java 8
   set_fact: jdk_dir={{ jvm_folder }}/{{ jdk8_archive_extracted }}
-  when: "jdk8_installed.changed == 'True'"
+#  when: "jdk8_installed.changed == 'True'"
 
 - name: jenkins-slave | Display java link before
   action: command update-alternatives --display java
@@ -180,10 +192,11 @@
   - { name: javafxpackager, link: /usr/bin/javafxpackager, path: "{{ jdk_dir }}/bin/javafxpackager" }
   - { name: javah, link: /usr/bin/javah, path: "{{ jdk_dir }}/bin/javah" }
   - { name: javap, link: /usr/bin/javap, path: "{{ jdk_dir }}/bin/javap" }
-  - { name: java_vm, link: /usr/bin/java_vm, path: "{{ jdk_dir }}/bin/java_vm" }
+#  - { name: java_vm, link: /usr/bin/java_vm, path: "{{ jdk_dir }}/bin/java_vm" }
   - { name: jvisualvm, link: /usr/bin/jvisualvm, path: "{{ jdk_dir }}/bin/jvisualvm" }
   when: not( (jdk_dir is undefined) or (jdk_dir is none) or (jdk_dir | trim == '') )
   become: yes
+  ignore_errors: true
 
 #TODO Verify the symlinks all point to the new java location:
 
@@ -191,4 +204,5 @@
 - name: jenkins-slave | Display java link after
   action: command update-alternatives --display java
   when: not( (jdk_dir is undefined) or (jdk_dir is none) or (jdk_dir | trim == '') )
+  changed_when: false  
   become: yes

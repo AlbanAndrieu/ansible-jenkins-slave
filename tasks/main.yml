@@ -35,22 +35,10 @@
   become: yes
 
 ##
- # git
- #
-# Moved to his own role
-- name: jenkins-slave | Install GIT
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  with_items:
-   - git-core
-   - git
-  become: yes
-
-##
  # other
  #
 - name: jenkins-slave | Install coverage and metrics tools
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-#TODO install epel repo first for RedHat
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or epel_repo_enabled
   with_items:
    - lcov
@@ -77,14 +65,6 @@
   become: yes
 
 #TODO first install pip on RedHat and Ubuntu
-
-#- name: jenkins-slave | Install Docker tool (Debian based)
-#  pip: name={{ item }}
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-#  with_items:
-#    - docker-py
-#  become: yes
-
 #- name: jenkins-slave | Install Ansible syntax check (Debian based)
 #  pip: name={{ item }}
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
@@ -92,19 +72,52 @@
 #    - ansible-lint
 #  become: yes
 
+#sudo pip2 install ansible==2.1.1
+#sudo pip2 install docker-py==1.9.0
+#ansible 2.3.0 issue and docker-py 2.3.0 issue
+
+#for docker-compose version 1.9.0 and docker version 1.12.6
+#sudo pip2 install docker-compose==1.9.0
+#sudo pip2 install docker-py==1.10.6 
+#sudo pip2 install ansible==2.2.0
+#sudo pip show docker-py
+- name: jenkins-slave | Install Docker tool (Debian based)
+  pip: name={{ item }}
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - docker-py==1.10.6
+  become: yes
+
+- name: jenkins-slave | Install Docker tool (Debian based)
+  pip: name={{ item }}
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - ansible==2.2.0
+  become: yes
+  
+#sudo apt-get install apt-transport-https ca-certificates
+#See https://docs.docker.com/engine/installation/linux/ubuntulinux/
+
 - name: jenkins-slave | Install Ansible syntax check (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   become: yes
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and epel_repo_enabled
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and epel_repo_enabled
   with_items:
    - ansible-lint
 
 - name: jenkins-slave | Install security basic tools for Ansible check
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
-#TODO install epel repo first for RedHat
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and epel_repo_enabled
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') 
   with_items:
     - chkrootkit
+  become: yes
+
+- name: jenkins-slave | Install security basic tools 
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or epel_repo_enabled
+  with_items:
+    - rkhunter
+    - unhide
   become: yes
 
 #- include: gcc.yml
@@ -114,16 +127,52 @@
 ##
  # Jenkins user
  #
-- name: Kill connection used by user jenkins
-  action: shell killall -u {{ jenkins_user }} || true
-  changed_when: false
+#- name: Kill connection used by user jenkins
+#  action: shell killall -u {{ jenkins_user }} || true
+#  changed_when: false
+#  become: yes
+#  ignore_errors: true
+
+#TODO
+#- name: Install docker-py
+#  pip: 
+#      name=docker-py 
+#      state=present
+#      version={{ item }} 1.9.0
+#  become: yes      
+
+#TODO https://stackoverflow.com/questions/26677064/create-and-use-group-without-restart
+
+- name: jenkins-slave | Create a docker group
+  group: 
+      name=docker 
+      state=present
   become: yes
-  ignore_errors: true
+  
+- name: jenkins-slave | Add user(s) to docker group
+  user: 
+      name={{ item }} 
+      group=docker 
+      state=present
+  with_items: docker_users
+  when: docker_users is defined
+  become: yes
+
+#sudo gpasswd -a ${USER} docker
+#sudo gpasswd -a jenkins docker
+
+#sudo gpasswd -a fusionrisk docker
+
+- name: jenkins-slave | Create a jenkins group
+  group: 
+      name=jenkins 
+      state=present
+  become: yes
 
 - name: jenkins-slave | Create jenkins user
-  user: name={{ jenkins_user }} password={{ jenkins_password }} update_password=always comment="Jenkins user" home={{ jenkins_home }} shell={{ jenkins_shell }}
+  user: name={{ jenkins_user }} password={{ jenkins_password }} update_password=always comment="Jenkins user" home={{ jenkins_home }} shell={{ jenkins_shell }} groups=docker,{{ jenkins_group }}
   become: yes
-#  ignore_errors: true
+  ignore_errors: true
 
 - name: jenkins-slave | Create .ssh folder
   file: path={{ jenkins_home }}/.ssh state=directory mode=0700 owner={{ jenkins_user }} group={{ jenkins_group }}
@@ -137,66 +186,21 @@
   file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: true
 
-- name: jenkins-slave | Copy the .netrc script for git credentials
-  template: src=.netrc.j2 dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-  when: shell_git_configure_enabled
-  changed_when: false
-  tags: git
-
-- name: jenkins-slave | Configure git
-  template:
-    src: .gitconfig.j2
-    dest: '{{ jenkins_home }}/.gitconfig'
-    owner: '{{ jenkins_user }}'
-    group: '{{ jenkins_group }}'
-    mode: 0600
-  when: shell_git_configure_enabled
-  changed_when: false
-  tags: git
-
-#- name: jenkins-slave | Update git configuration (user.email)
-#  action: command git config --global user.email "{{ shell_git_email }}"
-##  sudo_user: "{{ jenkins_user }}"
-#  become_user: "{{ jenkins_user }}"
-#  become: yes
-##  become_method: '{{ jenkins_become_method }}'
-#  changed_when: false
-#  tags: git
-#
-#- name: jenkins-slave | Update git configuration (user.name)
-#  action: command git config --global user.name "{{ shell_git_name }}"
-##  sudo_user: "{{ jenkins_user }}"
-#  become_user: "{{ jenkins_user }}"
-#  become: yes
-##  become_method: '{{ jenkins_become_method }}'
-#  changed_when: false
-#  tags: git
-#
-#- name: jenkins-slave | Update git configuration (http.sslVerify)
-#  action: command git config --global http.sslVerify {{ shell_git_ssl }}
-##  sudo_user: "{{ jenkins_user }}"
-#  become_user: "{{ jenkins_user }}"
-#  become: yes
-##  become_method: '{{ jenkins_become_method }}'
-#  changed_when: false
-#  tags: git
-
-#TODO
-#git config --global maven-scm.maildomain misys.com
-#git config --global maven-scm.forceUsername true
+- include: git.yml
 
 - name: jenkins-slave | Copy the deploy-log-parsing-rules for jenkins log parsing configuration
   copy: src=deploy-log-parsing-rules dest={{ jenkins_home }}/deploy-log-parsing-rules backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
 
 - name: jenkins-slave | Copy the email template for jenkins email ext configuration
   copy: src=groovy-html-main.template dest={{ jenkins_home }}/email-templates/groovy-html-cut.template backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
+  ignore_errors: true
 
 - name: jenkins-slave | Create .m2 folder
   file: path={{ jenkins_home }}/.m2 state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
   changed_when: false
 
 - name: jenkins-slave | Copy maven configuration
-  template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0700
+  template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   changed_when: false
 
 - name: jenkins-slave | Jenkins can run any command with no password
@@ -224,7 +228,7 @@
      "*               hard    nofile          65536" : '\*\s+hard\s+nofile'
      "root            soft    nofile          16384" : 'root\s+soft\s+nofile'
      "root            hard    nofile          65536" : 'root\s+hard\s+nofile'
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   become: yes
   changed_when: false
 
@@ -241,8 +245,13 @@
 
 - name: jenkins-slave | Set nproc limits for Jenkins
   lineinfile: dest="/etc/security/limits.d/90-nproc.conf" line='jenkins    soft    nproc     unlimited'
-#/etc/security/limits.d/20-nproc.conf RedHat 7
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  become: yes
+  changed_when: false
+
+- name: jenkins-slave | Set nproc limits for Jenkins
+  lineinfile: dest="/etc/security/limits.d/20-nproc.conf" line='jenkins    soft    nproc     unlimited'
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
   become: yes
   changed_when: false
 
@@ -263,12 +272,15 @@
   file: path={{ jenkins_slave_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
   changed_when: false
 
+#- name: jenkins-slave | Create Jenkins thin backup directory
+#  file: path={{ jenkins_remote_thinbackup }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
+#  changed_when: false  
+#  become: yes  
+#  ignore_errors: true 
+
 - name: jenkins-slave | Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
   changed_when: false
-
-#- name: jenkins-slave | Ensure npm settings
-#  command: chdir=/usr/bin npm config set registry {{ nexus_npm_url }}
 
 #- include: nodejs.yml
 
@@ -282,37 +294,6 @@
 
 - include: tmp.yml
 
-- name: workstation | Install requirement for phantomas
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-  become: yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  with_items:
-    - libfontconfig1
-
-#TODO
-#http://www.thegeekstuff.com/2013/10/tmpreaper-examples/
-- name: jenkins-slave | Install tmpreaper package
-  action: "{{ ansible_pkg_mgr}} name='tmpreaper' state={{ jenkins_pkg_state|default('present') }}"
-#TODO install epel repo first
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-  become: yes
-
-#it adds itself to /etc/cron.daily
-#but you need to configure it (comment out or remove one line in /etc/tmpreaper.conf #SHOWWARNING=true
-
-- name: jenkins-slave | Add sanitary job in cron
-  cron: name="tmp cleanup" hour="1" minute="0" job="find /tmp -user {{ jenkins_user }} -atime +7 -exec rm -rf {} +" user={{ jenkins_user }}
-  become: yes
-  tags: cron
-#sudo service cron restart
-
-#Fix jetty filling tmp
-- name: jenkins-slave | Add JAVA_OPTS in /etc/profile
-  lineinfile: dest=/etc/profile line="export JAVA_OPTS=-Djava.io.tmpdir=$WORKSPACE/target/tmp" insertafter=EOF
-#or ~.bash_profile
-  become: yes
-  changed_when: false
-
 #TODO add JAVA_HOME
 
 - name: jenkins-slave | Add options in ~/.bashrc
@@ -324,9 +305,28 @@
   with_items:
     - { regexp: '', line: 'export SCONS=/usr/bin/scons' }
     - { regexp: '', line: 'export TAR=/bin/gtar' }
-    - { regexp: '', line: '\n' }
-  become: yes
+  become_user: "{{ jenkins_user }}"
+#  become: yes
   changed_when: false
+
+#TODO
+#https://docs.ansible.com/ansible/jenkins_plugin_module.html
+#- name: Install plugins with a specific version
+#  jenkins_plugin:
+#    name: "{{ item.key }}"
+#    version: "{{ item.value['version'] }}"
+#  register: my_jenkins_plugin_versioned
+#  when: >
+#    'version' in item.value
+#  with_dict: my_jenkins_plugins
+
+# Create a jenkins job using basic authentication
+#- jenkins_job:
+#    config: "{{ lookup('file', 'templates/test.xml') }}"
+#    name: test
+#    password: admin
+#    url: "http://localhost:8080"
+#    user: admin
 
 #TODO Add source /etc/profile for RedHat to find lsof command
 

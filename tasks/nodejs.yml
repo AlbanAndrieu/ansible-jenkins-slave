@@ -10,7 +10,7 @@
 - name: jenkins-slave | Install requirement for phantomas/phantomjs (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
   become: yes
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
     - fontconfig
     - freetype
@@ -35,7 +35,7 @@
   with_items:
     - n
   become: yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and nodejs_enabled
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04") and nodejs_enabled
 
 #Node updater
 #sudo npm cache clean -f
@@ -44,7 +44,7 @@
 #sudo n stable
 - name: jenkins-slave | Update node
   action: command n v{{ nodejs_version }}
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and nodejs_enabled
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04") and nodejs_enabled
   become: yes
   changed_when: false
   tags: git
@@ -56,7 +56,7 @@
 
 - name: jenkins-slave | Create node link
   file: path=/usr/bin/node src=/usr/local/n/versions/node/{{ nodejs_version }}/ state=link
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and nodejs_enabled
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04") and nodejs_enabled
   become: yes
 
 #npm -g list grunt
@@ -76,5 +76,13 @@
     - phantomjs-prebuilt@2.1.12
     - phantomas@1.16.0
     - nsp@2.6.1
+    - grunt@1.0.1
+    - grunt-cli@1.2.0
+    - bower@1.8.0
+    - node-sass@3.11.2
+    - node-gyp@3.4.0
   become: yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and nodejs_enabled
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04") and nodejs_enabled
+
+#- name: jenkins-slave | Ensure npm settings
+#  command: chdir=/usr/bin npm config set registry {{ nexus_npm_url }}

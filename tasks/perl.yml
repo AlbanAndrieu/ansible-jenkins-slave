@@ -3,8 +3,8 @@
  # Perl
  #
 - name: jenkins-slave | Install tools needed by cpp generator (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
    - libwww-perl
    - libxml-dom-perl
@@ -19,9 +19,9 @@
   become: yes
 
 - name: jenkins-slave | Install tools needed by cpp generator (RedHat based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
   become: yes
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
    - perl-libwww-perl
    - perl-XML-DOM-XPath

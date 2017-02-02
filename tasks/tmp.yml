@@ -3,16 +3,14 @@
 #http://www.thegeekstuff.com/2013/10/tmpreaper-examples/
 - name: jenkins-slave | Install tmpreaper package
   action: "{{ ansible_pkg_mgr}} name='tmpreaper' state={{ jenkins_pkg_state|default('present') }}"
-#TODO install epel repo first
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or epel_repo_enabled
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: yes
 
 #it adds itself to /etc/cron.daily
 #but you need to configure it (comment out or remove one line in /etc/tmpreaper.conf #SHOWWARNING=true
 - name: jenkins-slave | Enable tmpreaper package
   lineinfile: dest=/etc/tmpreaper.conf line='SHOWWARNING=true' regexp='^#SHOWWARNING=true'
-#TODO install epel repo first
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or epel_repo_enabled
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: yes
   changed_when: false
 

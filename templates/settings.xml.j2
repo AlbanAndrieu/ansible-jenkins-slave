@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- {{ ansible_managed }} -->
- 
+
 <!-- USED by JENKINS -->
 
 <!--
@@ -84,7 +84,7 @@ under the License.
    | "org.apache.maven.plugins" and "org.codehaus.mojo" if these are not already contained in the list.
    |-->
   <pluginGroups>
-    <pluginGroup>com.atlassian.maven.plugins</pluginGroup>
+    <pluginGroup>com.atlassian.maven.plugins</pluginGroup> <!-- for clover -->
     <pluginGroup>com.sonatype.maven.plugins</pluginGroup>
     <pluginGroup>org.sonatype.plugins</pluginGroup>
     <pluginGroup>com.versioneye</pluginGroup>
@@ -136,13 +136,13 @@ under the License.
       <username>alban.andrieu@nabla.mobi</username>
       <password>TODO</password>
     </server>
-    
+
     <server>
       <id>github</id>
       <username>AlbanAndrieu</username>
       <password>TODO</password>
-    </server> 
-    
+    </server>
+
     <server>
       <id>website</id>
       <username>u54677262</username>
@@ -173,6 +173,15 @@ under the License.
       <id>nexus-releases</id>
       <username>admin</username>
       <password>TODO</password>
+      <!-- used for Nexus Staging in Jenkins -->
+      <configuration>
+        <httpHeaders>
+          <property>
+            <name>User-Agent</name>
+            <value>Maven m2Release java:${java.vm.version} ${env.BUILD_TAG}</value>
+          </property>
+        </httpHeaders>
+      </configuration>
     </server>
 
     <server>
@@ -455,7 +464,7 @@ under the License.
         </pluginRepositories>
     </profile>
     <profile>
-      <id>[[PROJECT_USER]]</id>      
+      <id>[[PROJECT_USER]]</id>
       <!-- http://mvnrepository.com/search.html -->
       <repositories>
         <repository>
@@ -914,7 +923,7 @@ under the License.
 				 </snapshots>
 			</pluginRepository>
 		  </pluginRepositories>
-		</profile>                
+		</profile>
   </profiles>
 
   <!-- activeProfiles

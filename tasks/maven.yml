@@ -153,4 +153,5 @@
 - name: jenkins-slave | Display mvn link after
   action: command update-alternatives --display mvn
   when: not( (mvn_dir is undefined) or (mvn_dir is none) or (mvn_dir | trim == '') )
+  changed_when: false  
   become: yes

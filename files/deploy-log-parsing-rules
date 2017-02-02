@@ -39,6 +39,24 @@ ok /SEND TLSv1.2 ALERT: warning/
 ok /RECV TLSv1.2 ALERT: warning/
 #ok /SEND TLSv1.1 ALERT: warning/
 #ok /RECV TLSv1.1 ALERT: warning/
+ok /Warning: Row size/
+#ok /#Warning openssl must be OpenSSL/
+
+warning /^kernel Attempt to set zfs file/
+info /MESSAGE: there are some new default variable/
+
+error /ERROR:/
+error /FAILED/
+error /ERROR :/
+warning /SEVERE:/
+error /Invalid or corrupt jarfile/
+#warning /Invalid argument/
+warning /No such file or directory/
+warning /command not found/
+#NPM
+error /Cannot find module/
+error /invalid config registry="None"/
+error /syntax error near unexpected token/
 
 #ansible
 ok /^Searching for Suckit rootkit/
@@ -51,10 +69,25 @@ error /unreachable=3/
 error /failed=1/
 error /failed=2/
 error /failed=3/
+warning /error: pathspec/
+#sendmail in ansible
+ok /ERROR: FEATURE/
+
+# match line starting with 'error ', case-insensitive
+error /(?i)^error/
+# each Sybase error is prefixed with Msg
+error /^Msg/
+# object does not exists
+error /Specify owner.objectname or use sp_help to/
+
+error /Cannot create an index on table/
+error /No group with the specified name exists/
+error /Error\(s\)/
 
 error /Connection refused/
 error /return is : 000/
-warning /error: pathspec/
+warning /fatal:/
+error /cat: input error/
 
 #jenkins
 error /marked build as failure/
@@ -65,7 +98,6 @@ warning /WARNING/
 warning /WARN/
 warning /recv-/
 
-warning /^kernel Attempt to set zfs file/
 warning /is not defined/
 
 # create a quick access link to lines in the report containing 'INFO'
