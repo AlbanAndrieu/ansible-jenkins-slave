@@ -267,8 +267,8 @@
   file: path={{ jenkins_slave_home }} state=directory
   changed_when: false
 
-- name: jenkins-slave | Create repository directory
-  file: path={{ jenkins_slave_home }}/repository state=directory owner={{ jenkins_user }} group={{ jenkins_group }}
+- name: jenkins-slave | Create maven repository directory
+  file: path={{ maven_repository }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
   changed_when: false
 
 - name: jenkins-slave | Create Jenkins slave directory

@@ -5,10 +5,12 @@
 #sudo apt-get update
 #sudo apt-get install oracle-java7-set-default
 #sudo apt-get install oracle-java8-set-default
+#sudo apt-get install oracle-java9-set-default
 
 #Switching between Oracle Java 8 and Java 7
 #sudo update-java-alternatives -s java-7-oracle
 #sudo update-java-alternatives -s java-8-oracle
+#sudo update-java-alternatives -s java-9-oracle
 
 - name: jdk | Install ppa
   apt_repository: repo="ppa:webupd8team/java" state={{ util_repository_state|default('present') }} update_cache=yes
