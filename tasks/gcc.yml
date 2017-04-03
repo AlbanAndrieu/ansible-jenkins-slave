@@ -5,30 +5,35 @@
 - name: cpp | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   become: yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("12.04")
   with_items:
-#   - gcc-4.7-base
    - gcc-4.6
    - g++-4.6
 
 - name: cpp | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   become: yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04")
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("14.04")
   with_items:
-#   - gcc-6
-#   - g++-6
-#   - gcc-5
-#   - g++-5
-#   - gcc-4.9
-#   - g++-4.9
    - gcc-4.8
    - g++-4.8
    - gcc-4.7
    - g++-4.7
 
+- name: cpp | Install C++ compiler (Debian based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  become: yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
+  with_items:
+#   - gcc-6
+#   - g++-6
+   - gcc-5
+   - g++-5
+#   - gcc-4.9
+#   - g++-4.9
+
 #SEE https://www.vultr.com/docs/how-to-install-gcc-on-centos-6
-- name: cpp | Install C++ compiler (RedHat based)
+- name: cpp | Install C++ compiler (CentOS based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   become: yes
   when: ansible_distribution == 'CentOS' 
@@ -42,6 +47,16 @@
 #   - glibc-devel.i386
 #   - glibc-devel
 
+- name: cpp | Install C++ compiler (RedHat based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  become: yes
+  when: (ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  with_items:
+#On purpose, we do not install gcc for RedHat because MiCloud VM already havea default one installed  
+#   - gcc
+#Only install c++
+   - gcc-c++
+
 - debug: msg="Version {{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_architecture }}"
 
 - name: cpp | Set cpp link to gcc
@@ -53,7 +68,11 @@
 
 - name: cpp | Set cpp link to gcc version
   set_fact: cpp_version=4.8
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04")
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("14.04")
+
+- name: cpp | Set cpp link to gcc version
+  set_fact: cpp_version=5
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
 
 #- name: cpp | Set cpp link to gcc version
 #  set_fact: cpp_version=4.4.7
@@ -115,3 +134,26 @@
         and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')        
   changed_when: false        
   become: yes
+
+- name: cpp | Install C++ clang
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+   - clang  
+  tags: cpp
+  become: yes
+  
+- name: cpp | Install C++ quality tool cppcheck
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+   - cppcheck
+  tags: cpp
+  become: yes
+  
+- name: cpp | Install C++ quality tool rats
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+   - rats
+  tags: cpp
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['16.04']
+  become: yes
+    

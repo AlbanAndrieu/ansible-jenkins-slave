@@ -31,9 +31,10 @@
     insertafter="EOF"
     state="present"
     create="yes"
-    mode="0644"
+    mode="0600"
     dest="{{jenkins_home}}/.ssh/authorized_keys"
     owner="{{jenkins_user}}"
   with_items: "{{jenkins_ssh_authorized_keys_fingerprints}}"
   when: jenkins_ssh_authorized_keys_fingerprints | length > 0    
   become: yes
+   

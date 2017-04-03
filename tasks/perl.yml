@@ -18,13 +18,96 @@
 #   - build-essential # do we need it?
   become: yes
 
+- name: jenkins-slave | Install tools needed by cpp generator (CentOS based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+  when: (ansible_distribution == 'CentOS')
+  with_items:
+   - perl-libwww-perl
+   - perl-XML-DOM-XPath
+   - perl-File-Copy-Recursive
+   - perl-File-Find-Rule
+
+- name: jenkins-slave | Install CPAN tools needed by cpp generator (RedHat based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+  when: (ansible_distribution == 'RedHat')
+  with_items:
+   - perl-CPAN
+
 - name: jenkins-slave | Install tools needed by cpp generator (RedHat based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+  when: (ansible_distribution == 'RedHat')
+  with_items:
+   - perl-libwww-perl
+   - perl-XML-Simple
+   - perl-XML-XPath
+   - perl-XML-LibXML
+#   - "perl(XML::LibXML)"
+   - perl-XML-Parser
+#   - perl-XML-SAX
+   - perl-libxml-perl
+
+#TODO
+#See http://almtools/confluence/display/ENG/The+MGR+developer+server+changelog
+#AND
+#See http://almtools/confluence/display/ENG/MGR+CMR+Windows+environment+setup
+#TODO For windows
+#- cpanm:
+#    name: XML::DOM
+    
+#Below is same has above but with CPAN    
+- name:  jenkins-slave | Install cpan perl modules needed by cpp generator
+  action: command "cpan {{ item }}"
+  with_items:
+    - XML::DOM
+    - XML::Handler::YAWriter
+    - XML::Simple
+    - Test::Harness
+    - Test::Pod::Coverage
+    - Test::Pod
+    - JSON
+    - IO::Prompt
+    - Text::SimpleTable
+    - HTTP::Date
+    - Date::Calc
+    - Date::Format
+    - Date::Manip
+    - LWP::Protocol::https
+    - Crypt::SSLeay
+    - File::Copy::Recursive
+  changed_when: false
+  become: yes
+  ignore_errors: true
+      
+#cpan install XML::DOM
+#cpan install XML::Handler::YAWriter
+#cpan install XML::Simple
+#cpan install Test::Harness
+#cpan install Test::Pod::Coverage
+#cpan install Test::Pod
+#cpan install JSON
+#cpan install IO::Prompt
+#cpan install Text::SimpleTable
+#cpan install HTTP::Date
+#cpan install Date::Calc
+#cpan install Date::Format
+#cpan install Date::Manip
+#cpan install LWP::Protocol::https
+#cpan install Crypt::SSLeay
+#cpan install File::Copy::Recursive
+
+- name: jenkins-slave | Install tools needed by sample at runtime (Debian based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+   - libtime-y2038-perl
+   
+- name: jenkins-slave | Install tools needed by sample a runtime (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
   become: yes
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
-   - perl-libwww-perl
-   - perl-XML-DOM-XPath
-   - perl-XML-Simple
-   - perl-File-Copy-Recursive
-   - perl-File-Find-Rule
+   - perl-Time-y2038

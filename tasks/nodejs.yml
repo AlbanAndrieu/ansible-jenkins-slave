@@ -66,6 +66,8 @@
 #npm update -g
 #npm config set python python2.7
 
+#npm install --unsafe-perm -g node-sass
+
 #TODO use jenkins to install phantomjs
 - name: npm | Ensure the npm dependencies are installed
   npm: >

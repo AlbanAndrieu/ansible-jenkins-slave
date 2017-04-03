@@ -77,7 +77,7 @@
 #ansible 2.3.0 issue and docker-py 2.3.0 issue
 
 #for docker-compose version 1.9.0 and docker version 1.12.6
-#sudo pip2 install docker-compose==1.10.1
+#sudo pip2 install docker-compose==1.9.0
 #sudo pip2 install docker-py==1.10.6 
 #sudo pip2 install docker==2.0.2
 #sudo pip2 install ansible==2.2.0
@@ -89,11 +89,11 @@
 #    - docker-py==1.10.6
 #  become: yes
 
-- name: jenkins-slave | Uninstall docker-py
-  pip:
-      name=docker-py
-      state=absent
-  become: yes
+#- name: jenkins-slave | Uninstall docker-py
+#  pip:
+#      name=docker-py
+#      state=absent
+#  become: yes
   
 - name: jenkins-slave | Install Docker tool (Debian based)
   pip: name={{ item }}
@@ -138,6 +138,7 @@
 ##
  # Jenkins user
  #
+
 #- name: Kill connection used by user jenkins
 #  action: shell killall -u {{ jenkins_user }} || true
 #  changed_when: false
@@ -163,8 +164,6 @@
 
 #sudo gpasswd -a ${USER} docker
 #sudo gpasswd -a jenkins docker
-
-#sudo gpasswd -a fusionrisk docker
 
 - name: jenkins-slave | Create a jenkins group
   group: 
@@ -278,12 +277,20 @@
 - name: jenkins-slave | Create Jenkins thin backup directory
   file: path={{ jenkins_remote_thinbackup }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
   changed_when: false  
+  become: yes
+  ignore_errors: true
 
 #- name: jenkins-slave | Create Jenkins thin backup directory
 #  file: path={{ jenkins_remote_thinbackup }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
 #  changed_when: false  
 #  become: yes  
 #  ignore_errors: true 
+
+#TODO install C++ sonar build-wrapper
+#cd {{ jenkins_home }}
+#wget https://sonar:8999/static/cpp/build-wrapper-linux-x86.zip --no-check-certificate
+#unzip build-wrapper-linux-x86.zip
+#{{ jenkins_home }}/build-wrapper-linux-x86/build-wrapper-linux-x86-64
 
 - name: jenkins-slave | Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}

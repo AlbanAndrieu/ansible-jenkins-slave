@@ -2,10 +2,10 @@
 
 jenkins_name: jenkins
 jenkins_user: jenkins
-# python -c 'import crypt; print crypt.crypt("This is my Password", "jenkins")'
 # python -c "from passlib.hash import sha512_crypt; import getpass; print sha512_crypt.encrypt(getpass.getpass())"
+#jenkins1234
 #http://docs.ansible.com/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
-jenkins_password: "$6$rounds=40000$OvRtT6osJP89GLee$/cizemUXDAH.mW1ILNK1NGk64/TYLgfbHPo3LnFZEZaLsXTOXQV/0f9.bghBsCycJ32rC.meBaujNQI7KgRPQ."
+jenkins_password: "$6$rounds=656000$ITswjqU77/RgGDEv$Vbv6Pw5UJEQQGXwZ4JiR0WXsZVSNAHY7NuWgid.yGLIxro27nZt7CIMwQrh4encLm9Db1RDscEjC1T9ldCgx61"
 jenkins_group: jenkins
 #jenkins_shell: "/bin/false"
 jenkins_shell: "/bin/bash"
