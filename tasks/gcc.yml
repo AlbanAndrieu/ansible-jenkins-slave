@@ -17,8 +17,6 @@
   with_items:
    - gcc-4.8
    - g++-4.8
-   - gcc-4.7
-   - g++-4.7
 
 - name: cpp | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -29,8 +27,6 @@
 #   - g++-6
    - gcc-5
    - g++-5
-#   - gcc-4.9
-#   - g++-4.9
 
 #SEE https://www.vultr.com/docs/how-to-install-gcc-on-centos-6
 - name: cpp | Install C++ compiler (CentOS based)

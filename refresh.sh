@@ -89,6 +89,10 @@ ssh-add $ANSIBLE_PRIVATE_KEY_FILE
 #ansible -m setup ${TARGET_SLAVE} -i staging --user=vagrant --private-key=~/.vagrant.d/insecure_private_key  -vvvv
 ansible -m setup ${TARGET_SLAVE} -i staging --user=vagrant -vvvv
 #vagrant ssh
+
+# check syntax 
+#ansible-playbook -i staging -c local -v  jenkins-slave.yml --limit ${TARGET_SLAVE} -vvvv --syntax-check
+
 ansible-playbook jenkins-slave.yml -i staging --limit ${TARGET_SLAVE} -vvvv || exit 2
 echo "Connecting to slave"
 #vagrant ssh-config

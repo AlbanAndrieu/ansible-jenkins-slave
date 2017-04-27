@@ -22,6 +22,8 @@
   tags:
     - jenkins-slave
 
+- include: python.yml
+
 #- include: java.yml
 
 #- include: maven.yml
@@ -31,14 +33,14 @@
  #
 #TODO move to its own role
 - name: Install subversion package
-  action: "{{ ansible_pkg_mgr}} name='subversion' state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name='subversion' state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   become: yes
 
 ##
  # other
  #
 - name: jenkins-slave | Install coverage and metrics tools
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or epel_repo_enabled
   with_items:
    - lcov
@@ -47,7 +49,7 @@
   become: yes
 
 - name: jenkins-slave | Install tools needed by grunt-zaproxy html report
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:
 #Needed for having /usr/bin/xml2-config in the PATH
@@ -56,7 +58,7 @@
   become: yes
 
 - name: jenkins-slave | Install tools needed by grunt-zaproxy html report
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
   with_items:
    - libxml2 #Needed for having /usr/bin/xml2-config in the PATH
@@ -99,32 +101,25 @@
   pip: name={{ item }}
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
-    - ansible==2.2.0
+    - ansible==2.3.0.0
   become: yes
-  
-#sudo pip uninstall docker docker-py  
-#sudo pip install docker  
-#docker-compose --version
-
-#sudo apt-get install apt-transport-https ca-certificates
-#See https://docs.docker.com/engine/installation/linux/ubuntulinux/
 
 - name: jenkins-slave | Install Ansible syntax check (RedHat based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  become: yes
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and epel_repo_enabled
   with_items:
    - ansible-lint
-
+  become: yes
+  
 - name: jenkins-slave | Install security basic tools for Ansible check
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') 
   with_items:
     - chkrootkit
   become: yes
 
 - name: jenkins-slave | Install security basic tools 
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or epel_repo_enabled
   with_items:
     - rkhunter
@@ -344,6 +339,20 @@
 
 #TODO Add source /etc/profile for RedHat to find lsof command
 
+- name: jenkins-slave | Install requirement for zaproxy
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+#    - phantomjs
+#    - adobe-flashplugin
+    - chromium-chromedriver # see selenium role
+#    - chromium-browser
+##below needed for protractor tests
+#    - google-chrome-stable
+
+#TODO sudo ln -s /usr/lib/chromium-browser/chromedriver /var/lib/chromedriver
+
 #TODO use jenkins to install phantomjs
 #- name: npm | Ensure the phantomas npm dependencies are installed
 #  npm: >
@@ -366,10 +375,12 @@
 
 - name: jenkins-slave | Cleanup temporary directory
   file: name={{ tempdir.stdout }} state=absent
-  changed_when: false
   tags:
     - jenkins-slave
-
+  changed_when: false    
+  ignore_errors: "{{ ansible_check_mode }}"    
+  become: yes
+  
 - name: jenkins-slave | Copy Dockerfile
   template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0777
   when: docker_files_enable

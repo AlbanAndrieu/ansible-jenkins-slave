@@ -1,0 +1,38 @@
+
+- include: python2.yml
+- include: python3.yml
+
+- name: jenkins-slave | Install devops tools for release notes
+  pip: name={{ item }}
+  with_items:
+    - numpy
+    - pandas
+    - stashy
+    - jira
+    - openpyxl        
+  become: yes
+
+- name: jenkins-slave | Install MySQL requirement for sonar
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - libmysqlclient-dev
+
+- name: jenkins-slave | Install MySQL for sonar
+  pip: name={{ item }}
+  with_items:
+    - MySQL-python       
+  become: yes
+
+#Issue wiht out of disk space on Ubuntu 16.04
+#unity7.log X11 error: BadWindow (invalid Window parameter) Error code: 3, request code: f, minor code: 0
+#See disk space issue : http://askubuntu.com/questions/434581/problem-with-cache-upstart
+#sudo apt-get purge logrotate
+#sudo apt-get install logrotate
+#wget https://launchpad.net/ubuntu/+archive/primary/+files/python-cryptography_1.7.1-2_amd64.deb && 
+#wget https://launchpad.net/ubuntu/+archive/primary/+files/python-openssl_16.2.0-1_all.deb && 
+#sudo dpkg -i --auto-deconfigure python-cryptography_1.7.1-2_amd64.deb && sudo dpkg -i  python-openssl_16.2.0-1_all.deb
+# 
+#rm ~/.cache/upstart/unity7.log
