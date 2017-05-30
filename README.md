@@ -4,15 +4,23 @@
      instead have a look at the files in the ./meta/ directory. -->
 
 [![Travis CI](https://img.shields.io/travis/AlbanAndrieu/ansible-jenkins-slave.svg?style=flat)](https://travis-ci.org/AlbanAndrieu/ansible-jenkins-slave)
-[![test-suite](https://img.shields.io/badge/test--suite-ansible--alban__andrieu__jenkins__slave-blue.svg?style=flat)](https://github.com/AlbanAndrieu/test-suite/tree/master/ansible-alban_andrieu_jenkins_slave/)
 [![Branch](http://img.shields.io/github/tag/AlbanAndrieu/ansible-jenkins-slave.svg?style=flat-square)](https://github.com/AlbanAndrieu/ansible-jenkins-slave/tree/master)
 [![Donate](https://img.shields.io/gratipay/AlbanAndrieu.svg?style=flat)](https://www.gratipay.com/~AlbanAndrieu)
-[![Ansible Galaxy](https://img.shields.io/badge/galaxy-alban.andrieu.jenkins--slave-660198.svg?style=flat)](https://galaxy.ansible.com/detail#/role/1998)
+<!--[![Ansible Galaxy](https://img.shields.io/badge/galaxy-alban.andrieu.jenkins--slave-660198.svg?style=flat)](https://galaxy.ansible.com/detail#/role/1998)-->
+<!--[![Ansible Galaxy](https://img.shields.io/badge/galaxy-alban.andrieu.jenkins--slave-660198.svg?style=flat)](https://galaxy.ansible.com/alban.andrieu/jenkins-slave/)-->
+[![Ansible Galaxy](https://img.shields.io/badge/galaxy-alban.andrieu.jenkins--slave-660198.svg?style=flat)](https://galaxy.ansible.com/alban.andrieu/jenkins-slave)
 [![Platforms](http://img.shields.io/badge/platforms-ubuntu-lightgrey.svg?style=flat)](#)
 [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=AlbanAndrieu&url=https://github.com/AlbanAndrieu/ansible-jenkins-slave&title=ansible-jenkins-slave&language=en_GB&tags=github&category=software)
 
 Ensures that the basic requirements are properly installed (using `apt`) and configured for a jenkins slave to build, test package and deploy your project
 
+### Installation
+
+This role requires at least Ansible `v2.3.0.0`. To install it, run:
+
+```Shell
+ansible-galaxy install alban.andrieu.jenkins-slave
+```
 
 ### Role dependencies
 
@@ -27,7 +35,7 @@ Ensures that the basic requirements are properly installed (using `apt`) and con
 - `alban.andrieu.jboss`
 ### Installation
 
-This role requires at least Ansible `v1.6.3`. To install it, run:
+This role requires at least Ansible `v2.3.0.0`. To install it, run:
 
 Using `ansible-galaxy`:
 ```shell
