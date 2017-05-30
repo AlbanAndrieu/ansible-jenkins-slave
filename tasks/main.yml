@@ -41,7 +41,7 @@
  #
 - name: jenkins-slave | Install coverage and metrics tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or epel_repo_enabled
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
    - lcov
    - graphviz
@@ -104,9 +104,9 @@
     - ansible==2.3.0.0
   become: yes
 
-- name: jenkins-slave | Install Ansible syntax check (RedHat based)
+- name: jenkins-slave | Install Ansible syntax check
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and epel_repo_enabled
+#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
    - ansible-lint
   become: yes
@@ -120,7 +120,7 @@
 
 - name: jenkins-slave | Install security basic tools 
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or epel_repo_enabled
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - rkhunter
     - unhide
