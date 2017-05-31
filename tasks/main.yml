@@ -71,38 +71,13 @@
 #  pip: name={{ item }}
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 #  with_items:
-#    - docker-py
+#    - ansible-lint
 #  become: yes
 
-#sudo pip2 install ansible==2.1.1
-#sudo pip2 install docker-py==1.9.0
-#ansible 2.3.0 issue and docker-py 2.3.0 issue
+- include: docker.yml
 
-#for docker-compose version 1.9.0 and docker version 1.12.6
-#sudo pip2 install docker-compose==1.9.0
-#sudo pip2 install docker-py==1.10.6 
-#sudo pip2 install docker==2.0.2
-#sudo pip2 install ansible==2.2.0
-#sudo pip show docker-py
-#- name: jenkins-slave | Install Docker tool (Debian based)
-#  pip: name={{ item }}
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-#  with_items:
-#    - docker-py==1.10.6
-#  become: yes
-
-#- name: jenkins-slave | Uninstall docker-py
-#  pip:
-#      name=docker-py
-#      state=absent
-#  become: yes
-  
-- name: jenkins-slave | Install Docker tool (Debian based)
-  pip: name={{ item }}
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  with_items:
-    - ansible==2.3.0.0
-  become: yes
+#sudo apt-get install apt-transport-https ca-certificates
+#See https://docs.docker.com/engine/installation/linux/ubuntulinux/
 
 - name: jenkins-slave | Install Ansible syntax check (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -128,6 +103,10 @@
 
 #- include: gcc.yml
 
+- include: cpp.yml
+
+- include: shell.yml
+
 - include: perl.yml
 
 ##
@@ -141,24 +120,6 @@
 #  ignore_errors: true
 
 #TODO https://stackoverflow.com/questions/26677064/create-and-use-group-without-restart
-
-- name: jenkins-slave | Create a docker group
-  group: 
-      name=docker 
-      state=present
-  become: yes
-  
-- name: jenkins-slave | Add user(s) to docker group
-  user: 
-      name={{ item }} 
-      group=docker 
-      state=present
-  with_items: docker_users
-  when: docker_users is defined
-  become: yes
-
-#sudo gpasswd -a ${USER} docker
-#sudo gpasswd -a jenkins docker
 
 - name: jenkins-slave | Create a jenkins group
   group: 
@@ -302,21 +263,6 @@
   changed_when: false
 
 - include: tmp.yml
-
-#TODO add JAVA_HOME
-
-- name: jenkins-slave | Add options in ~/.bashrc
-#    regexp: "{{ item.regexp }}"
-  lineinfile:
-    dest: ~/.bashrc
-    line: "{{ item.line }}"
-    insertafter: EOF
-  with_items:
-    - { regexp: '', line: 'export SCONS=/usr/bin/scons' }
-    - { regexp: '', line: 'export TAR=/bin/gtar' }
-  become_user: "{{ jenkins_user }}"
-#  become: yes
-  changed_when: false
 
 #TODO
 #https://docs.ansible.com/ansible/jenkins_plugin_module.html
