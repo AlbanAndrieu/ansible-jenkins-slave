@@ -23,7 +23,7 @@ galaxy_info:
   description: A role for installing jenkins-slave
   company: Nabla
   license: GPLv3
-  min_ansible_version: 1.6.3
+  min_ansible_version: 2.3.0.0
   platforms:
   - name: Ubuntu
     versions:
@@ -43,6 +43,7 @@ galaxy_info:
 
 ansigenome_info:
   galaxy_id: '1998'
+  galaxy_url: 'https://galaxy.ansible.com/alban.andrieu/jenkins-slave/'
   galaxy_user: 'alban.andrieu'
   galaxy_name: 'jenkins-slave'
 

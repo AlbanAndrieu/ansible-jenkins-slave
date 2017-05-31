@@ -5,15 +5,22 @@
 
 [![Travis CI](https://img.shields.io/travis/AlbanAndrieu/ansible-jenkins-slave.svg?style=flat)](https://travis-ci.org/AlbanAndrieu/ansible-jenkins-slave)
 [![Branch](http://img.shields.io/github/tag/AlbanAndrieu/ansible-jenkins-slave.svg?style=flat-square)](https://github.com/AlbanAndrieu/ansible-jenkins-slave/tree/master)
-[![Donate](https://img.shields.io/gratipay/AlbanAndrieu.svg?style=flat)](https://www.gratipay.com/AlbanAndrieu)
-[![test-suite](https://img.shields.io/badge/test--suite-ansible--alban__andrieu__jenkins__slave-blue.svg?style=flat)](https://github.com/AlbanAndrieu/test-suite/tree/master/ansible-alban_andrieu_jenkins_slave/)
-[![Ansible Galaxy](https://img.shields.io/badge/galaxy-alban.andrieu.jenkins--slave-660198.svg?style=flat)](https://galaxy.ansible.com/detail#/role/1998)
+[![Donate](https://img.shields.io/gratipay/AlbanAndrieu.svg?style=flat)](https://www.gratipay.com/~AlbanAndrieu)
+<!--[![Ansible Galaxy](https://img.shields.io/badge/galaxy-alban.andrieu.jenkins--slave-660198.svg?style=flat)](https://galaxy.ansible.com/detail#/role/1998)-->
+<!--[![Ansible Galaxy](https://img.shields.io/badge/galaxy-alban.andrieu.jenkins--slave-660198.svg?style=flat)](https://galaxy.ansible.com/alban.andrieu/jenkins-slave/)-->
+[![Ansible Galaxy](https://img.shields.io/badge/galaxy-alban.andrieu.jenkins--slave-660198.svg?style=flat)](https://galaxy.ansible.com/alban.andrieu/jenkins-slave)
 [![Platforms](http://img.shields.io/badge/platforms-ubuntu-lightgrey.svg?style=flat)](#)
-[![Gittip](http://img.shields.io/gittip/alban.andrieu.svg)](https://www.gittip.com/alban.andrieu/)
-[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=AlbanAndrieu&url=https://github.com/alban.andrieu/ansible-phpvirtualbox&title=Ansible Role: PhpVirtualbox&language=&tags=github&category=software)
+[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=AlbanAndrieu&url=https://github.com/AlbanAndrieu/ansible-jenkins-slave&title=ansible-jenkins-slave&language=en_GB&tags=github&category=software)
 
 Ensures that the basic requirements are properly installed (using `apt`) and configured for a jenkins slave to build, test package and deploy your project
 
+### Installation
+
+This role requires at least Ansible `v2.3.0.0`. To install it, run:
+
+```Shell
+ansible-galaxy install alban.andrieu.jenkins-slave
+```
 
 ### Role dependencies
 
@@ -28,7 +35,7 @@ Ensures that the basic requirements are properly installed (using `apt`) and con
 - `alban.andrieu.jboss`
 ### Installation
 
-This role requires at least Ansible `v1.6.3`. To install it, run:
+This role requires at least Ansible `v2.3.0.0`. To install it, run:
 
 Using `ansible-galaxy`:
 ```shell
@@ -42,13 +49,15 @@ $ arm install alban.andrieu.jenkins-slave
 
 Using `git`:
 ```shell
-$ git clone https://github.com/alban.andrieu/ansible-eclipse.git
+$ git clone https://github.com/AlbanAndrieu/ansible-jenkins-slave.git
 ```
 
 ### Documentation
 
+<!---
 More information about `alban.andrieu.jenkins-slave` can be found in the
 [official alban.andrieu.jenkins-slave documentation](https://docs.debops.org/en/latest/ansible/roles/ansible-jenkins-slave/docs/).
+-->
 
 
 ### Role variables
@@ -60,10 +69,10 @@ List of default variables available in the inventory:
 
 jenkins_name: jenkins
 jenkins_user: jenkins
-# python -c 'import crypt; print crypt.crypt("This is my Password", "jenkins")'
 # python -c "from passlib.hash import sha512_crypt; import getpass; print sha512_crypt.encrypt(getpass.getpass())"
+#jenkins1234
 #http://docs.ansible.com/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
-jenkins_password: "$6$rounds=40000$OvRtT6osJP89GLee$/cizemUXDAH.mW1ILNK1NGk64/TYLgfbHPo3LnFZEZaLsXTOXQV/0f9.bghBsCycJ32rC.meBaujNQI7KgRPQ."
+jenkins_password: "$6$rounds=656000$ITswjqU77/RgGDEv$Vbv6Pw5UJEQQGXwZ4JiR0WXsZVSNAHY7NuWgid.yGLIxro27nZt7CIMwQrh4encLm9Db1RDscEjC1T9ldCgx61"
 jenkins_group: jenkins
 #jenkins_shell: "/bin/false"
 jenkins_shell: "/bin/bash"
@@ -100,12 +109,17 @@ jenkins_ssh_fingerprints:                   # Set known hosts for ssh
   - "bitbucket.org,131.103.20.167 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw=="
   - "github.com,204.232.175.90 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=="
 
+jenkins_remote_thinbackup: "/backup/thinBackup"
+
 home_url: "http://localhost"
 nexus_url: "{{ home_url }}:8081"
 npm_nexus_npm_url: "{{ nexus_url }}/nexus/content/npm/registry.npmjs.org/"
 #npm_phantomjs_cdnurl: "{{ home_url }}:7070/download/phantomjs"
 npm_strict_ssl: "false"
 #npm_prefix: "/usr/local"
+#maven_repository: "{{ jenkins_slave_home }}/repository"
+maven_repository: "/usr/share/maven-repo"
+#TODO sudo chmod 755 -R /usr/share/maven-repo
 
 bower_directory: "bower_components"
 bower_analytics: "false"
@@ -137,6 +151,9 @@ proxy_repo_enabled: false
 proxy_repo_server: "localhost"
 proxy_repo_url: "http://{{ proxy_repo_server }}:3142"
 
+docker_py_version: "1.9.0"
+docker_users: "{{ jenkins_user }}"
+
 docker_files_generated_directory: "./"
 docker_files_enable: no
 docker_volume_directory: "{{ jenkins_home }}"
@@ -148,9 +165,9 @@ docker_image_name: "nabla/ansible-jenkins-slave"
 List of internal variables used by the role:
 
     cpp_version
-    mvn_dir
-    cpp_dir
     jdk_dir
+    cpp_dir
+    mvn_dir
 ### Detailed usage guide
 
 Describe how to use in more detail...
@@ -164,7 +181,7 @@ Describe how to use in more detail...
 
 - License: [GPLv3](https://tldrlegal.com/license/gnu-general-public-license-v3-%28gpl-3%29)
 
-Copyright (c) 2016 [Alban Andrieu](https://alban-andrieu.com/)
+Copyright (c) 2017 [Alban Andrieu](https://alban.andrieu.com/)
 
 ### Feedback, bug-reports, requests, ...
 
