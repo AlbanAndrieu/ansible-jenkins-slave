@@ -13,6 +13,7 @@
 - name: jenkins-slave | Copy the .netrc script for git credentials
   template: src=.netrc.j2 dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   when: shell_git_configure_enabled
+  become: yes  
   changed_when: false
   tags: git
 
@@ -24,6 +25,7 @@
     group: '{{ jenkins_group }}'
     mode: 0600
   when: shell_git_configure_enabled
+  become: yes  
   changed_when: false
   tags: git
 

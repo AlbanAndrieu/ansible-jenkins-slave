@@ -22,7 +22,7 @@ galaxy_info:
   author: Alban Andrieu
   description: A role for installing jenkins-slave
   company: Nabla
-  license: GPLv3
+  license: Apache
   min_ansible_version: 2.3.0.0
   platforms:
   - name: Ubuntu

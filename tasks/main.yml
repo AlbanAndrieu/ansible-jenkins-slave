@@ -80,7 +80,7 @@
 
 #for docker-compose version 1.9.0 and docker version 1.12.6
 #sudo pip2 install docker-compose==1.9.0
-#sudo pip2 install docker-py==1.10.6 
+#sudo pip2 install docker-py==1.10.6
 #sudo pip2 install docker==2.0.2
 #sudo pip2 install ansible==2.2.0
 #sudo pip show docker-py
@@ -96,7 +96,7 @@
 #      name=docker-py
 #      state=absent
 #  become: yes
-  
+
 - name: jenkins-slave | Install Docker tool (Debian based)
   pip: name={{ item }}
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
@@ -106,19 +106,19 @@
 
 - name: jenkins-slave | Install Ansible syntax check
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
    - ansible-lint
   become: yes
-  
+
 - name: jenkins-slave | Install security basic tools for Ansible check
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') 
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - chkrootkit
   become: yes
 
-- name: jenkins-slave | Install security basic tools 
+- name: jenkins-slave | Install security basic tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
@@ -143,15 +143,15 @@
 #TODO https://stackoverflow.com/questions/26677064/create-and-use-group-without-restart
 
 - name: jenkins-slave | Create a docker group
-  group: 
-      name=docker 
+  group:
+      name=docker
       state=present
   become: yes
-  
+
 - name: jenkins-slave | Add user(s) to docker group
-  user: 
-      name={{ item }} 
-      group=docker 
+  user:
+      name={{ item }}
+      group=docker
       state=present
   with_items: docker_users
   when: docker_users is defined
@@ -161,11 +161,11 @@
 #sudo gpasswd -a jenkins docker
 
 - name: jenkins-slave | Create a jenkins group
-  group: 
-      name=jenkins 
+  group:
+      name=jenkins
       state=present
   become: yes
-  
+
 - name: jenkins-slave | Create jenkins user
   user: name={{ jenkins_user }} password={{ jenkins_password }} update_password=always comment="Jenkins user" home={{ jenkins_home }} shell={{ jenkins_shell }} groups=docker,{{ jenkins_group }}
   become: yes
@@ -187,17 +187,21 @@
 
 - name: jenkins-slave | Copy the deploy-log-parsing-rules for jenkins log parsing configuration
   copy: src=deploy-log-parsing-rules dest={{ jenkins_home }}/deploy-log-parsing-rules backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
+  become: true
 
 - name: jenkins-slave | Copy the email template for jenkins email ext configuration
   copy: src=groovy-html-main.template dest={{ jenkins_home }}/email-templates/groovy-html-cut.template backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
+  become: true
   ignore_errors: true
 
 - name: jenkins-slave | Create .m2 folder
   file: path={{ jenkins_home }}/.m2 state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
+  become: true
   changed_when: false
 
 - name: jenkins-slave | Copy maven configuration
   template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
+  become: true
   changed_when: false
 
 - name: jenkins-slave | Jenkins can run any command with no password
@@ -259,27 +263,30 @@
 
 - name: jenkins-slave | Create {{ jenkins_slave_home }} directory
   file: path={{ jenkins_slave_home }} state=directory
+  become: yes
   changed_when: false
 
 - name: jenkins-slave | Create maven repository directory
   file: path={{ maven_repository }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
+  become: yes
   changed_when: false
 
 - name: jenkins-slave | Create Jenkins slave directory
   file: path={{ jenkins_slave_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
+  become: yes
   changed_when: false
-  
+
 - name: jenkins-slave | Create Jenkins thin backup directory
   file: path={{ jenkins_remote_thinbackup }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
-  changed_when: false  
+  changed_when: false
   become: yes
   ignore_errors: true
 
 #- name: jenkins-slave | Create Jenkins thin backup directory
 #  file: path={{ jenkins_remote_thinbackup }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
-#  changed_when: false  
-#  become: yes  
-#  ignore_errors: true 
+#  changed_when: false
+#  become: yes
+#  ignore_errors: true
 
 #TODO install C++ sonar build-wrapper
 #cd {{ jenkins_home }}
@@ -289,16 +296,19 @@
 
 - name: jenkins-slave | Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
+  become: yes  
   changed_when: false
 
 #- include: nodejs.yml
 
 - name: jenkins-slave | Copy the .npmrc script
   template: src=.npmrc.j2 dest={{ jenkins_home }}/.npmrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+  become: yes  
   changed_when: false
 
 - name: jenkins-slave | Copy the .bowerrc script
   template: src=.bowerrc.j2 dest={{ jenkins_home }}/.bowerrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+  become: yes  
   changed_when: false
 
 - include: tmp.yml
@@ -377,10 +387,10 @@
   file: name={{ tempdir.stdout }} state=absent
   tags:
     - jenkins-slave
-  changed_when: false    
-  ignore_errors: "{{ ansible_check_mode }}"    
+  changed_when: false
+  ignore_errors: "{{ ansible_check_mode }}"
   become: yes
-  
+
 - name: jenkins-slave | Copy Dockerfile
   template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0777
   when: docker_files_enable
