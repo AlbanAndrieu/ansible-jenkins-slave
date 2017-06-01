@@ -1,0 +1,38 @@
+
+- name: jenkins-slave | Install shell for running
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - bash
+   - ksh
+  become: yes
+  
+#For Solaris 10 update PATH
+#env
+#crle
+#echo $PATH
+##/usr/bin
+#PATH=/usr/sbin:/usr/bin:/usr/ccs/bin:/usr/sfw/bin
+#echo $SHELL
+##PS1='\w $ '
+#PS1='${HOST}:${PWD} # ';  export PS1
+#Switch to bash
+#exec bash --noprofile --rcfile /dev/null
+#export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
+
+#TODO add JAVA_HOME
+
+- name: jenkins-slave | Add options in ~/.bashrc
+#    regexp: "{{ item.regexp }}"
+  lineinfile:
+    dest: ~/.bashrc
+    line: "{{ item.line }}"
+    insertafter: EOF
+  with_items:
+    - { regexp: '', line: 'export SCONS=/usr/bin/scons' }
+    - { regexp: '', line: 'export TAR=/bin/gtar' }
+    - { regexp: '', line: 'export GIT_DISCOVERY_ACROSS_FILESYSTEM=1' } #For Solaris
+  become_user: "{{ jenkins_user }}"
+#  become: yes
+  changed_when: false
+

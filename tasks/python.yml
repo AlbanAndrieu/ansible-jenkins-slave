@@ -2,6 +2,13 @@
 - include: python2.yml
 - include: python3.yml
 
+- name: jenkins-slave | Install python check tools
+  pip: name={{ item }}
+  with_items:
+    - pylint
+    - flake8    
+  become: yes
+
 - name: jenkins-slave | Install devops tools for release notes
   pip: name={{ item }}
   with_items:
@@ -10,6 +17,29 @@
     - stashy
     - jira
     - openpyxl        
+  become: yes
+
+- name: jenkins-slave | Install devops tools for ansible windows
+  #executable=pip{{ python_versions }}
+  #pip: name="https://github.com/diyan/pywinrm/archive/df049454a9309280866e0156805ccda12d71c93a.zip" state=present
+  pip: name={{ item }}
+  with_items:
+    - "pywinrm>=0.2.2"
+  become: yes
+
+- name: jenkins-slave | Install devops tools for ansible kerberos
+  pip: name={{ item }}
+  with_items:
+    - python-dev 
+    - libkrb5-dev 
+    - krb5-user
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
+  become: yes
+
+- name: jenkins-slave | Install devops tools for ansible
+  pip: name={{ item }}
+  with_items:
+    - ansible-cmdb
   become: yes
 
 - name: jenkins-slave | Install MySQL requirement for sonar

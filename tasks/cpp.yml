@@ -1,0 +1,385 @@
+
+##
+ # C++ libs
+ #
+- name: package | Install C++ needed APR package
+  pkgutil: name={{ item }} state=present
+  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
+  with_items:
+   - CSWlibaprutil1-ldap
+   #- CSWlibaprutil1-0 #Dependencies CSWlibapr1-0 CSWlibexpat1 CSWlibiconv2
+   #- CSWlibaprutil-dev
+   #- CSWlibapr1-0
+   #- CSWlibapr-dev
+   #- CSWlibexpat0
+   #- CSWlibexpat1
+   #- CSWlibexpat-dev
+   #- CSWlibiconv2
+   #- CSWlibuuid1
+
+#- name: package | Install C++ needed LDAP package
+#  pkgutil: name={{ item }} state=present
+#  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
+#  with_items:
+#   - CSWopenldap #Dependencies CSWlibldap-r2-4- CSWlibsasl2-2 CSWliblber2-4-2 CSWlibssl1-0-0
+#   #- CSWlibldap2-4-2
+#   
+#- name: package | Install C++ needed Database package
+#  pkgutil: name={{ item }} state=present
+#  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
+#  with_items:   
+#   - CSWlibicui18n55
+#   - CSWlibicuuc55
+#   - CSWfreetds
+#   - CSWfreetds-dev
+#   - CSWsqsh-freetds
+#      
+#- name: package | Install C++ needed Other package
+#  pkgutil: name={{ item }} state=present
+#  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
+#  with_items:   
+#   - CSWlibcurl4 #Dependencies CSWlibz1
+#   #- CSWlibz1
+#   - CSWlibreadline6 #Dependencies CSWlibncurses6
+#   #- CSWlibncurses6
+
+- name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04']
+  with_items:
+#libstdc++6
+   - libstdc++-4.6-dev
+   - libaprutil1
+   - libapr1   
+#do not install log4cxx it because provided by 3rparties for RedHat
+#   - liblog4cxx10
+   - libldap-2.4-2
+   - libcurl3
+   - zlib1g
+#   - libcrypto++9
+#   - libxerces-c28
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04']
+  with_items:
+#libstdc++6
+   - libstdc++-4.8-dev
+   - libaprutil1
+   - libapr1   
+#do not install log4cxx it because provided by 3rparties for RedHat
+#   - liblog4cxx10
+   - libldap-2.4-2
+   - libcurl3
+   - zlib1g
+#   - libcrypto++9
+#   - libxerces-c28
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04','14.04']
+  with_items:
+   - libssl0.9.8
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','14.04']
+  with_items:
+   - libssl1.0.0
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04']
+  with_items:
+   - liblog4cxx-dev
+   - libldap2-dev
+#   - libldap-2.4-2
+   - libsasl2-dev
+#   - libcurl3
+#   - zlib1g
+#   - libcrypto++9
+#   - libxerces-c28
+   - libaprutil1-dev
+   - libdwarf-dev
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for building 64bits (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  with_items:
+#ldap-2.4 is the default on RedHat 7.1, but we still use ldap-2.3 in the code
+   - openldap-devel
+#bolow cyrus-sasl-devel is added by openldap-devel
+   - cyrus-sasl-devel
+   - openssl-devel
+   - apr-devel #KGRServer
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for building tibcoadapter (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04']
+  with_items:
+#   - libstdc++5
+#libstdc++6
+   - libstdc++-5-dev
+   - libstdc++-5-dev:i386
+#unicode libicuuc.so for tibadapter
+   - libicu-dev
+   - libicu55
+#   - libicu55:i386
+#Note that there is 32bits lib/libicuuc.so cross compilation in 3rdparties/x86Linux/tibadapter
+   - libicu-dev:i386
+  become: yes
+
+- name: jenkins-slave | Install package for installing tibcoadapter
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+   - bc
+  become: yes
+
+#TODO as root user install tibco
+#mkdir /opt/tibco
+#chmod 755 /opt/tibco
+#chown -R jenkins:jenkins /opt/tibco
+
+#TODO as jenkins user install tibco adapter
+
+#Install tibco rdv (not required if insatlling tibco admin)
+#cd ~/TMP
+#wget http://kgrweb/download/tibco/Adapter-SDK-5.8.0/TIB_rv_8.4.4_linux_x86.zip
+#unzip TIB_rv_8.4.4_linux_x86.zip
+#./TIBCOUniversalInstaller-lnx-x86.bin -silent
+
+#Install tibco admin
+#cd ~/TMP
+#wget http://kgrweb/download/tibco/Adapter-SDK-5.8.0/TIB_TIBCOAdmin_5.9.0_linux_x86_64.zip
+#unzip TIB_TIBCOAdmin_5.9.0_linux_x86_64.zip
+#./TIBCOUniversalInstaller-lnx-x86-64.bin -console
+
+#Prior to using the TIBCO Rendezvous - The Information Bus(tm) software, make sure that /opt/tibco/tibrv/8.4/bin is in your path.
+#You should also ensure that /opt/tibco/tibrv/8.4/lib is in your LD_LIBRARY_PATH
+
+#less /jenkins/.TIBCO/install_2017-03-06.153453/tibco_universal_installer.jenkins_install.log
+
+#Install tibco runtime agent (mandatory)
+#cd ~/TMP
+#wget http://kgrweb/download/tibco/Adapter-SDK-5.8.0/TIB_TRA_5.10.0_linux_x86_64.zip
+#unzip TIB_TRA_5.10.0_linux_x86_64.zip
+#./TIBCOUniversalInstaller-lnx-x86-64.bin -console
+
+#Configuration Directory Location:
+#ls -lrta /jenkins/TIBCO-HOME/tibco/cfgmgmt
+
+#cd ~/TMP
+#wget http://kgrweb/download/tibco/Adapter-SDK-5.8.0/TIB_sdk_5.8.0_linux24gl23_x86.zip
+#unzip  TIB_sdk_5.8.0_linux24gl23_x86.zip
+#./TIBCOUniversalInstaller-lnx-x86.bin -silent
+#See /jenkins/.TIBCO/install_2017-03-06.150301/tibco_universal_installer.jenkins_install.log
+
+#TIBCO Environment Home Directory: [/jenkins/tibco] 
+#Environment Name: TEST
+#Environment Location: /jenkins/tibco
+ 
+- name: jenkins-slave | Install C++ librairies for building tibcoadapter (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  with_items:
+#ldap-2.3 is still needed by tibco adapter
+   - compat-openldap
+   - libssl.so.0.9.8
+#See https://access.redhat.com/solutions/2043553
+# ln -s /usr/lib64/libssl.so.0.9.8e /usr/lib64/libssl.so.0.9.8
+# ln -s /usr/lib64/libssl.so.1.0.1e /usr/lib64/libssl.so.1.0.1
+# ln -s /usr/lib64/libcrypto.so.0.9.8e /usr/lib64/libcrypto.so.0.9.8
+# ln -s /usr/lib64/libcrypto.so.1.0.1e /usr/lib64/libcrypto.so.1.0.1
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for building (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  tags: cpp
+  with_items:
+   - libstdc++
+#Below libstdc++-devel already installed
+#   - libstdc++-devel
+   - glibc
+   - apr
+   - apr-util
+#   - log4cxx
+   - openssl
+   - openldap
+   - libcurl
+   - zlib
+#   - libcrypto++9
+#   - libxerces-c28
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for building 32bits RMDSExtractor (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04']
+  with_items:
+#needed for 32 bits cross compilation
+   - g++-4.6-multilib
+   - gcc-4.6-multilib
+   - ia32-libs
+   - lib32stdc++6
+   - libc6-i386
+   - libc6-dev-i386
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for building 32bits RMDSExtractor (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04']
+  with_items:
+#needed for 32 bits cross compilation
+   - g++-4.8-multilib
+   - gcc-4.8-multilib
+#   - ia32-libs
+#sudo ln -s /usr/lib32/libstdc++.so.6 /usr/lib32/libstdc++.so fixed by lib32gcc-4.8-dev
+#sudo ln -s /usr/lib32/libgcc_s.so.1 /usr/lib32/libgcc_s.so    fixed by lib32gcc-4.8-dev
+#   - lib32stdc++4.8-dev
+   - lib32gcc-4.8-dev
+   - libstdc++-4.8-dev
+  become: yes
+
+#TODO on Ubuntu 16.04 cros compatibility build for 32bit is not working
+#See https://akizuki.moe/?p=416
+#without below link workaround
+
+#sudo dpkg --add-architecture i386
+#TODO export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lib32:/usr/lib32:/usr/lib/i386-linux-gnu
+- name: jenkins-slave | Install C++ librairies for building 32bits RMDSExtractor (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04']
+  with_items:
+#needed for 32 bits cross compilation
+#   - g++-multilib
+#   - gcc-multilib
+   - gcc-5-multilib
+   - g++-5-multilib
+   - lib32gcc-5-dev
+   - libstdc++-5-dev
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for building 32bits RMDSExtractor (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'RedHat')
+  with_items:
+#needed for 32 bits cross compilation
+   - glibc-devel.i686
+   - libstdc++-devel.i686
+  become: yes
+
+#See https://gcc.gnu.org/onlinedocs/libstdc++/faq.html#faq.how_to_set_paths
+- name: jenkins-slave | Install C++ librairies for building old gcc (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04','14.04', '16.04']
+  with_items:
+#needed for linking old libraries
+# ldconfig -v | grep libstdc++
+   - libstdc++5
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for building old gcc (RedHat based)
+  yum:
+    name: "{{ item }}"
+    enablerepo: rhel-7-server-optional-rpms
+    state: "{{ jenkins_pkg_state|default('present') }}"
+  when: (ansible_distribution == 'RedHat')
+  with_items:
+# compat-libstdc++-33 contains libstdc++.so.5
+   - compat-libstdc++-33
+#  - compat-readline5-5.2-17.1.el6.i686   
+#  - compat-readline5-5.2-17.1.el6.x86_64
+  become: yes
+
+- name: jenkins-slave | Install tools (RedHat based)
+  yum:
+    name: "{{ item }}"
+    state: "{{ jenkins_pkg_state|default('present') }}"
+  when: (ansible_distribution == 'RedHat')
+  with_items:
+   - nfs-utils
+  become: yes
+
+#RHEL
+#start nfs service
+#sudo service nfs start
+ 
+#add following line /etc/exports
+#sudo vi /etc/exports
+#/misys/home/MGR/CMR *(rw)
+ 
+#add folder to sharing
+#sudo /usr/sbin/exportfs -a
+ 
+#check shared folders
+#sudo /usr/sbin/exportfs
+
+- name: jenkins-slave | Install ARC requirements (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - bison
+   - flex
+  become: yes
+  
+# Install unixodbc (ODBC connections), freetds (SQL Server connections) and tdsodbc (bridge between the former)
+- name: jenkins-slave | Install C++ librairies for running (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+#   - libicu
+#   - libtool-ltdl
+    - unixodbc 
+    - unixodbc-dev
+    - freetds-common
+    - freetds-bin
+    - tdsodbc
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for running (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+   - libicu
+   - libtool-ltdl
+   - unixODBC
+   - freetds-devel
+   - libdwarf-devel
+   #- libdwarf-tools
+  become: yes
+
+#before running “NVIDIA-Linux-x86_64-352.41.run
+- name: jenkins-slave | Install Kernel header for Nvidia driver (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+   - kernel-headers
+   - binutils
+  become: yes
+
+##
+ # Devtools
+ #
+#For wget tar unzip, see common role
+
+#See https://www.softwarecollections.org/en/scls/rhscl/devtoolset-4/
+- name: cpp | Install Devtools (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  become: yes
+  when: (ansible_distribution == 'CentOS')
+  with_items:
+   - centos-release-scl
+#   - devtoolset-3
+#   - devtoolset-4
+#sudo yum install centos-release-scl
+#sudo yum install devtoolset-4
+#scl enable devtoolset-4 bash
+#OR scl enable devtoolset-2 bash

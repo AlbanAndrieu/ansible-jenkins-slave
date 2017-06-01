@@ -2,6 +2,11 @@
 ##
  # C++
  #
+ 
+#TODO Solaris 10
+#Check gcc
+#/usr/sfw/bin/gcc -v 
+ 
 - name: cpp | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   become: yes
@@ -23,10 +28,16 @@
   become: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
   with_items:
-#   - gcc-6
-#   - g++-6
    - gcc-5
    - g++-5
+
+- name: cpp | Install C++ compiler (Debian based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  become: yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("17.04")
+  with_items:
+   - gcc-6
+   - g++-6
 
 #SEE https://www.vultr.com/docs/how-to-install-gcc-on-centos-6
 - name: cpp | Install C++ compiler (CentOS based)
