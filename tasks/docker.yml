@@ -29,10 +29,7 @@
 #  become: yes
 
 - name: jenkins-slave | Uninstall docker-py
-  pip:
-      name=docker-py
-      state=absent
-#      executable: "{{ _pip_executable }}"
+  pip: name=docker-py state=absent
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
   become: yes
 
