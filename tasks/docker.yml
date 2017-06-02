@@ -33,6 +33,7 @@
       name=docker-py
       state=absent
 #      executable: "{{ _pip_executable }}"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
   become: yes
 
 - name: jenkins-slave | Install Docker/Ansible compatible tools (Debian based)

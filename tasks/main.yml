@@ -77,9 +77,9 @@
 - include: docker.yml
 
 #sudo apt-get install apt-transport-https ca-certificates
-#See https://docs.docker.com/engine/installation/linux/ubuntulinux/b
+#See https://docs.docker.com/engine/installation/linux/ubuntulinux/
 
-- name: jenkins-slave | Install Ansible syntax check
+- name: jenkins-slave | Install Ansible syntax check (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
@@ -257,8 +257,9 @@
 
 - name: jenkins-slave | Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
-  become: yes  
   changed_when: false
+  become: yes
+  ignore_errors: true
 
 #- include: nodejs.yml
 
