@@ -24,6 +24,7 @@
   with_items:
     - nodejs
     - npm
+    - node-grunt-cli
 
 #Warning on Ubuntu command is nodejs (instead of node)
 
