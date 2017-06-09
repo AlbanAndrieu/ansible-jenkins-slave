@@ -6,7 +6,7 @@
   pip: name={{ item }}
   with_items:
     - pylint
-    - flake8    
+    - flake8
   become: yes
 
 - name: jenkins-slave | Install devops tools for release notes
@@ -15,8 +15,8 @@
     - numpy
     - pandas
     - stashy
-    - jira
-    - openpyxl        
+    - jira #See https://pypi.python.org/pypi/jira/
+    - openpyxl
   become: yes
 
 - name: jenkins-slave | Install devops tools for ansible windows
@@ -30,8 +30,8 @@
 - name: jenkins-slave | Install devops tools for ansible kerberos
   pip: name={{ item }}
   with_items:
-    - python-dev 
-    - libkrb5-dev 
+    - python-dev
+    - libkrb5-dev
     - krb5-user
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
   become: yes
@@ -53,7 +53,7 @@
 - name: jenkins-slave | Install MySQL for sonar
   pip: name={{ item }}
   with_items:
-    - MySQL-python       
+    - MySQL-python
   become: yes
 
 #Issue wiht out of disk space on Ubuntu 16.04
@@ -61,8 +61,8 @@
 #See disk space issue : http://askubuntu.com/questions/434581/problem-with-cache-upstart
 #sudo apt-get purge logrotate
 #sudo apt-get install logrotate
-#wget https://launchpad.net/ubuntu/+archive/primary/+files/python-cryptography_1.7.1-2_amd64.deb && 
-#wget https://launchpad.net/ubuntu/+archive/primary/+files/python-openssl_16.2.0-1_all.deb && 
+#wget https://launchpad.net/ubuntu/+archive/primary/+files/python-cryptography_1.7.1-2_amd64.deb &&
+#wget https://launchpad.net/ubuntu/+archive/primary/+files/python-openssl_16.2.0-1_all.deb &&
 #sudo dpkg -i --auto-deconfigure python-cryptography_1.7.1-2_amd64.deb && sudo dpkg -i  python-openssl_16.2.0-1_all.deb
-# 
+#
 #rm ~/.cache/upstart/unity7.log

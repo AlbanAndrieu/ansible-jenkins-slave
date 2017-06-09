@@ -1,31 +1,11 @@
 ok /Warning: Permanently added/
-ok /unlink .*warning.*/
-ok /cp: cannot stat/
 ok /Warning: Cannot set console to nonblocking mode, switching to blocking mode/
 ok /Administrator group not found, created with default member./
 ok /Administrator user not found, created with default password./
 # below warning removal need to be investigate
 ok /\[WARNING\] To Use Release/
-
-# match line starting with 'error ', case-insensitive
-error /(?i)^error/
-# each Sybase error is prefixed with Msg
-error /^Msg/
-# object does not exists
-error /Cannot create an index on table/
-error /No group with the specified name exists/
-error /Error\(s\)/
-error /An error occured while updating fs:/
-error /ERROR:/
-error /SEVERE:/
-error /FAILED/
-error /ERROR :/
-error /Invalid or corrupt jarfile/
-error /No such file or directory/
-error /Syntax error/
-error /Connection refused/
-error /return is : 000/
-error /Error\(s\)/
+ok /cp: cannot stat/
+ok /unlink .*warning.*/
 
 #maven cargo
 error /Exception thrown by the agent : java.net.MalformedURLException: Local host name unknown/
@@ -45,18 +25,33 @@ ok /Warning: Row size/
 warning /^kernel Attempt to set zfs file/
 info /MESSAGE: there are some new default variable/
 
+warning /No such file or directory/
+warning /ERROR: Error cloning remote repo/
+warning /Class path contains multiple SLF4J bindings/
+warning /HTTP 500 Internal Server Error/
+
 error /ERROR:/
-error /FAILED/
+warning /FAILED/
 error /ERROR :/
-warning /SEVERE:/
+error /SEVERE /
+#warning /SEVERE:/
+error /SEVERE:/
+error /SEVERE: /
 error /Invalid or corrupt jarfile/
 #warning /Invalid argument/
-warning /No such file or directory/
 warning /command not found/
+error /Address already in use/
 #NPM
 error /Cannot find module/
 error /invalid config registry="None"/
+#error /Syntax error/
+error /syntax error near/
 error /syntax error near unexpected token/
+error /An error occured while updating fs:/
+
+#Docker
+error /invalid config registry="None"/
+error /unhealthy/
 
 #ansible
 ok /^Searching for Suckit rootkit/
@@ -69,7 +64,11 @@ error /unreachable=3/
 error /failed=1/
 error /failed=2/
 error /failed=3/
+error /The error appears to have been in/
+
 warning /error: pathspec/
+warning /fatal:/
+warning /FAILED/
 #sendmail in ansible
 ok /ERROR: FEATURE/
 
@@ -86,7 +85,6 @@ error /Error\(s\)/
 
 error /Connection refused/
 error /return is : 000/
-warning /fatal:/
 error /cat: input error/
 
 #jenkins
