@@ -28,10 +28,10 @@
 #    - docker-py==1.10.6
 #  become: yes
 
-- name: jenkins-slave | Uninstall docker-py
-  pip: name=docker-py state=absent
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
-  become: yes
+#- name: jenkins-slave | Uninstall docker-py
+#  pip: name=docker-py state=absent
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
+#  become: yes
 
 - name: jenkins-slave | Install Docker/Ansible compatible tools (Debian based)
   pip: name={{ item }}
