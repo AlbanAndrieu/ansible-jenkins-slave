@@ -11,23 +11,6 @@
     - ansible==2.3.0.0
   become: yes
 
-#sudo pip2 install ansible==2.1.1
-#sudo pip2 install docker-py==1.9.0
-#ansible 2.3.0 issue and docker-py 2.3.0 issue
-
-#for docker-compose version 1.9.0 and docker version 1.12.6
-#sudo pip2 install docker-compose==1.9.0
-#sudo pip2 install docker-py==1.10.6
-#sudo pip2 install docker==2.0.2
-#sudo pip2 install ansible==2.2.0
-#sudo pip show docker-py
-#- name: jenkins-slave | Install Docker tool (Debian based)
-#  pip: name={{ item }}
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-#  with_items:
-#    - docker-py==1.10.6
-#  become: yes
-
 - name: jenkins-slave | Uninstall docker-py
   pip: name=docker-py state=absent
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
