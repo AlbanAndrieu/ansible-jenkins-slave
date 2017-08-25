@@ -309,6 +309,14 @@
 #    - google-chrome-stable
 
 #TODO sudo ln -s /usr/lib/chromium-browser/chromedriver /var/lib/chromedriver
+- name: jenkins-slave | Create chromedriver directory link (legacy required)
+  file: path=/var/lib/chromedriver src=/usr/lib/chromium-browser/chromedriver state=link
+  become: yes
+  
+#TODO sudo mkdir -p /workspace/jboss-as-7.1.1.Final
+#- name: jenkins-slave | Create Jboss directory link (legacy required)
+#  file: path={{ jboss_link_dir }} src={{ jboss_home_dir }} state=link
+#  become: yes
 
 #TODO use jenkins to install phantomjs
 #- name: npm | Ensure the phantomas npm dependencies are installed

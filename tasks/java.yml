@@ -3,6 +3,9 @@
 
 #sudo add-apt-repository ppa:webupd8team/java
 #sudo apt-get update
+#sudo apt-get install oracle-java7-installer
+#sudo apt-get install oracle-java8-installer
+#sudo apt-get install oracle-java9-installer
 #sudo apt-get install oracle-java7-set-default
 #sudo apt-get install oracle-java8-set-default
 #sudo apt-get install oracle-java9-set-default
@@ -14,7 +17,7 @@
 
 - name: jdk | Install ppa
   apt_repository: repo="ppa:webupd8team/java" state={{ util_repository_state|default('present') }} update_cache=yes
-  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version in ['16.04'])
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['12.04','13.04','14.04'])
   tags: jdk_setup
   become: yes
   
@@ -23,7 +26,7 @@
   tags: jdk_setup
   with_items:
    - oracle-java7-set-default
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04']) and jenkins_jdk7_enable   
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk7_enable   
   become: yes
 
 - name: jdk8 | Install default oracle
@@ -31,7 +34,7 @@
   tags: jdk_setup
   with_items:
    - oracle-java8-set-default
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04']) and jenkins_jdk8_enable   
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04','17.04']) and jenkins_jdk8_enable   
   become: yes
 
 #######

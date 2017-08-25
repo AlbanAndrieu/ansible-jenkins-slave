@@ -27,14 +27,14 @@
     - "pywinrm>=0.2.2"
   become: yes
 
-- name: jenkins-slave | Install devops tools for ansible kerberos
-  pip: name={{ item }}
-  with_items:
-    - python-dev
-    - libkrb5-dev
-    - krb5-user
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
-  become: yes
+#- name: jenkins-slave | Install devops tools for ansible kerberos
+#  pip: name={{ item }}
+#  with_items:
+#    - python-dev
+#    - libkrb5-dev
+#    - krb5-user
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
+#  become: yes
 
 - name: jenkins-slave | Install devops tools for ansible
   pip: name={{ item }}

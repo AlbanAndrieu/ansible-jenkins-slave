@@ -36,3 +36,13 @@
 #  become: yes
   changed_when: false
 
+#Add more fonts
+#https://coolaj86.com/articles/how-to-get-more-fonts-on-ubuntu.html
+
+- name: jenkins-slave | Install default oracle
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  with_items:
+   - ttf-xfree86-nonfree
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04'])
+  become: yes
+
