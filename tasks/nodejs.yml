@@ -21,11 +21,9 @@
 - name: jenkins-slave | Install nodejs npm official (might be outdated) (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
   become: yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04']) and nodejs_enabled
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['12.04']) and nodejs_enabled
   with_items:
     - nodejs
-    - npm
-    - node-grunt-cli
 
 - name: jenkins-slave | Install nodejs npm official (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"

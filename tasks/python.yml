@@ -7,6 +7,8 @@
   with_items:
     - pylint
     - flake8
+    - autopep8 #autopep8 py_file --in-place
+    - pre-commit #See http://pre-commit.com/
   become: yes
 
 - name: jenkins-slave | Install devops tools for release notes
@@ -17,6 +19,7 @@
     - stashy
     - jira #See https://pypi.python.org/pypi/jira/
     - openpyxl
+    - "docopt==0.6.2"
   become: yes
 
 - name: jenkins-slave | Install devops tools for ansible windows
@@ -40,6 +43,7 @@
   pip: name={{ item }}
   with_items:
     - ansible-cmdb
+    - ansible-lint
   become: yes
 
 - name: jenkins-slave | Install MySQL requirement for sonar

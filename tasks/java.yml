@@ -34,7 +34,7 @@
   tags: jdk_setup
   with_items:
    - oracle-java8-set-default
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04','17.04']) and jenkins_jdk8_enable   
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable   
   become: yes
 
 #######
