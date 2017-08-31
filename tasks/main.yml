@@ -3,7 +3,7 @@
 - name: Assert platform is supported
   assert:
     that:
-      - ansible_os_family in ['Debian', 'RedHat', 'Windows','Solaris']
+      - ansible_os_family in ['Debian', 'RedHat', 'Windows', 'Solaris', 'MacOSX', 'FreeBSD']
       - ansible_architecture in ['x86_64']
 
 - name: Include OS-specific variables.
@@ -36,18 +36,67 @@
   action: "{{ ansible_pkg_mgr }} name='subversion' state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   become: yes
 
+- name: Install ant package
+  action: "{{ ansible_pkg_mgr }} name='ant' state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  become: yes
+  
 ##
  # other
  #
 - name: jenkins-slave | Install coverage and metrics tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
+  #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
   with_items:
    - lcov
+   - gperf
+  become: yes
+
+- name: jenkins-slave | Install documentation tools 
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
+  #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
+  with_items
    - graphviz
    - doxygen
   become: yes
 
+- name: jenkins-slave | Install findbugs
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - findbugs
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
+  become: yes       
+       
+- name: jenkins-slave | Install flawfinder
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - flawfinder
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD') 
+  become: yes      
+         
+- name: jenkins-slave | Install rats
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - rats
+when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD') 
+  become: yes      
+           
+- name: jenkins-slave | Install flex
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - flex
+  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
+  #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
+  become: yes
+  
 - name: jenkins-slave | Install tools needed by grunt-zaproxy html report
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
@@ -59,7 +108,7 @@
 
 - name: jenkins-slave | Install tools needed by grunt-zaproxy html report
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
   with_items:
    - libxml2 #Needed for having /usr/bin/xml2-config in the PATH
    - libxslt
@@ -79,13 +128,6 @@
 #sudo apt-get install apt-transport-https ca-certificates
 #See https://docs.docker.com/engine/installation/linux/ubuntulinux/
 
-- name: jenkins-slave | Install Ansible syntax check (RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-  with_items:
-   - ansible-lint
-  become: yes
-
 - name: jenkins-slave | Install security basic tools for Ansible check
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
@@ -95,12 +137,20 @@
 
 - name: jenkins-slave | Install security basic tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')     
+  #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')  
   with_items:
     - rkhunter
+  become: yes
+  
+- name: jenkins-slave | Install security basic tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')  
+  with_items:
     - unhide
   become: yes
-
+  
 #- include: gcc.yml
 
 - include: cpp.yml
@@ -201,7 +251,7 @@
      "*               hard    nofile          65536" : '\*\s+hard\s+nofile'
      "root            soft    nofile          65536" : 'root\s+soft\s+nofile'
      "root            hard    nofile          65536" : 'root\s+hard\s+nofile'
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: yes
   changed_when: false
 

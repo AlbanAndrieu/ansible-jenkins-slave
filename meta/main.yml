@@ -25,7 +25,7 @@ galaxy_info:
   description: A role for installing jenkins-slave
   company: Nabla
   license: GPLv3
-  min_ansible_version: 1.6.3
+  min_ansible_version: 2.3.1.0
   platforms:
   - name: Ubuntu
     versions:

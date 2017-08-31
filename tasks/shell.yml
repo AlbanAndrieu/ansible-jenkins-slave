@@ -7,6 +7,22 @@
    - ksh
   become: yes
   
+- name: jenkins-slave | Install shell tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - shellcheck
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
+  become: yes  
+  
+- name: jenkins-slave | Install shell tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - ShellCheck
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')   
+  become: yes    
+    
 #For Solaris 10 update PATH
 #env
 #crle

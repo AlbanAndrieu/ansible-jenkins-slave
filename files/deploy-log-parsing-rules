@@ -22,6 +22,20 @@ ok /RECV TLSv1.2 ALERT: warning/
 ok /Warning: Row size/
 #ok /#Warning openssl must be OpenSSL/
 
+#scons
+error /undefined reference/
+error /cannot find/
+warning /not found/
+warning /File doesn\'t exist/
+error /cannot stat/
+error /No rule to make target/
+error /No output written/
+error /multiple definition of/
+error /scons: \*\*\*/
+
+#maven
+warning /Tests in error:/
+
 warning /^kernel Attempt to set zfs file/
 info /MESSAGE: there are some new default variable/
 
@@ -40,13 +54,14 @@ error /SEVERE: /
 error /Invalid or corrupt jarfile/
 #warning /Invalid argument/
 warning /command not found/
+error /syntax error near/
 error /Address already in use/
 #NPM
 error /Cannot find module/
 error /invalid config registry="None"/
 #error /Syntax error/
 error /syntax error near/
-error /syntax error near unexpected token/
+
 error /An error occured while updating fs:/
 
 #Docker
@@ -101,6 +116,9 @@ warning /is not defined/
 # create a quick access link to lines in the report containing 'INFO'
 info /INFO/
 info /TODO/
+#scons
+info /Cleaning up/
+info /Finished/
 
 # each line containing 'BUILD' represents the start of a section for grouping errors and warnings found after the line.
 # also creates a quick access link.
@@ -108,3 +126,8 @@ start /====/
 start /###/
 start /---/
 start /TASK: /
+
+start /scons: done/
+start /scons: building/
+start /scons: Reading/
+

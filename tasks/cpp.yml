@@ -320,12 +320,14 @@
 #check shared folders
 #sudo /usr/sbin/exportfs
 
-- name: jenkins-slave | Install ARC requirements (Debian based)
+- name: jenkins-slave | Install bison
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
    - bison
-   - flex
+  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
+  #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
   become: yes
   
 # Install unixodbc (ODBC connections), freetds (SQL Server connections) and tdsodbc (bridge between the former)
@@ -340,6 +342,7 @@
     - freetds-common
     - freetds-bin
     - tdsodbc
+    - libcrypto++-dev
   become: yes
 
 - name: jenkins-slave | Install C++ librairies for running (RedHat based)
@@ -365,13 +368,24 @@
    - binutils
   become: yes
 
+- name: jenkins-slave | Install OpenCL (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  become: yes
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  with_items:
+   - numactl 
+   - redhat-lsb-core
+#   - ocl-icd-libopencl1 
+#   - ocl-icd-opencl-dev 
+#   - libnuma-dev
+   
 ##
  # Devtools
  #
 #For wget tar unzip, see common role
 
 #See https://www.softwarecollections.org/en/scls/rhscl/devtoolset-4/
-- name: cpp | Install Devtools (RedHat based)
+- name: jenkins-slave | Install Devtools (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   become: yes
   when: (ansible_distribution == 'CentOS')
@@ -383,3 +397,11 @@
 #sudo yum install devtoolset-4
 #scl enable devtoolset-4 bash
 #OR scl enable devtoolset-2 bash
+
+- name: jenkins-slave | Install cpp tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - cppcheck
+  become: yes  
+  

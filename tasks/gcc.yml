@@ -149,10 +149,30 @@
   tags: cpp
   become: yes
   
-- name: cpp | Install C++ quality tool cppcheck
+- name: cpp | Install C++ clang
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes" 
+  with_items:
+   - clang-format
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')       
+  tags: cpp
+  become: yes  
+  
+- name: cpp | Install C++ quality tool 
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+   - findbugs
+   - flawfinder
+   - ggcov   
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')      
+  tags: cpp
+  become: yes
+    
+- name: cpp | Install C++ quality tool 
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - cppcheck
+   - gperf
+   - lcov
   tags: cpp
   become: yes
   
