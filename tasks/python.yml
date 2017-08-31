@@ -9,6 +9,13 @@
     - flake8
   become: yes
 
+- name: jenkins-slave | Install devops tools for jobs-duration-charts-admin
+  pip: name={{ item }}
+  with_items:
+    - urllib
+    - pygal
+  become: yes
+
 - name: jenkins-slave | Install devops tools for release notes
   pip: name={{ item }}
   with_items:
