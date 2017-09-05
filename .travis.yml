@@ -56,11 +56,11 @@ script:
   #- echo localhost > hosts
 
   # Check syntax
-  - sudo ansible-playbook -i hosts --syntax-check jenkins-slave.yml
+  - sudo ansible-playbook -i hosts --syntax-check jenkins-slave.yml -e "python_versions=[2.7]"
 
   # Run the role/playbook again, checking to make sure it's idempotent.
   - >
-    sudo ansible-playbook -i hosts jenkins-slave.yml --connection=local --sudo -vvvv
+    sudo ansible-playbook -i hosts jenkins-slave.yml --connection=local --sudo -vvvv  -e "python_versions=[2.7]"
 #    | grep -q 'changed=0.*failed=0'
 #    && (echo 'Idempotence test: pass' && exit 0)
 #    || (echo 'Idempotence test: fail' && exit 0)

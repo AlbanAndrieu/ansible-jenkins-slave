@@ -2,7 +2,243 @@
 ##
  # C++ libs
  #
-- name: package | Install C++ needed APR package
+#i386 and i686 is the 32-bit version, and x86_64 is the 64-bit version of the OS
+
+#OPENSSL
+- name: jenkins-slave | Install C++ librairies openssl (Solaris based)
+  pkgutil: name={{ item }} state=present
+  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
+  with_items:
+   - CSWlibssl1-0-0
+
+- name: jenkins-slave | Install C++ librairies openssl for building 64bits (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','14.04']
+  with_items:
+   - libssl1.0.0
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies openssl (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+   - openssl
+   - libcrypto++-dev
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies openssl (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+   - openssl-devel
+  become: yes
+
+#TODO must be the same as openssl-devel
+- name: jenkins-slave | Install C++ librairies openssl for building 64bits (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+   - openssl-libs.x86_64
+  become: yes
+
+#OPENSSL 0.9.8
+- name: jenkins-slave | Install C++ librairies openssl for building 64bits (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04','14.04']
+  with_items:
+   - libssl0.9.8
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies openssl for building 64bits (CentOS based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' )
+  tags: cpp
+  with_items:
+   - libssl.so.0.9.8
+#See https://access.redhat.com/solutions/2043553
+# ln -s /usr/lib64/libssl.so.0.9.8e /usr/lib64/libssl.so.0.9.8
+# ln -s /usr/lib64/libssl.so.1.0.1e /usr/lib64/libssl.so.1.0.1
+# ln -s /usr/lib64/libcrypto.so.0.9.8e /usr/lib64/libcrypto.so.0.9.8
+# ln -s /usr/lib64/libcrypto.so.1.0.1e /usr/lib64/libcrypto.so.1.0.1
+  become: yes
+
+##cross compatibility for i386 i686
+- name: jenkins-slave | Install C++ librairies openssl for building 32bits (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  tags: cpp
+  with_items:
+   - openssl098e.i686
+  become: yes
+
+#OPENLDAP
+#FYI : ldpa is used for linux windows,
+#but x86sol and sun4sol have been migrated to openldap
+- name: jenkins-slave | Install C++ librairies ldap (Solaris based)
+  pkgutil: name={{ item }} state=present
+  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
+  with_items:
+   - CSWopenldap #Dependencies CSWlibldap-r2-4- CSWlibsasl2-2 CSWliblber2-4-2
+   #- CSWlibldap2-4-2
+
+- name: jenkins-slave | Install C++ librairies ldap (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  with_items:
+#ldap-2.4 is the default on RedHat 7.1, but we still use ldap-2.3 in the code
+   - openldap-devel
+#bolow cyrus-sasl-devel is added by openldap-devel
+   - cyrus-sasl-devel
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies ldap (CentOS based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  tags: cpp
+  with_items:
+   - openldap-devel
+  become: yes
+
+#LDAP
+#FYI : ldpa is used for linux windows,
+#but x86sol and sun4sol have been migrated to openldap  
+- name: jenkins-slave | Install C++ librairies ldap (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04', '14.04']
+  with_items:
+   - libldap-2.4-2
+  become: yes
+  
+- name: jenkins-slave | Install C++ librairies ldap (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04']
+  with_items:
+   - libldap2-dev
+#   - libldap-2.4-2
+   - libsasl2-dev
+  become: yes
+
+#cross compatibility for i386 i686
+- name: jenkins-slave | Install C++ librairies ldap (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '6.8')
+  with_items:
+#ldap-2.3 is still needed by tibco adapter
+   - compat-openldap
+  become: yes
+  
+- name: jenkins-slave | Install C++ librairies ldap (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  with_items:
+#ldap-2.3 is still needed by tibco adapter
+   - compat-openldap
+  become: yes
+  
+#LIBCURL
+- name: jenkins-slave | Install C++ librairies curl (Solaris based)
+  pkgutil: name={{ item }} state=present
+  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
+  with_items:
+   - CSWlibcurl4 #Dependencies CSWlibz1
+   #- CSWlibz1
+   - CSWlibreadline6 #Dependencies CSWlibncurses6
+   #- CSWlibncurses6
+
+- name: jenkins-slave | Install C++ librairies curl (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  #and ansible_distribution_version in ['12.04', '14.04', '16.04']
+  with_items:
+   - libcurl3
+   - zlib1g
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies curl (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+   - libcurl
+   - zlib
+  become: yes
+
+#TODO ???
+#cross compatibility for i386 i686
+#- name: jenkins-slave | Install C++ librairies curl (CentOS and RedHat based)
+#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+#  tags: cpp
+#  with_items:
+#   - libcurl.i686
+#  become: yes
+
+#LOG4CXX
+#- name: jenkins-slave | Install C++ librairies log4cxx (Debian based)
+#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04']
+#  with_items:
+##do not install log4cxx it because provided by 3rparties for RedHat
+##   - liblog4cxx10
+##   - libcrypto++9
+##   - libxerces-c28
+#  become: yes
+#
+#- name: jenkins-slave | Install C++ librairies log4cxx (Debian based)
+#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04']
+#  with_items:
+##do not install log4cxx it because provided by 3rparties for RedHat
+##   - liblog4cxx10
+##   - libcrypto++9
+##   - libxerces-c28
+#  become: yes
+
+- name: jenkins-slave | Install C++ librairies log4cxx (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04']
+  tags: cpp  
+  with_items:
+   - liblog4cxx-dev
+#   - libcrypto++9
+#   - libxerces-c28
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies log4cxx (CentOS based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  tags: cpp
+  with_items:
+   - log4cxx-devel
+#   - libcrypto++9
+#   - libxerces-c28
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies log4cxx (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  tags: cpp
+  with_items:
+   - log4cxx-devel
+#   - libcrypto++9
+#   - libxerces-c28
+  become: yes
+
+#TODO ???
+#cross compatibility for i386 i686  
+#- name: jenkins-slave | Install C++ librairies log4cxx (RedHat based)
+#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+#  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+#  tags: cpp
+#  with_items:
+#   - log4cxx-devel.i686
+#  become: yes  
+  
+#KGRServer
+#APR
+- name: jenkins-slave | Install C++ librairies apr (Solaris based)
   pkgutil: name={{ item }} state=present
   when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
   with_items:
@@ -15,127 +251,34 @@
    #- CSWlibexpat1
    #- CSWlibexpat-dev
    #- CSWlibiconv2
-   #- CSWlibuuid1
 
-#- name: package | Install C++ needed LDAP package
-#  pkgutil: name={{ item }} state=present
-#  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
-#  with_items:
-#   - CSWopenldap #Dependencies CSWlibldap-r2-4- CSWlibsasl2-2 CSWliblber2-4-2 CSWlibssl1-0-0
-#   #- CSWlibldap2-4-2
-#   
-#- name: package | Install C++ needed Database package
-#  pkgutil: name={{ item }} state=present
-#  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
-#  with_items:   
-#   - CSWlibicui18n55
-#   - CSWlibicuuc55
-#   - CSWfreetds
-#   - CSWfreetds-dev
-#   - CSWsqsh-freetds
-#      
-#- name: package | Install C++ needed Other package
-#  pkgutil: name={{ item }} state=present
-#  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
-#  with_items:   
-#   - CSWlibcurl4 #Dependencies CSWlibz1
-#   #- CSWlibz1
-#   - CSWlibreadline6 #Dependencies CSWlibncurses6
-#   #- CSWlibncurses6
-
-- name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04']
-  with_items:
-#libstdc++6
-   - libstdc++-4.6-dev
-   - libaprutil1
-   - libapr1   
-#do not install log4cxx it because provided by 3rparties for RedHat
-#   - liblog4cxx10
-   - libldap-2.4-2
-   - libcurl3
-   - zlib1g
-#   - libcrypto++9
-#   - libxerces-c28
-  become: yes
-
-- name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04']
-  with_items:
-#libstdc++6
-   - libstdc++-4.8-dev
-   - libaprutil1
-   - libapr1   
-#do not install log4cxx it because provided by 3rparties for RedHat
-#   - liblog4cxx10
-   - libldap-2.4-2
-   - libcurl3
-   - zlib1g
-#   - libcrypto++9
-#   - libxerces-c28
-  become: yes
-
-- name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04','14.04']
-  with_items:
-   - libssl0.9.8
-  become: yes
-
-- name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','14.04']
-  with_items:
-   - libssl1.0.0
-  become: yes
-
-- name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
+- name: jenkins-slave | Install C++ librairies apr (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04']
   with_items:
-   - liblog4cxx-dev
-   - libldap2-dev
-#   - libldap-2.4-2
-   - libsasl2-dev
-#   - libcurl3
-#   - zlib1g
-#   - libcrypto++9
-#   - libxerces-c28
+   - libapr1-dev
    - libaprutil1-dev
-   - libdwarf-dev
   become: yes
 
-- name: jenkins-slave | Install C++ librairies for building 64bits (RedHat based)
+- name: jenkins-slave | Install C++ librairies apr (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
   with_items:
-#ldap-2.4 is the default on RedHat 7.1, but we still use ldap-2.3 in the code
-   - openldap-devel
-#bolow cyrus-sasl-devel is added by openldap-devel
-   - cyrus-sasl-devel
-   - openssl-devel
-   - apr-devel #KGRServer
+   - apr-devel
+   - apr-util-devel
   become: yes
 
-- name: jenkins-slave | Install C++ librairies for building tibcoadapter (Debian based)
+- name: jenkins-slave | Install C++ librairies apr (CentOS based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04']
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  tags: cpp
   with_items:
-#   - libstdc++5
-#libstdc++6
-   - libstdc++-5-dev
-   - libstdc++-5-dev:i386
-#unicode libicuuc.so for tibadapter
-   - libicu-dev
-   - libicu55
-#   - libicu55:i386
-#Note that there is 32bits lib/libicuuc.so cross compilation in 3rdparties/x86Linux/tibadapter
-   - libicu-dev:i386
+   - apr-devel
+   - apr-util-devel
   become: yes
 
-- name: jenkins-slave | Install package for installing tibcoadapter
+#cross compatibility for i386 i686
+- name: jenkins-slave | Install package for installing cross compatibility 32bits
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - bc
@@ -184,21 +327,43 @@
 #Environment Name: TEST
 #Environment Location: /jenkins/tibco
  
-- name: jenkins-slave | Install C++ librairies for building tibcoadapter (RedHat based)
+#LIBSTD
+- name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04']
   with_items:
-#ldap-2.3 is still needed by tibco adapter
-   - compat-openldap
-   - libssl.so.0.9.8
-#See https://access.redhat.com/solutions/2043553
-# ln -s /usr/lib64/libssl.so.0.9.8e /usr/lib64/libssl.so.0.9.8
-# ln -s /usr/lib64/libssl.so.1.0.1e /usr/lib64/libssl.so.1.0.1
-# ln -s /usr/lib64/libcrypto.so.0.9.8e /usr/lib64/libcrypto.so.0.9.8
-# ln -s /usr/lib64/libcrypto.so.1.0.1e /usr/lib64/libcrypto.so.1.0.1
+#libstdc++6
+   - libstdc++-4.6-dev
+#do not install log4cxx it because provided by 3rparties for RedHat
+#   - liblog4cxx10
+#   - libcrypto++9
+#   - libxerces-c28
   become: yes
 
-- name: jenkins-slave | Install C++ librairies for building (RedHat based)
+- name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04']
+  with_items:
+#libstdc++6
+   - libstdc++-4.8-dev
+#do not install log4cxx it because provided by 3rparties for RedHat
+#   - liblog4cxx10
+#   - libcrypto++9
+#   - libxerces-c28
+  become: yes
+
+#cross compatibility for i386 i686
+- name: jenkins-slave | Install C++ librairies for building cross compatibility 32bits (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04']
+  with_items:
+#   - libstdc++5
+#libstdc++6
+   - libstdc++-5-dev
+   - libstdc++-5-dev:i386
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for building (CentOS based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
   tags: cpp
@@ -207,17 +372,12 @@
 #Below libstdc++-devel already installed
 #   - libstdc++-devel
    - glibc
-   - apr
-   - apr-util
 #   - log4cxx
-   - openssl
-   - openldap
-   - libcurl
-   - zlib
 #   - libcrypto++9
 #   - libxerces-c28
   become: yes
 
+#cross compatibility for i386 i686
 - name: jenkins-slave | Install C++ librairies for building 32bits RMDSExtractor (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04']
@@ -250,6 +410,7 @@
 #See https://akizuki.moe/?p=416
 #without below link workaround
 
+#cross compatibility for i386 i686
 #sudo dpkg --add-architecture i386
 #TODO export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lib32:/usr/lib32:/usr/lib/i386-linux-gnu
 - name: jenkins-slave | Install C++ librairies for building 32bits RMDSExtractor (Debian based)
@@ -265,9 +426,10 @@
    - libstdc++-5-dev
   become: yes
 
-- name: jenkins-slave | Install C++ librairies for building 32bits RMDSExtractor (RedHat based)
+#cross compatibility for i386 i686
+- name: jenkins-slave | Install C++ librairies for building 32bits RMDSExtractor (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
 #needed for 32 bits cross compilation
    - glibc-devel.i686
@@ -289,7 +451,7 @@
     name: "{{ item }}"
     enablerepo: rhel-7-server-optional-rpms
     state: "{{ jenkins_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'RedHat')
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
   with_items:
 # compat-libstdc++-33 contains libstdc++.so.5
    - compat-libstdc++-33
@@ -301,7 +463,7 @@
   yum:
     name: "{{ item }}"
     state: "{{ jenkins_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'RedHat')
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
   with_items:
    - nfs-utils
   become: yes
@@ -329,37 +491,199 @@
   #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
   #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
   become: yes
-  
-# Install unixodbc (ODBC connections), freetds (SQL Server connections) and tdsodbc (bridge between the former)
-- name: jenkins-slave | Install C++ librairies for running (Debian based)
+
+#UUID
+- name: jenkins-slave | Install C++ librairies uuid (Solaris based)
+  pkgutil: name={{ item }} state=present
+  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
+  with_items:
+   - CSWlibuuid1
+
+- name: jenkins-slave | Install C++ librairies uuid (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:
-#   - libicu
-#   - libtool-ltdl
-    - unixodbc 
-    - unixodbc-dev
-    - freetds-common
-    - freetds-bin
-    - tdsodbc
-    - libcrypto++-dev
+    - uuid-dev
   become: yes
 
-- name: jenkins-slave | Install C++ librairies for running (RedHat based)
+- name: jenkins-slave | Install C++ librairies uuid (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-   - libicu
-   - libtool-ltdl
-   - unixODBC
-   - freetds-devel
+   - libuuid-devel
+  become: yes
+
+#ICU UNICODE
+#Nedeed for database
+- name: jenkins-slave | Install C++ librairies unicode for database (Solaris based)
+  pkgutil: name={{ item }} state=present
+  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
+  with_items:
+   - CSWlibicui18n55
+   - CSWlibicuuc55
+
+- name: jenkins-slave | Install C++ librairies unicode for database (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+   - libicu-dev
+  become: yes
+
+#cross compatibility for i386 i686
+- name: jenkins-slave | Install C++ librairies for unicode for database (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04']
+  with_items:
+#unicode libicuuc.so for adapter
+   - libicu55
+#   - libicu55:i386
+#Note that there is 32bits lib/libicuuc.so cross compilation in 3rdparties/x86Linux/adapter
+   - libicu-dev:i386
+  become: yes
+
+#cross compatibility for i386 i686
+- name: jenkins-slave | Install C++ librairies for unicode for database (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  tags: cpp
+  with_items:
+   - libicu-devel.i686
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for unicode for database (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+   - libicu-devel
+  become: yes
+
+#LIBDWARF
+- name: jenkins-slave | Install C++ librairies libdwarf (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+    - libdwarf-dev
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for libdwarf (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
    - libdwarf-devel
-   #- libdwarf-tools
+  become: yes
+
+#DATABASE
+#See Connecting to MSSQL from Linux with unixODBC + FreeTDS http://help.interfaceware.com/kb/904
+- name: jenkins-slave | Install C++ librairies database (Solaris based)
+  pkgutil: name={{ item }} state=present
+  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
+  with_items:
+   - CSWfreetds
+   - CSWfreetds-dev
+   - CSWsqsh-freetds
+
+- name: jenkins-slave | Install C++ librairies database (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - unixodbc-dev #ODBC
+    - freetds-dev #freetds
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for database (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+   - unixODBC-devel #ODBC
+   - libtool-ltdl-devel #ODBC
+   - freetds-devel #freetds
+  become: yes
+  
+# Install unixodbc (ODBC connections), freetds (SQL Server connections) and tdsodbc (bridge between the former)
+- name: jenkins-slave | Install C++ librairies for running (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - unixodbc #ODBC
+    - freetds-common #freetds
+    - freetds-bin #freetds
+    - tdsodbc #freetds
+    #- libmyodbc #ODBC mysql
+    - odbc-postgresql #ODBC postgreSQL
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for running (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+    - unixODBC #ODBC
+    - libtool-ltdl #ODBC
+    - freetds #freetds
+    - mysql-connector-odbc #ODBC mysql
+    - postgresql-odbc #ODBC postgreSQL
+  become: yes
+
+#XML2
+- name: jenkins-slave | Install C++ librairies xml (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+   -  libxml2-dev
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies xml (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+   - libxml2-devel
+  become: yes
+
+#GNUSTEP
+- name: jenkins-slave | Install gnustep (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+    - gnustep
+    #- gnustep-devel
+    - gobjc
+  become: yes
+
+- name: jenkins-slave | Installgnustep (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+   - gcc-objc
+   - libobjc
+   - gnustep-base-devel
+   - gnustep-make
+   - gnustep-filesystem
+  become: yes
+
+#GNU LIBTOOL
+- name: jenkins-slave | Install C++ librairies gnu libtool (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+   - libtool
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for gnu libtool (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+   - libtool-ltdl
   become: yes
 
 #before running “NVIDIA-Linux-x86_64-352.41.run
-- name: jenkins-slave | Install Kernel header for Nvidia driver (RedHat based)
+- name: jenkins-slave | Install Kernel header for Nvidia driver (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
@@ -368,7 +692,7 @@
    - binutils
   become: yes
 
-- name: jenkins-slave | Install OpenCL (RedHat based)
+- name: jenkins-slave | Install OpenCL (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   become: yes
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')

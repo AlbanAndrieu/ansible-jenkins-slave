@@ -58,7 +58,7 @@
   #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
   #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
-  with_items
+  with_items:
    - graphviz
    - doxygen
   become: yes
@@ -84,7 +84,8 @@
   tags: package
   with_items:
    - rats
-when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD') 
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' and (ansible_distribution_version not in ['16.04'])) or 
+        (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD') 
   become: yes      
            
 - name: jenkins-slave | Install flex
@@ -361,6 +362,7 @@ when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or 
 #TODO sudo ln -s /usr/lib/chromium-browser/chromedriver /var/lib/chromedriver
 - name: jenkins-slave | Create chromedriver directory link (legacy required)
   file: path=/var/lib/chromedriver src=/usr/lib/chromium-browser/chromedriver state=link
+  ignore_errors: "{{ ansible_check_mode }}"  
   become: yes
   
 #TODO sudo mkdir -p /workspace/jboss-as-7.1.1.Final

@@ -39,7 +39,6 @@
 #TODO add JAVA_HOME
 
 - name: jenkins-slave | Add options in ~/.bashrc
-#    regexp: "{{ item.regexp }}"
   lineinfile:
     dest: ~/.bashrc
     line: "{{ item.line }}"
@@ -49,13 +48,12 @@
     - { regexp: '', line: 'export TAR=/bin/gtar' }
     - { regexp: '', line: 'export GIT_DISCOVERY_ACROSS_FILESYSTEM=1' } #For Solaris
   become_user: "{{ jenkins_user }}"
-#  become: yes
   changed_when: false
 
 #Add more fonts
 #https://coolaj86.com/articles/how-to-get-more-fonts-on-ubuntu.html
 
-- name: jenkins-slave | Install default oracle
+- name: jenkins-slave | Install ttf
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   with_items:
    - ttf-xfree86-nonfree

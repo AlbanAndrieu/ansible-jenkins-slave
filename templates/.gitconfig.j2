@@ -1,4 +1,5 @@
 # {{ ansible_managed }}
+
 {# Set up machine #}
 {% for machine in shell_git %}
 [user]
@@ -33,4 +34,9 @@
 #	rebase = true
 #[branch]
 #	autosetuprebase = always
+[maven-scm]
+    maildomain = free.fr
+    forceUsername = true
+[http]
+    sslverify = false    
 {% endfor %}
