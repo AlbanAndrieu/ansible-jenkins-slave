@@ -362,6 +362,7 @@
    - libstdc++-5-dev
    - libstdc++-5-dev:i386
   become: yes
+  ignore_errors: true
 
 - name: jenkins-slave | Install C++ librairies for building (CentOS based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -390,7 +391,8 @@
    - libc6-i386
    - libc6-dev-i386
   become: yes
-
+  ignore_errors: true
+  
 - name: jenkins-slave | Install C++ librairies for building 32bits RMDSExtractor (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04']
@@ -405,7 +407,8 @@
    - lib32gcc-4.8-dev
    - libstdc++-4.8-dev
   become: yes
-
+  ignore_errors: true
+  
 #TODO on Ubuntu 16.04 cros compatibility build for 32bit is not working
 #See https://akizuki.moe/?p=416
 #without below link workaround
@@ -425,7 +428,8 @@
    - lib32gcc-5-dev
    - libstdc++-5-dev
   become: yes
-
+  ignore_errors: true
+  
 #cross compatibility for i386 i686
 - name: jenkins-slave | Install C++ librairies for building 32bits RMDSExtractor (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -445,7 +449,8 @@
 # ldconfig -v | grep libstdc++
    - libstdc++5
   become: yes
-
+  ignore_errors: true
+  
 - name: jenkins-slave | Install C++ librairies for building old gcc (RedHat based)
   yum:
     name: "{{ item }}"
@@ -491,7 +496,8 @@
   #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
   #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
   become: yes
-
+  ignore_errors: true
+  
 #UUID
 - name: jenkins-slave | Install C++ librairies uuid (Solaris based)
   pkgutil: name={{ item }} state=present
@@ -505,7 +511,8 @@
   with_items:
     - uuid-dev
   become: yes
-
+  ignore_errors: true
+  
 - name: jenkins-slave | Install C++ librairies uuid (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
@@ -529,7 +536,8 @@
   with_items:
    - libicu-dev
   become: yes
-
+  ignore_errors: true
+  
 #cross compatibility for i386 i686
 - name: jenkins-slave | Install C++ librairies for unicode for database (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -541,7 +549,8 @@
 #Note that there is 32bits lib/libicuuc.so cross compilation in 3rdparties/x86Linux/adapter
    - libicu-dev:i386
   become: yes
-
+  ignore_errors: true
+  
 #cross compatibility for i386 i686
 - name: jenkins-slave | Install C++ librairies for unicode for database (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -566,7 +575,8 @@
   with_items:
     - libdwarf-dev
   become: yes
-
+  ignore_errors: true
+  
 - name: jenkins-slave | Install C++ librairies for libdwarf (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
@@ -592,7 +602,8 @@
     - unixodbc-dev #ODBC
     - freetds-dev #freetds
   become: yes
-
+  ignore_errors: true
+  
 - name: jenkins-slave | Install C++ librairies for database (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
@@ -615,7 +626,8 @@
     #- libmyodbc #ODBC mysql
     - odbc-postgresql #ODBC postgreSQL
   become: yes
-
+  ignore_errors: true
+  
 - name: jenkins-slave | Install C++ librairies for running (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
