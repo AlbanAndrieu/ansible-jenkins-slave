@@ -14,7 +14,8 @@
 - name: jenkins-slave | Install devops tools for jobs-duration-charts-admin
   pip: name={{ item }}
   with_items:
-    - urllib
+ #   - urllib
+    - cairosvg
     - pygal
   become: yes
 
