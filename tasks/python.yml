@@ -15,7 +15,7 @@
   pip: name={{ item }}
   with_items:
  #   - urllib
-    - cairosvg
+ #   - cairosvg
     - pygal
   become: yes
 
