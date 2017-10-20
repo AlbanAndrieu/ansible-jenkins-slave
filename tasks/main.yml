@@ -224,6 +224,7 @@
 #    - "jenkins ALL=(ALL)   NOPASSWD: /usr/local/bin/test.py"
     - "Defaults:jenkins    secure_path=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\""
   become: yes
+  ignore_errors: true  
   changed_when: false
 
 - name: jenkins-slave | Disable env_reset
@@ -232,6 +233,7 @@
     backrefs=yes
     validate='visudo -cf %s'
   become: yes
+  ignore_errors: true    
   changed_when: false
 
 - name: jenkins-slave | Set limits
