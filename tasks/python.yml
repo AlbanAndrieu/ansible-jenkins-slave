@@ -11,6 +11,13 @@
     - pre-commit #See http://pre-commit.com/
   become: yes
 
+- name: jenkins-slave | Install aws tools
+  pip: name={{ item }}
+  with_items:
+    - awscli
+  ignore_errors: true    
+  become: yes
+  
 - name: jenkins-slave | Install devops tools for jobs-duration-charts-admin
   pip: name={{ item }}
   with_items:
