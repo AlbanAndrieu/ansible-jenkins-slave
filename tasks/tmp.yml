@@ -17,6 +17,7 @@
 - name: jenkins-slave | Add sanitary job in cron
   cron: name="tmp cleanup" hour="1" minute="0" job="find /tmp -user {{ jenkins_user }} -atime +7 -exec rm -rf {} +" user={{ jenkins_user }}
   become: yes
+  ignore_errors: true
   tags: cron
 #sudo service cron restart
 
