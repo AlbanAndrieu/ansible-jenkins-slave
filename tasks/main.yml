@@ -22,8 +22,6 @@
   tags:
     - jenkins-slave
 
-- include: python.yml
-
 #- include: java.yml
 
 #- include: maven.yml
@@ -36,57 +34,24 @@
   action: "{{ ansible_pkg_mgr }} name='subversion' state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   become: yes
 
-- name: Install ant package
-  action: "{{ ansible_pkg_mgr }} name='ant' state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  become: yes
-  
 ##
  # other
  #
-- name: jenkins-slave | Install coverage and metrics tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
-  #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
-  with_items:
-   - lcov
-   - gperf
+- name: Install ant package
+  action: "{{ ansible_pkg_mgr }} name='ant' state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   become: yes
-
-- name: jenkins-slave | Install documentation tools 
+    
+- name: Install zip package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
-  #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
   with_items:
-   - graphviz
-   - doxygen
+    - zip
+    - unzip
   become: yes
+  ignore_errors: true
 
-- name: jenkins-slave | Install findbugs
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  tags: package
-  with_items:
-   - findbugs
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
-  become: yes       
-       
-- name: jenkins-slave | Install flawfinder
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  tags: package
-  with_items:
-   - flawfinder
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD') 
-  become: yes      
-         
-- name: jenkins-slave | Install rats
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  tags: package
-  with_items:
-   - rats
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' and (ansible_distribution_version not in ['16.04'])) or 
-        (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD') 
-  become: yes      
+- include: qa.yml
+
+- include: quality.yml
            
 - name: jenkins-slave | Install flex
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -126,39 +91,17 @@
 
 - include: docker.yml
 
-#sudo apt-get install apt-transport-https ca-certificates
-#See https://docs.docker.com/engine/installation/linux/ubuntulinux/
+- include: security.yml
 
-- name: jenkins-slave | Install security basic tools for Ansible check
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  with_items:
-    - chkrootkit
-  become: yes
-
-- name: jenkins-slave | Install security basic tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
-  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')     
-  #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')  
-  with_items:
-    - rkhunter
-  become: yes
-  
-- name: jenkins-slave | Install security basic tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}  update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')  
-  with_items:
-    - unhide
-  become: yes
-  
 #- include: gcc.yml
 
 - include: cpp.yml
 
-- include: shell.yml
+- include: database.yml
 
 - include: perl.yml
+
+- include: python.yml
 
 ##
  # Jenkins user
@@ -194,6 +137,8 @@
 - name: jenkins-slave | Update authorized_keys rights
   file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: true
+
+- include: shell.yml
 
 - include: git.yml
 
@@ -266,7 +211,7 @@
 
 - name: jenkins-slave | Set nproc limits for Jenkins
   lineinfile: dest="/etc/security/limits.d/20-nproc.conf" line='jenkins    soft    nproc     unlimited'
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   become: yes
   changed_when: false
 
@@ -285,7 +230,7 @@
   become: yes
   changed_when: false
 
-- name: jenkins-slave | Create Jenkins slave directory
+- name: jenkins-slave | Create Jenkins slave default directory
   file: path={{ jenkins_slave_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
   become: yes
   changed_when: false
@@ -364,7 +309,9 @@
 #TODO sudo ln -s /usr/lib/chromium-browser/chromedriver /var/lib/chromedriver
 - name: jenkins-slave | Create chromedriver directory link (legacy required)
   file: path=/var/lib/chromedriver src=/usr/lib/chromium-browser/chromedriver state=link
-  ignore_errors: "{{ ansible_check_mode }}"  
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')  
+#  ignore_errors: "{{ ansible_check_mode }}"
+  ignore_errors: true   
   become: yes
   
 #TODO sudo mkdir -p /workspace/jboss-as-7.1.1.Final

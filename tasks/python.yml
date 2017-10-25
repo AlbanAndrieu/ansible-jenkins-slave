@@ -10,14 +10,15 @@
     - autopep8 #autopep8 py_file --in-place
     - pre-commit #See http://pre-commit.com/
   become: yes
+  ignore_errors: true
 
 - name: jenkins-slave | Install aws tools
   pip: name={{ item }}
   with_items:
     - awscli
-  ignore_errors: true    
+  ignore_errors: true
   become: yes
-  
+
 - name: jenkins-slave | Install devops tools for jobs-duration-charts-admin
   pip: name={{ item }}
   with_items:
@@ -36,6 +37,7 @@
     - openpyxl
     - "docopt==0.6.2"
   become: yes
+  ignore_errors: true
 
 - name: jenkins-slave | Install devops tools for ansible windows
   #executable=pip{{ python_versions }}
@@ -45,14 +47,26 @@
     - "pywinrm>=0.2.2"
   become: yes
 
-#- name: jenkins-slave | Install devops tools for ansible kerberos
-#  pip: name={{ item }}
-#  with_items:
-#    - python-dev
-#    - libkrb5-dev
-#    - krb5-user
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
-#  become: yes
+- name: jenkins-slave | Install devops tools for ansible accelerate mode
+  #executable=pip{{ python_versions }}
+  #pip: name="https://github.com/diyan/pywinrm/archive/df049454a9309280866e0156805ccda12d71c93a.zip" state=present
+  pip: name={{ item }}
+  with_items:
+    - python-keyczar
+  become: yes
+  ignore_errors: true
+
+#sudo apt-get install krb5-kdc krb5-admin-server
+
+- name: jenkins-slave | Install devops tools for ansible kerberos
+  pip: name={{ item }}
+  with_items:
+    - python-dev
+    - libkrb5-dev
+    - krb5-user
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
+  become: yes
+  ignore_errors: true
 
 - name: jenkins-slave | Install devops tools for ansible
   pip: name={{ item }}
@@ -60,20 +74,30 @@
     - ansible-cmdb
     - ansible-lint
   become: yes
+  ignore_errors: true
 
 - name: jenkins-slave | Install MySQL requirement for sonar
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
   become: yes
-#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - libmysqlclient-dev
 
+#WARNING need gcc/cpp, must be done after gcc.yml
 - name: jenkins-slave | Install MySQL for sonar
   pip: name={{ item }}
   with_items:
     - MySQL-python
   become: yes
+  ignore_errors: true
+
+#WARNING need gcc/cpp, must be done after gcc.yml
+- name: jenkins-slave | Install ODBC for FreeTDS
+  pip: name={{ item }}
+  with_items:
+    - pyodbc
+  become: yes  
+  ignore_errors: true
 
 #Issue wiht out of disk space on Ubuntu 16.04
 #unity7.log X11 error: BadWindow (invalid Window parameter) Error code: 3, request code: f, minor code: 0

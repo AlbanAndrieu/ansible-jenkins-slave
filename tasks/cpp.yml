@@ -20,7 +20,7 @@
 
 - name: jenkins-slave | Install C++ librairies openssl (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
    - openssl
    - libcrypto++-dev
@@ -131,7 +131,7 @@
   
 - name: jenkins-slave | Install C++ librairies ldap (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   with_items:
 #ldap-2.3 is still needed by tibco adapter
    - compat-openldap
@@ -218,10 +218,10 @@
 
 - name: jenkins-slave | Install C++ librairies log4cxx (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   tags: cpp
   with_items:
-   - log4cxx-devel
+   - log4cxx
 #   - libcrypto++9
 #   - libxerces-c28
   become: yes
@@ -230,7 +230,7 @@
 #cross compatibility for i386 i686  
 #- name: jenkins-slave | Install C++ librairies log4cxx (RedHat based)
 #  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-#  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+#  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
 #  tags: cpp
 #  with_items:
 #   - log4cxx-devel.i686
@@ -262,7 +262,7 @@
 
 - name: jenkins-slave | Install C++ librairies apr (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   with_items:
    - apr-devel
    - apr-util-devel
@@ -456,7 +456,7 @@
     name: "{{ item }}"
     enablerepo: rhel-7-server-optional-rpms
     state: "{{ jenkins_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   with_items:
 # compat-libstdc++-33 contains libstdc++.so.5
    - compat-libstdc++-33
@@ -468,7 +468,7 @@
   yum:
     name: "{{ item }}"
     state: "{{ jenkins_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   with_items:
    - nfs-utils
   become: yes
@@ -554,7 +554,7 @@
 #cross compatibility for i386 i686
 - name: jenkins-slave | Install C++ librairies for unicode for database (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   tags: cpp
   with_items:
    - libicu-devel.i686
@@ -582,62 +582,7 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-   - libdwarf-devel
-  become: yes
-
-#DATABASE
-#See Connecting to MSSQL from Linux with unixODBC + FreeTDS http://help.interfaceware.com/kb/904
-- name: jenkins-slave | Install C++ librairies database (Solaris based)
-  pkgutil: name={{ item }} state=present
-  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
-  with_items:
-   - CSWfreetds
-   - CSWfreetds-dev
-   - CSWsqsh-freetds
-
-- name: jenkins-slave | Install C++ librairies database (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  with_items:
-    - unixodbc-dev #ODBC
-    - freetds-dev #freetds
-  become: yes
-  ignore_errors: true
-  
-- name: jenkins-slave | Install C++ librairies for database (CentOS and RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-  tags: cpp
-  with_items:
-   - unixODBC-devel #ODBC
-   - libtool-ltdl-devel #ODBC
-   - freetds-devel #freetds
-  become: yes
-  
-# Install unixodbc (ODBC connections), freetds (SQL Server connections) and tdsodbc (bridge between the former)
-- name: jenkins-slave | Install C++ librairies for running (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  with_items:
-    - unixodbc #ODBC
-    - freetds-common #freetds
-    - freetds-bin #freetds
-    - tdsodbc #freetds
-    #- libmyodbc #ODBC mysql
-    - odbc-postgresql #ODBC postgreSQL
-  become: yes
-  ignore_errors: true
-  
-- name: jenkins-slave | Install C++ librairies for running (CentOS and RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-  tags: cpp
-  with_items:
-    - unixODBC #ODBC
-    - libtool-ltdl #ODBC
-    - freetds #freetds
-    - mysql-connector-odbc #ODBC mysql
-    - postgresql-odbc #ODBC postgreSQL
+   - libdwarf
   become: yes
 
 #XML2
@@ -740,4 +685,17 @@
   with_items:
    - cppcheck
   become: yes  
+
+##########
+
+- name: jenkins-slave | Install X (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  become: yes
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  with_items:
+   - libXext
+   - libXrender
+   - libXtst
+  ignore_errors: true
+  
   

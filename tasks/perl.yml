@@ -100,6 +100,14 @@
 #   - build-essential # do we need it?
   become: yes
 
+- name: jenkins-slave | Install perl for running
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: package
+  with_items:
+   - perl-Env
+  become: yes
+
 - name: jenkins-slave | Install tools needed by cpp generator (CentOS based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
   become: yes

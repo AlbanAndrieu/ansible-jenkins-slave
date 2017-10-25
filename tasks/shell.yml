@@ -7,6 +7,15 @@
    - ksh
   become: yes
   
+- name: jenkins-slave | Install shell for running
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: package
+  with_items:
+   - bash
+   - ksh
+  become: yes
+    
 - name: jenkins-slave | Install shell tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   tags: package
@@ -14,6 +23,7 @@
    - shellcheck
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
   become: yes  
+  ignore_errors: true
   
 - name: jenkins-slave | Install shell tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -22,6 +32,7 @@
    - ShellCheck
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')   
   become: yes    
+  ignore_errors: true
     
 #For Solaris 10 update PATH
 #env
@@ -49,6 +60,12 @@
     - { regexp: '', line: 'export GIT_DISCOVERY_ACROSS_FILESYSTEM=1' } #For Solaris
   become_user: "{{ jenkins_user }}"
   changed_when: false
+
+- name: jenkins-slave | Switch to bash
+  command: usermod -s {{ jenkins_shell }} {{ jenkins_user }}
+  #become_user: "{{ jenkins_user }}"
+  changed_when: false
+  ignore_errors: "{{ ansible_check_mode }}"
 
 #Add more fonts
 #https://coolaj86.com/articles/how-to-get-more-fonts-on-ubuntu.html

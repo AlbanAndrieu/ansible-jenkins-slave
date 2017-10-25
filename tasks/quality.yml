@@ -1,0 +1,63 @@
+
+- name: jenkins-slave | Install gcovr coverage and metrics tools 
+  pip: name={{ item }}
+  with_items:
+    - gcovr
+  become: yes
+  ignore_errors: true
+  
+- name: jenkins-slave | Install lcov coverage and metrics tools 
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+   - lcov
+  become: yes
+  ignore_errors: true
+  
+- name: jenkins-slave | Install gperf monitoring and metrics tools 
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
+  when: not (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
+  with_items:
+   - gperf
+  become: yes
+  ignore_errors: true
+  
+- name: jenkins-slave | Install documentation tools 
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
+  #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
+  with_items:
+   - graphviz
+   - doxygen
+  become: yes
+  ignore_errors: true
+  
+- name: jenkins-slave | Install findbugs
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - findbugs
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
+  become: yes       
+  ignore_errors: true
+  
+- name: jenkins-slave | Install flawfinder
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - flawfinder
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD') 
+  become: yes      
+  ignore_errors: true
+   
+- name: jenkins-slave | Install rats
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - rats
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' and (ansible_distribution_version not in ['16.04'])) or 
+        (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD') 
+  become: yes      
+  ignore_errors: true

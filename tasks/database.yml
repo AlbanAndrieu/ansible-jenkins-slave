@@ -1,0 +1,100 @@
+
+#DATABASE
+#TODO instead use role https://github.com/marcusianlevine/ansible-role-odbc-container
+#See Connecting to MSSQL from Linux with unixODBC + FreeTDS http://help.interfaceware.com/kb/904
+- name: jenkins-slave | Install C++ librairies database (Solaris based)
+  pkgutil: name={{ item }} state=present
+  when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
+  with_items:
+   - CSWfreetds
+   - CSWfreetds-dev
+   - CSWsqsh-freetds
+
+- name: jenkins-slave | Install C++ librairies database (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - unixodbc-dev #ODBC
+    - freetds-dev #freetds
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for database (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+   - unixODBC-devel #ODBC
+   - libtool-ltdl-devel #ODBC
+   - freetds-devel #freetds
+  become: yes
+
+# Install unixodbc (ODBC connections), freetds (SQL Server connections) and tdsodbc (bridge between the former)
+- name: jenkins-slave | Install C++ librairies for running (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - unixodbc #ODBC
+    - unixodbc-bin #ODBC
+    - freetds-common #freetds
+    - freetds-bin #freetds
+    - tdsodbc #freetds
+    #- libmyodbc #ODBC mysql
+    - odbc-postgresql #ODBC postgreSQL
+    - libaio1 #ODBC oracle install client    
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies for running (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+    - unixODBC #ODBC
+    - libtool-ltdl #ODBC
+    - freetds #freetds
+    - mysql-connector-odbc #ODBC mysql
+    - postgresql-odbc #ODBC postgreSQL
+    - libaio #ODBC oraacle install client
+  become: yes
+  
+#TODO automate install oracle open client in /opt/oracle/
+
+#TODO for Almonde, database configuration are scripted on:
+#http://par-castor/viewvc/almonde/AlmondeFactory/trunk/Almonde/Data/Scripts/x86_64-linux-rhel/installunixodbc.sh?revision=81030&view=markup
+#http://par-castor/viewvc/almonde/AlmondeFactory/trunk/Almonde/Data/Scripts/x86_64-linux-rhel/oracle_adddsn_dataconnector.sh?revision=80883&view=markup
+
+- name: jenkins-slave | Copy unixODBC database configuration (step 1)
+  template: src=odbcinst.ini.j2 dest=/etc/odbcinst.ini backup=yes  mode=0755
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  become: yes
+  changed_when: false
+
+- name: jenkins-slave | Copy unixODBC database configuration (step 2)
+  template: src=odbc.ini.j2 dest=/etc/odbc.ini backup=yes  mode=0755
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  become: yes
+  changed_when: false
+  
+- name: jenkins-slave | Copy freetds database configuration
+  template: src=freetds.conf.j2 dest=/etc/freetds.conf backup=yes  mode=0755
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  become: yes
+  changed_when: false
+  
+#For MacOSX
+#See 
+#brew install unixodbc 
+#brew install freetds --with-tdsver=7.2 --with-unixodbc
+
+#otool -L /usr/local/lib/libtdsodbc.so
+
+#sudo port install wget
+#sudo port install freetds
+#sudo port install unixODBC
+
+#unixODBC (can check with isql)
+#isql parl011138_2014 sa Almonde01 -v
+#freeTDS (can check with tsql)
+#tsql -S parl011138_2014 -U sa -P Almonde01
+
+#Oracle
+#osql -S pard013448_2012 -U sa -P Almonde01
