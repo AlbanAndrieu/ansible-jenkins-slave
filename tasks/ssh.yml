@@ -11,7 +11,8 @@
     mode=0600
   become: yes
   when: jenkins_ssh_key_file != ""
-
+  ignore_errors: yes
+  
 - name: jenkins-ssh | Setup SSH hosts
   lineinfile: 
     line="{{item}}"
@@ -37,4 +38,3 @@
   with_items: "{{jenkins_ssh_authorized_keys_fingerprints}}"
   when: jenkins_ssh_authorized_keys_fingerprints | length > 0    
   become: yes
-   
