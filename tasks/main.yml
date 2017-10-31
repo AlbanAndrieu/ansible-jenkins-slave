@@ -46,6 +46,7 @@
   with_items:
     - zip
     - unzip
+    - bzip2
   become: yes
   ignore_errors: true
 
@@ -88,6 +89,8 @@
 #  with_items:
 #    - ansible-lint
 #  become: yes
+
+- include: ansible.yml
 
 - include: docker.yml
 

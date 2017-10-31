@@ -1,0 +1,18 @@
+      
+- name: Install qa package
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+    - curl
+    - libcurl4-openssl-dev
+    - expat
+    - libexpat1-dev
+    - gettext
+    - openssl
+    - perl
+    - libperl-dev
+    - asciidoc
+    - docbook2x
+    - make
+    - autoconf
+  become: yes
+  ignore_errors: true

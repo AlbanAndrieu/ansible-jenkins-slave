@@ -58,6 +58,8 @@
     - { regexp: '', line: 'export SCONS=/usr/bin/scons' }
     - { regexp: '', line: 'export TAR=/bin/gtar' }
     - { regexp: '', line: 'export GIT_DISCOVERY_ACROSS_FILESYSTEM=1' } #For Solaris
+    - { regexp: '', line: 'export ACCEPT_EULA=Y' } #For MsSQL
+    - { regexp: '', line: 'export SA_PASSWORD={{ shell_sa_password }}' } #For MsSQL
   become_user: "{{ jenkins_user }}"
   changed_when: false
 

@@ -25,6 +25,8 @@
  #   - urllib
  #   - cairosvg
     - pygal
+    - urllib3[secure]    
+    - certifi
   become: yes
 
 - name: jenkins-slave | Install devops tools for release notes

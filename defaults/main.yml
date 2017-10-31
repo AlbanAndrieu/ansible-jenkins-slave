@@ -76,6 +76,8 @@ shell_git: []
   #   shell_git_meld_enabled: yes,
   #   shell_git_editor: "gedit",
 
+shell_sa_password: "Almonde01"
+
 nodejs_version: "6.4.0"
 nodejs_enabled: true
 epel_repo_enabled: false

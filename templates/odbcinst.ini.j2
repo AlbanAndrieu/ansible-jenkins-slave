@@ -9,56 +9,59 @@
 
 [PostgreSQL]
 Description = ODBC for PostgreSQL
-#CentOS 6
-Driver = /usr/lib/psqlodbcw.so
-#CentOS 6
-#Setup = /usr/lib/x86_64-linux-gnu/odbc/psqlodbca.so
-#Ubuntu
-#Setup = /usr/lib/x86_64-linux-gnu/odbc/libodbcpsqlS.so
-#CentOS 6
-Driver64 = /usr/lib64/psqlodbcw.so
-Setup64 = /usr/lib64/libodbcpsqlS.so
+{% if odbcinst_PostgreSQL_Driver is defined %}
+Driver =  {{ odbcinst_PostgreSQL_Driver }}
+{% endif %}
+{% if odbcinst_PostgreSQL_Setup is defined %}
+Setup =  {{ odbcinst_PostgreSQL_Setup }}
+{% endif %}
+{% if odbcinst_PostgreSQL_Driver64 is defined %}
+Driver64 =  {{ odbcinst_PostgreSQL_Driver64 }}
+{% endif %}
+{% if odbcinst_PostgreSQL_Setup64 is defined %}
+Setup64 =  {{ odbcinst_PostgreSQL_Setup64 }}
+{% endif %}
 FileUsage=1
 
 #/usr/local/Cellar/unixodbc/2.3.4/
 
 [MySQL]
 Description = ODBC for MySQL
-#CentOS 6
-Driver=/usr/lib/libmyodbc5.so
-#Ubuntu
-#Driver = /usr/lib/x86_64-linux-gnu/odbc/libmyodbc5a.so
-#CentOS 6
-Setup=/usr/lib/libodbcmyS.so
-#Ubuntu
-#Setup = /usr/lib/x86_64-linux-gnu/odbc/libodbcmyS.so
-#CentOS 6
-Driver64 = /usr/lib64/libmyodbc5.so
-Setup64 = /usr/lib64/libodbcmyS.so
+{% if odbcinst_MySQL_Driver is defined %}
+Driver =  {{ odbcinst_MySQL_Driver }}
+{% endif %}
+{% if odbcinst_MySQL_Setup is defined %}
+Setup =  {{ odbcinst_MySQL_Setup }}
+{% endif %}
+{% if odbcinst_MySQL_Driver64 is defined %}
+Driver64 =  {{ odbcinst_MySQL_Driver64 }}
+{% endif %}
+{% if odbcinst_MySQL_Setup64 is defined %}
+Setup64 =  {{ odbcinst_MySQL_Setup64 }}
+{% endif %}
+
 FileUsage=1
 
 [FreeTDS]
 Description = FreeTDS Driver v0.91
-#CentOS 6
-Driver = /usr/lib64/libtdsodbc.so.0
-#Ubuntu
-#Driver = /usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so
-#MacOSX
-#Driver = /usr/local/Cellar/freetds/1.00.63/lib/libtdsodbc.so
-#CentOS 6
-Setup = /usr/lib64/libtdsodbc.so.0
-#Ubuntu
-#Setup = /usr/lib/x86_64-linux-gnu/odbc/libtdsS.so
-#MacOSX
-#Setup = /usr/local/Cellar/freetds/1.00.63/lib/libtdsodbc.so
+{% if odbcinst_FreeTDS_Driver is defined %}
+Driver =  {{ odbcinst_FreeTDS_Driver }}
+{% endif %}
+{% if odbcinst_FreeTDS_Setup is defined %}
+Setup =  {{ odbcinst_FreeTDS_Setup }}
+{% endif %}
 fileusage=1
 dontdlclose=1
 UsageCount=1
 
 [Oracle]
 Description = Oracle ODBC driver for Oracle 12c
-Driver = /opt/oracle/instantclient_12_2/libsqora.so.12.1
-Driver64 = /opt/oracle/instantclient_12_2/libsqora.so.12.1
+{% if odbcinst_Oracle_Driver is defined %}
+Driver =  {{ odbcinst_Oracle_Driver }}
+{% endif %}
+{% if odbcinst_Oracle_Driver is defined %}
+Driver64 =  {{ odbcinst_Oracle_Driver64 }}
+{% endif %}
 FileCount=1
 UsageCount=1
 
