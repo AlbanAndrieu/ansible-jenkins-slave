@@ -62,7 +62,8 @@
     - { regexp: '', line: 'export SA_PASSWORD={{ shell_sa_password }}' } #For MsSQL
   become_user: "{{ jenkins_user }}"
   changed_when: false
-
+  ignore_errors: true
+  
 - name: jenkins-slave | Switch to bash
   command: usermod -s {{ jenkins_shell }} {{ jenkins_user }}
   #become_user: "{{ jenkins_user }}"
