@@ -11,3 +11,39 @@
     - paramiko
     - ansible==2.4.1.0
   become: yes
+
+- name: jenkins-slave | Install ansible requirements
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+    - sshpass
+  become: yes
+  ignore_errors: true
+  
+- name: jenkins-slave | Install devops tools for ansible windows
+  #executable=pip{{ python_versions }}
+  #pip: name="https://github.com/diyan/pywinrm/archive/df049454a9309280866e0156805ccda12d71c93a.zip" state=present
+  pip: name={{ item }}
+  with_items:
+    - "pywinrm>=0.2.2"
+  become: yes
+
+- name: jenkins-slave | Install devops tools for ansible accelerate mode
+  #executable=pip{{ python_versions }}
+  #pip: name="https://github.com/diyan/pywinrm/archive/df049454a9309280866e0156805ccda12d71c93a.zip" state=present
+  pip: name={{ item }}
+  with_items:
+    - python-keyczar
+  become: yes
+  ignore_errors: true
+  
+#sudo apt-get install krb5-kdc krb5-admin-server
+
+- name: jenkins-slave | Install devops tools for ansible kerberos
+  pip: name={{ item }}
+  with_items:
+    - python-dev
+    - libkrb5-dev
+    - krb5-user
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
+  become: yes
+  ignore_errors: true

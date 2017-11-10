@@ -1,0 +1,9 @@
+
+- name: jenkins-slave | Install debug tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  with_items:
+    - xclock
+  become: yes
+  changed_when: false
+  

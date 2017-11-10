@@ -1,0 +1,67 @@
+
+##
+ # BROWSER
+ #
+ 
+- name: jenkins-slave | Install requirement for zaproxy
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - chromium-chromedriver # see selenium role
+  become: yes
+  changed_when: false
+
+- name: jenkins-slave | Install requirement for zaproxy
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  with_items:
+    - chromedriver # see selenium role
+  become: yes
+  changed_when: false
+  
+#TODO sudo ln -s /usr/lib/chromium-browser/chromedriver /var/lib/chromedriver
+- name: jenkins-slave | Create chromedriver directory link (legacy required)
+  file: path=/var/lib/chromedriver src=/usr/lib/chromium-browser/chromedriver state=link
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  ignore_errors: true   
+  become: yes
+  
+#TODO sudo ln -s /usr/bin/chromedrive /var/lib/chromedriver  
+- name: jenkins-slave | Create chromedriver directory link (legacy required)
+  file: path=/var/lib/chromedriver src=/usr/bin/chromedriver state=link
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  ignore_errors: true   
+  become: yes
+
+#TODO install google-chrome-stable
+
+##below needed for protractor tests
+##sudo apt-get install google-chrome-stable
+
+# wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+# yum -y install redhat-lsb libXScrnSaver
+# yum -y localinstall google-chrome-stable_current_x86_64.rpm
+
+#- name: jenkins-slave | Install firefox for zaproxy
+#  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+#  become: yes
+#  with_items:
+#    - firefox # see selenium role
+
+#TODO install
+##for zap
+#/usr/bin/phantomjs --version || true
+#/usr/lib/chromium-browser/chromedriver --version || true
+#ls /var/lib/chromedriver
+#/usr/bin/firefox
+#/usr/bin/chromium-browser
+#chromium-browser --version
+#Chromium 52.0.2743.116 Built on Ubuntu , running on Ubuntu 14.04
+#sudo apt-get install google-chrome-stable
+#/opt/google/chrome/chrome --version
+#Google Chrome 47.0.2526.111 unknown
+
+#sudo apt-get install phantomjs
+#sudo apt-get install adobe-flashplugin
+#sudo apt-get install chromium-chromedriver
+

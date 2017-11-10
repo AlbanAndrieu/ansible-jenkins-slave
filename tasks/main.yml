@@ -22,9 +22,9 @@
   tags:
     - jenkins-slave
 
-#- include: java.yml
+#- import_playbook: java.yml
 
-#- include: maven.yml
+#- import_playbook: maven.yml
 
 ##
  # subversion
@@ -50,9 +50,9 @@
   become: yes
   ignore_errors: true
 
-- include: qa.yml
+- import_playbook: qa.yml
 
-- include: quality.yml
+- import_playbook: quality.yml
            
 - name: jenkins-slave | Install flex
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -90,21 +90,21 @@
 #    - ansible-lint
 #  become: yes
 
-- include: ansible.yml
+- import_playbook: ansible.yml
 
-- include: docker.yml
+- import_playbook: docker.yml
 
-- include: security.yml
+- import_playbook: security.yml
 
-#- include: gcc.yml
+#- import_playbook: gcc.yml
 
-- include: cpp.yml
+- inclimport_playbookude: cpp.yml
 
-- include: database.yml
+- import_playbook: database.yml
 
-- include: perl.yml
+- import_playbook: perl.yml
 
-- include: python.yml
+- import_playbook: python.yml
 
 ##
  # Jenkins user
@@ -133,7 +133,7 @@
   file: path={{ jenkins_home }}/.ssh state=directory mode=0700 owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: true
 
-- include: ssh.yml
+- import_playbook: ssh.yml
   when: jenkins_ssh_key_file != ""
   tags: [jenkins, jenkins-ssh]
 
@@ -141,9 +141,9 @@
   file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: true
 
-- include: shell.yml
+- import_playbook: shell.yml
 
-- include: git.yml
+- import_playbook: git.yml
 
 - name: jenkins-slave | Copy the deploy-log-parsing-rules for jenkins log parsing configuration
   copy: src=deploy-log-parsing-rules dest={{ jenkins_home }}/deploy-log-parsing-rules backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
@@ -274,7 +274,7 @@
   become: yes  
   changed_when: false
 
-- include: tmp.yml
+- import_playbook: tmp.yml
 
 #TODO
 #https://docs.ansible.com/ansible/jenkins_plugin_module.html
@@ -297,47 +297,14 @@
 
 #TODO Add source /etc/profile for RedHat to find lsof command
 
-- name: jenkins-slave | Install requirement for zaproxy
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-  become: yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  with_items:
-#    - phantomjs
-#    - adobe-flashplugin
-    - chromium-chromedriver # see selenium role
-#    - chromium-browser
-##below needed for protractor tests
-#    - google-chrome-stable
+- import_playbook: browser.yml
 
-#TODO sudo ln -s /usr/lib/chromium-browser/chromedriver /var/lib/chromedriver
-- name: jenkins-slave | Create chromedriver directory link (legacy required)
-  file: path=/var/lib/chromedriver src=/usr/lib/chromium-browser/chromedriver state=link
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')  
-#  ignore_errors: "{{ ansible_check_mode }}"
-  ignore_errors: true   
-  become: yes
-  
-#TODO sudo mkdir -p /workspace/jboss-as-7.1.1.Final
-#- name: jenkins-slave | Create Jboss directory link (legacy required)
-#  file: path={{ jboss_link_dir }} src={{ jboss_home_dir }} state=link
+- import_playbook: debug.yml
+
+#- name: jenkins-slave | Create Java directory link (legacy required)
+#  file: path={{ jenkins_slave_home }}/jdk1.7 src={{ jvm_folder }}/{{ jdk7_archive_extracted }} state=link
+#  when: jenkins_jdk7_enable
 #  become: yes
-
-#TODO use jenkins to install phantomjs
-#- name: npm | Ensure the phantomas npm dependencies are installed
-#  npm: >
-#    name={{ item }}
-#    state=present
-#    global=yes
-#  with_items:
-#    - phantomjs
-#    - phantomas
-#  become: yes
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and nodejs_enabled
-
-- name: jenkins-slave | Create Java directory link (legacy required)
-  file: path={{ jenkins_slave_home }}/jdk1.7 src={{ jvm_folder }}/{{ jdk7_archive_extracted }} state=link
-  when: jenkins_jdk7_enable
-  become: yes
 
 #- name: jenkins-slave | Clone the application
 #  action: git repo=https://github.com/AlbanAndrieu/nabla.git dest=/jenkins/nabla
