@@ -22,9 +22,9 @@
   tags:
     - jenkins-slave
 
-#- import_playbook: java.yml
+#- import_task: java.yml
 
-#- import_playbook: maven.yml
+#- import_task: maven.yml
 
 ##
  # subversion
@@ -50,9 +50,9 @@
   become: yes
   ignore_errors: true
 
-- import_playbook: qa.yml
+- import_task: qa.yml
 
-- import_playbook: quality.yml
+- import_task: quality.yml
            
 - name: jenkins-slave | Install flex
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -90,21 +90,21 @@
 #    - ansible-lint
 #  become: yes
 
-- import_playbook: ansible.yml
+- import_task: ansible.yml
 
-- import_playbook: docker.yml
+- import_task: docker.yml
 
-- import_playbook: security.yml
+- import_task: security.yml
 
-#- import_playbook: gcc.yml
+#- import_task: gcc.yml
 
-- inclimport_playbookude: cpp.yml
+- inclimport_taskude: cpp.yml
 
-- import_playbook: database.yml
+- import_task: database.yml
 
-- import_playbook: perl.yml
+- import_task: perl.yml
 
-- import_playbook: python.yml
+- import_task: python.yml
 
 ##
  # Jenkins user
@@ -133,7 +133,7 @@
   file: path={{ jenkins_home }}/.ssh state=directory mode=0700 owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: true
 
-- import_playbook: ssh.yml
+- import_task: ssh.yml
   when: jenkins_ssh_key_file != ""
   tags: [jenkins, jenkins-ssh]
 
@@ -141,9 +141,9 @@
   file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: true
 
-- import_playbook: shell.yml
+- import_task: shell.yml
 
-- import_playbook: git.yml
+- import_task: git.yml
 
 - name: jenkins-slave | Copy the deploy-log-parsing-rules for jenkins log parsing configuration
   copy: src=deploy-log-parsing-rules dest={{ jenkins_home }}/deploy-log-parsing-rules backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
@@ -274,7 +274,7 @@
   become: yes  
   changed_when: false
 
-- import_playbook: tmp.yml
+- import_task: tmp.yml
 
 #TODO
 #https://docs.ansible.com/ansible/jenkins_plugin_module.html
@@ -297,9 +297,9 @@
 
 #TODO Add source /etc/profile for RedHat to find lsof command
 
-- import_playbook: browser.yml
+- import_task: browser.yml
 
-- import_playbook: debug.yml
+- import_task: debug.yml
 
 #- name: jenkins-slave | Create Java directory link (legacy required)
 #  file: path={{ jenkins_slave_home }}/jdk1.7 src={{ jvm_folder }}/{{ jdk7_archive_extracted }} state=link
