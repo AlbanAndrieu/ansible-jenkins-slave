@@ -40,7 +40,7 @@
 - name: Install ant package
   action: "{{ ansible_pkg_mgr }} name='ant' state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   become: yes
-    
+
 - name: Install zip package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
@@ -53,17 +53,17 @@
 - import_task: qa.yml
 
 - import_task: quality.yml
-           
+
 - name: jenkins-slave | Install flex
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
    - flex
   #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
-  #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
+  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   become: yes
-  
+
 - name: jenkins-slave | Install tools needed by grunt-zaproxy html report
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
@@ -98,7 +98,7 @@
 
 #- import_task: gcc.yml
 
-- inclimport_taskude: cpp.yml
+- import_task: cpp.yml
 
 - import_task: database.yml
 
@@ -172,7 +172,7 @@
 #    - "jenkins ALL=(ALL)   NOPASSWD: /usr/local/bin/test.py"
     - "Defaults:jenkins    secure_path=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\""
   become: yes
-  ignore_errors: true  
+  ignore_errors: true
   changed_when: false
 
 - name: jenkins-slave | Disable env_reset
@@ -181,7 +181,7 @@
     backrefs=yes
     validate='visudo -cf %s'
   become: yes
-  ignore_errors: true    
+  ignore_errors: true
   changed_when: false
 
 - name: jenkins-slave | Set limits
@@ -266,12 +266,12 @@
 
 - name: jenkins-slave | Copy the .npmrc script
   template: src=.npmrc.j2 dest={{ jenkins_home }}/.npmrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-  become: yes  
+  become: yes
   changed_when: false
 
 - name: jenkins-slave | Copy the .bowerrc script
   template: src=.bowerrc.j2 dest={{ jenkins_home }}/.bowerrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-  become: yes  
+  become: yes
   changed_when: false
 
 - import_task: tmp.yml
