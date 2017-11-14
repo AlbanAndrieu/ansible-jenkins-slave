@@ -33,13 +33,34 @@
   ignore_errors: true   
   become: yes
 
-#TODO install google-chrome-stable
+- name: jenkins-slave | Install google-chrome-stable
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')  
+  with_items:
+    - google-chrome-stable
+  become: yes
+  changed_when: false
 
 ##below needed for protractor tests
 ##sudo apt-get install google-chrome-stable
 
-# wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
-# yum -y install redhat-lsb libXScrnSaver
+- name: jenkins-slave | Get google-chrome-stable repo
+  action: command wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
+  become: yes
+  changed_when: false
+
+- name: jenkins-slave | Install google-chrome-stable
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  with_items:
+    - redhat-lsb 
+    - libXScrnSaver
+    - google-chrome-stable_current_x86_64.rpm
+  become: yes
+  changed_when: false
+  
 # yum -y localinstall google-chrome-stable_current_x86_64.rpm
 
 #- name: jenkins-slave | Install firefox for zaproxy
