@@ -50,7 +50,7 @@
   become: yes
   ignore_errors: true
 
-- import_tasks: qa.yml
+- import_tasks: other.yml
 
 - import_tasks: quality.yml
 
