@@ -96,7 +96,7 @@
   when: jenkins_jdk7_enable
   tags: jdk_setup
 
-- include: jdk7-tasks.yml
+- import_tasks: jdk7-tasks.yml
   when: jenkins_jdk7_enable
   tags: jdk_setup
 
@@ -152,7 +152,7 @@
   when: jenkins_jdk8_enable
   tags: jdk_setup
 
-- include: jdk8-tasks.yml
+- import_tasks: jdk8-tasks.yml
   when: jenkins_jdk8_enable
   tags: jdk_setup
 
