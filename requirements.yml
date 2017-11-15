@@ -407,7 +407,7 @@
   scm:     'git'
   version: 'master'
 
-- src:     'https://github.com/AlbanAndrieu/ansible-python'
+- src:     'https://github.com/AlbanAndrieu/Stouts.python'
   name:    'python'
   scm:     'git'
   version: 'master'
