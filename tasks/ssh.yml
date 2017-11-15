@@ -9,9 +9,15 @@
     owner={{jenkins_user}}
     group={{jenkins_group}}
     mode=0600
+  register: key    
   become: yes
   when: jenkins_ssh_key_file != ""
   ignore_errors: yes
+
+- name: jenkins-ssh | Create private key
+  command: /usr/bin/ssh-keygen -A
+  become: yes
+  when: key|failed
   
 - name: jenkins-ssh | Setup SSH hosts
   lineinfile: 
