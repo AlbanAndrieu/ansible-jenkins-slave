@@ -5,4 +5,5 @@
   with_items:
     - xclock
   become: yes
+  ignore_errors: true     
   changed_when: false
