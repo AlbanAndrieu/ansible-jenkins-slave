@@ -174,13 +174,13 @@ under the License.
     <server>
       <id>local-nexus</id>
       <username>admin</username>
-      <password>TODO</password>
+      <password>admin123</password>
     </server>
     
     <server>
       <id>nexus-releases</id>
       <username>admin</username>
-      <password>TODO</password>
+      <password>admin123</password>
       <!-- used for Nexus Staging in Jenkins -->
       <configuration>
         <httpHeaders>
@@ -195,7 +195,7 @@ under the License.
     <server>
       <id>nexus-snapshots</id>
       <username>admin</username>
-      <password>TODO</password>
+      <password>admin123</password>
     </server>
 
     <server>
@@ -204,6 +204,7 @@ under the License.
       <password>admin</password>
     </server>
 
+	<!--
     <server>
       <id>[[WORKSTATION]]</id>
       <username>albandri</username>
@@ -213,6 +214,7 @@ under the License.
       <directoryPermissions>775</directoryPermissions>
       <privateKey>${user.home}/.ssh/id_dsa</privateKey>
     </server>
+    -->
 
   </servers>
 
@@ -416,61 +418,7 @@ under the License.
       <properties>
         <env.WORKSPACE>${env.HOME}</env.WORKSPACE>
       </properties>
-    </profile>
-    <profile>
-      <id>cloudbees</id>
-      <repositories>
-        <repository>
-            <id>server-forge-release</id>
-            <name>External Staging Repository</name>
-            <url>https://repository-nabla.forge.cloudbees.com/release</url>
-            <layout>default</layout>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <id>server-forge-snapshot</id>
-            <name>External Snapshot Repository</name>
-            <url>https://repository-nabla.forge.cloudbees.com/snapshot</url>
-            <layout>default</layout>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>server-forge-release</id>
-            <url>https://repository-nabla.forge.cloudbees.com/release</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </pluginRepository>
-		<pluginRepository>
-			<id>cloudbees-public-release</id>
-			<url>http://repository-cloudbees.forge.cloudbees.com/public-release</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-        </pluginRepositories>
-    </profile>
+    </profile>    
     <profile>
       <id>[[PROJECT_USER]]</id>
       <!-- http://mvnrepository.com/search.html -->
@@ -942,8 +890,8 @@ under the License.
 
   <activeProfiles>
     <!--<activeProfile>cloudbees</activeProfile>-->
-    <!--<activeProfile>nexus</activeProfile>-->
-    <activeProfile>[[PROJECT_USER]]</activeProfile>
+    <activeProfile>nexus</activeProfile>
+    <!--<activeProfile>[[PROJECT_USER]]</activeProfile>-->
     <!--<activeProfile>unittest</activeProfile>-->
   </activeProfiles>
 </settings>
