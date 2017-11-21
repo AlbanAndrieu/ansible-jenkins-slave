@@ -262,7 +262,7 @@
   become: yes
   ignore_errors: true
 
-#- include: nodejs.yml
+- include: nodejs.yml
 
 - name: jenkins-slave | Copy the .npmrc script
   template: src=.npmrc.j2 dest={{ jenkins_home }}/.npmrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
