@@ -87,7 +87,7 @@
 
 - name: cpp | Set cpp link to gcc version
   set_fact: cpp_version=4.8
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '7.1')
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
 
 - name: cpp | Display cpp link before
   action: command update-alternatives --display gcc
@@ -166,6 +166,7 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')      
   tags: cpp
   become: yes
+  ignore_errors: true
     
 - name: cpp | Install C++ quality tool 
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -175,6 +176,7 @@
    - lcov
   tags: cpp
   become: yes
+  ignore_errors: true
   
 - name: cpp | Install C++ quality tool rats
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -183,4 +185,4 @@
   tags: cpp
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['16.04']
   become: yes
-    
+  ignore_errors: true  

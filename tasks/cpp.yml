@@ -571,7 +571,7 @@
 #LIBDWARF
 - name: jenkins-slave | Install C++ librairies libdwarf (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - libdwarf-dev
   become: yes
@@ -588,7 +588,7 @@
 #XML2
 - name: jenkins-slave | Install C++ librairies xml (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
    -  libxml2-dev
   become: yes
@@ -604,12 +604,13 @@
 #GNUSTEP
 - name: jenkins-slave | Install gnustep (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - gnustep
     #- gnustep-devel
     - gobjc
   become: yes
+  ignore_errors: true
 
 - name: jenkins-slave | Installgnustep (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
