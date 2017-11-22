@@ -28,7 +28,7 @@
       shell: ansible-galaxy install -r requirements.yml -p ./roles/ --ignore-errors 
       #shell: ansible-galaxy install -r requirements.yml -p ./roles/ --ignore-errors --force
 
-- hosts: all
+- hosts: localhost
   become: true
 #  remote_user: root
 
