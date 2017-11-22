@@ -31,25 +31,25 @@ install:
   # Install dependencies.
   #- ansible-galaxy install alban.andrieu.subversion
   #- ansible-galaxy install alban.andrieu.xvbf
-  - git clone https://github.com/AlbanAndrieu/Stouts.python.git python
-  - git clone https://github.com/AlbanAndrieu/ansible-role-ntp.git geerlingguy.ntp
-  - git clone https://github.com/AlbanAndrieu/ansible-locale.git locale
-  - git clone https://github.com/AlbanAndrieu/ansible-hostname.git alban.andrieu.hostname
-  - git clone https://github.com/AlbanAndrieu/ansible-util.git silpion.util
-  - git clone https://github.com/AlbanAndrieu/ansible-lib silpion.lib
-  - git clone https://github.com/AlbanAndrieu/ansible-java.git java
-  - git clone https://github.com/AlbanAndrieu/ansible-common.git alban.andrieu.common
-  - git clone https://github.com/AlbanAndrieu/ansible-subversion.git alban.andrieu.subversion
-  - git clone https://github.com/AlbanAndrieu/ansible-role-git.git geerlingguy.git
-  - git clone https://github.com/AlbanAndrieu/ansible-cmake.git alban.andrieu.cmake
-  - git clone https://github.com/AlbanAndrieu/ansible-cpp.git alban.andrieu.cpp
-  - git clone https://github.com/AlbanAndrieu/ansible-xvbf alban.andrieu.xvbf
-  - git clone https://github.com/AlbanAndrieu/ansible-selenium alban.andrieu.selenium
-  - git clone https://github.com/AlbanAndrieu/ansible-maven.git maven
-  - git clone https://github.com/AlbanAndrieu/devbox.chrome.git chrome
-  - git clone https://github.com/AlbanAndrieu/ansible-nodejs.git nodejs
-  - git clone https://github.com/AlbanAndrieu/ansible-tomcat alban.andrieu.tomcat
-  - git clone https://github.com/AlbanAndrieu/ansible-jboss alban.andrieu.jboss
+  #- git clone https://github.com/AlbanAndrieu/Stouts.python.git python
+  #- git clone https://github.com/AlbanAndrieu/ansible-role-ntp.git geerlingguy.ntp
+  #- git clone https://github.com/AlbanAndrieu/ansible-locale.git locale
+  #- git clone https://github.com/AlbanAndrieu/ansible-hostname.git alban.andrieu.hostname
+  #- git clone https://github.com/AlbanAndrieu/ansible-util.git silpion.util
+  #- git clone https://github.com/AlbanAndrieu/ansible-lib silpion.lib
+  #- git clone https://github.com/AlbanAndrieu/ansible-java.git java
+  #- git clone https://github.com/AlbanAndrieu/ansible-common.git alban.andrieu.common
+  #- git clone https://github.com/AlbanAndrieu/ansible-subversion.git alban.andrieu.subversion
+  #- git clone https://github.com/AlbanAndrieu/ansible-role-git.git geerlingguy.git
+  #- git clone https://github.com/AlbanAndrieu/ansible-cmake.git alban.andrieu.cmake
+  #- git clone https://github.com/AlbanAndrieu/ansible-cpp.git alban.andrieu.cpp
+  #- git clone https://github.com/AlbanAndrieu/ansible-xvbf alban.andrieu.xvbf
+  #- git clone https://github.com/AlbanAndrieu/ansible-selenium alban.andrieu.selenium
+  #- git clone https://github.com/AlbanAndrieu/ansible-maven.git maven
+  #- git clone https://github.com/AlbanAndrieu/devbox.chrome.git chrome
+  #- git clone https://github.com/AlbanAndrieu/ansible-nodejs.git nodejs
+  #- git clone https://github.com/AlbanAndrieu/ansible-tomcat alban.andrieu.tomcat
+  #- git clone https://github.com/AlbanAndrieu/ansible-jboss alban.andrieu.jboss
 
   - ansible-galaxy install -r requirements.yml -p ./roles/ --ignore-errors
   
@@ -65,7 +65,7 @@ script:
 
   # Run the role/playbook again, checking to make sure it's idempotent.
   - >
-    sudo ansible-playbook -i hosts jenkins-slave.yml --connection=local --sudo -vvvv -e "python_versions=[2.7]"
+    sudo ansible-playbook -i hosts jenkins-slave.yml --connection=local --sudo -vvvv"
 #    | grep -q 'changed=0.*failed=0'
 #    && (echo 'Idempotence test: pass' && exit 0)
 #    || (echo 'Idempotence test: fail' && exit 0)
