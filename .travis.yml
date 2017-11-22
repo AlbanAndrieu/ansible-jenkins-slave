@@ -24,10 +24,6 @@ install:
   # Add ansible.cfg to pick up roles path.
   #- "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
 
-  # Update Ansible submodule.
-  - git pull && git submodule init && git submodule update && git submodule status
-  - git submodule foreach git checkout master
-  
   # Install dependencies.
   #- ansible-galaxy install alban.andrieu.subversion
   #- ansible-galaxy install alban.andrieu.xvbf
@@ -51,21 +47,32 @@ install:
   #- git clone https://github.com/AlbanAndrieu/ansible-tomcat alban.andrieu.tomcat
   #- git clone https://github.com/AlbanAndrieu/ansible-jboss alban.andrieu.jboss
 
+  # Update Ansible submodule.
+  - git pull && git submodule init && git submodule update && git submodule status
+  - git submodule foreach git checkout master
+  
   - ansible-galaxy install -r requirements.yml -p ./roles/ --ignore-errors
   
 script:
   # Check ansible version
   - sudo ansible --version
-
+  
+  # Add ansible.cfg to pick up roles path.
+  - "{ echo '[defaults]'; echo 'roles_path = ./roles'; } >> ansible.cfg"
+  
   # Prepare tests
   #- echo localhost > hosts
 
   # Check syntax
   - sudo ansible-playbook -i hosts --syntax-check jenkins-slave.yml --connection=local -e "python_versions=[2.7]"
 
+  # First run
+  # Run the role/playbook with ansible-playbook.
+  - sudo ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local --sudo -vvvv -e "python_versions=[2.7]"
+  
   # Run the role/playbook again, checking to make sure it's idempotent.
-  - >
-    sudo ansible-playbook -i hosts jenkins-slave.yml --connection=local --sudo -vvvv -e "python_versions=[2.7]"
+#  - >
+#    sudo ansible-playbook -i hosts jenkins-slave.yml --connection=local --sudo -vvvv -e "python_versions=[2.7]"
 #    | grep -q 'changed=0.*failed=0'
 #    && (echo 'Idempotence test: pass' && exit 0)
 #    || (echo 'Idempotence test: fail' && exit 0)
