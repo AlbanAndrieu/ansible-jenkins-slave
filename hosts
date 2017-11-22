@@ -1,2 +1,8 @@
+
+# file: hosts
+
+[all]
+localhost
+
 [local]
 localhost

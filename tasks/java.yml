@@ -15,6 +15,13 @@
 #sudo update-java-alternatives -s java-8-oracle
 #sudo update-java-alternatives -s java-9-oracle
 
+- name: jdk | Accept license
+  shell: "{{ item }}"
+  with_items:
+    - echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+    - echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04'])
+  
 - name: jdk | Install ppa
   apt_repository: repo="ppa:webupd8team/java" state={{ util_repository_state|default('present') }} update_cache=yes
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['12.04','13.04','14.04'])
@@ -29,6 +36,12 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk7_enable   
   become: yes
 
+#- name: jdk8 | Install default oracle
+#  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ default_pkg_state|default('present') }} update_cache=yes"
+#  with_items:
+#   - name=oracle-java8-installer
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable   
+  
 - name: jdk8 | Install default oracle
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   tags: jdk_setup
@@ -87,7 +100,7 @@
   tags: jdk_setup
 
 - fail: msg=" jdk7 | Whoops! file ownership has changed"
-  when: jenkins_jdk7_enable and jdk7_archive_extracted_present.stat.pw_name != '{{jdk_owner}}'
+  when: (jenkins_jdk7_enable and jdk7_archive_extracted_present.stat.pw_name != '{{ jdk_owner }}')
   tags: jdk_setup
 
 #- debug: msg="jdk7_installed value is {{ jdk7_installed.stdout }} "
@@ -143,7 +156,7 @@
   tags: jdk_setup
 
 - fail: msg=" jdk8 | Whoops! file ownership has changed"
-  when: jenkins_jdk8_enable and jdk8_archive_extracted_present.stat.pw_name != '{{jdk_owner}}'
+  when: (jenkins_jdk8_enable and jdk8_archive_extracted_present.stat.pw_name != '{{ jdk_owner }}')
   tags: jdk_setup
 
 #- debug: msg=" jenkins-slave | jdk8_installed value is {{ jdk8_installed.stdout }} "

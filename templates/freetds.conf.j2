@@ -44,65 +44,13 @@
         tds version = 7.0
 
 # -----------------------------------------
-#  ALMTest Servers
+#  NABLA Servers
 # -----------------------------------------
 
-[parvswalmonde02_2008]
-host = 10.21.200.87
-port = 1433
-tds version = 7.2
-client charset = UTF-8
-text size = 2147483647
-
-#Oracle12c
-[pard013448_2012]
-host = pard013448
-port = 1433
-tds version = 7.2
-client charset = UTF-8
-text size = 2147483647
-	
-#SQLServer2014	
-[parl011138_2014]
-host = parl011138
-port = 54201
-tds version = 7.2
-client charset = UTF-8
-text size = 2147483647
-
-[FR1CSWFRDEV0008]
-host = FR1CSWFRDEV0008
-port = 1433
-tds version = 8.0
-client charset = UTF-8
-text size = 2147483647
-	
 #SQLServer2016	
-[FR1CSWFRBM0005_2016]
-host = FR1CSWFRBM0005
-#port = port is found automatically, don't define explicitly
-tds version = 8.0
+[ALBANDRI_2016]
+host = ALBANDRI
+port = 1433
+tds version = 7.2
 client charset = UTF-8
 text size = 2147483647
-
-# -----------------------------------------
-#  CMR Servers
-# -----------------------------------------
-
-[$V(KGR_DS_NAME)]
-	host = $V(KGR_DB_HOST) 
-	port =$V(KGR_DB_PORT)
-#	instance = $V(KGR_DS_NAME)
-	tds version = 8.0
-
-[$V(RATE_DS_NAME)]
-	host = $V(KGR_DB_HOST) 
-	port =$V(KGR_DB_PORT)
-#	instance = $V(KGR_DS_NAME)
-	tds version = 8.0
-
-[$V(KPLUS_DS_NAME)]
-	host = $V(KPLUS_DB_HOST) 
-	port = $V(KPLUS_DB_PORT)
-#	instance = $V(KPLUS_DS_NAME)
-	tds version = 8.0

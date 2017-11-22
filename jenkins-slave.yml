@@ -1,47 +1,36 @@
 ---
 
-#- name: Apply hostname configuration
-#  hosts: all
-#  remote_user: root
-##  connection: local
-#
-#  roles:
-#    - alban.andrieu.hostname
-
-#- name: Install git
-#  hosts: all
-#  become: true
-#  remote_user: root
-##  connection: local
-#
-#  roles:
-#    - role: geerlingguy.git
-#
-#- name: Install subversion
-#  hosts: all
-#  remote_user: root
-##  connection: local
-#
-#  roles:
-#    - role: alban.andrieu.subversion
-#
-#  vars:
-#      user: root
-#      home: /root
-#      subversion_owner_home: "/root/.subversion"
-#      subversion_previous_enabled: true
-#      subversion_previous_codename: precise
-#      subversion_rabbitvcs_enabled: no
-#      subversion_diff_enabled: no
-#      subversion_major    : '1'
-#      subversion_minor    : '6'
-#      subversion_revision : '17'
-#      subversion_version : "{{subversion_major}}.{{subversion_minor}}.{{subversion_revision}}"
-#      subversion_ubuntu: '{{ subversion_version }}dfsg-3ubuntu3'
-
 - hosts: all
+  gather_facts: true
+  tasks:
+    - name: group hosts by distribution
+      group_by: key="{{ ansible_distribution }}-{{ ansible_distribution_version }}"
+
+- hosts: RedHat-7*:RedHat-6*:RedHat-5*:CentOS-7*:CentOS-6*:Ubuntu-17*:Ubuntu-16*:Ubuntu-14*:Ubuntu-13*:Ubuntu-12*
+  gather_facts: false
+  tasks:
+    - name: group hosts for supported distributions
+      group_by: key="supported"
+
+- hosts: "!supported"
+  gather_facts: false
+  tasks:
+    - name: fail for unsupported distribution
+      fail: msg="{{ ansible_distribution }} {{ ansible_distribution_version }}
+                 is not a supported OS for a Tower installation.  Supported
+                 OSes include Red Hat Enterprise Linux 6/7, CentOS 6, or
+                 Ubuntu 12.04/13.04/14.04/16.04/17.04."
+    - debug: msg="Version {{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_architecture }}"
+
+- hosts: localhost
+  tasks:
+    - name: Install Ansible-Galaxy dependencies
+      shell: ansible-galaxy install -r requirements.yml -p ./roles/ --ignore-errors 
+      #shell: ansible-galaxy install -r requirements.yml -p ./roles/ --ignore-errors --force
+
+- hosts: localhost
   become: true
-  remote_user: root
+#  remote_user: root
 
 #  vars_files:
 #  - [ "vars/{{ ansible_distribution }}-{{ ansible_architecture }}.yml", "vars/{{ ansible_distribution }}.yml" ]

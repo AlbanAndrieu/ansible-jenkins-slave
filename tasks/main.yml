@@ -50,7 +50,7 @@
   become: yes
   ignore_errors: true
 
-- import_tasks: other.yml
+- import_tasks: qa.yml
 
 - import_tasks: quality.yml
 
@@ -262,7 +262,7 @@
   become: yes
   ignore_errors: true
 
-- include: nodejs.yml
+- import_tasks: nodejs.yml
 
 - name: jenkins-slave | Copy the .npmrc script
   template: src=.npmrc.j2 dest={{ jenkins_home }}/.npmrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}

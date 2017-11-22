@@ -31,10 +31,14 @@ error /cannot stat/
 error /No rule to make target/
 error /No output written/
 error /multiple definition of/
+error /is not recognized as an internal or external command/
+error /C\/C++ compilers are most likely not set correctly/
 error /scons: \*\*\*/
 
 #maven
 warning /Tests in error:/
+error /^\[ERROR/
+error /Failed to execute goal/
 
 warning /^kernel Attempt to set zfs file/
 info /MESSAGE: there are some new default variable/

@@ -1,37 +1,38 @@
 
 - name: jenkins-slave | Install requirement for phantomas/phantomjs (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-  become: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - libfontconfig1
     - libfreetype6
-
+  become: yes
+  
 - name: jenkins-slave | Install requirement for phantomas/phantomjs (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-  become: yes
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
     - fontconfig
     - freetype
     - libfreetype.so.6
     - libfontconfig.so.1
-
+  become: yes
+  
 #Warning on Ubuntu command is nodejs (instead of node)
 - name: jenkins-slave | Install nodejs npm official (might be outdated) (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-  become: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['12.04','14.04']) and nodejs_enabled
   with_items:
     - nodejs
-
+  become: yes    
+  ignore_errors: yes
+  
 - name: jenkins-slave | Install nodejs npm official (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-  become: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04']) and nodejs_enabled
   with_items:
     - npm
-
+  become: yes
+  
 - name: npm | Ensure the n (node updater) is installed
   npm: >
     name={{ item }}
@@ -51,8 +52,8 @@
   action: command n v{{ nodejs_version }}
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04") and nodejs_enabled
   become: yes
+  ignore_errors: yes  
   changed_when: false
-  tags: git
 
 #/usr/local/n/versions/node/6.4.0
 #/usr/bin/node --version
@@ -88,15 +89,16 @@
     - bower@1.8.0
     - node-sass@3.11.2
     - node-gyp@3.4.0
-  become: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04") and nodejs_enabled
-
+  become: yes
+  
 - name: jenkins-slave | Install compass (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-  become: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and nodejs_enabled
   with_items:
     - ruby-compass
-
+  become: yes    
+  ignore_errors: yes
+  
 #- name: jenkins-slave | Ensure npm settings
 #  command: chdir=/usr/bin npm config set registry {{ nexus_npm_url }}
