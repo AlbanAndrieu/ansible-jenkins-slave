@@ -7,3 +7,30 @@
   with_items:
     - python3-dev
     - python3-pip
+
+#TODO RedHat https://www.tecmint.com/install-python-in-linux/ install python 3.6 for ansible
+#yum -y groupinstall development
+#yum -y install zlib-devel
+
+# wget https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tar.xz
+# tar xJf Python-3.6.3.tar.xz
+# cd Python-3.6.3
+# ./configure
+# make
+# make install
+
+# which python3
+# python3 -V
+
+#virtualenv py3-ansible -p /usr/local/bin/python3.6
+
+#alternatives --list | grep -i python
+ 
+#alternatives --install /usr/bin/python python /usr/local/bin/python3.6 2
+#alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+ 
+#pip3 install ansible
+
+#python3 /usr/bin/ansible localhost -m ping
+
+#update-alternatives --config python

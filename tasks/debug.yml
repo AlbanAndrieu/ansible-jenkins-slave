@@ -7,3 +7,11 @@
   become: yes
   ignore_errors: true     
   changed_when: false
+
+#TODO
+#sudo yum groupinstall 'Development Tools'
+
+#TODO homebrew
+#sudo apt-get install build-essential curl file git python-setuptools ruby
+#sudo yum install curl file git irb python-setuptools ruby
+#ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"

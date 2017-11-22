@@ -55,7 +55,7 @@
     line: "{{ item.line }}"
     insertafter: EOF
   with_items:
-    - { regexp: '', line: 'export SCONS=/usr/bin/scons' }
+    - { regexp: '', line: 'export SCONS=/usr/bin/python2.7 /usr/bin/scons' }
     - { regexp: '', line: 'export TAR=/bin/gtar' }
     - { regexp: '', line: 'export GIT_DISCOVERY_ACROSS_FILESYSTEM=1' } #For Solaris
     - { regexp: '', line: 'export ACCEPT_EULA=Y' } #For MsSQL
