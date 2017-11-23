@@ -17,7 +17,8 @@ jenkins_slave_directory: "{{ jenkins_slave_home }}/jenkins-slave"
 
 jenkins_jdk7_enable: no
 jenkins_jdk8_enable: no
-jdk_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
+#jdk_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
+jdk_dir_tmp: "{{ tempdir.stdout }}
 jdk_owner: "root"
 jdk_group: "{{ jdk_owner }}"
 
