@@ -78,6 +78,7 @@ script:
 #    || (echo 'Idempotence test: fail' && exit 0)
 
 notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/
   email:
     recipients:
       - alban.andrieu@nabla.mobi
