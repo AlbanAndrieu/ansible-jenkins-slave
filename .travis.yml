@@ -9,7 +9,8 @@ cache:
   directories:
     - $HOME/.cache/pip
 env:
-  - ANSIBLE_VERSION=2.4.1.0
+  - ANSIBLE_VERSION=2.3.1.0
+#  - ANSIBLE_VERSION=2.4.1.0
 cache: bundler
 #sudo: false
 sudo: required
@@ -20,9 +21,6 @@ before_install:
 install:
   # Install Ansible.
   - sudo pip install ansible==$ANSIBLE_VERSION
-
-  # Add ansible.cfg to pick up roles path.
-  #- "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
 
   # Install dependencies.
   #- ansible-galaxy install alban.andrieu.subversion
@@ -58,17 +56,18 @@ script:
   - sudo ansible --version
   
   # Add ansible.cfg to pick up roles path.
-  - "{ echo '[defaults]'; echo 'roles_path = ./roles'; } >> ansible.cfg"
+  #- "{ echo '[defaults]'; echo 'roles_path = ./roles'; } >> ansible.cfg"
+  #- export ANSIBLE_ROLES_PATH="../"
   
   # Prepare tests
   #- echo localhost > hosts
 
   # Check syntax
-  - sudo ansible-playbook -i hosts --syntax-check jenkins-slave.yml --connection=local -e "python_versions=[2.7]"
+  - sudo ansible-playbook -i ./hosts --syntax-check ./jenkins-slave.yml -vvvv --connection=local -e "python_versions=[2.7]"
 
   # First run
   # Run the role/playbook with ansible-playbook.
-  - sudo ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local --sudo -vvvv -e "python_versions=[2.7]"
+  - sudo ansible-playbook -i ./hosts ./jenkins-slave.yml -vvvv --connection=local -e "python_versions=[2.7]"
   
   # Run the role/playbook again, checking to make sure it's idempotent.
 #  - >

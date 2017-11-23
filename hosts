@@ -1,8 +1,8 @@
-
-# file: hosts
+[local]
+localhost
 
 [all]
 localhost
 
-[local]
+[jenkins-slaves]
 localhost
