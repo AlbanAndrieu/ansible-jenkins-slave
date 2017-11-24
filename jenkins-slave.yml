@@ -1,4 +1,5 @@
 ---
+#sudo ansible-playbook -i hosts -c local -v jenkins-slave.yml -vvvv | tee setup.log
 
 - hosts: all
   gather_facts: true
@@ -29,9 +30,9 @@
       #shell: ansible-galaxy install -r requirements.yml -p ./roles/ --ignore-errors --force
 
 - name: Install jenkins-slaves
-  hosts: localhost
+  hosts: jenkins-slaves
   remote_user: root
-  become: true
+  become: yes
   
   roles:
     - role: ./
