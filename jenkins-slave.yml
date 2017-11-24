@@ -37,8 +37,8 @@
   become: yes
   
   roles:
-    - role: ansible-jenkins-slave
-#    - role: ./
+#    - role: ansible-jenkins-slave
+    - role: ./
 
   vars:
       docker_files_enable: no
