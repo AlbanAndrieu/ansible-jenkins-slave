@@ -9,15 +9,15 @@
     owner={{jenkins_user}}
     group={{jenkins_group}}
     mode=0600
-  register: key    
-  become: yes
+  register: key
   when: jenkins_ssh_key_file != ""
+  become: yes
   ignore_errors: yes
 
 - name: jenkins-ssh | Create private key
   command: /usr/bin/ssh-keygen -A
-  become: yes
   when: key|failed
+  become: yes
 
 - name: jenkins-ssh | Copy private key for jenkins
   copy: >
@@ -27,14 +27,15 @@
     group={{jenkins_group}}
     mode=0600
   register: key
-  become_user: "{{ jenkins_user }}"
   when: jenkins_ssh_key_file != ""
+  become_user: "{{ jenkins_user }}"
   ignore_errors: yes
 
 - name: jenkins-ssh | Create private key for jenkins
   command: /usr/bin/ssh-keygen -A
-  become_user: "{{ jenkins_user }}"
   when: key|failed
+  become_user: "{{ jenkins_user }}"
+  ignore_errors: yes
   
 - name: jenkins-ssh | Setup SSH hosts
   lineinfile: 
