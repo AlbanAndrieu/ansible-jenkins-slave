@@ -82,10 +82,10 @@
   scm:     'git'
   version: 'master'
 
-- src:     'https://github.com/AlbanAndrieu/ansible-jenkins-slave'
-  name:    'alban.andrieu.jenkins-slave'
-  scm:     'git'
-  version: 'master'
+#- src:     'https://github.com/AlbanAndrieu/ansible-jenkins-slave'
+#  name:    'alban.andrieu.jenkins-slave'
+#  scm:     'git'
+#  version: 'master'
 
 - src:     'https://github.com/AlbanAndrieu/ansible-jenkins-swarm'
   name:    'alban.andrieu.jenkins-swarm'

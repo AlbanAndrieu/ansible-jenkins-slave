@@ -24,13 +24,12 @@
     - debug: msg="Version {{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_architecture }}"
 
 - hosts: localhost
-  remote_user: root
-  become: yes
-  ignore_errors: true
+
   tasks:
     - name: Install Ansible-Galaxy dependencies
-      shell: ansible-galaxy install -r requirements.yml -p ./roles/ --ignore-errors 
+      shell: ansible-galaxy install -r requirements.yml -p ./roles/
       #shell: ansible-galaxy install -r requirements.yml -p ./roles/ --ignore-errors --force
+      ignore_errors: yes
 
 - name: Install jenkins-slaves
   hosts: jenkins-slaves
