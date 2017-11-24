@@ -54,7 +54,8 @@ script:
 
   # First run
   # Run the role/playbook with ansible-playbook.
-  - travis_wait 30 ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local --sudo -vvvv -e "python_versions=[2.7]"
+#  - travis_wait 30 
+  - ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local --sudo -vvvv -e "python_versions=[2.7]"
 
   # Run the role/playbook again, checking to make sure it's idempotent.
 #  - >
