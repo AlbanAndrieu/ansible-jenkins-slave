@@ -17,7 +17,7 @@ sudo: required
 dist: trusty
 before_install:
   - sudo apt-get update -qq
- - sudo apt-get install curl
+  - sudo apt-get install curl
   - sudo apt-get install -qq python-apt python-pycurl
 
 install:
@@ -27,17 +27,17 @@ install:
   # Update Ansible submodule.
   - git pull && git submodule init && git submodule update && git submodule status
   - git submodule foreach git checkout master
-  
+
   - ansible-galaxy install -r requirements.yml -p ./roles/ --ignore-errors
-  
+
 script:
   # Check ansible version
   - sudo ansible --version
-  
+
   # Add ansible.cfg to pick up roles path.
   #- "{ echo '[defaults]'; echo 'roles_path = ./roles'; } >> ansible.cfg"
   #- export ANSIBLE_ROLES_PATH="../"
-  
+
   # Prepare tests
   #- echo localhost > hosts
 
@@ -47,7 +47,7 @@ script:
   # First run
   # Run the role/playbook with ansible-playbook.
   - travis_wait 30 sudo ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local --sudo -vvvv -e "python_versions=[2.7]"
-  
+
   # Run the role/playbook again, checking to make sure it's idempotent.
 #  - >
 #    sudo ansible-playbook -i hosts jenkins-slave.yml --connection=local --sudo -vvvv -e "python_versions=[2.7]"
