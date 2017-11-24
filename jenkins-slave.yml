@@ -1,44 +1,42 @@
 ---
 #sudo ansible-playbook -i hosts -c local -v jenkins-slave.yml -vvvv | tee setup.log
 
+#- hosts: all
+#  gather_facts: true
+#  tasks:
+#    - name: group hosts by distribution
+#      group_by: key="{{ ansible_distribution }}-{{ ansible_distribution_version }}"
+#
+#- hosts: RedHat-7*:RedHat-6*:RedHat-5*:CentOS-7*:CentOS-6*:Ubuntu-17*:Ubuntu-16*:Ubuntu-15*:Ubuntu-14*:Ubuntu-13*:Ubuntu-12*
+#  gather_facts: false
+#  tasks:
+#    - name: group hosts for supported distributions
+#      group_by: key="supported"
+#
+#- hosts: "!supported"
+#  gather_facts: false
+#  tasks:
+#    - name: fail for unsupported distribution
+#      fail: msg="{{ ansible_distribution }} {{ ansible_distribution_version }}
+#                 is not a supported OS for a Tower installation.  Supported
+#                 OSes include Red Hat Enterprise Linux 6/7/5, CentOS 6/7, or
+#                 Ubuntu 12.04/12.04/14.04/16.04/17.04."
+#    - debug: msg="Version {{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_architecture }}"
+#
+#- hosts: localhost
+#
+#  tasks:
+#    - name: Install Ansible-Galaxy dependencies
+#      shell: ansible-galaxy install -r requirements.yml -p ./roles/
+#      #shell: ansible-galaxy install -r requirements.yml -p ./roles/ --ignore-errors --force
+#      ignore_errors: yes
+
 - hosts: all
-  gather_facts: true
-  tasks:
-    - name: group hosts by distribution
-      group_by: key="{{ ansible_distribution }}-{{ ansible_distribution_version }}"
+  become: true
 
-- hosts: RedHat-7*:RedHat-6*:RedHat-5*:CentOS-7*:CentOS-6*:Ubuntu-17*:Ubuntu-16*:Ubuntu-15*:Ubuntu-14*:Ubuntu-13*:Ubuntu-12*
-  gather_facts: false
-  tasks:
-    - name: group hosts for supported distributions
-      group_by: key="supported"
-
-- hosts: "!supported"
-  gather_facts: false
-  tasks:
-    - name: fail for unsupported distribution
-      fail: msg="{{ ansible_distribution }} {{ ansible_distribution_version }}
-                 is not a supported OS for a Tower installation.  Supported
-                 OSes include Red Hat Enterprise Linux 6/7/5, CentOS 6/7, or
-                 Ubuntu 12.04/12.04/14.04/16.04/17.04."
-    - debug: msg="Version {{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_architecture }}"
-
-- hosts: localhost
-
-  tasks:
-    - name: Install Ansible-Galaxy dependencies
-      shell: ansible-galaxy install -r requirements.yml -p ./roles/
-      #shell: ansible-galaxy install -r requirements.yml -p ./roles/ --ignore-errors --force
-      ignore_errors: yes
-
-- name: Install jenkins-slaves
-  hosts: jenkins-slaves
-  remote_user: root
-  become: yes
-  
   roles:
-#    - role: ansible-jenkins-slave
-    - role: ./
+    - role: ansible-jenkins-slave
+#    - role: ./
 
   vars:
       docker_files_enable: no
