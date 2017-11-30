@@ -299,12 +299,9 @@
 
 - import_tasks: browser.yml
 
-- import_tasks: debug.yml
+- import_tasks: flash.yml
 
-#- name: jenkins-slave | Create Java directory link (legacy required)
-#  file: path={{ jenkins_slave_home }}/jdk1.7 src={{ jvm_folder }}/{{ jdk7_archive_extracted }} state=link
-#  when: jenkins_jdk7_enable
-#  become: yes
+- import_tasks: debug.yml
 
 #- name: jenkins-slave | Clone the application
 #  action: git repo=https://github.com/AlbanAndrieu/nabla.git dest=/jenkins/nabla
