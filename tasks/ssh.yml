@@ -35,7 +35,8 @@
   command: /usr/bin/ssh-keygen -f {{jenkins_home}}/.ssh/id_rsa -t rsa -N ''
   when: key|failed
   become_user: "{{ jenkins_user }}"
-
+  ignore_errors: yes
+  
 - name: jenkins-ssh | Copy private key
   copy: >
     src={{jenkins_ssh_key_file}}
