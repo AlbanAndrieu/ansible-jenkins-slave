@@ -297,7 +297,9 @@
 
 #TODO Add source /etc/profile for RedHat to find lsof command
 
-- import_tasks: browser.yml
+#- import_tasks: browser.yml
+
+- import_tasks: selenium.yml
 
 - import_tasks: flash.yml
 
