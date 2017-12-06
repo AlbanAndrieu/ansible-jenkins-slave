@@ -11,7 +11,7 @@
 
 #/opt/maven305
 - name: jenkins-slave | Set mvn link to Maven 3.5.0
-  set_fact: mvn_dir=/opt/maven/apache-maven-3.5.0
+  set_fact: mvn_dir={{ mvn_home }}
 
 - name: jenkins-slave | Display mvn link before
   action: command update-alternatives --display mvn

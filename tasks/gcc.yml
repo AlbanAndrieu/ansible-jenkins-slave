@@ -156,6 +156,17 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')       
   tags: cpp
   become: yes  
+  ignore_errors: true
+  
+- name: cpp | Install C++ clang llvm dev
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+   - libclang-dev
+   - llvm
+   - llvm-3.8-dev
+  tags: cpp
+  become: yes
+  ignore_errors: true
   
 - name: cpp | Install C++ quality tool 
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
