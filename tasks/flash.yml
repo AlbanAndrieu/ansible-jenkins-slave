@@ -3,17 +3,17 @@
   get_url: url={{ flashplayer_standalone_download_url }}/{{ flashplayer_standalone_filename }} dest=/tmp/{{ flashplayer_standalone_filename }}
   when: (ansible_distribution == 'CentOS' and ansible_lsb.major_release|int <= 5)
   become: yes
-  
+
 - name: jenkins-slave | Install flashplayer
   unarchive: src=/tmp/{{ flashplayer_standalone_filename }} dest=/usr/local/bin creates=/usr/local/bin/flashplayerdebugger copy=no
   when: (ansible_distribution == 'CentOS' and ansible_lsb.major_release|int <= 5)
   become: yes
-  
+
 - name: jenkins-slave | Create symbolic link of flashplayer
   file: src=/usr/local/bin/flashplayerdebugger dest=/usr/local/bin/flashplayer owner=root group=root state=link
   when: (ansible_distribution == 'CentOS' and ansible_lsb.major_release|int <= 5)
   become: yes
-  
+
 - name: jenkins-slave | Install flashplayer dependencies
   yum: name={{ item }} state=present
   with_items:
@@ -32,9 +32,9 @@
     - xorg-x11-fonts-truetype
     - xorg-x11-drv-v4l
     - xorg-x11-xauth
-  when: (ansible_distribution == 'CentOS' and ansible_lsb.major_release|int <= 5)    
+  when: (ansible_distribution == 'CentOS' and ansible_lsb.major_release|int <= 5)
   become: yes
-    
+
 - name: jenkins-slave | Install the adobe repo installed
   command: rpm -q adobe-release-{{ ansible_machine }}
   register: adobe_release_installed
@@ -42,25 +42,26 @@
   changed_when: adobe_release_installed|failed
   when: (ansible_distribution == 'RedHat')
   become: yes
-  
+
 - name: jenkins-slave | Install adobe yum repo
   yum:
     name: http://linuxdownload.adobe.com/adobe-release/adobe-release-{{ ansible_machine }}-1.0-1.noarch.rpm
     state: present
-  when: (ansible_distribution == 'RedHat') and adobe_release_installed|failed 
+  when: (ansible_distribution == 'RedHat') and adobe_release_installed|failed
   become: yes
-  
+
 - name: jenkins-slave | Install flash-plugin
   yum: name=flash-plugin state=present
   when: (ansible_distribution == 'RedHat')
   become: yes
-  
+
 - name: jenkins-slave | Install adobe-flashplugin
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')  
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     #- adobe-flashplugin
-    - flashplugin-installer 
+    - flashplugin-installer
   become: yes
+  ignore_errors: true
   changed_when: false
-  
+
