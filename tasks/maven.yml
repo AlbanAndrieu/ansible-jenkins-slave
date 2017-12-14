@@ -9,7 +9,6 @@
 
 #- import_tasks: maven-legacy.yml
 
-#/opt/maven305
 - name: jenkins-slave | Set mvn link to Maven
   set_fact: mvn_dir={{ mvn_home }}
 

@@ -16,6 +16,27 @@
     - libfreetype.so.6
     - libfontconfig.so.1
   become: yes
+
+- name: jenkins-slave | Install nodejs (RedHat based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
+  with_items:
+    - gcc-c++
+    - make
+  become: yes
+
+- name: jenkins-slave | Get node repo
+  action: command curl -sL https://rpm.nodesource.com/setup_6.x | sudo -E bash -
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
+  become: yes
+  changed_when: false
+
+- name: jenkins-slave | Install nodejs (RedHat based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
+  with_items:
+    - nodejs
   
 - name: jenkins-slave | Install nodejs (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
@@ -49,7 +70,7 @@
   
 - name: jenkins-slave | Install nodejs npm official (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04']) and nodejs_enabled
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04']) and nodejs_enabled
   with_items:
     - npm
   become: yes
@@ -96,6 +117,8 @@
 #npm update -g
 #npm config set python python2.7
 
+#npm config set slimerjs_cdnurl http://kgrdb01/download/slimerjs/0.9.6/ 
+#npm config list
 #npm install --unsafe-perm -g node-sass
 
 #TODO use jenkins to install phantomjs
@@ -105,15 +128,25 @@
     state=present
     global=yes
   with_items:
-    - phantomjs-prebuilt@2.1.12
-    - phantomas@1.16.0
+    - phantomjs-prebuilt@2.1.16
+    - phantomas@1.18.0
     - nsp@2.6.1
     - grunt@1.0.1
     - grunt-cli@1.2.0
     - bower@1.8.0
+    - connect@1.9.2
     - node-sass@3.11.2
-    - node-gyp@3.4.0
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04") and nodejs_enabled
+    - jshint@2.9.5
+    - jsonlint@1.6.2
+    - node-gyp@3.6.2
+    - slimerjs@0.10.3
+    - casperjs@1.1.4
+    - critical@0.7.3
+    - coffee-script@1.10.0
+    - analyze-css@0.10.2
+    - tap-eater@0.0.3
+  when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04")) or
+        (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
   ignore_errors: yes  
   become: yes
   
