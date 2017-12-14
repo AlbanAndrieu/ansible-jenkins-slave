@@ -1,6 +1,44 @@
 ---
 
-- file: dest={{jenkins_home}}/.ssh state=directory
+- file: >
+    dest={{jenkins_home}}/.ssh
+    state=directory
+    owner={{jenkins_user}}
+    group={{jenkins_group}}
+    mode=0700
+
+- name: jenkins-ssh | Copy private key for jenkins
+  copy: >
+    src={{jenkins_ssh_key_file}}
+    dest={{jenkins_home}}/.ssh/id_rsa
+    owner={{jenkins_user}}
+    group={{jenkins_group}}
+    mode=0600
+  register: key
+  when: jenkins_ssh_key_file != ""
+  become: yes
+  become_user: "{{ jenkins_user }}"
+  ignore_errors: yes
+
+- name: jenkins-ssh | Copy public key for jenkins
+  copy: >
+    src={{jenkins_ssh_key_file}}.pub
+    dest={{jenkins_home}}/.ssh/id_rsa.pub
+    owner={{jenkins_user}}
+    group={{jenkins_group}}
+    mode=0600
+  register: key
+  when: jenkins_ssh_key_file != ""
+  become: yes
+  become_user: "{{ jenkins_user }}"
+  ignore_errors: yes
+
+- name: jenkins-ssh | Create private key for jenkins
+  command: /usr/bin/ssh-keygen -f {{jenkins_home}}/.ssh/id_rsa -t rsa -N ''
+  when: key|failed
+  become: yes
+  become_user: "{{ jenkins_user }}"
+  ignore_errors: yes
 
 - name: jenkins-ssh | Copy private key
   copy: >
@@ -14,28 +52,22 @@
   become: yes
   ignore_errors: yes
 
-- name: jenkins-ssh | Create private key
-  command: /usr/bin/ssh-keygen -A
-  when: key|failed
-  become: yes
-
-- name: jenkins-ssh | Copy private key for jenkins
+- name: jenkins-ssh | Copy public key
   copy: >
-    src={{jenkins_ssh_key_file}}
-    dest={{jenkins_home}}/.ssh/id_rsa
+    src={{jenkins_ssh_key_file}}.pub
+    dest={{jenkins_home}}/.ssh/id_rsa.pub
     owner={{jenkins_user}}
     group={{jenkins_group}}
     mode=0600
   register: key
   when: jenkins_ssh_key_file != ""
-  become_user: "{{ jenkins_user }}"
+  become: yes
   ignore_errors: yes
 
-- name: jenkins-ssh | Create private key for jenkins
-  command: /usr/bin/ssh-keygen -A
+- name: jenkins-ssh | Create private key
+  command: /usr/bin/ssh-keygen -f $HOME/.ssh/id_rsa -t rsa -N ''
   when: key|failed
-  become_user: "{{ jenkins_user }}"
-  ignore_errors: yes
+  become: yes
   
 - name: jenkins-ssh | Setup SSH hosts
   lineinfile: 

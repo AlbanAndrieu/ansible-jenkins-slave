@@ -221,7 +221,7 @@
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   tags: cpp
   with_items:
-   - log4cxx
+   - log4cxx-devel
 #   - libcrypto++9
 #   - libxerces-c28
   become: yes
@@ -450,6 +450,19 @@
    - libstdc++5
   become: yes
   ignore_errors: true
+
+- name: jenkins-slave | Install C++ librairies for building old gcc (RedHat based)
+  yum:
+    name: "{{ item }}"
+    enablerepo: rhel-6-server-optional-rpms
+    state: "{{ jenkins_pkg_state|default('present') }}"
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+  with_items:
+# compat-libstdc++-33 contains libstdc++.so.5
+   - compat-libstdc++-33
+#  - compat-readline5-5.2-17.1.el6.i686
+#  - compat-readline5-5.2-17.1.el6.x86_64
+  become: yes
   
 - name: jenkins-slave | Install C++ librairies for building old gcc (RedHat based)
   yum:
@@ -532,7 +545,7 @@
 
 - name: jenkins-slave | Install C++ librairies unicode for database (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
    - libicu-dev
   become: yes
@@ -607,7 +620,7 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - gnustep
-    #- gnustep-devel
+    - gnustep-devel
     - gobjc
   become: yes
   ignore_errors: true

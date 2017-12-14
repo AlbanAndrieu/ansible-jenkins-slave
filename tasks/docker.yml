@@ -46,3 +46,15 @@
 
 #sudo gpasswd -a ${USER} docker
 #sudo gpasswd -a jenkins docker
+
+#See https://github.com/tensorflow/tensorflow/issues/4078
+#For https://github.com/NVIDIA/nvidia-docker
+#- name: jenkins-slave | Install requirement for nvidia
+#  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+#  with_items:
+#    - nvidia-361-dev
+#  become: yes
+#  changed_when: false
+
+#nvidia-smi

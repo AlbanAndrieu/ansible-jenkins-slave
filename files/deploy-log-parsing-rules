@@ -24,6 +24,7 @@ ok /Warning: Row size/
 
 #scons
 error /undefined reference/
+error /unresolved external symbol/
 error /cannot find/
 warning /not found/
 warning /File doesn\'t exist/

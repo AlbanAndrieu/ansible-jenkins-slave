@@ -22,9 +22,9 @@
   tags:
     - jenkins-slave
 
-#- import_tasks: java.yml
+- import_tasks: java.yml
 
-#- import_tasks: maven.yml
+- import_tasks: maven.yml
 
 ##
  # subversion
@@ -298,6 +298,8 @@
 #TODO Add source /etc/profile for RedHat to find lsof command
 
 - import_tasks: browser.yml
+
+- import_tasks: flash.yml
 
 - import_tasks: debug.yml
 

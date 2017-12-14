@@ -17,6 +17,27 @@
     - libfontconfig.so.1
   become: yes
   
+- name: jenkins-slave | Install nodejs (RedHat based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
+  with_items:
+    - gcc-c++
+    - make
+  become: yes
+
+- name: jenkins-slave | Get node repo
+  action: command curl -sL https://rpm.nodesource.com/setup_6.x | sudo -E bash -
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
+  become: yes
+  changed_when: false
+
+- name: jenkins-slave | Install nodejs (RedHat based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
+  with_items:
+    - nodejs
+
 #Warning on Ubuntu command is nodejs (instead of node)
 - name: jenkins-slave | Install nodejs npm official (might be outdated) (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"

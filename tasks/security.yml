@@ -36,4 +36,3 @@
     - python-openscap
   become: yes
   ignore_errors: true
-  

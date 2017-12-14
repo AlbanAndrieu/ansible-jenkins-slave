@@ -28,3 +28,6 @@ odbcinst_FreeTDS_Setup: /usr/lib64/libtdsodbc.so.0
 #Oracle
 odbcinst_Oracle_Driver: /opt/oracle/instantclient_12_2/libsqora.so.12.1
 #odbcinst_Oracle_Driver64: /opt/oracle/instantclient_12_2/libsqora.so.12.1
+
+flashplayer_standalone_download_url: "http://fpdownload.macromedia.com/pub/flashplayer/updaters/11/"
+flashplayer_standalone_filename: "flashplayer_11_sa_debug.i386.tar.gz"
