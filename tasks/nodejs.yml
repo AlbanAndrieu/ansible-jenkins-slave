@@ -99,13 +99,13 @@
   ignore_errors: yes  
   changed_when: false
 
-#/usr/local/n/versions/node/6.4.0
+#/usr/local/n/versions/node/7.8.0
 #/usr/bin/node --version
 #Switch to new version
-#sudo ln -sf /usr/local/n/versions/node/6.4.0/ /usr/bin/node
+#sudo ln -sf /usr/local/n/versions/node/7.8.0/ /usr/bin/node
 
 - name: jenkins-slave | Create node link
-  file: path=/usr/bin/node src=/usr/local/n/versions/node/{{ nodejs_version }}/ state=link
+  file: path=/usr/bin/node src=/usr/local/n/versions/node/{{ nodejs_version }}/bin/node state=link
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04") and nodejs_enabled
   ignore_errors: yes  
   become: yes
@@ -155,6 +155,13 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and nodejs_enabled
   with_items:
     - ruby-compass
+  become: yes
+  ignore_errors: yes
+
+- name: jenkins-slave | Disable yarn ssl check
+#  command: yarn config set cafile ~/NABLA.crt
+  command: yarn config set "strict-ssl" false -g
+  when: yarn_result.changed
   become: yes    
   ignore_errors: yes
   
