@@ -1,0 +1,33 @@
+
+#TODO yarn
+#https://github.com/ocha/ansible-role-yarn
+#curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+#echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+#sudo apt-get update
+#sudo apt-get install yarn
+
+#- name: jenkins-slave | Add yarn repos
+#  apt_repository: repo='https://dl.yarnpkg.com/debian/ stable main ./'
+#  become: yes
+#  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+#- name: jenkins-slave | Addkey yarn
+#  apt_key: url=https://dl.yarnpkg.com/debian/pubkey.gpg  state={{ jenkins_pkg_state|default('present') }}
+#  become: yes
+#  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+#
+#- name: jenkins-slave | Install yarn (Debian based)
+#  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and nodejs_enabled
+#  with_items:
+#    - yarn
+#  register: yarn_result
+#  become: yes
+#  ignore_errors: yes
+
+- name: jenkins-slave | Disable yarn ssl check
+#  command: yarn config set cafile ~/UK1VSWCERT01-CA-5.crt
+  command: yarn config set "strict-ssl" false -g
+  when: yarn_result.changed
+  become: yes
+  ignore_errors: yes

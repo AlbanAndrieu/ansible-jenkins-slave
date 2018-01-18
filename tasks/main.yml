@@ -264,6 +264,8 @@
 
 - import_tasks: nodejs.yml
 
+- import_tasks: yarn.yml
+
 - name: jenkins-slave | Copy the .npmrc script
   template: src=.npmrc.j2 dest={{ jenkins_home }}/.npmrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   become: yes
@@ -303,7 +305,19 @@
 
 - import_tasks: flash.yml
 
+- import_tasks: zabbix.yml
+
 - import_tasks: debug.yml
+
+- name: jenkins-slave | Install saxon package
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - libsaxon-java
+   - libsaxonb-java
+  changed_when: false
+  become: yes
+  ignore_errors: true
 
 #- name: jenkins-slave | Clone the application
 #  action: git repo=https://github.com/AlbanAndrieu/nabla.git dest=/jenkins/nabla

@@ -84,7 +84,7 @@ shell_git: []
 
 shell_sa_password: "Almonde01"
 
-nodejs_version: "6.4.0"
+nodejs_version: "7.8.0"
 nodejs_enabled: true
 epel_repo_enabled: false
 

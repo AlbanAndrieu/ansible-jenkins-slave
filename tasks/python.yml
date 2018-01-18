@@ -85,6 +85,14 @@
   become: yes
   ignore_errors: true
 
+- name: jenkins-slave | Install zabbix tools
+  pip: name={{ item }}
+  with_items:
+    - zabbix-api
+    - zabbix-proxy-mysql
+  become: yes
+  ignore_errors: true
+
 - name: jenkins-slave | Install MySQL requirement for sonar
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
   become: yes
