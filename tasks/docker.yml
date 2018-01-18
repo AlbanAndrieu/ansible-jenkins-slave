@@ -25,8 +25,9 @@
   pip: name={{ item }}
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_version.full | version_compare('2.3', '>='))
   with_items:
-    - docker-compose==1.12.0
-    - docker==2.2.1
+#    - docker-compose==1.12.0
+#    - docker==2.2.1
+    - docker-py==1.10.6
   become: yes
 
 - name: jenkins-slave | Create a docker group

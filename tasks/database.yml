@@ -98,3 +98,13 @@
 
 #Oracle
 #osql -S pard013448_2012 -U sa -P Almonde01
+
+#See rlwrap sqlplus64 username/password@//dbhost:1521/SID
+- name: jenkins-slave | Install wrapper and alien tool for sqlplus (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - rlwrap
+    - alien
+  become: yes
+  ignore_errors: yes

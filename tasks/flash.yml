@@ -9,7 +9,7 @@
   when: (ansible_distribution == 'CentOS' and ansible_lsb.major_release|int <= 5)
   become: yes
 
-- name: jenkins-slave | Create symbolic link of flashplayer
+- name: jenkins-slave | Create symbolic link for flashplayer
   file: src=/usr/local/bin/flashplayerdebugger dest=/usr/local/bin/flashplayer owner=root group=root state=link
   when: (ansible_distribution == 'CentOS' and ansible_lsb.major_release|int <= 5)
   become: yes
@@ -64,3 +64,8 @@
   become: yes
   ignore_errors: true
   changed_when: false
+
+- name: jenkins-slave | Create folder for flashplayer
+  file: path={{ jenkins_home }}/.macromedia state=directory mode=0700 owner={{ jenkins_user }} group={{ jenkins_group }}
+  become: yes
+  ignore_errors: true

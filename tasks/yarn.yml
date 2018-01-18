@@ -25,6 +25,11 @@
 #  become: yes
 #  ignore_errors: yes
 
+- name: jenkins-slave | Yarn global add node-gyp
+  command: yarn global add node-gyp
+  become: yes
+  ignore_errors: yes
+
 - name: jenkins-slave | Disable yarn ssl check
 #  command: yarn config set cafile ~/UK1VSWCERT01-CA-5.crt
   command: yarn config set "strict-ssl" false -g

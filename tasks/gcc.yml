@@ -111,6 +111,7 @@
         and
         not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )
   become: yes
+  ignore_errors: true
 
 #sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 40 --slave /usr/bin/gcc gcc /usr/bin/gcc-4.9
 #sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.9 40 --slave /usr/bin/cpp cpp /usr/bin/cpp-4.9
@@ -133,6 +134,7 @@
 #sudo update-alternatives --config g++
 
 #ls -la /etc/alternatives/gcc*
+
 - name: cpp | Display cpp link after
   action: command update-alternatives --display gcc
   when: not( (cpp_dir is undefined) or (cpp_dir is none) or (cpp_dir | trim == '') )
@@ -171,6 +173,19 @@
 - name: cpp | Install C++ quality tool 
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
+   - colormake
+   - valgrind
+   - gawk
+   - kcachegrind
+   - valkyrie
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  tags: cpp
+  become: yes
+  ignore_errors: true
+
+- name: cpp | Install C++ quality tool
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
    - findbugs
    - flawfinder
    - ggcov   
@@ -197,3 +212,12 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['16.04']
   become: yes
   ignore_errors: true  
+
+#- name: cpp | Install dragonegg for gcc
+#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+#  with_items:
+#   - dragonegg
+#  tags: cpp
+#  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+#  become: yes
+#  ignore_errors: true
