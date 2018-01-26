@@ -51,6 +51,7 @@ home_url: "http://localhost"
 nexus_url: "{{ home_url }}:8081"
 #npm_nexus_npm_url: "{{ nexus_url }}/nexus/content/npm/registry.npmjs.org/"
 npm_nexus_npm_url:
+npm_nexus_private_npm_url: 
 proxy_cdnurl_server: "localhost"
 npm_phantomjs_cdnurl: ""
 npm_slimerjs_cdnurl: ""

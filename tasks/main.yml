@@ -319,6 +319,38 @@
   become: yes
   ignore_errors: true
 
+- name: jenkins-slave | Install log4j package for better display of log for slave
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - liblog4j1.2-java
+   - libslf4j-java
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['12.04'])
+  changed_when: false
+  become: yes
+  ignore_errors: true 
+
+- name: jenkins-slave | Install log4j package for better display of log for slave
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - liblog4j2-java
+   - libslf4j-java
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
+  changed_when: false
+  become: yes
+  ignore_errors: true
+
+- name: jenkins-slave | Install log4j package for better display of log for slave
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - log4j
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  changed_when: false
+  become: yes
+  ignore_errors: true
+
 #- name: jenkins-slave | Clone the application
 #  action: git repo=https://github.com/AlbanAndrieu/nabla.git dest=/jenkins/nabla
 
