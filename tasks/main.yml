@@ -233,11 +233,28 @@
   become: yes
   changed_when: false
 
-- name: jenkins-slave | Create Jenkins slave default directory
-  file: path={{ jenkins_slave_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
+- name: jenkins-slave | Checking slave folders
+  stat:
+   path: "{{item}}"
+  register: folder_stats
+  with_items: "{{ jenkins_slave_directory }}"
+  when: jenkins_slave_directory | length > 0
   become: yes
   changed_when: false
 
+- name: jenkins-slave | Creating multiple folders without disturbing previous permissions
+  file:
+   path: "{{item.item}}"
+   state: directory
+   mode: 0755
+   group: "{{ jenkins_user }}"
+   owner: "{{ jenkins_group }}"
+  when: item.stat.exists == false
+  with_items:
+  - "{{folder_stats.results}}"
+  become: yes
+  changed_when: false
+  
 - name: jenkins-slave | Create Jenkins thin backup directory
   file: path={{ jenkins_remote_thinbackup }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
   changed_when: false

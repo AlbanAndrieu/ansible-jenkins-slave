@@ -13,7 +13,7 @@ jenkins_home: /var/lib/jenkins              # Jenkins home location
 #NIS issue jenkins_home: /home/jenkins
 #jenkins_home: "/home/jenkins"
 jenkins_slave_home: "{{ jenkins_home }}"
-jenkins_slave_directory: "{{ jenkins_slave_home }}/jenkins-slave"
+jenkins_slave_directory: ["{{ jenkins_slave_home }}/slave","{{ jenkins_slave_home }}/slave-test"]
 
 jenkins_jdk7_enable: no
 jenkins_jdk8_enable: no
@@ -52,6 +52,7 @@ nexus_url: "{{ home_url }}:8081"
 #npm_nexus_npm_url: "{{ nexus_url }}/nexus/content/npm/registry.npmjs.org/"
 npm_nexus_npm_url:
 npm_nexus_private_npm_url: 
+npm_nexus_private_npm_data:
 proxy_cdnurl_server: "localhost"
 npm_phantomjs_cdnurl: ""
 npm_slimerjs_cdnurl: ""

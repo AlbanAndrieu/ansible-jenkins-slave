@@ -27,7 +27,8 @@
   - { name: mvn, link: /usr/bin/mvn, path: "{{ mvn_dir }}/bin/mvn" }
   when: not( (mvn_dir is undefined) or (mvn_dir is none) or (mvn_dir | trim == '') )
   become: yes
-
+  ignore_errors: true
+  
 #TODO Verify the symlinks all point to the new mvn location:
 
 #ls -la /etc/alternatives/mvn*

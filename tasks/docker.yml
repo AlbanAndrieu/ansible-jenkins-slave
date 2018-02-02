@@ -60,3 +60,26 @@
 #  changed_when: false
 
 #nvidia-smi
+
+#grubby --args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
+- name:  jenkins-slave | Enable "user" namespace
+  shell: "grubby --args=\"user_namespace.enable=1\" --update-kernel=\"$(grubby --default-kernel)\""
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  become: yes  
+  ignore_errors: true
+ 
+#TO REVOKE
+# grubby --remove-args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)" 
+ 
+#Check docker
+- name:  jenkins-slave | Install check docker
+  shell: "curl https://raw.githubusercontent.com/docker/docker/master/contrib/check-config.sh > check-config.sh"
+  register: cpan_result
+  changed_when: false
+  become: yes
+  
+- name: jenkins-slave | Run check docker
+  shell: bash ./check-config.sh
+  when: cpan_result.changed
+  become: yes  
+  ignore_errors: true
