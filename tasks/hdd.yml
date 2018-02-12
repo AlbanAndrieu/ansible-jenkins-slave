@@ -1,0 +1,14 @@
+
+- name: jenkins-slave | Mount up device by label
+  mount:
+    path: /dev/rhel_fr1cslvcacrhel71/workspace
+    src: /workspace
+    fstype: ext4
+    state: present
+
+- name: jenkins-slave | Mount up device by label
+  mount:
+    path: /dev/rhel_fr1cslvcacrhel71/docker
+    src: /docker
+    fstype: ext4
+    state: present

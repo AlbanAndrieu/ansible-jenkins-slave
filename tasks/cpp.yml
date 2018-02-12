@@ -848,14 +848,3 @@
   become: yes  
 
 ##########
-
-- name: jenkins-slave | Install X (CentOS and RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  become: yes
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-  with_items:
-   - libXext
-   - libXrender
-   - libXtst
-  ignore_errors: true
-  

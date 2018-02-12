@@ -30,8 +30,13 @@
   become: yes
   ignore_errors: yes
 
+- name: jenkins-slave | Yarn global add sharp
+  command: yarn global add sharp
+  become: yes
+  ignore_errors: yes
+
 - name: jenkins-slave | Disable yarn ssl check
-#  command: yarn config set cafile ~/UK1VSWCERT01-CA-5.crt
+#  command: yarn config set cafile ~/NABLA.crt
   command: yarn config set "strict-ssl" false -g
   when: yarn_result.changed
   become: yes

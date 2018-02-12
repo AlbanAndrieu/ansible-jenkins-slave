@@ -151,6 +151,14 @@
   tags: cpp
   become: yes
   
+- name: jenkins-slave | Install clang scan-build (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+   - clang-analyzer
+  become: yes
+
 - name: cpp | Install C++ clang
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes" 
   with_items:

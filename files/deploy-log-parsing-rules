@@ -7,11 +7,18 @@ ok /\[WARNING\] To Use Release/
 ok /cp: cannot stat/
 ok /unlink .*warning.*/
 
+#ssh
+error /Failed to add the host to the list of known hosts/
+
+#svn/subversion
+error /This client is too old to work with the working copy at/
+
 #maven cargo
 error /Exception thrown by the agent : java.net.MalformedURLException: Local host name unknown/
 
 #security
 warning /Warning: \/sbin\/init INFECTED/
+
 #HTTPS
 ok /catchup task declaration, SEND TLSv1.2 ALERT/
 ok /Keep-Alive-Timer, SEND TLSv1.2 ALERT/
@@ -36,15 +43,39 @@ error /is not recognized as an internal or external command/
 error /C\/C++ compilers are most likely not set correctly/
 error /scons: \*\*\*/
 
+#perl
+error /.*\/ld: cannot find \-l/
+error /.*\.pl.*compilation errors/
+error /Bareword found where operator expected at .\* line \d+, near/
+error /Execution.*\.pl aborted due to compilation errors/
+
+#make
+error /^make\[\d+\]:\s+\*{3}\s+\[BUILD\] Error/
+
+#java
+warning /java.lang.IllegalArgumentException/
+warning /Class path contains multiple SLF4J bindings/
+
+#cpp
+error /not found \(try using -rpath or -rpath-link\)/
+error /undefined reference to/
+error /: undeclared identifier/
+
 #maven
 warning /Tests in error:/
+ok /^\[INFO\]/
+ok /^\[WARNING\] npm WARN/
+ok /^\[WARNING\] Tests run:/
+ok /^\[ERROR\] prebuild-install/
+#ok /^\[ERROR\]   ✔/
+ok /^\[ERROR\] npm notice created a lockfile as/
+ok /^\[ERROR\] /
 error /^\[ERROR/
 error /Failed to execute goal/
 
 warning /^kernel Attempt to set zfs file/
 info /MESSAGE: there are some new default variable/
 
-warning /No such file or directory/
 warning /ERROR: Error cloning remote repo/
 warning /Class path contains multiple SLF4J bindings/
 warning /HTTP 500 Internal Server Error/
@@ -58,9 +89,15 @@ error /SEVERE:/
 error /SEVERE: /
 error /Invalid or corrupt jarfile/
 #warning /Invalid argument/
+warning /No such file or directory/
 warning /command not found/
 error /syntax error near/
 error /Address already in use/
+error /Premature end of file/
+
+#shell
+error /Could not create directory/
+
 #NPM
 error /Cannot find module/
 error /invalid config registry="None"/
@@ -71,7 +108,7 @@ error /An error occured while updating fs:/
 
 #Docker
 error /invalid config registry="None"/
-error /unhealthy/
+warning /unhealthy/
 
 #ansible
 ok /^Searching for Suckit rootkit/
@@ -103,18 +140,77 @@ error /Cannot create an index on table/
 error /No group with the specified name exists/
 error /Error\(s\)/
 
-error /Connection refused/
+warning /Connection refused/
 error /return is : 000/
 error /cat: input error/
 
 #jenkins
 error /marked build as failure/
 
+#Xcode
+# don't treat any of these as errors, warnings or info
+ok /setenv /
+# ignore TidyXML warnings
+ok /line [0-9]+ column [0-9]+ - Error:/
+ok /line [0-9]+ column [0-9]+ - Warning:/
+ok /[0-9]+ warning.+ error.+ found!/
+# ignore weird warnings about build variables in Info.plist:
+# e.g. "warning: ignoring operator ':rfc1034Identifier' on 'RSWebClientCore' for macro 'PRODUCT_NAME'"
+ok /rfc1034Identifier/
+# ignore the warnings we get e.g. on integration builds because we try to strip debug symbols repeatedly
+ok /warning: no debug symbols in executable/
+# ignore the warnings summary line so it's not counted as a separate warning
+ok /warnings generated/
+# ignore warning inside compiler options
+ok /-undefined warning/
+# ignore xibtool warnings
+ok /--warnings/
+# ignore the word warning in export (env variable) lines e.g. WARNING_CFLAGS
+ok /export.+WARNING/
+# sometimes we copy a tiff file called warning.tiff
+ok /warning.tiff/
+# python deprecation warning
+ok /The popen2 module is deprecated/
+# don't allow clang invocation lines themselves count as warnings... the warning will always be on a separate line
+ok /-x objective-c/
+# same for "CompileC" xcode build directives which may contain the same problematic source names that have e.g. "Warnings" in the file name
+ok /CompileC/
+# ignore spurious warning from Apple about -mlong-branch on their own library
+ok /object file compiled with -mlong-branch/
+# False positive errors from CFNetwork
+ok /HTTP download error/
+# issue starting with Xcode 5 where it complains about connecting to the octest process AFTER running the test
+# ACTUALLY whatever error is causing this causes some tests to not be run so we want to be alerted of it
+# ok /error: failed to launch.*otest/
+# match line starting with 'error ', case-insensitive, or presenting an error with a colon:
+#error /(?i)^error /
+#error /(?i)error:/
+# clang errors
+error /clang failed/
+# Build failures sometimes occur but for some reason don't match any other errors - always alert us!
+error /BUILD FAILED/
+error /The following build commands failed/
+# Code signing will fail with cryptic error code preceded by an error message
+error /failed with exit code/
+# architecture mismatch
+error /No architectures to compile/
+# respect xibtool errors
+error /com.apple.ibtool.errors/
+# Code signing issues
+error /User interaction is not allowed/
+# Outright symbol linkage failures
+error /Undefined symbols/
+# Catch all "TEST FAILED" messages
+error /TEST FAILED/
+# E.g. when Ant build for TinyMCE fails
+error /Build failed/
+# Fail on Mercurial issues
+error /mercurial\.error\.Abort/
+
 # list of warnings here...
 warning /[Ww]arning/
 warning /WARNING/
 warning /WARN/
-warning /recv-/
 
 warning /is not defined/
 
@@ -136,3 +232,6 @@ start /scons: done/
 start /scons: building/
 start /scons: Reading/
 
+# each line containing 'xcodebuild' represents the start of a section for grouping errors and warnings found after the line.
+# also creates a quick access link.
+start /xcodebuild/

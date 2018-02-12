@@ -124,6 +124,25 @@
   when: (ansible_distribution == 'RedHat')
   with_items:
    - perl-CPAN
+   - perl-App-cpanminus
+
+#export PERL_MM_USE_DEFAULT=1
+#export PERL_EXTUTILS_AUTOINSTALL="--defaultdeps"
+#sudo PERL_MM_USE_DEFAULT=1 perl -MCPAN -e 'install Test::More'
+
+#It makes perl automatically answer "yes" when CPAN asks "Would you like to configure as much as possible automatically? [yes]"
+- name: jenkins-slave | Install automatically perl module PERL_MM_USE_DEFAULT
+  shell: "echo $PERL_MM_USE_DEFAULT"
+  environment:
+    PERL_MM_USE_DEFAULT: 1
+
+- name: jenkins-slave | Echo PERL_MM_USE_DEFAULT again
+  shell: "echo $PERL_MM_USE_DEFAULT"
+
+- name:  jenkins-slave | Check perl
+  shell: perl -e 'use FileHandle; print $FileHandle::VERSION'
+  changed_when: false
+  become: yes
 
 - name: jenkins-slave | Install tools needed by cpp generator (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
@@ -153,7 +172,7 @@
     
 #Below is same has above but with CPAN    
 - name:  jenkins-slave | Install cpan perl modules needed by cpp generator
-  action: command "cpan {{ item }}"
+  shell: "cpan {{ item }}"
   with_items:
     - XML::DOM
     - XML::Handler::YAWriter
@@ -174,11 +193,6 @@
   register: cpan_result    
   changed_when: false
   become: yes
-  ignore_errors: true
-      
-#export PERL_MM_USE_DEFAULT=1
-#export PERL_EXTUTILS_AUTOINSTALL="--defaultdeps"
-#sudo PERL_MM_USE_DEFAULT=1 perl -MCPAN -e 'install Test::More' 
 
 #Solaris 10
 #Check make is installed
@@ -215,8 +229,8 @@
 #install Crypt::SSLeay
 #install File::Copy::Recursive
 
-- name: Run perl cpan check
-  command: perl -MLWP::Simple -e 1
+- name: jenkins-slave | Run perl cpan check
+  shell: perl -MLWP::Simple -e 1
   when: cpan_result.changed
 
 - name: jenkins-slave | Install tools needed by sample at runtime (Debian based)

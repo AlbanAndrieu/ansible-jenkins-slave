@@ -13,7 +13,7 @@
   with_items:
     - fontconfig
     - freetype
-    - libfreetype.so.6
+#    - libfreetype.so.6
     - libfontconfig.so.1
   become: yes
 
@@ -129,6 +129,7 @@
     - analyze-css@0.10.2
     - tap-eater@0.0.3
     - yarn@1.3.2
+    - sharp@0.19.0
   when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04")) or
         (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
   ignore_errors: yes  
@@ -142,5 +143,7 @@
   become: yes
   ignore_errors: yes
 
-#- name: jenkins-slave | Ensure npm settings
-#  command: chdir=/usr/bin npm config set registry {{ nexus_npm_url }}
+- name: jenkins-slave | Ensure npm settings
+  command: chdir=/usr/bin npm config set registry {{ npm_nexus_private_npm_url }}
+  when: npm_nexus_private_npm_url is defined and nodejs_enabled
+  become: yes

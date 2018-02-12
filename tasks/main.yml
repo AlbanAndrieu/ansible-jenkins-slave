@@ -227,6 +227,7 @@
   file: path={{ jenkins_slave_home }} state=directory
   become: yes
   changed_when: false
+  ignore_errors: true
 
 - name: jenkins-slave | Create maven repository directory
   file: path={{ maven_repository }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
@@ -378,6 +379,8 @@
   changed_when: false
   ignore_errors: "{{ ansible_check_mode }}"
   become: yes
+
+- import_tasks: hdd.yml
 
 - name: jenkins-slave | Copy Dockerfile
   template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0777

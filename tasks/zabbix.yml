@@ -1,4 +1,28 @@
 
+#wget -q -O - http://linux.dell.com/repo/hardware/latest/bootstrap.cgi > bootstrap.cgi
+#bash bootstrap.cgi
+#yum install srvadmin-base
+#yum install srvadmin-storageservices
+
+- name: jenkins-slave | Remove srvadmin-storelib-sysfs conflict megacli
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=absent update_cache=yes"
+  tags: package
+  with_items:
+   - srvadmin-storelib-sysfs
+  changed_when: false
+  become: yes
+  ignore_errors: true
+
+- name: jenkins-slave | Install sensors package
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - lm_sensors
+   - xsensors
+  changed_when: false
+  become: yes
+  ignore_errors: true
+
 - name: jenkins-slave | Create /opt/zabbix/externalscripts folder
   file: path=/opt/zabbix/externalscripts state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
   become: true
@@ -14,14 +38,14 @@
   become: true
   ignore_errors: true
 
-- name: jenkins-slave | Install open-iscsi package
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  tags: package
-  with_items:
-   - open-iscsi
-  changed_when: false
-  become: yes
-  ignore_errors: true
+#- name: jenkins-slave | Install open-iscsi package
+#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+#  tags: package
+#  with_items:
+#   - open-iscsi
+#  changed_when: false
+#  become: yes
+#  ignore_errors: true
 
 - name: jenkins-slave | Copy zabbix script (3)
   copy: src=zabbix/iscsi-status.sh dest=/opt/zabbix/externalscripts/iscsi-status.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
@@ -52,3 +76,44 @@
   template: src=zabbix_agentd.conf.j2 dest={{ zabbix_agent_config_director }}/zabbix_agentd.conf backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
   changed_when: false
+
+- name: jenkins-slave | Disable chronyd (to allow ntps service to run for zabbix)
+  command: systemctl disable chronyd
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  changed_when: false
+  become: yes
+  ignore_errors: true
+
+#yum -y update
+
+- name: jenkins-slave | Install locate package
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - mlocate
+#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  changed_when: false
+  become: yes
+  ignore_errors: true
+
+- name: jenkins-slave | updatedb
+  command: updatedb
+#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  changed_when: false
+  become: yes
+  ignore_errors: true
+
+#TODO
+##See https://libstorage.github.io/libstoragemgmt-doc/doc/install.html
+#sudo yum install libstoragemgmt
+#sudo yum install libstoragemgmt-\*-plugin
+#sudo systemctl start libstoragemgmt.service
+#lsmcli -u 'sim://' list --type systems
+
+#FYI perccli64 is installed on administrations role dell.yml
+- name: jenkins-slave | Check perccli64 properly installed
+  command: /opt/MegaRAID/perccli/perccli64 --version
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and (ansible_system_vendor == 'Dell Inc.' or ansible_system_vendor == 'VMware, Inc.')
+  changed_when: false
+  become: yes
+  ignore_errors: true
