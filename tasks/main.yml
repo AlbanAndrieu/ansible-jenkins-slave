@@ -100,8 +100,6 @@
 
 - import_tasks: cpp.yml
 
-- import_tasks: database.yml
-
 - import_tasks: perl.yml
 
 - import_tasks: python.yml
@@ -372,6 +370,10 @@
 #- name: jenkins-slave | Clone the application
 #  action: git repo=https://github.com/AlbanAndrieu/nabla.git dest=/jenkins/nabla
 
+- import_tasks: database.yml
+
+- import_tasks: hdd.yml
+
 - name: jenkins-slave | Cleanup temporary directory
   file: name={{ tempdir.stdout }} state=absent
   tags:
@@ -379,8 +381,6 @@
   changed_when: false
   ignore_errors: "{{ ansible_check_mode }}"
   become: yes
-
-- import_tasks: hdd.yml
 
 - name: jenkins-slave | Copy Dockerfile
   template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0777
