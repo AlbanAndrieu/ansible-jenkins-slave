@@ -1,0 +1,117 @@
+# {{ ansible_managed }}
+
+# On MacoSX
+#/usr/local/etc/freetds.conf
+
+#   $Id: freetds.conf,v 1.12 2007-12-25 06:02:36 jklowden Exp $
+#
+# This file is installed by FreeTDS if no file by the same
+# name is found in the installation directory.
+#
+# For information about the layout of this file and its settings,
+# see the freetds.conf manpage "man freetds.conf".
+
+# Global settings are overridden by those in a database
+# server specific section
+[global]
+        # TDS protocol version
+;       tds version = 4.2
+
+        # Whether to write a TDSDUMP file for diagnostic purposes
+        # (setting this to /tmp is insecure on a multi-user system)
+;       dump file = /tmp/freetds.log
+;       debug flags = 0xffff
+
+        # Command and connection timeouts
+;       timeout = 10
+;       connect timeout = 10
+
+        # If you get out-of-memory errors, it may mean that your client
+        # is trying to allocate a huge buffer for a TEXT field.
+        # Try setting 'text size' to a more reasonable limit
+        text size = 64512
+
+# A typical Sybase server
+[egServer50]
+        host = symachine.domain.com
+        port = 5000
+        tds version = 5.0
+
+# A typical Microsoft server
+[egServer70]
+        host = ntmachine.domain.com
+        port = 1433
+        tds version = 7.0
+
+# -----------------------------------------
+#  ALMTest Servers
+# -----------------------------------------
+
+[parvswalmonde02_2008]
+host = 10.21.200.87
+port = 1433
+tds version = 7.2
+client charset = UTF-8
+text size = 2147483647
+
+#Oracle12c
+[pard013448_2012]
+host = pard013448
+port = 1433
+tds version = 7.2
+client charset = UTF-8
+text size = 2147483647
+
+#Oracle 12.2.0.1
+[FR1CSLFRBM0019_2017]
+host = FR1CSLFRBM0019
+port = 1521
+tds version = 7.2
+client charset = UTF-8
+text size = 2147483647
+
+#SQLServer2014
+[parl011138_2014]
+host = parl011138
+port = 54201
+tds version = 7.2
+client charset = UTF-8
+text size = 2147483647
+
+#SQLServer2017
+[FR1CSWFRBM0008_2017]
+host = FR1CSWFRBM0008
+port = 1433
+tds version = 7.2
+client charset = UTF-8
+text size = 2147483647
+
+#SQLServer2016
+[FR1CSWFRBM0005_2016]
+host = FR1CSWFRBM0005
+port = 1433
+tds version = 7.2
+client charset = UTF-8
+text size = 2147483647
+
+# -----------------------------------------
+#  CMR Servers
+# -----------------------------------------
+
+[$V(KGR_DS_NAME)]
+	host = $V(KGR_DB_HOST)
+	port =$V(KGR_DB_PORT)
+#	instance = $V(KGR_DS_NAME)
+	tds version = 8.0
+
+[$V(RATE_DS_NAME)]
+	host = $V(KGR_DB_HOST)
+	port =$V(KGR_DB_PORT)
+#	instance = $V(KGR_DS_NAME)
+	tds version = 8.0
+
+[$V(KPLUS_DS_NAME)]
+	host = $V(KPLUS_DB_HOST)
+	port = $V(KPLUS_DB_PORT)
+#	instance = $V(KPLUS_DS_NAME)
+	tds version = 8.0

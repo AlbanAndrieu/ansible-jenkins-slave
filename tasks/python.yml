@@ -1,7 +1,7 @@
 
 - import_tasks: python2.yml
 - import_tasks: python3.yml
-
+  
 - name: python | Set python link to python version
   set_fact: python_version=2.7
 

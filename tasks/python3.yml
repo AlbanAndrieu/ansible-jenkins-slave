@@ -33,7 +33,7 @@
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
   become: yes
 #  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
   with_items:
     - python3-dev
     - python3-pip
@@ -48,7 +48,7 @@
   changed_when: false
   become: yes
 
-- debug: msg="{{ curl_result.stdout }}"
+#- debug: msg="{{ curl_result.stdout }}"
 
 - name: python3 | Run pip check
   shell: (pip -V && pip3 -V && pip3.6 -V) | uniq

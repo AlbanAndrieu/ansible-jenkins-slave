@@ -1,11 +1,9 @@
 # {{ ansible_managed }}
 cache = .node_cache
 tmp = .node_tmp
-{% if npm_nexus_private_npm_data is defined %}
 {% for i in npm_nexus_private_npm_data %}
 {{i}}
 {% endfor %}
-{% endif %}
 {% if npm_nexus_private_npm_url is defined %}
 registry = {{ npm_nexus_private_npm_url }}
 {% endif %}

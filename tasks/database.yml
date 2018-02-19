@@ -2,7 +2,7 @@
 #DATABASE
 #TODO instead use role https://github.com/marcusianlevine/ansible-role-odbc-container
 #See Connecting to MSSQL from Linux with unixODBC + FreeTDS http://help.interfaceware.com/kb/904
-- name: jenkins-slave | Install C++ librairies database (Solaris based)
+- name: database | Install C++ librairies database (Solaris based)
   pkgutil: name={{ item }} state=present
   when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
   with_items:
@@ -10,7 +10,7 @@
    - CSWfreetds-dev
    - CSWsqsh-freetds
 
-- name: jenkins-slave | Install C++ librairies database (Debian based)
+- name: database | Install C++ librairies database (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
@@ -18,7 +18,7 @@
     - freetds-dev #freetds
   become: yes
 
-- name: jenkins-slave | Install C++ librairies for database (CentOS and RedHat based)
+- name: database | Install C++ librairies for database (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
@@ -29,7 +29,7 @@
   become: yes
 
 # Install unixodbc (ODBC connections), freetds (SQL Server connections) and tdsodbc (bridge between the former)
-- name: jenkins-slave | Install C++ librairies for running (Debian based)
+- name: database | Install C++ librairies for running (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
@@ -43,7 +43,7 @@
     - libaio1 #ODBC oracle install client    
   become: yes
 
-- name: jenkins-slave | Install C++ librairies for running (CentOS and RedHat based)
+- name: database | Install C++ librairies for running (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
@@ -62,21 +62,28 @@
 #http://par-castor/viewvc/almonde/AlmondeFactory/trunk/Almonde/Data/Scripts/x86_64-linux-rhel/installunixodbc.sh?revision=81030&view=markup
 #http://par-castor/viewvc/almonde/AlmondeFactory/trunk/Almonde/Data/Scripts/x86_64-linux-rhel/oracle_adddsn_dataconnector.sh?revision=80883&view=markup
 
-- name: jenkins-slave | Copy unixODBC database configuration (step 1)
-  template: src=odbcinst.ini.j2 dest=/etc/odbcinst.ini backup=yes  mode=0755
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+- name: database | Copy unixODBC database configuration (step 1)
+  template: src=database/odbcinst.ini.j2 dest=/etc/odbcinst.ini backup=yes  mode=0755
+  #when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   become: yes
   changed_when: false
 
-- name: jenkins-slave | Copy unixODBC database configuration (step 2)
-  template: src=odbc.ini.j2 dest=/etc/odbc.ini backup=yes  mode=0755
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+- name: database | Copy unixODBC database configuration (step 2)
+  template: src=database/odbc.ini.j2 dest=/etc/odbc.ini backup=yes  mode=0755
+  #when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   become: yes
   changed_when: false
   
-- name: jenkins-slave | Copy freetds database configuration
-  template: src=freetds.conf.j2 dest=/etc/freetds.conf backup=yes  mode=0755
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+- name: database | Copy freetds database configuration
+  template: src=database/freetds.conf.j2 dest=/etc/freetds.conf backup=yes  mode=0755
+  #when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  become: yes
+  changed_when: false
+
+
+- name: database | Copy tnsnames database configuration
+  template: src=database/oracle/tnsnames.ora.j2 dest=/opt/oracle/instantclient_12_2/tnsnames.ora backup=yes  mode=0755
+  #when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   become: yes
   changed_when: false
   
@@ -100,7 +107,7 @@
 #osql -S pard013448_2012 -U sa -P Almonde01
 
 #See rlwrap sqlplus64 username/password@//dbhost:1521/SID
-- name: jenkins-slave | Install wrapper and alien tool for sqlplus (Debian based)
+- name: database | Install wrapper and alien tool for sqlplus (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
@@ -108,3 +115,35 @@
     - alien
   become: yes
   ignore_errors: yes
+
+- name: database | Create oracle data container directory
+  file: path={{ database_docker_oradata }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
+  become: yes
+  changed_when: false
+
+- name: database | Create oracle container directory
+  file: path={{ database_docker_scripts }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
+  become: yes
+  changed_when: false
+
+- name: database | Configure oracle tablespaces
+  template:
+    src: database/oracle/01-tablespaces.0.sql.j2
+    dest: '{{ database_docker_scripts }}/startup/01-tablespaces.0.sql'
+    owner: '{{ jenkins_user }}'
+    group: '{{ jenkins_group }}'
+    mode: 0600
+#  when: shell_git_configure_enabled
+  become: yes
+  changed_when: false
+
+- name: database | Configure oracle users
+  template:
+    src: database/oracle/03-user.0.sql.j2
+    dest: '{{ database_docker_scripts }}/startup/03-user.0.sql'
+    owner: '{{ jenkins_user }}'
+    group: '{{ jenkins_group }}'
+    mode: 0600
+#  when: shell_git_configure_enabled
+  become: yes
+  changed_when: false

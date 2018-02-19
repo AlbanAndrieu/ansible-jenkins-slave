@@ -52,7 +52,7 @@ nexus_url: "{{ home_url }}:8081"
 #npm_nexus_npm_url: "{{ nexus_url }}/nexus/content/npm/registry.npmjs.org/"
 npm_nexus_npm_url:
 npm_nexus_private_npm_url: 
-npm_nexus_private_npm_data:
+npm_nexus_private_npm_data: []
 proxy_cdnurl_server: "localhost"
 npm_phantomjs_cdnurl: ""
 npm_slimerjs_cdnurl: ""
@@ -85,11 +85,18 @@ shell_git: []
   #   shell_git_meld_enabled: yes,
   #   shell_git_editor: "gedit",
 
-shell_sa_password: "Almonde01"
+shell_sa_password: "microsoft"
+svn_user: "jenkins"
+svn_password: "microsoft"
 
 nodejs_version: "7.8.0"
 nodejs_enabled: true
 epel_repo_enabled: false
+
+database_docker_oradata: "/opt/oracle/oradata"
+#database_docker_oradata_orcl: "${{ database_docker_oradata }}/ora8i/"
+database_docker_oradata_orcl: "/u02/app/oracle/oradata/ORCL"
+database_docker_scripts: "/opt/oracle/scripts"
 
 zabbix_agent_config_server: "127.0.0.1"
 zabbix_agent_config_listen_ip: "0.0.0.0"

@@ -17,20 +17,21 @@
 - name: docker | docker-compose check #1
   shell: "docker-compose --version"
   register: docker_compose_result
-  ignore_errors: true
+  ignore_errors: '{{ ansible_check_mode }}'
   become: yes
 
-- debug: msg="{{ docker_compose_result.rc }} - {{ docker_compose_result.stdout }}"
-  ignore_errors: true
+#- debug: msg="{{ docker_compose_result.rc }} - {{ docker_compose_result.stdout }}"
+#  when: not check_mode
 
 - name: docker | Uninstall docker-py
   pip: name={{ item }} state=absent
   executable: pip{{ python_version }}
-  when: docker_compose_result.rc != 0
+  when: not check_mode and docker_compose_result.rc != 0
   with_items:
     - docker
     - docker-py
     - docker-compose
+  ignore_errors: '{{ ansible_check_mode }}'
   become: yes
 
 - name: docker | Install Docker/Ansible compatible compose tools
@@ -39,17 +40,19 @@
   when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_version.full | version_compare('2.3', '>='))) or (ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
     - docker-compose==1.12.0
+  ignore_errors: '{{ ansible_check_mode }}'
   become: yes
 
 - name: docker | docker-compose check #2
   shell: "docker-compose --version"
   register: docker_compose_result
-  ignore_errors: True
+  ignore_errors: '{{ ansible_check_mode }}'
   become: yes
 
 - name: docker | Fail the play if the previous command did not succeed
   fail: msg="The command docker-compose --version failed"
   when: "'FAILED' in docker_compose_result.stderr"
+  ignore_errors: '{{ ansible_check_mode }}'
 
 #- name: docker | Install Docker/Ansible compatible tools (Debian based)
 #  pip: name={{ item }}

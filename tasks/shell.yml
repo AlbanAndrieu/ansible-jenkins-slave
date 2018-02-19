@@ -63,6 +63,7 @@
 #    - { regexp: '', line: 'export WORKSPACE="{{ jenkins_home }}"' }
     - { regexp: '', line: 'export TAR="/bin/gtar"' }
     - { regexp: '', line: 'export GIT_DISCOVERY_ACROSS_FILESYSTEM=1' } #For Solaris
+    - { regexp: '', line: 'export TNS_ADMIN=/opt/oracle/instantclient_12_2/' } #For Oracle
     - { regexp: '', line: 'export ACCEPT_EULA=Y' } #For MsSQL
     - { regexp: '', line: 'export SA_PASSWORD="{{ shell_sa_password }}"' } #For MsSQL
   become: true

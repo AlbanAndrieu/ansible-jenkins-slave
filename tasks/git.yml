@@ -3,21 +3,21 @@
  # git
  #
 # Moved to his own role
-- name: jenkins-slave | Install GIT
+- name: git | Install GIT
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - git-core
    - git
   become: yes
 
-- name: jenkins-slave | Copy the .netrc script for git credentials
+- name: git | Copy the .netrc script for git credentials
   template: src=.netrc.j2 dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   when: shell_git_configure_enabled
   become: yes  
   changed_when: false
   tags: git
 
-- name: jenkins-slave | Configure git
+- name: git | Configure git
   template:
     src: .gitconfig.j2
     dest: '{{ jenkins_home }}/.gitconfig'
@@ -29,7 +29,7 @@
   changed_when: false
   tags: git
 
-#- name: jenkins-slave | Update git configuration (user.email)
+#- name: git | Update git configuration (user.email)
 #  action: command git config --global user.email "{{ shell_git_email }}"
 ##  sudo_user: "{{ jenkins_user }}"
 #  become_user: "{{ jenkins_user }}"
@@ -38,7 +38,7 @@
 #  changed_when: false
 #  tags: git
 #
-#- name: jenkins-slave | Update git configuration (user.name)
+#- name: git | Update git configuration (user.name)
 #  action: command git config --global user.name "{{ shell_git_name }}"
 ##  sudo_user: "{{ jenkins_user }}"
 #  become_user: "{{ jenkins_user }}"
@@ -47,7 +47,7 @@
 #  changed_when: false
 #  tags: git
 #
-#- name: jenkins-slave | Update git configuration (http.sslVerify)
+#- name: git | Update git configuration (http.sslVerify)
 #  action: command git config --global http.sslVerify {{ shell_git_ssl }}
 ##  sudo_user: "{{ jenkins_user }}"
 #  become_user: "{{ jenkins_user }}"
@@ -69,5 +69,5 @@
 #- git_config: name=color.ui scope=global value=auto
 #
 ##See https://docs.ansible.com/ansible/git_config_module.html
-#- name: jenkins-slave | Read all values from git config
+#- name: git | Read all values from git config
 #  git_config: list_all=yes scope=global

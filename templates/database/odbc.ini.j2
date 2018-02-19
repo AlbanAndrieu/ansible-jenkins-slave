@@ -18,6 +18,14 @@ Server                = 10.41.40.13
 Port                  = 1433
 #Database              = JEN_TRUNK_QA_BM
 
+[FR1CSLFRBM0019_2017]
+Description           = "Oracle12c"
+Driver                = Oracle
+#ServerName           = FR1CSLFRBM0019
+Server                = 10.21.186.16
+Port                  = 1521
+#Database              = JEN_TRUNK_QA_BM
+
 [FR1CSWFRBM0005_2016]
 Description           = "SQLServer2016"
 Driver 				  = FreeTDS
@@ -25,6 +33,17 @@ Trace 				  = No
 #TraceFile = /tmp/sql.log
 #ServerName            = FR1CSWFRBM0005
 Server                = 10.21.185.152
+Port                  = 1433
+#Database              = JEN_TRUNK_QA_BM
+TDS_Version 		  = 7.2
+
+[FR1CSWFRBM0008_2017]
+Description           = "SQLServer2017"
+Driver 				  = FreeTDS
+Trace 				  = No
+#TraceFile = /tmp/sql.log
+#ServerName            = FR1CSWFRBM0005
+Server                = 10.21.187.79
 Port                  = 1433
 #Database              = JEN_TRUNK_QA_BM
 TDS_Version 		  = 7.2
