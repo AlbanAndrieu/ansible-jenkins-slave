@@ -145,5 +145,6 @@
 
 - name: jenkins-slave | Ensure npm settings
   command: chdir=/usr/bin npm config set registry {{ npm_nexus_private_npm_url }}
-  when: npm_nexus_private_npm_url is defined and nodejs_enabled
+  when: not( (npm_nexus_private_npm_url is undefined) or (npm_nexus_private_npm_url is none) or (npm_nexus_private_npm_url | trim == '') ) and nodejs_enabled
+#  when: npm_nexus_private_npm_url is defined and nodejs_enabled
   become: yes
