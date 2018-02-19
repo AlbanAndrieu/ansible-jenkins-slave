@@ -40,7 +40,7 @@
     - tdsodbc #freetds
     #- libmyodbc #ODBC mysql
     - odbc-postgresql #ODBC postgreSQL
-    - libaio1 #ODBC oracle install client    
+    - libaio1 #ODBC oracle install client
   become: yes
 
 - name: database | Install C++ librairies for running (CentOS and RedHat based)
@@ -55,7 +55,7 @@
     - postgresql-odbc #ODBC postgreSQL
     - libaio #ODBC oraacle install client
   become: yes
-  
+
 #TODO automate install oracle open client in /opt/oracle/
 
 #TODO for Almonde, database configuration are scripted on:
@@ -64,32 +64,29 @@
 
 - name: database | Copy unixODBC database configuration (step 1)
   template: src=database/odbcinst.ini.j2 dest=/etc/odbcinst.ini backup=yes  mode=0755
-  #when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   become: yes
   changed_when: false
 
 - name: database | Copy unixODBC database configuration (step 2)
   template: src=database/odbc.ini.j2 dest=/etc/odbc.ini backup=yes  mode=0755
-  #when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   become: yes
   changed_when: false
-  
+
 - name: database | Copy freetds database configuration
   template: src=database/freetds.conf.j2 dest=/etc/freetds.conf backup=yes  mode=0755
-  #when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   become: yes
   changed_when: false
 
 
 - name: database | Copy tnsnames database configuration
   template: src=database/oracle/tnsnames.ora.j2 dest=/opt/oracle/instantclient_12_2/tnsnames.ora backup=yes  mode=0755
-  #when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   become: yes
+  ignore_errors: true
   changed_when: false
-  
+
 #For MacOSX
-#See 
-#brew install unixodbc 
+#See
+#brew install unixodbc
 #brew install freetds --with-tdsver=7.2 --with-unixodbc
 
 #otool -L /usr/local/lib/libtdsodbc.so
