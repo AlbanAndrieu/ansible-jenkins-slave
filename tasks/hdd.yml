@@ -1,14 +1,24 @@
 
-- name: jenkins-slave | Mount up device by label
+- name: hdd | Mount up device by label
   mount:
     path: /dev/rhel_fr1cslvcacrhel71/workspace
     src: /workspace
     fstype: ext4
     state: present
 
-- name: jenkins-slave | Mount up device by label
+- name: hdd | Mount up device by label
   mount:
     path: /dev/rhel_fr1cslvcacrhel71/docker
     src: /docker
     fstype: ext4
     state: present
+
+- name: hdd | Install hdd tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  with_items:
+    - system-storage-manager
+    - gnome-disk-utility
+    - baobab
+  become: yes
+  

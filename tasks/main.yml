@@ -135,8 +135,6 @@
 
 - import_tasks: git.yml
 
-#- import_tasks: subversion.yml
-
 - name: jenkins-slave | Copy the deploy-log-parsing-rules for jenkins log parsing configuration
   copy: src=deploy-log-parsing-rules dest={{ jenkins_home }}/deploy-log-parsing-rules backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
   become: true
@@ -364,6 +362,8 @@
 
 #- name: jenkins-slave | Clone the application
 #  action: git repo=https://github.com/AlbanAndrieu/nabla.git dest=/jenkins/nabla
+
+#- import_tasks: subversion.yml
 
 - import_tasks: database.yml
 

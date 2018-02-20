@@ -8,6 +8,11 @@
   action: "{{ ansible_pkg_mgr }} name='subversion' state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   become: yes
 
+- name: subversion | Create subversion directory
+  file: path={{ jenkins_home }}/.subversion/servers state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
+  become: yes
+  changed_when: false
+  
 - name: subversion | Configure svn
   template:
     src: servers.j2
@@ -21,7 +26,7 @@
   tags: git
 
 - name: subversion | Configure svn
-  shell: "mkdir -p ~/.subversion/auth/svn.simple && echo -e \"K 8\npasstype\nV 6\nsimple\nK 8\npassword\nV 9\n{{ svn_password }}\nK 15\nsvn:realmstring\nV 54\n<http://par-castor:80> CollabNet Subversion Repository\nK 8\nusername\nV 16\n{{ svn_user }}\nEND\" >> ~/.subversion/auth/svn.simple/ef18e09a57c44b1b03f412a5d6cabfb4"
+  shell: "mkdir -p {{ jenkins_home }}/.subversion/auth/svn.simple && echo -e \"K 8\npasstype\nV 6\nsimple\nK 8\npassword\nV 9\n{{ svn_password }}\nK 15\nsvn:realmstring\nV 54\n<http://par-castor:80> CollabNet Subversion Repository\nK 8\nusername\nV 16\n{{ svn_user }}\nEND\" >> {{ jenkins_home }}/.subversion/auth/svn.simple/ef18e09a57c44b1b03f412a5d6cabfb4"
   ignore_errors: '{{ ansible_check_mode }}'
   become_user: "{{ jenkins_user }}"
   become: yes
