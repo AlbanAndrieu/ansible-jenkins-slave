@@ -89,8 +89,6 @@
   become: yes
   ignore_errors: true
 
-#yum -y update
-
 - name: zabbix | Install locate package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   tags: package

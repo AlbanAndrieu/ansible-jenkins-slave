@@ -27,14 +27,6 @@
 - import_tasks: maven.yml
 
 ##
- # subversion
- #
-#TODO move to its own role
-- name: Install subversion package
-  action: "{{ ansible_pkg_mgr }} name='subversion' state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  become: yes
-
-##
  # other
  #
 - name: Install ant package
@@ -142,6 +134,8 @@
 - import_tasks: shell.yml
 
 - import_tasks: git.yml
+
+#- import_tasks: subversion.yml
 
 - name: jenkins-slave | Copy the deploy-log-parsing-rules for jenkins log parsing configuration
   copy: src=deploy-log-parsing-rules dest={{ jenkins_home }}/deploy-log-parsing-rules backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
@@ -253,6 +247,7 @@
   - "{{folder_stats.results}}"
   become: yes
   changed_when: false
+  ignore_errors: true
   
 - name: jenkins-slave | Create Jenkins thin backup directory
   file: path={{ jenkins_remote_thinbackup }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775

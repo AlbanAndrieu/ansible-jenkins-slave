@@ -97,6 +97,7 @@ database_docker_oradata: "/opt/oracle/oradata"
 #database_docker_oradata_orcl: "${{ database_docker_oradata }}/ora8i/"
 database_docker_oradata_orcl: "/u02/app/oracle/oradata/ORCL"
 database_docker_scripts: "/opt/oracle/scripts"
+database_docker_instantclient: "/opt/oracle/instantclient_12_2"
 
 zabbix_agent_config_server: "127.0.0.1"
 zabbix_agent_config_listen_ip: "0.0.0.0"

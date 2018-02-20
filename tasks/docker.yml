@@ -17,7 +17,7 @@
 - name: docker | docker-compose check #1
   shell: "docker-compose --version"
   register: docker_compose_result
-  ignore_errors: '{{ ansible_check_mode }}'
+  ignore_errors: yes
   become: yes
 
 #- debug: msg="{{ docker_compose_result.rc }} - {{ docker_compose_result.stdout }}"
@@ -46,7 +46,7 @@
 - name: docker | docker-compose check #2
   shell: "docker-compose --version"
   register: docker_compose_result
-  ignore_errors: '{{ ansible_check_mode }}'
+  ignore_errors: yes
   become: yes
 
 - name: docker | Fail the play if the previous command did not succeed

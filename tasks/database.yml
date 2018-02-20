@@ -77,9 +77,13 @@
   become: yes
   changed_when: false
 
+- name: database | Create oracle instantclient directory
+  file: path={{ database_docker_instantclient }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
+  become: yes
+  changed_when: false
 
 - name: database | Copy tnsnames database configuration
-  template: src=database/oracle/tnsnames.ora.j2 dest=/opt/oracle/instantclient_12_2/tnsnames.ora backup=yes  mode=0755
+  template: src=database/oracle/tnsnames.ora.j2 dest={{ database_docker_instantclient }}/tnsnames.ora backup=yes  mode=0755
   become: yes
   ignore_errors: true
   changed_when: false
@@ -119,7 +123,7 @@
   changed_when: false
 
 - name: database | Create oracle container directory
-  file: path={{ database_docker_scripts }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
+  file: path={{ database_docker_scripts }}/startup state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
   become: yes
   changed_when: false
 

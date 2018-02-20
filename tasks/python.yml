@@ -1,6 +1,8 @@
 
 - import_tasks: python2.yml
 - import_tasks: python3.yml
+#TODO once fixed https://bugs.launchpad.net/ubuntu/+source/python3.6/+bug/1685596
+#- import_tasks: python36.yml
   
 - name: python | Set python link to python version
   set_fact: python_version=2.7
