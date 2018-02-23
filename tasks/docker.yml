@@ -1,6 +1,6 @@
 
 - name: docker | Set python link to python version
-  set_fact: python_version=3.6
+  set_fact: python_version=3.5
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
 
 ##TODO fix docker-compose
@@ -21,12 +21,12 @@
   become: yes
 
 #- debug: msg="{{ docker_compose_result.rc }} - {{ docker_compose_result.stdout }}"
-#  when: not check_mode
+#  when: not ansible_check_mode
 
 - name: docker | Uninstall docker-py
   pip: name={{ item }} state=absent
   executable: pip{{ python_version }}
-  when: not check_mode and docker_compose_result.rc != 0
+  when: not ansible_check_mode and docker_compose_result.rc != 0
   with_items:
     - docker
     - docker-py

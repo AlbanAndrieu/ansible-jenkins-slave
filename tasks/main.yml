@@ -22,9 +22,15 @@
   tags:
     - jenkins-slave
 
+- import_tasks: hdd.yml
+
 - import_tasks: java.yml
 
 - import_tasks: maven.yml
+
+- import_tasks: python.yml
+
+- import_tasks: ansible.yml
 
 ##
  # other
@@ -82,8 +88,6 @@
 #    - ansible-lint
 #  become: yes
 
-- import_tasks: ansible.yml
-
 - import_tasks: docker.yml
 
 - import_tasks: security.yml
@@ -93,8 +97,6 @@
 - import_tasks: cpp.yml
 
 - import_tasks: perl.yml
-
-- import_tasks: python.yml
 
 ##
  # Jenkins user
@@ -366,8 +368,6 @@
 #- import_tasks: subversion.yml
 
 - import_tasks: database.yml
-
-- import_tasks: hdd.yml
 
 - name: jenkins-slave | Cleanup temporary directory
   file: name={{ tempdir.stdout }} state=absent

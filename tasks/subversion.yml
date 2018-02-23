@@ -11,6 +11,7 @@
 - name: subversion | Create subversion directory
   file: path={{ jenkins_home }}/.subversion/servers state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
   become: yes
+  ignore_errors: true
   changed_when: false
   
 - name: subversion | Configure svn

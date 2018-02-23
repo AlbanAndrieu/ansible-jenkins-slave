@@ -1,17 +1,49 @@
 
-- name: hdd | Mount up device by label
-  mount:
-    path: /dev/rhel_fr1cslvcacrhel71/workspace
-    src: /workspace
-    fstype: ext4
-    state: present
+#WARNING below order is important
 
-- name: hdd | Mount up device by label
-  mount:
-    path: /dev/rhel_fr1cslvcacrhel71/docker
-    src: /docker
-    fstype: ext4
-    state: present
+#pvcreate /dev/sdb
+#vgextend rhel_fr1cslvcacrhel71 /dev/sdb
+#
+#lvcreate -l 12805 -n workspace rhel_fr1cslvcacrhel71
+#lvcreate -l 12805 -n docker rhel_fr1cslvcacrhel71
+#
+#lvdisplay
+#
+#sudo mkfs -t ext4 /dev/rhel_fr1cslvcacrhel71/workspace
+#sudo mkfs -t ext4 /dev/rhel_fr1cslvcacrhel71/docker
+#
+#sudo mkdir /workspace
+#sudo mkdir /docker
+#
+#- name: hdd | Mount up device by label
+#  mount:
+#    path: /workspace
+#    src: /dev/rhel_fr1cslvcacrhel71/workspace
+#    fstype: ext4
+#    opts: auto
+#    passno: 2
+#    state: present
+#
+#- name: hdd | Mount up device by label
+#  mount:
+#    path: /docker
+#    src: /dev/rhel_fr1cslvcacrhel71/docker
+#    fstype: ext4
+#    opts: auto
+#    passno: 2
+#    state: present
+
+#Check entry in /etc/fstab
+#sudo mount /workspace
+#sudo mount /docker
+
+#extend size of logical volume
+#lvextend --resizefs -L +6G /dev/rhel_fr1cslvcacrhel71/swap
+#lvextend --resizefs -L +17G /dev/rhel_fr1cslvcacrhel71/root
+##lvextend -l +100%FREE /dev/rhel_fr1cslvcacrhel71/root
+
+#IMPORTANT
+#Do not reboot the server if entry in wrong in fstab you will have IS team to get console on booting
 
 - name: hdd | Install hdd tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
