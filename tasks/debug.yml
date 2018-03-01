@@ -57,6 +57,15 @@
   when:
     - ansible_os_family != "Windows"
 
+- name: jenkins-slave | Install utility tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' or ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - lsof
+  become: yes
+  ignore_errors: true
+  changed_when: false
+
 - name: jenkins-slave | Install CPP gdb tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' or ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')

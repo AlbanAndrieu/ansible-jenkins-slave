@@ -1,6 +1,6 @@
 
 - name: jenkins-slave | Set python link to python version
-  set_fact: python_version=3.6
+  set_fact: python_version=3.5
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
 
 - name: jenkins-slave | Fail if using python3 with Ansible<2.3
@@ -11,16 +11,17 @@
 - name: jenkins-slave | Install Ansible (Debian based)
   pip: name={{ item }}
   executable: pip{{ python_version }}
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - paramiko
-    - ansible==2.4.1.0
+    - ansible==2.4.3.0
+    - ansible-cmdb==1.25
   become: yes
 
 - name: jenkins-slave | Install ansible requirements
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
     - sshpass
+    - python-selinux
   become: yes
   ignore_errors: true
   

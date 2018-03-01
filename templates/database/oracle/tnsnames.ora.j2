@@ -1,7 +1,38 @@
-ARC1 =
+
+// TNS (alias à changer au besoin)
+BMORCL1 =
 (DESCRIPTION =
-(ADDRESS = (PROTOCOL = TCP)(HOST = FR1CSLFRBM0019.misys.global.ad)(PORT = 1521))
+    (ADDRESS = (PROTOCOL = TCP)(HOST = TEST02)(PORT = 1521))
 (CONNECT_DATA =
-(SERVICE_NAME = ORCLCDB.localdomain)
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = ARC1)
+    )
+  )
+
+BMPDBORCL1 =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = TEST02)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = ORCLPDB1)
+    )
+  )
+
+// TNS (alias à changer au besoin)
+BMORCL2 =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = TEST03)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = ARC1)
+    )
+  )
+
+BMPDBORCL2 =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = TEST03)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = ORCLPDB1)
 )
 )

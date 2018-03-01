@@ -1,8 +1,18 @@
 
 #WARNING below order is important
 
-#pvcreate /dev/sdb
-#vgextend rhel_fr1cslvcacrhel71 /dev/sdb
+- name: hdd | Create sdb
+  command: pvcreate /dev/sdb
+  changed_when: false
+  become: yes
+  ignore_errors: true
+
+#- name: hdd | Extend sdb
+#  command: vgextend rhel_fr1cslvcacrhel71 /dev/sdb
+#  changed_when: false
+#  become: yes
+#  ignore_errors: true
+
 #
 #lvcreate -l 12805 -n workspace rhel_fr1cslvcacrhel71
 #lvcreate -l 12805 -n docker rhel_fr1cslvcacrhel71

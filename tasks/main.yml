@@ -22,6 +22,7 @@
   tags:
     - jenkins-slave
 
+#FYI hdd.yml must be first (before creating slave folders)
 - import_tasks: hdd.yml
 
 - import_tasks: java.yml
@@ -30,6 +31,7 @@
 
 - import_tasks: python.yml
 
+#FYI ansible.yml need python.yml
 - import_tasks: ansible.yml
 
 ##

@@ -9,9 +9,20 @@ ok /unlink .*warning.*/
 
 #ssh
 error /Failed to add the host to the list of known hosts/
+error /Error is not recoverable: exiting now/
+warning /No such file or directory/
+error /command not found/
+
+#python
+error /python: can't open file/
+error /ImportError: No module named/
+error /ImportError: cannot import name/
 
 #svn/subversion
 error /This client is too old to work with the working copy at/
+error /You need to upgrade the working copy first/
+error /ATTENTION!  Your password for authentication realm/
+error /is not a working copy/
 
 #maven cargo
 error /Exception thrown by the agent : java.net.MalformedURLException: Local host name unknown/
@@ -60,6 +71,9 @@ warning /Class path contains multiple SLF4J bindings/
 error /not found \(try using -rpath or -rpath-link\)/
 error /undefined reference to/
 error /: undeclared identifier/
+error /: error C2375:/
+error /: error C3190:/
+error /LINK : fatal error LNK1181:/
 
 #maven
 warning /Tests in error:/
@@ -206,6 +220,10 @@ error /TEST FAILED/
 error /Build failed/
 # Fail on Mercurial issues
 error /mercurial\.error\.Abort/
+#Fail wrong scons version for Mingw
+error /Internal Error: no cycle found for node/
+
+warning /ld: skipping incompatible/
 
 # list of warnings here...
 warning /[Ww]arning/

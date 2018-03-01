@@ -32,7 +32,8 @@
   when: not( (python_version is undefined) or (python_version is none) or (python_version | trim == '') )
   changed_when: false
   become: yes
-
+  ignore_errors: true
+  
 - name: python3 | Install missing pip3.5 requirement
   shell: "pip{{ python_version }} install -r requirements-current-{{ python_version }}.txt"
   changed_when: false

@@ -25,6 +25,14 @@
     - make
   become: yes
 
+#https://www.globo.tech/learning-center/install-nodejs-run-node-applications-centos-7/
+
+#yum clean all && yum update
+# yum install nodejs npm --enablerepo=epel
+
+#TODO use fix version of node/npm
+#node v6.13.0
+#npm 3.10.10
 - name: jenkins-slave | Get node repo
   #shell: 'curl -sL https://rpm.nodesource.com/setup_7.x | sudo -E bash -'
   shell: 'curl -sL https://rpm.nodesource.com/setup_6.x | sudo -E bash -'
@@ -100,7 +108,6 @@
 #npm update -g
 #npm config set python python2.7
 
-#npm config set slimerjs_cdnurl http://kgrdb01/download/slimerjs/0.9.6/ 
 #npm config list
 #npm install --unsafe-perm -g node-sass
 
@@ -146,5 +153,4 @@
 - name: jenkins-slave | Ensure npm settings
   command: chdir=/usr/bin npm config set registry {{ npm_nexus_private_npm_url }}
   when: not( (npm_nexus_private_npm_url is undefined) or (npm_nexus_private_npm_url is none) or (npm_nexus_private_npm_url | trim == '') ) and nodejs_enabled
-#  when: npm_nexus_private_npm_url is defined and nodejs_enabled
   become: yes
