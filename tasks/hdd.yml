@@ -43,12 +43,17 @@
 #    passno: 2
 #    state: present
 
+#/etc/fstab
+#/dev/rhel_fr1cslvcacrhel71/workspace /workspace ext4 auto 0 2
+#/dev/rhel_fr1cslvcacrhel71/docker /docker ext4 auto 0 2
+
 #Check entry in /etc/fstab
 #sudo mount /workspace
 #sudo mount /docker
 
 #extend size of logical volume
 #lvextend --resizefs -L +6G /dev/rhel_fr1cslvcacrhel71/swap
+#lvextend --resizefs -L +6G /dev/VolGroup00/usrvol
 #lvextend --resizefs -L +17G /dev/rhel_fr1cslvcacrhel71/root
 ##lvextend -l +100%FREE /dev/rhel_fr1cslvcacrhel71/root
 
@@ -56,11 +61,36 @@
 #Do not reboot the server if entry in wrong in fstab you will have IS team to get console on booting
 
 - name: hdd | Install hdd tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
+  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')
+  with_items:
+    - system-storage-manager
+  become: yes
+  changed_when: false
+
+- name: hdd | Install hdd tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
-    - system-storage-manager
     - gnome-disk-utility
     - baobab
   become: yes
+
+#TODO
+#- name: hdd | Mount containers storage
+#  mount:
+#  path: "{{ containers_mount }}"
+#    src: "storage:/tank/containers"
+#    fstype: nfs
+#    state: mounted
+
+#Change quota on xfs for oracle database
+#See https://help.directadmin.com/item.php?id=557
+
+#nano /etc/default/grub
+#....
+
+#lvextend -l +100%FREE /dev/rhel_fr1cslvcacrhel71/root
+#xfs_info /dev/mapper/rhel_fr1cslvcacrhel71-root
+#xfs_growfs -d /dev/rhel_fr1cslvcacrhel71/root
   

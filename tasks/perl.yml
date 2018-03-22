@@ -102,7 +102,7 @@
 
 - name: jenkins-slave | Install perl for running
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
   tags: package
   with_items:
    - perl-Env
@@ -118,13 +118,20 @@
    - perl-File-Copy-Recursive
    - perl-File-Find-Rule
 
+- name: jenkins-slave | Install cpanminus (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
+  tags: package
+  with_items:
+   - perl-App-cpanminus
+  become: yes
+
 - name: jenkins-slave | Install CPAN tools needed by cpp generator (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
   become: yes
   when: (ansible_distribution == 'RedHat')
   with_items:
    - perl-CPAN
-   - perl-App-cpanminus
 
 #export PERL_MM_USE_DEFAULT=1
 #export PERL_EXTUTILS_AUTOINSTALL="--defaultdeps"
@@ -147,7 +154,18 @@
 - name: jenkins-slave | Install tools needed by cpp generator (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
   become: yes
-  when: (ansible_distribution == 'RedHat')
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+  with_items:
+   - perl-libwww-perl
+   - perl-XML-XPath
+   - perl-XML-LibXML
+   - perl-XML-Parser
+   - perl-libxml-perl
+
+- name: jenkins-slave | Install tools needed by cpp generator (RedHat based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')
   with_items:
    - perl-libwww-perl
    - perl-XML-Simple

@@ -24,8 +24,10 @@
 #  when: not ansible_check_mode
 
 - name: docker | Uninstall docker-py
-  pip: name={{ item }} state=absent
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python_version }}"
+    state: absent
   when: not ansible_check_mode and docker_compose_result.rc != 0
   with_items:
     - docker
@@ -35,8 +37,10 @@
   become: yes
 
 - name: docker | Install Docker/Ansible compatible compose tools
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python_version }}"
+    state: forcereinstall
   when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_version.full | version_compare('2.3', '>='))) or (ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
     - docker-compose==1.12.0

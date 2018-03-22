@@ -5,6 +5,35 @@
 #yum -y groupinstall development
 #yum -y install zlib-devel
 
+#On RedHat
+#sudo yum install -y https://centos6.iuscommunity.org/ius-release.rpm
+#sudo yum install -y python35u python35u-pip
+
+#sudo yum install -y https://centos7.iuscommunity.org/ius-release.rpm
+#sudo yum install -y python35u python35u-pip
+
+- name: jenkins-slave | Install python (RedHat based)
+  yum:
+    name: "{{ item }}"
+    state: "{{ jenkins_pkg_state|default('present') }}"
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+  with_items:
+   - "https://centos6.iuscommunity.org/ius-release.rpm"
+   - python35u
+   - python35u-pip
+  become: yes
+
+- name: jenkins-slave | Install python (RedHat based)
+  yum:
+    name: "{{ item }}"
+    state: "{{ jenkins_pkg_state|default('present') }}"
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  with_items:
+   - "https://centos7.iuscommunity.org/ius-release.rpm"
+   - python35u
+   - python35u-pip
+  become: yes
+
 # wget https://www.python.org/ftp/python/3.5.5/Python-3.5.5.tgz
 # tar xzf Python-3.5.5.tgz
 # cd Python-3.5.5
@@ -20,24 +49,45 @@
 #virtualenv py3-ansible -p /usr/local/bin/python3.5
 
 - name: python3 | Set python link to python version
-  set_fact: python_version=3.5
+  set_fact: python3_version=3.5
 
 #- name: python3 | Run pip check
 #  shell: (pip -V && pip3.5 -V) | uniq
 #  become: yes
 #  ignore_errors: true
 
-- name: python3 | Gather current pip3.5 requirement
-  shell: "pip{{ python_version }} freeze > requirements-{{ python_version }}.txt"
-  when: not( (python_version is undefined) or (python_version is none) or (python_version | trim == '') )
+- name: python3 | Gather current pip requirement
+  shell: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
+  when: not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
   changed_when: false
   become: yes
+
+- name: python3 | Install virtualenv via pip
+  pip:
+    name: virtualenv
+    executable: pip{{ python3_version }}
+
+- name: python3 | Copy the minimal requirements configuration file for python
+  copy: src=requirements-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-minimal-{{ python3_version }}.txt backup=yes
+  become: true
+
+- name: python3 | Copy the requirements configuration file for python
+  copy: src=requirements-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-{{ python3_version }}.txt backup=yes
+  become: true
+
+- name: python3 | Create venv and install requirements
+  pip:
+    requirements: "{{ ansible_user_dir }}/requirements-minimal-{{ python3_version }}.txt"
+    virtualenv: /opt/ansible/env35
+    virtualenv_python: "python{{ python3_version }}"
+  tags:
+    - venv
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ ansible_user_dir }}/.local/bin"
   ignore_errors: true
   
-- name: python3 | Install missing pip3.5 requirement
-  shell: "pip{{ python_version }} install -r requirements-current-{{ python_version }}.txt"
-  changed_when: false
-  become: yes
-#TODO automation
-#For now below will be done by hand
-  ignore_errors: true
+#- name: python3 | Install missing pip requirement
+#  shell: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
+#  changed_when: false
+#  become: yes
+#  ignore_errors: true

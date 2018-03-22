@@ -23,6 +23,7 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
    - openssl
+   - libssl-dev
    - libcrypto++-dev
   become: yes
 
@@ -53,7 +54,7 @@
 #TODO must be the same as openssl-devel
 - name: jenkins-slave | Install C++ librairies openssl for building 64bits (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6') )
   tags: cpp
   with_items:
    - openssl-libs.x86_64
@@ -66,6 +67,24 @@
   with_items:
    - libssl0.9.8
   become: yes
+
+#TODO
+#- name: jenkins-slave | Install C++ librairies openssl for building 64bits (Debian based)
+##!/bin/bash
+#apt-get update
+#apt-get -y install git
+#cd /usr/src/
+#mkdir openssl
+#git clone https://github.com/openssl/openssl.git
+#cd openssl
+#git checkout OpenSSL_0_9_8-stable
+#./config shared --prefix=/usr/local/openssl/
+#make -j2
+#make install
+#ls -larth /usr/local/openssl/lib/
+##Then add /usr/local/openssl/lib/ to your linker...
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04']
+#  become: yes
 
 - name: jenkins-slave | Install C++ librairies openssl for building 64bits (CentOS based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -82,7 +101,7 @@
 
 - name: jenkins-slave | Install C++ librairies openssl for building 64bits (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
   tags: cpp
   with_items:
    - openssl098e
@@ -91,7 +110,7 @@
 ##cross compatibility for i386 i686
 - name: jenkins-slave | Install C++ librairies openssl for building 32bits (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
   tags: cpp
   with_items:
    - openssl098e.i686
@@ -109,7 +128,7 @@
 
 - name: jenkins-slave | Install C++ librairies ldap (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
   with_items:
 #ldap-2.4 is the default on RedHat 7.1, but we still use ldap-2.3 in the code
    - openldap-devel
@@ -154,7 +173,7 @@
   
 - name: jenkins-slave | Install C++ librairies ldap (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
   with_items:
 #ldap-2.3 is still needed by tibco adapter
    - compat-openldap
@@ -198,7 +217,7 @@
 
 - name: jenkins-slave | Install C++ librairies curl (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
   tags: cpp
   with_items:
    - libcurl-devel
@@ -257,7 +276,7 @@
 
 - name: jenkins-slave | Install C++ librairies log4cxx (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
   tags: cpp
   with_items:
    - log4cxx-devel
@@ -284,7 +303,7 @@
 
 - name: jenkins-slave | Install C++ librairies xerces 3.1 (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
   tags: cpp
   with_items:
    - xerces-c-devel
@@ -309,7 +328,7 @@
 
 - name: jenkins-slave | Install C++ librairies libssh2 (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
   tags: cpp
   with_items:
    - libssh2-devel
@@ -319,7 +338,7 @@
 #cross compatibility for i386 i686  
 #- name: jenkins-slave | Install C++ librairies log4cxx (RedHat based)
 #  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-#  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+#  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
 #  tags: cpp
 #  with_items:
 #   - log4cxx-devel.i686
@@ -350,23 +369,7 @@
 
 - name: jenkins-slave | Install C++ librairies apr (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '5')
-  with_items:
-   - apr-devel
-   - apr-util-devel
-  become: yes
-
-- name: jenkins-slave | Install C++ librairies apr (RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
-  with_items:
-   - apr-devel
-   - apr-util-devel
-  become: yes
-
-- name: jenkins-slave | Install C++ librairies apr (RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: (ansible_distribution == 'RedHat')
   with_items:
    - apr-devel
    - apr-util-devel
@@ -414,14 +417,7 @@
 
 - name: jenkins-slave | Install C++ librairies activemq (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
-  with_items:
-   - activemq-cpp-devel
-  become: yes
-
-- name: jenkins-slave | Install C++ librairies activemq (RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
   with_items:
    - activemq-cpp-devel
   become: yes
@@ -702,7 +698,7 @@
 #cross compatibility for i386 i686
 - name: jenkins-slave | Install C++ librairies for unicode for database (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
   tags: cpp
   with_items:
    - libicu-devel.i686
@@ -710,7 +706,7 @@
 
 - name: jenkins-slave | Install C++ librairies for unicode for database (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
   tags: cpp
   with_items:
    - libicu-devel
@@ -751,7 +747,7 @@
   become: yes
 
 #GNUSTEP
-- name: jenkins-slave | Install gnustep (Debian based)
+- name: jenkins-slave | Install gobjc gnustep (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
@@ -761,13 +757,20 @@
   become: yes
   ignore_errors: true
 
-- name: jenkins-slave | Installgnustep (CentOS and RedHat based)
+- name: jenkins-slave | Install objc (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
    - gcc-objc
    - libobjc
+  become: yes
+
+- name: jenkins-slave | Install gnustep (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
+  tags: cpp
+  with_items:
    - gnustep-base-devel
    - gnustep-make
    - gnustep-filesystem

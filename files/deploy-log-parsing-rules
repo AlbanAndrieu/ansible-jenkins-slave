@@ -6,12 +6,19 @@ ok /Administrator user not found, created with default password./
 ok /\[WARNING\] To Use Release/
 ok /cp: cannot stat/
 ok /unlink .*warning.*/
+ok /No error encountered/
+#npm error must be at the beginning of the scripts
+#Trying to download phantomjs-2.5.0-development-linux-x86_64.tar.bz2
+warning /Error requesting archive./
+warning /Error extracting archive/
+warning /tar: Error is not recoverable: exiting now/
 
 #ssh
 error /Failed to add the host to the list of known hosts/
 error /Error is not recoverable: exiting now/
 warning /No such file or directory/
 error /command not found/
+error /Host key verification failed/
 
 #python
 error /python: can't open file/
@@ -45,7 +52,6 @@ error /undefined reference/
 error /unresolved external symbol/
 error /cannot find/
 warning /not found/
-warning /File doesn\'t exist/
 error /cannot stat/
 error /No rule to make target/
 error /No output written/
@@ -53,6 +59,8 @@ error /multiple definition of/
 error /is not recognized as an internal or external command/
 error /C\/C++ compilers are most likely not set correctly/
 error /scons: \*\*\*/
+warning /File doesn\'t exist/
+warning /do something here to address the error/
 
 #perl
 error /.*\/ld: cannot find \-l/
@@ -66,14 +74,22 @@ error /^make\[\d+\]:\s+\*{3}\s+\[BUILD\] Error/
 #java
 warning /java.lang.IllegalArgumentException/
 warning /Class path contains multiple SLF4J bindings/
+error /\'java\' is not recognized as an internal or external command/
+error /Failed to run java/
+error /Usage: jar/
 
 #cpp
 error /not found \(try using -rpath or -rpath-link\)/
 error /undefined reference to/
 error /: undeclared identifier/
-error /: error C2375:/
-error /: error C3190:/
+error / : error .*: /
+#error / : error C2375: /
+#error / : error C3190: /
+#error / : error C2039: /
 error /LINK : fatal error LNK1181:/
+warning /LINK : warning LNK4044:/
+#warning / : warning C4251: /
+warning /: warning: /
 
 #maven
 warning /Tests in error:/
@@ -103,7 +119,6 @@ error /SEVERE:/
 error /SEVERE: /
 error /Invalid or corrupt jarfile/
 #warning /Invalid argument/
-warning /No such file or directory/
 warning /command not found/
 error /syntax error near/
 error /Address already in use/
@@ -117,6 +132,8 @@ error /Cannot find module/
 error /invalid config registry="None"/
 #error /Syntax error/
 error /syntax error near/
+warning /Error: Uncaught \[ReferenceError: angular is not defined\]/
+warning /Error: Could not load script:/
 
 error /An error occured while updating fs:/
 
@@ -157,6 +174,9 @@ error /Error\(s\)/
 warning /Connection refused/
 error /return is : 000/
 error /cat: input error/
+
+#zfs
+warning /recv-/
 
 #jenkins
 error /marked build as failure/

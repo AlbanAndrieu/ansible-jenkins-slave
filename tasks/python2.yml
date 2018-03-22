@@ -10,7 +10,7 @@
     - python-dbg
 
 - name: python | Set python link to python version
-  set_fact: python_version=2.7
+  set_fact: python2_version=2.7
 
 - name: python | Install virtualenv
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
@@ -22,8 +22,9 @@
 #    - virtualenvwrapper
 
 - name: python | Install python check tools
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
   with_items:
     - pylint
     - flake8
@@ -33,27 +34,32 @@
   ignore_errors: true
 
 - name: python | Install aws tools
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
+    state: forcereinstall
   with_items:
     - awscli
   ignore_errors: true
   become: yes
 
 - name: python | Install devops tools for jobs-duration-charts-admin
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
   with_items:
  #   - urllib
  #   - cairosvg
     - pygal
-    - urllib3[secure]
+    #- urllib3[secure]
+    - urllib3
     - certifi
   become: yes
 
 - name: python | Install devops tools
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
   with_items:
     - gprof2dot
     - termcolor
@@ -62,8 +68,9 @@
   become: yes
 
 - name: python | Install devops tools for release notes
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
   with_items:
     - numpy
     - pandas
@@ -75,17 +82,18 @@
   ignore_errors: true
 
 - name: python | Install devops tools for ansible windows
-  #pip: name="https://github.com/diyan/pywinrm/archive/df049454a9309280866e0156805ccda12d71c93a.zip" state=present
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
   with_items:
     - "pywinrm>=0.2.2"
+  when: not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
   become: yes
 
 - name: python | Install devops tools for ansible accelerate mode
-  #pip: name="https://github.com/diyan/pywinrm/archive/df049454a9309280866e0156805ccda12d71c93a.zip" state=present
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
   with_items:
     - python-keyczar
   become: yes
@@ -94,8 +102,9 @@
 #sudo apt-get install krb5-kdc krb5-admin-server
 
 - name: python | Install devops tools for ansible kerberos
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
   with_items:
     - python-dev
     - libkrb5-dev
@@ -105,8 +114,9 @@
   ignore_errors: true
 
 - name: python | Install devops tools for ansible
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
   with_items:
     - ansible-cmdb
     - ansible-lint
@@ -114,8 +124,9 @@
   ignore_errors: true
 
 - name: python | Install zabbix tools
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
   with_items:
     - zabbix-api
     - zabbix-proxy-mysql
@@ -131,8 +142,9 @@
 
 #WARNING need gcc/cpp, must be done after gcc.yml
 - name: python | Install MySQL for sonar
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
   with_items:
     - MySQL-python
   become: yes
@@ -140,8 +152,9 @@
 
 #WARNING need gcc/cpp, must be done after gcc.yml
 - name: python | Install ODBC for FreeTDS
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
   with_items:
     - pyodbc
   become: yes
@@ -159,8 +172,9 @@
 #rm ~/.cache/upstart/unity7.log
 
 - name: python | Install tox for testing python
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
   with_items:
     - tox
   become: yes

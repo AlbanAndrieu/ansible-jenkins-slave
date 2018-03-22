@@ -9,12 +9,14 @@
   when: ansible_version.full | version_compare('2.3', '<') and ansible_python_interpreter is defined and 'python3' in ansible_python_interpreter
   
 - name: jenkins-slave | Install Ansible (Debian based)
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python_version }}"
   with_items:
     - paramiko
     - ansible==2.4.3.0
     - ansible-cmdb==1.25
+  when: not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
   become: yes
 
 - name: jenkins-slave | Install ansible requirements
@@ -26,17 +28,18 @@
   ignore_errors: true
   
 - name: jenkins-slave | Install devops tools for ansible windows
-  #pip: name="https://github.com/diyan/pywinrm/archive/df049454a9309280866e0156805ccda12d71c93a.zip" state=present
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python_version }}"
   with_items:
     - "pywinrm>=0.2.2"
+  when: not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
   become: yes
 
 - name: jenkins-slave | Install devops tools for ansible accelerate mode
-  #pip: name="https://github.com/diyan/pywinrm/archive/df049454a9309280866e0156805ccda12d71c93a.zip" state=present
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python_version }}"
   with_items:
     - python-keyczar
   become: yes
@@ -45,8 +48,9 @@
 #sudo apt-get install krb5-kdc krb5-admin-server
 
 - name: jenkins-slave | Install devops tools for ansible kerberos
-  pip: name={{ item }}
-  executable: pip{{ python_version }}
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python_version }}"
   with_items:
     - python-dev
     - libkrb5-dev

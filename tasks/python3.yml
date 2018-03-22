@@ -5,28 +5,12 @@
 
 #TODO on RedHat add python3.6 by hand
 
-#TODO RedHat https://www.tecmint.com/install-python-in-linux/ install python 3.6 for ansible
-#yum -y groupinstall development
-#yum -y install zlib-devel
-
-# wget https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tar.xz
-# tar xJf Python-3.6.3.tar.xz
-# cd Python-3.6.3
-# ./configure
-# make
-# make install
-
-# which python3
-# python3 -V
-
-#virtualenv py3-ansible -p /usr/local/bin/python3.6
-
 - name: python3 | Set python link to python
   set_fact: python_dir=/usr/local/bin
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
 
 - name: python3 | Set python link to python version
-  set_fact: python_version=3.5
+  set_fact: python3_version=3.5
 
 #ls -la /etc/alternatives/python*
 #sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.6 30
@@ -45,10 +29,10 @@
   alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }}
   with_items:
   - { name: python, link: /usr/bin/python, path: "{{ python_dir }}python2.7" }
-  - { name: python, link: /usr/bin/python, path: "{{ python_dir }}python{{ python_version }}" }
+  - { name: python, link: /usr/bin/python, path: "{{ python_dir }}python{{ python3_version }}" }
   when: not( (python_dir is undefined) or (python_dir is none) or (python_dir | trim == '') )
         and
-        not( (python_version is undefined) or (python_version is none) or (python_version | trim == '') )
+        not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
   become: yes
   ignore_errors: true
 
@@ -56,7 +40,7 @@
   action: command update-alternatives --display python
   when: not( (python_dir is undefined) or (python_dir is none) or (python_dir | trim == '') )
         and
-        not( (python_version is undefined) or (python_version is none) or (python_version | trim == '') )
+        not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
         and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   changed_when: false
   become: yes
@@ -77,21 +61,3 @@
 #python3 /usr/bin/ansible localhost -m ping
 
 #update-alternatives --config python
-
-#- name: python3 | Install devops tools requirements
-#  executable=pip{{ python_version }}
-#  pip: name={{ item }}
-#  with_items:
-#    - "pywinrm>=0.2.2"
-#  become: yes
-
-#- name: python3 | Gather current pip3 requirement
-#  shell: "pip{{ python_version }} freeze > requirements-current-{{ python_version }}.txt"
-#  when: not( (python_version is undefined) or (python_version is none) or (python_version | trim == '') )
-#  changed_when: false
-#  become: yes
-#
-#- name: python3 | Install missing pip3 requirement
-#  shell: "pip{{ python_version }} install -r > requirements-current-{{ python_version }}.txt"
-#  changed_when: false
-#  become: yes
