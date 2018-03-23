@@ -61,7 +61,8 @@
   when: not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
   changed_when: false
   become: yes
-
+  ignore_errors: true
+  
 - name: python3 | Install virtualenv via pip
   pip:
     name: virtualenv
