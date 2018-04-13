@@ -44,3 +44,11 @@
     - openscap
   become: yes
   ignore_errors: true
+
+- name: python3 | Set python link to python version
+  set_fact: python3_version=3.5
+
+- name: python3 | Install python-owasp-zap-v2.4 via pip
+  pip:
+    name: python-owasp-zap-v2.4
+    executable: pip{{ python3_version }}
