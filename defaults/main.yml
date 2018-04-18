@@ -7,6 +7,7 @@ jenkins_user: jenkins
 #http://docs.ansible.com/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
 jenkins_password: "$6$rounds=656000$ITswjqU77/RgGDEv$Vbv6Pw5UJEQQGXwZ4JiR0WXsZVSNAHY7NuWgid.yGLIxro27nZt7CIMwQrh4encLm9Db1RDscEjC1T9ldCgx61"
 jenkins_group: jenkins
+jenkins_groups: docker,www-data,{{ jenkins_group }}
 #jenkins_shell: "/bin/false"
 jenkins_shell: "/bin/bash"
 jenkins_home: /var/lib/jenkins              # Jenkins home location
@@ -14,6 +15,7 @@ jenkins_home: /var/lib/jenkins              # Jenkins home location
 #jenkins_home: "/home/jenkins"
 jenkins_slave_home: "{{ jenkins_home }}"
 jenkins_slave_directory: ["{{ jenkins_slave_home }}/slave","{{ jenkins_slave_home }}/slave-test"]
+jenkins_sudo: no
 
 jenkins_jdk7_enable: no
 jenkins_jdk8_enable: no

@@ -92,6 +92,7 @@
   - { name: javafxpackager, link: /usr/bin/javafxpackager, path: "{{ jdk_dir }}/bin/javafxpackager" }
   - { name: javah, link: /usr/bin/javah, path: "{{ jdk_dir }}/bin/javah" }
   - { name: javap, link: /usr/bin/javap, path: "{{ jdk_dir }}/bin/javap" }
+  - { name: jarsigner, link: /usr/bin/jarsigner, path: "{{ jdk_dir }}/bin/jarsigner" }
 #  - { name: java_vm, link: /usr/bin/java_vm, path: "{{ jdk_dir }}/bin/java_vm" }
   - { name: jvisualvm, link: /usr/bin/jvisualvm, path: "{{ jdk_dir }}/bin/jvisualvm" }
   when: not( (jdk_dir is undefined) or (jdk_dir is none) or (jdk_dir | trim == '') )

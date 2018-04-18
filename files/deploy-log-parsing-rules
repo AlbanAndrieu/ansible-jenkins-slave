@@ -19,6 +19,8 @@ error /Error is not recoverable: exiting now/
 warning /No such file or directory/
 error /command not found/
 error /Host key verification failed/
+#rsync
+error /failed: No space left on device/
 
 #python
 error /python: can't open file/
@@ -30,6 +32,7 @@ error /This client is too old to work with the working copy at/
 error /You need to upgrade the working copy first/
 error /ATTENTION!  Your password for authentication realm/
 error /is not a working copy/
+error /svn: E155019: Can\'t upgrade/
 
 #maven cargo
 error /Exception thrown by the agent : java.net.MalformedURLException: Local host name unknown/
@@ -77,6 +80,14 @@ warning /Class path contains multiple SLF4J bindings/
 error /\'java\' is not recognized as an internal or external command/
 error /Failed to run java/
 error /Usage: jar/
+error /has value '1.8', but '1.7' is required./
+error /Error: could not find java.dll/
+error /Error: Could not find Java SE Runtime Environment./
+error /java.nio.charset.MalformedInputException: Input length = 1/
+error /The JAVA_HOME environment variable is not defined correctly/
+error /This environment variable is needed to run this program/
+error /NB: JAVA_HOME should point to a JDK not a JRE/
+error /java.io.FileNotFoundException/
 
 #cpp
 error /not found \(try using -rpath or -rpath-link\)/

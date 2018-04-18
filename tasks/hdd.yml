@@ -20,7 +20,9 @@
 #lvdisplay
 #
 #sudo mkfs -t ext4 /dev/rhel_fr1cslvcacrhel71/workspace
+#sudo mkfs -t xfs /dev/rhel_fr1cslvcacrhel71/workspace
 #sudo mkfs -t ext4 /dev/rhel_fr1cslvcacrhel71/docker
+#mkfs.xfs -n ftype=1 /dev/rhel_fr1cslvcacrhel71/docker
 #
 #sudo mkdir /workspace
 #sudo mkdir /docker
@@ -46,6 +48,8 @@
 #/etc/fstab
 #/dev/rhel_fr1cslvcacrhel71/workspace /workspace ext4 auto 0 2
 #/dev/rhel_fr1cslvcacrhel71/docker /docker ext4 auto 0 2
+#/dev/rhel_fr1cslvcacrhel71/workspace /workspace xfs auto 0 2
+#/dev/rhel_fr1cslvcacrhel71/docker /docker xfs defaults,usrquota,prjquota  0   0
 
 #Check entry in /etc/fstab
 #sudo mount /workspace
@@ -56,6 +60,8 @@
 #lvextend --resizefs -L +6G /dev/VolGroup00/usrvol
 #lvextend --resizefs -L +17G /dev/rhel_fr1cslvcacrhel71/root
 ##lvextend -l +100%FREE /dev/rhel_fr1cslvcacrhel71/root
+#RedHat 6
+#lvextend --resizefs -L +6G /dev/VolGroup00/usrvol
 
 #IMPORTANT
 #Do not reboot the server if entry in wrong in fstab you will have IS team to get console on booting
@@ -95,7 +101,10 @@
 #See https://help.directadmin.com/item.php?id=557
 
 #nano /etc/default/grub
-#....
+#GRUB_CMDLINE_LINUX="rd.lvm.lv=rhel_fr1cslvcacrhel71/swap rd.lvm.lv=rhel_fr1cslvcacrhel71/root rhgb quiet rootflags=uquota,pquota"
+
+#cp /boot/grub2/grub.cfg /boot/grub2/grub.cfg.orig
+#grub2-mkconfig -o /boot/grub2/grub.cfg
 
 #lvextend -l +100%FREE /dev/rhel_fr1cslvcacrhel71/root
 #xfs_info /dev/mapper/rhel_fr1cslvcacrhel71-root

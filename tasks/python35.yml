@@ -56,6 +56,17 @@
 #  become: yes
 #  ignore_errors: true
 
+#MySQL-python is not supported on python3 instead of this you can use mysqlclient
+- name: python | Install MySQL for sonar
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
+  with_items:
+    #- MySQL-python
+    - mysqlclient
+  become: yes
+  ignore_errors: true    
+
 - name: python3 | Gather current pip requirement
   shell: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
   when: not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
@@ -75,6 +86,13 @@
 - name: python3 | Copy the requirements configuration file for python
   copy: src=requirements-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-{{ python3_version }}.txt backup=yes
   become: true
+
+- name: python3 | Install apt depenedencies for python 3 requirements
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - libcups2-dev
 
 - name: python3 | Create venv and install requirements
   pip:

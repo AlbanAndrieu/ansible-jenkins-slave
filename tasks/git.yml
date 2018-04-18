@@ -3,10 +3,16 @@
  # git
  #
 # Moved to his own role
-- name: git | Install GIT
+- name: git | Install git
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - git-core
+  become: yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  
+- name: git | Install git
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
    - git
   become: yes
 

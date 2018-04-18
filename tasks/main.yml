@@ -29,6 +29,8 @@
 
 - import_tasks: maven.yml
 
+- import_tasks: brew.yml
+
 - import_tasks: python.yml
 
 #FYI ansible.yml need python.yml
@@ -89,6 +91,8 @@
 #  with_items:
 #    - ansible-lint
 #  become: yes
+
+- import_tasks: user.yml
 
 - import_tasks: docker.yml
 
@@ -156,26 +160,6 @@
 - name: jenkins-slave | Copy maven configuration
   template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
-  changed_when: false
-
-- name: jenkins-slave | Jenkins can run any command with no password
-  lineinfile: dest=/etc/sudoers line="{{item}}" validate='visudo -cf %s'
-  with_items:
-    - "Defaults:jenkins    !requiretty"
-    - "jenkins ALL=NOPASSWD: ALL"
-#    - "jenkins ALL=(ALL)   NOPASSWD: /usr/local/bin/test.py"
-    - "Defaults:jenkins    secure_path=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\""
-  become: yes
-  ignore_errors: true
-  changed_when: false
-
-- name: jenkins-slave | Disable env_reset
-  lineinfile: dest=/etc/sudoers regexp="^Defaults    env_reset.*"
-    line="Defaults    !env_reset"
-    backrefs=yes
-    validate='visudo -cf %s'
-  become: yes
-  ignore_errors: true
   changed_when: false
 
 - name: jenkins-slave | Set limits
@@ -370,6 +354,8 @@
 #- import_tasks: subversion.yml
 
 - import_tasks: database.yml
+
+- import_tasks: dev.yml
 
 - name: jenkins-slave | Cleanup temporary directory
   file: name={{ tempdir.stdout }} state=absent

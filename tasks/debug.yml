@@ -30,7 +30,7 @@
   when: ansible_os_family != "Windows"
 
 - name: jenkins-slave |  Make a directory for coredumps
-  file: path="/home/{{ jenkins_user }}/coredumps" state=directory
+  file: path="{{ jenkins_home }}/coredumps" state=directory
   when: ansible_os_family != "Windows"
 
 - name: jenkins-slave | Remove unknown keys from sysctl.conf
@@ -83,11 +83,3 @@
   become: yes
   ignore_errors: true
   changed_when: false
-
-#TODO
-#sudo yum groupinstall 'Development Tools'
-
-#TODO homebrew
-#sudo apt-get install build-essential curl file git python-setuptools ruby
-#sudo yum install curl file git irb python-setuptools ruby
-#ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"

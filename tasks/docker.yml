@@ -3,6 +3,14 @@
   set_fact: python_version=3.5
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
 
+- name: docker | Install python-docker
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  with_items:
+    - python-docker
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  tags: package
+  become: yes
+  
 ##TODO fix docker-compose
 #sudo pip2.7 uninstall docker
 #sudo pip2.7 uninstall docker-py
@@ -86,7 +94,7 @@
       name={{ item }}
       group=docker
       state=present
-  with_items: docker_users
+  with_items: "{{ docker_users }}"
   when: docker_users is defined
   become: yes
 
@@ -104,6 +112,14 @@
 #  changed_when: false
 
 #nvidia-smi
+
+#See issue https://github.com/geerlingguy/ansible-role-docker/issues/56
+- name: docker | Set notify_only to 0
+  lineinfile: dest=/etc/yum/pluginconf.d/search-disabled-repos.conf line='notify_only=0' regexp='^notify_only=1'
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  become: yes
+  ignore_errors: yes
+  changed_when: false
 
 #grubby --args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
 - name: docker | Enable "user" namespace

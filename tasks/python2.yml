@@ -48,8 +48,6 @@
     name: "{{ item }}"
     executable: "pip{{ python2_version }}"
   with_items:
- #   - urllib
- #   - cairosvg
     - pygal
     #- urllib3[secure]
     - urllib3

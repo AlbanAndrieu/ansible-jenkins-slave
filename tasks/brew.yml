@@ -1,0 +1,40 @@
+
+#TODO homebrew
+#sudo apt-get install build-essential curl file git python-setuptools ruby
+#sudo yum install curl file git irb python-setuptools ruby
+#ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"
+
+- name: brew | Install apt dependencies for brew requirement
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - build-essential 
+    - curl 
+    - file 
+    - git 
+    - python-setuptools 
+    - ruby
+    - linuxbrew-wrapper
+
+- name: brew | docker-compose check #2
+  shell: "brew install cairo libxml2 libffi"
+  ignore_errors: yes
+  become: yes
+        
+- name: brew | Install brew requirements
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python_version }}"
+    state: forcereinstall
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - cairocffi==0.8.0
+    - CairoSVG==2.0.3
+  ignore_errors: '{{ ansible_check_mode }}'
+  become: yes
+
+#For MacOSX
+#See
+#brew install unixodbc
+#brew install freetds --with-tdsver=7.2 --with-unixodbc

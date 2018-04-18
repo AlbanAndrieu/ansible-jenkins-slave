@@ -1,0 +1,62 @@
+
+##
+ # Jenkins user
+ #
+
+#- name: Kill connection used by user jenkins
+#  action: shell killall -u {{ jenkins_user }} || true
+#  changed_when: false
+#  become: yes
+#  ignore_errors: true
+
+#TODO https://stackoverflow.com/questions/26677064/create-and-use-group-without-restart
+
+- name: jenkins-slave | Create a jenkins group
+  group:
+      name=jenkins
+      state=present
+  become: yes
+
+- name: jenkins-slave | Create jenkins user
+  user: name={{ jenkins_user }} 
+        password={{ jenkins_password }} 
+        update_password=always 
+        comment="Jenkins user" 
+        home={{ jenkins_home }} 
+        shell={{ jenkins_shell }} 
+        groups={{ jenkins_groups }}
+  become: yes
+  ignore_errors: true
+
+- name: jenkins-slave | Create .ssh folder
+  file: path={{ jenkins_home }}/.ssh state=directory mode=0700 owner={{ jenkins_user }} group={{ jenkins_group }}
+  ignore_errors: true
+
+- import_tasks: ssh.yml
+  when: jenkins_ssh_key_file != ""
+  tags: [jenkins, jenkins-ssh]
+
+- name: jenkins-slave | Update authorized_keys rights
+  file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+  ignore_errors: true
+
+- name: jenkins-slave | Jenkins can run any command with no password
+  lineinfile: dest=/etc/sudoers line="{{item}}" validate='visudo -cf %s'
+  with_items:
+    - "Defaults:jenkins    !requiretty"
+    - "jenkins ALL=NOPASSWD: ALL"
+    - "Defaults:jenkins    secure_path=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\""
+  when: jenkins_sudo
+  become: yes
+  ignore_errors: true
+  changed_when: false
+
+- name: jenkins-slave | Disable env_reset
+  lineinfile: dest=/etc/sudoers regexp="^Defaults    env_reset.*"
+    line="Defaults    !env_reset"
+    backrefs=yes
+    validate='visudo -cf %s'
+  when: jenkins_sudo    
+  become: yes
+  ignore_errors: true
+  changed_when: false

@@ -1,0 +1,22 @@
+
+
+#TODO
+#sudo yum groupinstall 'Development Tools'
+
+#TODO homebrew
+#sudo apt-get install build-essential curl file git python-setuptools ruby
+#sudo yum install curl file git irb python-setuptools ruby
+#ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"
+
+- name: Web | Install the 'Development tools' package group
+  yum:
+    name: "@Development tools"
+    state: present
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  
+- name: Web | Install the 'Gnome desktop' environment group
+  yum:
+    name: "@^gnome-desktop-environment"
+    state: present
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  
