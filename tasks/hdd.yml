@@ -1,4 +1,8 @@
 
+#TODO use ansible modules
+#http://docs.ansible.com/ansible/latest/modules/lvol_module.html
+#http://docs.ansible.com/ansible/latest/modules/lvg_module.html
+
 #WARNING below order is important
 
 - name: hdd | Create sdb

@@ -5,7 +5,7 @@
     - xclock
     - xauth
     - x11-apps
-  become: yes
+  become: true
   ignore_errors: true
   changed_when: false
 
@@ -16,7 +16,7 @@
    - libXext
    - libXrender
    - libXtst
-  become: yes
+  become: true
   ignore_errors: true     
   changed_when: false
 
@@ -30,7 +30,7 @@
   when: ansible_os_family != "Windows"
 
 - name: jenkins-slave |  Make a directory for coredumps
-  file: path="{{ jenkins_home }}/coredumps" state=directory
+  file: path="{{ jenkins_home }}/coredumps" state=directory owner={{ jenkins_user }} group={{ jenkins_group }}
   when: ansible_os_family != "Windows"
 
 - name: jenkins-slave | Remove unknown keys from sysctl.conf

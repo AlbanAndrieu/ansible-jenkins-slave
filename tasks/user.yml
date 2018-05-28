@@ -15,6 +15,14 @@
   group:
       name=jenkins
       state=present
+      gid=131
+  become: yes
+
+- name: jenkins-slave | Create a www-data group
+  group:
+      name=www-data
+      state=present
+      gid=33
   become: yes
 
 - name: jenkins-slave | Create jenkins user
@@ -24,6 +32,7 @@
         comment="Jenkins user" 
         home={{ jenkins_home }} 
         shell={{ jenkins_shell }} 
+        uid=2000
         groups={{ jenkins_groups }}
   become: yes
   ignore_errors: true

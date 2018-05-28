@@ -51,7 +51,7 @@
 
 - name: jenkins-slave | Add options in ~/.bashrc
   lineinfile:
-    dest: ~/.bashrc
+    dest: {{ jenkins_home }}/.bashrc
     line: "{{ item.line }}"
     insertafter: EOF
   with_items:

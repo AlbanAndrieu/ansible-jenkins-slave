@@ -87,6 +87,7 @@
   group:
       name=docker
       state=present
+      gid=2000      
   become: yes
 
 - name: docker | Add user(s) to docker group
