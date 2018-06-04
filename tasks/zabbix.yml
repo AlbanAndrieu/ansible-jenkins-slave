@@ -84,7 +84,7 @@
 
 - name: zabbix | Disable chronyd (to allow ntps service to run for zabbix)
   command: systemctl disable chronyd
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6') )
   changed_when: false
   become: yes
   ignore_errors: true

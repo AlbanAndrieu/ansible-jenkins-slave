@@ -107,7 +107,8 @@ zabbix_agent_config_server: "127.0.0.1"
 zabbix_agent_config_listen_ip: "0.0.0.0"
 zabbix_agent_config_start_agents: "3"
 zabbix_agent_config_server_active: "{{ zabbix_agent_config_server }}"
-zabbix_agent_config_hostname: "system.hostname"
+#zabbix_agent_config_hostname: "{{ ansible_fqdn }}"
+zabbix_agent_config_hostname: "{{ ansible_hostname }}"
 zabbix_agent_config_director: "/etc/zabbix/"
 
 proxy_repo_enabled: false

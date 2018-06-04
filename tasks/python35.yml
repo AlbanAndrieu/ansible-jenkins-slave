@@ -5,6 +5,15 @@
 #yum -y groupinstall development
 #yum -y install zlib-devel
 
+
+# wget https://www.python.org/ftp/python/3.5.5/Python-3.5.5.tgz
+# tar xzf Python-3.5.5.tgz
+# cd Python-3.5.5
+# ./configure --enable-optimizations
+# make altinstall
+# cd ..
+# rm -f Python-3.5.5.tgz
+
 #On RedHat
 #sudo yum install -y https://centos6.iuscommunity.org/ius-release.rpm
 #sudo yum install -y python35u python35u-pip
@@ -33,20 +42,6 @@
    - python35u
    - python35u-pip
   become: yes
-
-# wget https://www.python.org/ftp/python/3.5.5/Python-3.5.5.tgz
-# tar xzf Python-3.5.5.tgz
-# cd Python-3.5.5
-# ./configure --enable-optimizations
-# make altinstall
-# cd ..
-# rm -f Python-3.5.5.tgz
-
-# which python3
-# python3 -V
-# python3.5 -V
-
-#virtualenv py3-ansible -p /usr/local/bin/python3.5
 
 - name: python3 | Set python link to python version
   set_fact: python3_version=3.5
@@ -87,12 +82,24 @@
   copy: src=requirements-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-{{ python3_version }}.txt backup=yes
   become: true
 
-- name: python3 | Install apt depenedencies for python 3 requirements
+- name: python3 | Install apt dependencies for python 3 requirements
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
   become: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - libcups2-dev
+    - python3-apt
+
+- name: python3 | Uninstall apt dependencies for python 3 requirements
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python_version }}"
+    state: absent
+  when: not ansible_check_mode and docker_compose_result.rc != 0
+  with_items:
+    - libxml2-python
+  ignore_errors: '{{ ansible_check_mode }}'
+  become: yes
 
 - name: python3 | Create venv and install requirements
   pip:

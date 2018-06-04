@@ -35,33 +35,6 @@
   changed_when: false
   tags: git
 
-#- name: git | Update git configuration (user.email)
-#  action: command git config --global user.email "{{ shell_git_email }}"
-##  sudo_user: "{{ jenkins_user }}"
-#  become_user: "{{ jenkins_user }}"
-#  become: yes
-##  become_method: '{{ jenkins_become_method }}'
-#  changed_when: false
-#  tags: git
-#
-#- name: git | Update git configuration (user.name)
-#  action: command git config --global user.name "{{ shell_git_name }}"
-##  sudo_user: "{{ jenkins_user }}"
-#  become_user: "{{ jenkins_user }}"
-#  become: yes
-##  become_method: '{{ jenkins_become_method }}'
-#  changed_when: false
-#  tags: git
-#
-#- name: git | Update git configuration (http.sslVerify)
-#  action: command git config --global http.sslVerify {{ shell_git_ssl }}
-##  sudo_user: "{{ jenkins_user }}"
-#  become_user: "{{ jenkins_user }}"
-#  become: yes
-##  become_method: '{{ jenkins_become_method }}'
-#  changed_when: false
-#  tags: git
-
 #- git_config: name=user.email scope=global value="{{ shell_git_email }}"
 #- git_config: name=user.name scope=global value="{{ shell_git_name }}"
 #- git_config: name=http.sslVerify scope=global value="{{ shell_git_ssl }}"

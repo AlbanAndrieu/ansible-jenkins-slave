@@ -49,11 +49,12 @@
 
 #TODO add JAVA_HOME
 
-- name: jenkins-slave | Add options in ~/.bashrc
+- name: jenkins-slave | Add options in "{{ jenkins_home }}/.bashrc"
   lineinfile:
-    dest: {{ jenkins_home }}/.bashrc
+    dest: "{{ jenkins_home }}/.bashrc"
     line: "{{ item.line }}"
     insertafter: EOF
+    create: true
   with_items:
     - { regexp: '', line: 'export SCONS="/usr/bin/python2.7 /usr/bin/scons"' }
 #    - { regexp: '', line: 'export TERM="dumb"' }
