@@ -94,12 +94,12 @@
 #    fstype: nfs
 #    state: mounted
 
-- name: hdd | Mount containers storage
-  mount:
-    path: /media/iscsi/extent1
-    src: /dev/sdc1
-    fstype: ext4
-    state: mounted
+#- name: hdd | Mount containers storage
+#  mount:
+#    path: /media/iscsi/extent1
+#    src: /dev/sdc1
+#    fstype: ext4
+#    state: mounted
 
 #Change quota on xfs for oracle database
 #See https://help.directadmin.com/item.php?id=557
