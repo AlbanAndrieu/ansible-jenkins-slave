@@ -19,6 +19,7 @@ error /Error is not recoverable: exiting now/
 warning /No such file or directory/
 error /command not found/
 error /Host key verification failed/
+error /sudo: no tty present and no askpass program specified/
 #rsync
 error /failed: No space left on device/
 
@@ -157,6 +158,7 @@ ok /^Searching for Suckit rootkit/
 error /INFECTED/
 warning /^\[ANSIBLE/
 warning /Permission denied/
+warning /[WARNING]:/
 error /unreachable=1/
 error /unreachable=2/
 error /unreachable=3/

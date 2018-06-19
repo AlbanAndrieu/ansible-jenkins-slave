@@ -292,7 +292,6 @@ if (junitResultList.size() > 0) { %>
 <BR/>
 <% } %>
 -->
-
 <pre>
 <!-- BUTTOM MESAGE -->
 <table class="bottom-message" align="left">
@@ -308,4 +307,3 @@ if (junitResultList.size() > 0) { %>
 </pre>
 
 </BODY>
-

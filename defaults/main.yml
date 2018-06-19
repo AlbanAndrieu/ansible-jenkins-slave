@@ -118,6 +118,12 @@ proxy_repo_url: "http://{{ proxy_repo_server }}:3142"
 docker_py_version: "1.9.0"
 docker_users: "{{ jenkins_user }}"
 
+#workspace: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
+workspace: "{{ tempdir.stdout }}"
+sonar_build_wrapper_download_url: http://localhost:9000/static/cpp/build-wrapper-linux-x86.zip
+sonar_build_wrapper_download_file: build-wrapper-linux-x86.zip
+sonar_build_wrapper_expanded_file: build-wrapper-linux-x86
+
 docker_files_generated_directory: "./"
 docker_files_enable: no
 docker_volume_directory: "{{ jenkins_home }}"

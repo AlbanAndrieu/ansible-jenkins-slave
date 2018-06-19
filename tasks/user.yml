@@ -24,6 +24,7 @@
       state=present
       gid=33
   become: yes
+  ignore_errors: true
 
 - name: jenkins-slave | Create jenkins user
   user: name={{ jenkins_user }} 
@@ -34,7 +35,7 @@
         shell={{ jenkins_shell }} 
         uid=2000
         groups={{ jenkins_groups }}
-  become: yes
+#  become: yes
   ignore_errors: true
 
 - name: jenkins-slave | Create .ssh folder

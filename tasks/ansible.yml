@@ -23,7 +23,14 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
     - sshpass
+  become: yes
+  ignore_errors: true
+
+- name: jenkins-slave | Install ansible requirements
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
+  with_items:
     - python-selinux
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: yes
   ignore_errors: true
   

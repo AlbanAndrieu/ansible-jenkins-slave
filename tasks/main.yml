@@ -247,17 +247,7 @@
 #  become: yes
 #  ignore_errors: true
 
-#TODO install C++ sonar build-wrapper
-#cd {{ jenkins_home }}
-#wget https://sonar:8999/static/cpp/build-wrapper-linux-x86.zip --no-check-certificate
-#unzip build-wrapper-linux-x86.zip
-#{{ jenkins_home }}/build-wrapper-linux-x86/build-wrapper-linux-x86-64
-
-- name: jenkins-slave | Copy sonar runner configuration
-  copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
-  changed_when: false
-  become: yes
-  ignore_errors: true
+- import_tasks: sonar.yml
 
 - import_tasks: nodejs.yml
 
