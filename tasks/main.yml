@@ -35,7 +35,8 @@
 
 #FYI ansible.yml need python.yml
 - import_tasks: ansible.yml
-
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
+  
 ##
  # other
  #
