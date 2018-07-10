@@ -29,7 +29,7 @@
 
 - name: python3 | Display python link before
   action: command update-alternatives --display python
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
   changed_when: false
   become: yes
   ignore_errors: true
@@ -43,6 +43,7 @@
   when: not( (python_dir is undefined) or (python_dir is none) or (python_dir | trim == '') )
         and
         not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
+        and ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04'])        
   become: yes
   ignore_errors: true
 
@@ -51,7 +52,7 @@
   when: not( (python_dir is undefined) or (python_dir is none) or (python_dir | trim == '') )
         and
         not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
-        and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+        and ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04'])
   changed_when: false
   become: yes
 
