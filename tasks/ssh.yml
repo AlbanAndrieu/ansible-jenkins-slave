@@ -68,7 +68,8 @@
   command: /usr/bin/ssh-keygen -f $HOME/.ssh/id_rsa -t rsa -N ''
   when: key|failed
   become: yes
-  
+  ignore_errors: yes
+    
 - name: jenkins-ssh | Setup SSH hosts
   lineinfile: 
     line="{{item}}"
