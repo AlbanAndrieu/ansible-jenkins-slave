@@ -13,7 +13,7 @@ data_gid: "33"
 docker_users: "{{ jenkins_user }}"
 docker_gid: "2000"
 docker_group: "docker"
-jenkins_groups: {{ docker_group }},{{ data_group }},{{ jenkins_group }}
+jenkins_groups: "{{ docker_group }},{{ data_group }},{{ jenkins_group }}"
 #jenkins_shell: "/bin/false"
 jenkins_shell: "/bin/bash"
 jenkins_home: /var/lib/jenkins              # Jenkins home location
