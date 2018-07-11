@@ -31,13 +31,14 @@
     remote_src: yes
 #    creates: "{{ sonar_build_wrapper_target_dir }}"
   become: yes
-  ignore_errors: "{{ ansible_check_mode }}"
+  ignore_errors: true  
+  #ignore_errors: "{{ ansible_check_mode }}"
 
 - name: sonar | Move sonar-build-wrapper into place.
   shell: >
     mv {{ workspace }}/{{ sonar_build_wrapper_expanded_file }}/* {{ sonar_build_wrapper_target_dir }}
   become: yes
-  ignore_errors: "true"
+  ignore_errors: true
 
 - name: jenkins-slave | Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
