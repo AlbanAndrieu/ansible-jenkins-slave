@@ -14,7 +14,36 @@
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - git
+  when: not (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
   become: yes
+
+- name: git | Install git
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+   - git2u
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+  become: yes
+
+- name: git | Install git-lfs (1)
+  shell: >
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | sudo bash
+  become: yes
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+
+- name: git | Install git-lfs (1)
+  shell: >
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+  become: yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+
+- name: git | Install git-lfs (2)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+   - git-lfs
+  become: yes
+  ignore_errors: "{{ ansible_check_mode }}"
+
+#git lfs install
 
 - name: git | Copy the .netrc script for git credentials
   template: src=.netrc.j2 dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}

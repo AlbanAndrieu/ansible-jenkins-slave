@@ -7,6 +7,9 @@ source ./step-0-color.sh
 
 echo -e "${yellow} ${bold}INSTALLING ORACLE INSTANT CLIENT ${NC}"
 
+#HOME="/home/jenkins" on linux
+#HOME="/Users/jenkins" on osx
+
 if [[ ! -d /opt/oracle/instantclient_12_2/ ]]; then
   echo "${green} Installing oracle/instantclient ${NC}"
   if [[ "$(uname -s)" == "SunOS" ]]; then
@@ -32,8 +35,8 @@ if [[ ! -d /opt/oracle/instantclient_12_2/ ]]; then
     unzip instantclient-jdbc-macos.x64-12.1.0.2.0.zip
     wget --no-check-certificate https://kgrdb01/download/oracle/instantclient-odbc-macos.x64-12.1.0.2.0.zip
     unzip instantclient-odbc-macos.x64-12.1.0.2.0.zip
-    ln -s /opt/oracle/instantclient_12_2 /jenkins/Developer/instantclient_12_2
-    #LD_LIBRARY_PATH=${HOME}/Developer/instantclient_12_1:$LD_LIBRARY_PATH
+    #ln -s /opt/oracle/instantclient_12_2 /Users/jenkins/Developer/instantclient_12_2
+    #LD_LIBRARY_PATH=/Users/jenkins/Developer/instantclient_12_1:$LD_LIBRARY_PATH
   elif [[ "$(uname -s)" == "Linux" ]]; then
     #See http://kgrdb01/download/oracle/
     mkdir -p /opt/oracle
@@ -53,8 +56,8 @@ if [[ ! -d /opt/oracle/instantclient_12_2/ ]]; then
   fi
 fi
 
-export LD_LIBRARY_PATH=/jenkins/Developer/instantclient_12_2:$LD_LIBRARY_PATH
-export PATH=/jenkins/Developer/instantclient_12_2:$PATH
+export LD_LIBRARY_PATH=/opt/oracle/instantclient_12_2:$LD_LIBRARY_PATH
+export PATH=/opt/oracle/Developer/instantclient_12_2:$PATH
 
 # Set the $TNS_ADMIN environment variable so that sqlplus knows where to look
 export TNS_ADMIN=/home/jenkins/Developer/instantclient_12_2

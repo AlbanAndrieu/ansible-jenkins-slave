@@ -89,6 +89,13 @@
   become: yes
   ignore_errors: true
 
+- name: zabbix | Disable ufw (to allow access port 10050 for zabbix)
+  command: systemctl disable ufw
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  changed_when: false
+  become: yes
+  ignore_errors: true
+
 - name: zabbix | Install locate package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   tags: package

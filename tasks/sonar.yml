@@ -8,21 +8,36 @@
 #mkdir -p /usr/local/sonar-build-wrapper/bin/
 #cp ${WORKSPACE}/build-wrapper-*-x86/* /usr/local/sonar-build-wrapper/bin/
 
-- name: Ensure unzip is installed.
+- name: sonar | Ensure unzip is installed.
   package: name=unzip state=present
 
-- name: Download and expand C++ sonar build-wrapper.
-  unarchive:
-    src: "{{ sonar_build_wrapper_download_url }}"
-    dest: "{{ workspace }}"
-    copy: no
-    creates: /usr/local/sonar-build-wrapper/bin/
+- name: sonar | Create temporary directory
+  shell: mktemp -d
+  register: tempdir
+  changed_when: false
   become: yes
 
-- name: Move sonar-build-wrapper into place.
+- name: sonar | Create sonar repository directory {{ sonar_build_wrapper_target_dir }}
+  file: path={{ sonar_build_wrapper_target_dir }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
+  become: yes
+  changed_when: false
+
+- name: sonar | Download and expand C++ sonar build-wrapper
+  unarchive:
+    src: "{{ sonar_build_wrapper_download_url }}"
+#    dest: "{{ workspace }}"
+    dest: "{{ sonar_build_wrapper_target_dir }}"
+#    copy: no
+    remote_src: yes
+#    creates: "{{ sonar_build_wrapper_target_dir }}"
+  become: yes
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: sonar | Move sonar-build-wrapper into place.
   shell: >
-    mv {{ workspace }}/{{ sonar_build_wrapper_expanded_file }}
-    creates=/usr/local/sonar-build-wrapper/bin/sonar-build-wrapper
+    mv {{ workspace }}/{{ sonar_build_wrapper_expanded_file }}/* {{ sonar_build_wrapper_target_dir }}
+  become: yes
+  ignore_errors: "true"
 
 - name: jenkins-slave | Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
@@ -30,3 +45,8 @@
   become: yes
   ignore_errors: true
   
+- name: sonar | Cleanup temporary directory
+  file: name={{ tempdir.stdout }} state=absent
+  changed_when: false
+  ignore_errors: "{{ ansible_check_mode }}"
+  become: yes

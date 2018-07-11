@@ -5,7 +5,7 @@
 
 #pip install --upgrade pip
 
-- name: python2 | Install python 2.7 requirement
+- name: python | Install python 2.7 requirement
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
   become: yes
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6') )
@@ -18,7 +18,7 @@
 #update-alternatives --install /usr/bin/python python /usr/bin/python2.7 10
 #update-alternatives --install /usr/bin/python python /usr/bin/python3.5 20
 
-- name: python2 | Install python 2 requirement
+- name: python | Install python 2 requirement
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
   become: yes
 #  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
@@ -197,6 +197,16 @@
 #sudo dpkg -i --auto-deconfigure python-cryptography_1.7.1-2_amd64.deb && sudo dpkg -i  python-openssl_16.2.0-1_all.deb
 #
 #rm ~/.cache/upstart/unity7.log
+
+- name: python | Install devops tools for cpp
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python2_version }}"
+  with_items:
+    - "conan==1.5.1"
+  when: ansible_python_version | version_compare('2.7', '>=')
+  become: yes
+  ignore_errors: true
 
 - name: python | Install tox for testing python
   pip:

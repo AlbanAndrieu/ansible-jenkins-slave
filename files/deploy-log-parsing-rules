@@ -7,11 +7,18 @@ ok /\[WARNING\] To Use Release/
 ok /cp: cannot stat/
 ok /unlink .*warning.*/
 ok /No error encountered/
+ok /lsof: command not found/
 #npm error must be at the beginning of the scripts
 #Trying to download phantomjs-2.5.0-development-linux-x86_64.tar.bz2
 warning /Error requesting archive./
 warning /Error extracting archive/
 warning /tar: Error is not recoverable: exiting now/
+
+#docker
+ok /Error: No such object:/
+#javascript uncss
+warning /Error: Could not load script:/
+warning /Error: Uncaught \[ReferenceError: angular is not defined\]/
 
 #ssh
 error /Failed to add the host to the list of known hosts/
@@ -159,13 +166,11 @@ error /INFECTED/
 warning /^\[ANSIBLE/
 warning /Permission denied/
 warning /[WARNING]:/
-error /unreachable=1/
-error /unreachable=2/
-error /unreachable=3/
-error /failed=1/
-error /failed=2/
-error /failed=3/
-error /The error appears to have been in/
+#warning /[WARNING]: Consider using/
+#error /[WARNING]: Could not match supplied host pattern/
+error /unreachable=[0-9]+/
+error /failed=[0-9]+/
+#error /The error appears to have been in/
 
 warning /error: pathspec/
 warning /fatal:/

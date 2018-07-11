@@ -283,7 +283,7 @@
 
 - name: jenkins-slave | Install C++ librairies log4cxx (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
+  when: (ansible_distribution == 'RedHat' and not (ansible_distribution_major_version == '5' or ansible_distribution_major_version == '6'))
   tags: cpp
   with_items:
    - log4cxx-devel
@@ -705,7 +705,7 @@
 #cross compatibility for i386 i686
 - name: jenkins-slave | Install C++ librairies for unicode for database (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
+  when: (ansible_distribution == 'RedHat' and not (ansible_distribution_major_version == '5' or ansible_distribution_major_version == '6'))
   tags: cpp
   with_items:
    - libicu-devel.i686

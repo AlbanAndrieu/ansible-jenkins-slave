@@ -14,14 +14,6 @@
   become: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 
-- name: jenkins-slave | Create temporary directory
-  shell: mktemp -d
-  register: tempdir
-  changed_when: false
-  become: yes
-  tags:
-    - jenkins-slave
-
 #FYI hdd.yml must be first (before creating slave folders)
 - import_tasks: hdd.yml
 
@@ -242,12 +234,6 @@
   become: yes
   ignore_errors: true
 
-#- name: jenkins-slave | Create Jenkins thin backup directory
-#  file: path={{ jenkins_remote_thinbackup }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
-#  changed_when: false
-#  become: yes
-#  ignore_errors: true
-
 - import_tasks: sonar.yml
 
 - import_tasks: nodejs.yml
@@ -348,14 +334,6 @@
 - import_tasks: database.yml
 
 - import_tasks: dev.yml
-
-- name: jenkins-slave | Cleanup temporary directory
-  file: name={{ tempdir.stdout }} state=absent
-  tags:
-    - jenkins-slave
-  changed_when: false
-  ignore_errors: "{{ ansible_check_mode }}"
-  become: yes
 
 - name: jenkins-slave | Copy Dockerfile
   template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0777

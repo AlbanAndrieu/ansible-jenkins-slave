@@ -4,11 +4,17 @@
 #pip2 install cairocffi==0.8.0
 #pip2 install CairoSVG==2.0.3
 ansible==2.4.3.0
+ansible-cmdb==1.24
+#ansible-container==0.2.0
+ansible-lint==3.3.3
+ansicolors==1.1.8
+ansigenome==0.5.6
 appdirs==1.4.3
 argcomplete==1.9.4
 asn1crypto==0.24.0
 aspy.yaml==1.0.0
 autopep8==1.3.4
+attrs==15.2.0
 bcrypt==3.1.4
 beautifulsoup4==4.6.0
 blinker==1.4
@@ -20,6 +26,8 @@ cffi==1.11.5
 cfgv==1.0.0
 chardet==3.0.4
 #command-not-found==0.3
+colorama==0.3.7
+conan==1.5.1
 configparser==3.5.0
 cpplint==1.3.0
 cryptography==2.2.1
@@ -48,6 +56,7 @@ keyrings.alt==3.0
 launchpadlib==1.10.6
 lazr.restfulclient==0.13.5
 lazr.uri==1.0.3
+letsencrypt==0.4.1
 #LibAppArmor==2.11.0
 #louis==3.0.0
 lxml==4.2.1
@@ -93,6 +102,7 @@ python-gnupg==0.4.1
 #python-xlib==0.14
 python-magic==0.4.15
 pytz==2018.3
+pywinrm==0.2.2
 pyxdg==0.26
 PyYAML==3.12
 #reportbug===7.1.7ubuntu1
@@ -107,6 +117,7 @@ six==1.11.0
 #ssh-import-id==5.7
 #system-service==0.3
 #systemd-python==234
+termcolor==1.1.0
 testresources==2.0.1
 tinycss==0.4
 #ubuntu-drivers-common==0.0.0
@@ -131,6 +142,8 @@ urllib3==1.22
 #usb-creator==0.3.3
 #vboxapi==1.0
 virtualenv==15.2.0
+virtualenv-clone==0.2.5
+virtualenvwrapper==4.3.1
 wadllib==1.3.2
 webencodings==0.5.1
 #xdiagnose==3.8.8
