@@ -125,7 +125,7 @@ docker_py_version: "1.9.0"
 
 #workspace: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
 workspace: "{{ tempdir.stdout }}"
-sonar_build_wrapper_download_url: "http://localhost:9000/static/cpp/build-wrapper-linux-x86.zip"
+sonar_build_wrapper_download_url: "https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip"
 sonar_build_wrapper_download_file: "build-wrapper-linux-x86.zip"
 sonar_build_wrapper_expanded_file: "build-wrapper-linux-x86"
 sonar_build_wrapper_target_dir: "/usr/local/sonar-build-wrapper/bin/"

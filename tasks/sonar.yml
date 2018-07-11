@@ -31,8 +31,7 @@
     remote_src: yes
 #    creates: "{{ sonar_build_wrapper_target_dir }}"
   become: yes
-  ignore_errors: true  
-  #ignore_errors: "{{ ansible_check_mode }}"
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: sonar | Move sonar-build-wrapper into place.
   shell: >
