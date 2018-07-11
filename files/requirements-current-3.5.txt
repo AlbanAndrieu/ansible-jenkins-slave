@@ -135,6 +135,7 @@ python-debian==0.1.32
 python-debianbts==2.7.2
 python-gnupg==0.4.1
 python-keyczar==0.716
+python-owasp-zap-v2.4==0.0.14
 python-xapp==1.0.0
 python-xlib==0.22
 pytz==2018.3
