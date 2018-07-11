@@ -7,7 +7,13 @@ jenkins_user: jenkins
 #http://docs.ansible.com/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
 jenkins_password: "$6$rounds=656000$ITswjqU77/RgGDEv$Vbv6Pw5UJEQQGXwZ4JiR0WXsZVSNAHY7NuWgid.yGLIxro27nZt7CIMwQrh4encLm9Db1RDscEjC1T9ldCgx61"
 jenkins_group: jenkins
-jenkins_groups: docker,www-data,{{ jenkins_group }}
+jenkins_gid: "131"
+data_group: "www-data"
+data_gid: "33"
+docker_users: "{{ jenkins_user }}"
+docker_gid: "2000"
+docker_group: "docker"
+jenkins_groups: {{ docker_group }},{{ data_group }},{{ jenkins_group }}
 #jenkins_shell: "/bin/false"
 jenkins_shell: "/bin/bash"
 jenkins_home: /var/lib/jenkins              # Jenkins home location
@@ -116,7 +122,6 @@ proxy_repo_server: "localhost"
 proxy_repo_url: "http://{{ proxy_repo_server }}:3142"
 
 docker_py_version: "1.9.0"
-docker_users: "{{ jenkins_user }}"
 
 #workspace: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
 workspace: "{{ tempdir.stdout }}"

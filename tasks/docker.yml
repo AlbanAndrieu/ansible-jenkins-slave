@@ -85,15 +85,15 @@
 
 - name: docker | Create a docker group
   group:
-      name=docker
+      name={{ docker_group }}
       state=present
-      gid=2000      
+      gid="{{ docker_gid }}"      
   become: yes
 
 - name: docker | Add user(s) to docker group
   user:
       name={{ item }}
-      group=docker
+      group={{ docker_group }}
       state=present
   with_items: "{{ docker_users }}"
   when: docker_users is defined

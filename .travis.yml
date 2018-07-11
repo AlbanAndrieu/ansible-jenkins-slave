@@ -53,12 +53,12 @@ script:
   #- echo localhost > hosts
 
   # Check syntax
-  - ansible-playbook -i ./hosts --syntax-check ./jenkins-slave.yml -vvvv --connection=local -e "python_versions=[2.7, 3.5]"
+  - ansible-playbook -i ./hosts --syntax-check ./jenkins-slave.yml -vvvv --connection=local -e "python_versions=[2.7, 3.5]" -e "docker_gid=3000"
 
   # First run
   # Run the role/playbook with ansible-playbook.
 #  - travis_wait 30 
-  - ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local --sudo -vvvv -e "python_versions=[2.7, 3.5]"
+  - ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local --sudo -vvvv -e "python_versions=[2.7, 3.5]" -e "docker_gid=3000"
 
   # Run the role/playbook again, checking to make sure it's idempotent.
 #  - >

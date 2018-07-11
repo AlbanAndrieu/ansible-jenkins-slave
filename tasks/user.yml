@@ -13,16 +13,16 @@
 
 - name: jenkins-slave | Create a jenkins group
   group:
-      name=jenkins
+      name={{ jenkins_group }}
       state=present
-      gid=131
+      gid={{ jenkins_gid }}
   become: yes
 
 - name: jenkins-slave | Create a www-data group
   group:
-      name=www-data
+      name={{ data_group }}
       state=present
-      gid=33
+      gid={{ data_gid }}
   become: yes
   ignore_errors: true
 
