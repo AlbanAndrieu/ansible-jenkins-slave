@@ -56,7 +56,7 @@
     - python3.6-dbg
 #    - idle-python3.6
 
-- name: python3 | Install missing pip3.6 requirement
+- name: python3 | Install missing pip3.6
   shell: "curl https://bootstrap.pypa.io/get-pip.py | sudo python3.6"
   register: curl_result
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
