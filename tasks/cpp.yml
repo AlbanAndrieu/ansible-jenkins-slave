@@ -505,7 +505,7 @@
 
 - name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04', '16.04']
   with_items:
 #libstdc++6
    - libstdc++-4.8-dev
@@ -556,7 +556,7 @@
   
 - name: jenkins-slave | Install C++ librairies for building 32bits RMDSExtractor (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04', '16.04']
   with_items:
 #needed for 32 bits cross compilation
    - g++-4.8-multilib
@@ -711,6 +711,15 @@
    - libicu-devel.i686
   become: yes
 
+#WARNING it need remi repo
+- name: jenkins-slave | Install C++ librairies for unicode for database (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+  tags: cpp
+  with_items:
+   - libicu-last-devel
+  become: yes
+
 - name: jenkins-slave | Install C++ librairies for unicode for database (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
@@ -825,21 +834,6 @@
  #
 #For wget tar unzip, see common role
 
-#See https://www.softwarecollections.org/en/scls/rhscl/devtoolset-4/
-- name: jenkins-slave | Install Devtools (RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  become: yes
-  when: (ansible_distribution == 'CentOS')
-  with_items:
-   - centos-release-scl
-#   - devtoolset-3
-#   - devtoolset-4
-#sudo yum install centos-release-scl
-#sudo yum install devtoolset-4
-#scl enable devtoolset-4 bash
-#OR scl enable devtoolset-2 bash
-
-#TODO RedHat
 - name: jenkins-slave | Install cppunit tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')

@@ -41,6 +41,13 @@
   changed_when: false
   ignore_errors: yes
 
+- name: jenkins-slave | Get node repo
+  shell: 'curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -'
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04']) and nodejs_enabled
+  become: yes
+  changed_when: false
+  ignore_errors: yes
+
 - name: jenkins-slave | Install nodejs (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
   become: yes

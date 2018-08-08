@@ -1,13 +1,4 @@
 
-#export WORKSPACE="/root/"
-#ON OSX cd /var/root
-#cd ${WORKSPACE}
-#wget http://alm-sonar.misys.global.ad/static/cpp/build-wrapper-linux-x86.zip --no-check-certificate
-#wget http://alm-sonar.misys.global.ad/static/cpp/build-wrapper-macosx-x86.zip --no-check-certificate
-#unzip build-wrapper-*-x86.zip
-#mkdir -p /usr/local/sonar-build-wrapper/bin/
-#cp ${WORKSPACE}/build-wrapper-*-x86/* /usr/local/sonar-build-wrapper/bin/
-
 - name: sonar | Ensure unzip is installed.
   package: name=unzip state=present
 
@@ -17,6 +8,15 @@
   changed_when: false
   become: yes
 
+#export WORKSPACE="/root/"
+#ON OSX cd /var/root
+#cd ${WORKSPACE}
+#wget http://sonar.nabla.mobi/static/cpp/build-wrapper-linux-x86.zip --no-check-certificate
+#wget http://sonar.nabla.mobi/static/cpp/build-wrapper-macosx-x86.zip --no-check-certificate
+#unzip build-wrapper-*-x86.zip
+#mkdir -p /usr/local/sonar-build-wrapper/bin/
+#cp ${WORKSPACE}/build-wrapper-*-x86/* /usr/local/sonar-build-wrapper/bin/
+
 - name: sonar | Create sonar repository directory {{ sonar_build_wrapper_target_dir }}
   file: path={{ sonar_build_wrapper_target_dir }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
   become: yes
@@ -25,11 +25,8 @@
 - name: sonar | Download and expand C++ sonar build-wrapper
   unarchive:
     src: "{{ sonar_build_wrapper_download_url }}"
-#    dest: "{{ workspace }}"
     dest: "{{ sonar_build_wrapper_target_dir }}"
-#    copy: no
     remote_src: yes
-#    creates: "{{ sonar_build_wrapper_target_dir }}"
   become: yes
   ignore_errors: "{{ ansible_check_mode }}"
 
@@ -37,9 +34,32 @@
   shell: >
     mv {{ workspace }}/{{ sonar_build_wrapper_expanded_file }}/* {{ sonar_build_wrapper_target_dir }}
   become: yes
+  ignore_errors: "true"
+
+#cd /usr/local
+#sudo wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip
+#sudo wget http://nabla.mobi/download/sonar/sonar-scanner-cli-3.2.0.1227.zip
+#sudo unzip sonar-scanner-cli-3.2.0.1227.zip
+
+- name: sonar | Download and expand sonar scanner
+  unarchive:
+    src: "{{ sonar_scanner_download_url }}"
+    dest: "{{ sonar_scanner_target_dir }}"
+    remote_src: yes
+  become: yes
+  ignore_errors: "{{ ansible_check_mode }}"
+
+#TODO
+#sudo ln -s /usr/local/sonar-scanner-3.2.0.1227/bin/sonar-scanner /usr/bin/sonar-runner
+#sudo ln -s /usr/local/sonar-scanner-3.2.0.1227 /usr/local/sonar-runner
+
+- name: sonar | Copy sonar MGR CAM runner configuration
+  copy: src=sonar-runner-mgr-cam.properties dest={{ jenkins_slave_home }}/sonar-runner-mgr-cam.properties backup=yes owner=jenkins
+  changed_when: false
+  become: yes
   ignore_errors: true
 
-- name: jenkins-slave | Copy sonar runner configuration
+- name: sonar | Copy sonar runner configuration
   copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
   changed_when: false
   become: yes

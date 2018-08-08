@@ -269,6 +269,6 @@
 - name: jenkins-slave | Install tools needed by sample a runtime (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
   become: yes
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
   with_items:
    - perl-Time-y2038

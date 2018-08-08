@@ -107,6 +107,7 @@ error / : error .*: /
 #error / : error C2039: /
 error /LINK : fatal error LNK1181:/
 warning /LINK : warning LNK4044:/
+warning / : warning .*: /
 #warning / : warning C4251: /
 warning /: warning: /
 
@@ -145,6 +146,7 @@ error /Premature end of file/
 
 #shell
 error /Could not create directory/
+error /usage: sed/
 
 #NPM
 error /Cannot find module/
@@ -171,9 +173,11 @@ warning /[WARNING]:/
 error /unreachable=[0-9]+/
 error /failed=[0-9]+/
 #error /The error appears to have been in/
+#Below for inventory ansible-cmdb
+error /Whoops, it looks like something went wrong while rendering the template/
 
 warning /error: pathspec/
-warning /fatal:/
+error /fatal:/
 warning /FAILED/
 #sendmail in ansible
 ok /ERROR: FEATURE/
@@ -267,7 +271,8 @@ warning /ld: skipping incompatible/
 warning /[Ww]arning/
 warning /WARNING/
 warning /WARN/
-
+ok /warning.gif/
+ok /warning.png/
 warning /is not defined/
 
 # create a quick access link to lines in the report containing 'INFO'

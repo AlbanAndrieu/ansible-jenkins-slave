@@ -7,15 +7,6 @@
    - ksh
   become: yes
 
-- name: jenkins-slave | Install shell for running
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-  tags: package
-  with_items:
-   - bash
-   - ksh
-  become: yes
-
 - name: jenkins-slave | Install shell tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   tags: package

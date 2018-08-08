@@ -117,6 +117,8 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes" 
   with_items:
    - clang-format
+   - clang-tools
+   - clang-tidy
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')       
   tags: cpp
   become: yes  

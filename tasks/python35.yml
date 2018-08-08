@@ -5,7 +5,6 @@
 #yum -y groupinstall development
 #yum -y install zlib-devel
 
-
 # wget https://www.python.org/ftp/python/3.5.5/Python-3.5.5.tgz
 # tar xzf Python-3.5.5.tgz
 # cd Python-3.5.5
@@ -43,6 +42,9 @@
    - python35u-pip
   become: yes
 
+- name: python3 | Set python link to python version
+  set_fact: python3_version=3.5
+
 # sudo apt-get install python3-pip --reinstall
 - name: python3 | Install missing pip3.5
   shell: "curl https://bootstrap.pypa.io/ez_setup.py -o - | sudo python3.5 && easy_install pip"
@@ -51,8 +53,17 @@
   changed_when: false
   become: yes
   
-- name: python3 | Set python link to python version
-  set_fact: python3_version=3.5
+#sudo apt-get install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
+
+#sudo apt-cache show python3
+#sudo apt-get install python3=3.5.1*
+
+- name: python3 | Install python 3 requirement
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  with_items:
+    - python3=3.5.1*
 
 #- name: python3 | Run pip check
 #  shell: (pip -V && pip3.5 -V) | uniq

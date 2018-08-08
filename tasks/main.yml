@@ -326,6 +326,15 @@
   become: yes
   ignore_errors: true
 
+- name: jenkins-slave | Install rsync package
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+   - rsync
+   - pv
+  changed_when: false
+  become: yes
+
 #- name: jenkins-slave | Clone the application
 #  action: git repo=https://github.com/AlbanAndrieu/nabla.git dest=/jenkins/nabla
 

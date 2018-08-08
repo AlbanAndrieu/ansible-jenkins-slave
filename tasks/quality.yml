@@ -43,7 +43,32 @@
   become: yes       
   ignore_errors: true
   
-- name: jenkins-slave | Install flawfinder
+- name: cpp | Install C++ quality tool
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+   - ggcov
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  tags: cpp
+  become: yes
+  ignore_errors: true
+
+- name: cpp | Install C++ quality tool
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=qyes"
+  with_items:
+   - cppcheck
+   - gperf
+   - lcov
+   - vera++
+   - lua5.3
+   - tcl
+   - tk
+  tags: cpp
+  become: yes
+  ignore_errors: true
+
+#TODO install rats and flawfinder on RedHat
+
+- name: cpp | Install flawfinder
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
@@ -51,8 +76,14 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD') 
   become: yes      
   ignore_errors: true
+
+#wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/rough-auditing-tool-for-security/rats-2.4.tgz
+#tar -xzvf rats-2.4.tgz
+#cd rats-2.4
+#./configure && make && sudo make install
+#./rats
    
-- name: jenkins-slave | Install rats
+- name: cpp | Install rats
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
