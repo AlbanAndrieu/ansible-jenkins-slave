@@ -21,8 +21,6 @@
 
 - import_tasks: maven.yml
 
-- import_tasks: brew.yml
-
 - import_tasks: python.yml
 
 #FYI ansible.yml need python.yml
@@ -88,6 +86,8 @@
 - import_tasks: docker.yml
 
 - import_tasks: user.yml
+
+- import_tasks: brew.yml
 
 - import_tasks: security.yml
 
