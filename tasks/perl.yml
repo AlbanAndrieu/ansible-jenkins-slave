@@ -114,9 +114,15 @@
   when: (ansible_distribution == 'CentOS')
   with_items:
    - perl-libwww-perl
-   - perl-XML-DOM-XPath
    - perl-File-Copy-Recursive
    - perl-File-Find-Rule
+
+- name: jenkins-slave | Install tools needed by cpp generator (CentOS based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+  when: (ansible_distribution == 'CentOS' and ansible_distribution_major_version in ('5', '6'))
+  with_items:
+   - perl-XML-DOM-XPath
 
 - name: jenkins-slave | Install cpanminus (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -129,7 +135,7 @@
 - name: jenkins-slave | Install CPAN tools needed by cpp generator (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
   become: yes
-  when: (ansible_distribution == 'RedHat')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
    - perl-CPAN
 
@@ -184,7 +190,6 @@
 #- cpanm:
 #    name: XML::DOM
     
-    
 #TODO on Ubuntu configure cpan by hand
 #sudo perl -MCPAN -e 'install Bundle::CPAN'    
     
@@ -194,7 +199,6 @@
   with_items:
     - XML::DOM
     - XML::Handler::YAWriter
-    - XML::Simple
     - Test::Harness
     - Test::Pod::Coverage
     - Test::Pod
@@ -210,6 +214,16 @@
   register: cpan_result    
   changed_when: false
   become: yes
+
+#Force install on CentOS 7, tests are failing!
+- name:  jenkins-slave | Install cpan perl modules needed by cpp generator
+  shell: "cpan -f {{ item }}"
+  with_items:
+    - XML::Simple
+  register: cpan_result
+  changed_when: false
+  become: yes
+  ignore_errors: true
 
 - name:  jenkins-slave | Install cpan perl modules needed by cpp generator
   shell: "cpan {{ item }}"

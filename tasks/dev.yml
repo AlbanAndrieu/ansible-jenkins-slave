@@ -5,11 +5,13 @@
     state: present
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
 
+#TODO buggy on CentOS 7
+#Repository zabbix-non-supported is listed more than once in the configuration\nError: rsync31u conflicts with rsync-3.1.2-4.el7.x86_64
 - name: Workstation | Install the 'Gnome desktop' environment group
   yum:
     name: "@^gnome-desktop-environment"
     state: present
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  when: ((ansible_distribution == 'CentOS' and ansible_distribution_major_version not in '7') or ansible_distribution == 'Red Hat Enterprise Linux')
 
 #https://developers.redhat.com/products/developertoolset/hello-world/#fndtn-rhel-6
 #subscription-manager repos --list | egrep rhscl
@@ -87,7 +89,7 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - rh-eclipse47
-  when: (ansible_distribution == 'CentOS' or (ansible_distribution == 'Red Hat Enterprise Linux' and not ansible_distribution_major_version == '6'))
+  when: ((ansible_distribution == 'CentOS' and ansible_distribution_major_version not in '7') or (ansible_distribution == 'Red Hat Enterprise Linux' and not ansible_distribution_major_version == '6'))
   become: yes
 
 #scl enable rh-eclipse47 eclipse
@@ -98,5 +100,5 @@
    #- rh-nodejs6
    - rh-maven33
    - rh-java
-  when: (ansible_distribution == 'CentOS' or (ansible_distribution == 'Red Hat Enterprise Linux' and not ansible_distribution_major_version == '5'))
+  when: ((ansible_distribution == 'CentOS' and ansible_distribution_major_version not in '7') or (ansible_distribution == 'Red Hat Enterprise Linux' and not ansible_distribution_major_version == '5'))
   become: yes

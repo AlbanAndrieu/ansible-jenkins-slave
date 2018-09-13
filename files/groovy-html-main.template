@@ -16,41 +16,17 @@ TD.console { font-family:Courier New; }
 </STYLE>
 <BODY>
 
-<div class="round_border">
-<TABLE>
-  <TR><TD align="right"><IMG SRC="${rooturl}static/e59dfe28/images/32x32/<%= build.result.toString() == 'SUCCESS' ? "blue.gif" : build.result.toString() == 'FAILURE' ? 'red.gif' : 'yellow.gif' %>" />
-  </TD><TD valign="center"><B style="font-size: 200%;">BUILD ${build.result}</B></TD></TR>
-  <TR><TD>URL</TD><TD><A href="${rooturl}${build.url}">${rooturl}${build.url}</A></TD></TR>
-  <TR><TD>Project:</TD><TD>${project.name}</TD></TR>
-  <TR><TD>Date:</TD><TD>${it.timestampString}</TD></TR>
-  <TR><TD>Duration:</TD><TD>${build.durationString}</TD></TR>
-  <TR><TD>Cause:</TD><TD><% build.causes.each() { cause -> %> ${cause.shortDescription} <%  } %></TD></TR>
-</TABLE>
-<BR/>
-</div>
-
-<BR/>
-Hi
-<BR/>
-<BR/>
-Project ${build.getEnvironment(listener).get('RELEASE_VERSION')} cut on develop is available.<BR/>
-All the cut details can be find here:
-<A href="${rooturl}${build.url}">Cut</A>
-<A href="${rooturl}${build.url}/downstreambuildview/">Downstream</A>
-Tag are available on <A href="https://stash/projects/PRJ">Stash</A>
-<BR/>
-<BR/>
-<pre>
-<B>NEXT RELEASE SCHEDULE:</B>
-    Next cut will happen next Friday. Jobs will be disabled around midday and release process will start around 3 p.m
-    Dates of new releases you can find here:
-    <a href="http://jira/secure/Dashboard.jspa?selectPageId=38202">Project Release Calendar</a>
-<BR/>
-</pre>
-<pre>
-<!-- INSTALLER -->
 <%
-threshold = Result.SUCCESS
+def getResultAsString(build)
+{
+    def result = build?.result
+    if (result == null) {
+        result = "SUCCESS"
+    }
+    return result;
+}
+
+def currResult = getResultAsString(build)
 
 void aggregate_results() {
     failed = false
@@ -66,16 +42,16 @@ void aggregate_results() {
       subJobNumber = subBuild.getBuildNumber()
       job = hudson.model.Hudson.instance.getItem(subBuild.getJobName())
 
-      if( subJob.equals("FR_DEV_PACKAGE-INSTALLER") ) {
+      if( subJob.contains("_PACKAGE-INSTALLER")) {
 %><i>Project installer can be find here:</i>
-<ul><li><a href="${rooturl}job/${subJob}/ARCH=sun4sol,PRODUCTS=standard,label=kgrdb01/${subJobNumber}/">sun4sol</a></li>
-<li><a href="${rooturl}job/${subJob}/ARCH=x86sol,PRODUCTS=standard,label=kgrdb01/${subJobNumber}/">x86sol</a></li>
-<li><a href="${rooturl}job/${subJob}/ARCH=x86Linux,PRODUCTS=standard,label=kgrdb01/${subJobNumber}/">x86Linux</a></li>
-<li><a href="${rooturl}job/${subJob}/ARCH=winnt,PRODUCTS=standard,label=kgrdb01/${subJobNumber}/">winnt</a></li>
+<ul><li><a href="${rooturl}job/${subJob}/ARCH=sun4sol,PRODUCTS=standard,label=albandri/${subJobNumber}/">sun4sol</a></li>
+<li><a href="${rooturl}job/${subJob}/ARCH=x86sol,PRODUCTS=standard,label=albandri/${subJobNumber}/">x86sol</a></li>
+<li><a href="${rooturl}job/${subJob}/ARCH=x86Linux,PRODUCTS=standard,label=albandri/${subJobNumber}/">x86Linux</a></li>
+<li><a href="${rooturl}job/${subJob}/ARCH=winnt,PRODUCTS=standard,label=albandri/${subJobNumber}/">winnt</a></li>
 </ul><%
       }
 
-      if( subJob.equals("FR_DEV_PACKAGE-PRICER_INSTALLER")) {
+      if( subJob.contains("PACKAGE-PRICER_INSTALLER")) {
 %><i>Project pricer installer can be find here:</i>
 <ul><li><a href="${rooturl}job/${subJob}/${subJobNumber}/">pricer</a></li>
 </ul><%
@@ -117,9 +93,63 @@ void aggregate_results() {
     }
 
     //if(failed) {manager.build.setResult(hudson.model.Result.FAILURE)}
-}%><pre>
+}%>
+
+<!-- GENERAL INFO -->
+
+<div class="round_border">
+<TABLE>
+  <TR><TD align="right">
+  <TR><TD align="right"><IMG SRC="${rooturl}static/e59dfe28/images/32x32/<%= build.result.toString() == 'SUCCESS' ? "blue.gif" : build.result.toString() == 'FAILURE' ? 'red.gif' : 'yellow.gif' %>" />
+<%
+def release_version = build.getEnvironment(listener).get('RELEASE_VERSION')
+if(release_version != null && release_version.size() > 0 && release_version.contains("SNAPSHOT") == false ) { %>
+  </TD><TD valign="center"><B style="font-size: 200%;">CUT ${build.getEnvironment(listener).get('RELEASE_VERSION')} of ${build.getEnvironment(listener).get('RELEASE')} ${build.result}</B></TD></TR>
+<% } else {
+release_version = null
+ %>
+  </TD><TD valign="center"><B style="font-size: 200%;">BUILD ${currResult}</B></TD></TR>
+  <TR><TD>Project:</TD><TD>${project.name}</TD></TR>
+  <TR><TD>Cause:</TD><TD><% build.causes.each() { cause -> %> ${cause.shortDescription} <%  } %></TD></TR>
+  <TR><TD>Build duration:</TD><TD>${build.durationString}</TD></TR>
+<%  } %>
+  <TR><TD>Build URL:</TD><TD><A href="${rooturl}${build.url}">${rooturl}${build.url}</A></TD></TR>
+  <TR><TD>Date of build:</TD><TD>${it.timestampString}</TD></TR>
+</TABLE>
+<BR/>
+</div>
+<BR/>
+Hi
+<BR/>
+<BR/>
+<% if(release_version != null && release_version.size() > 0) { %>
+<blockquote>
+FusionRisk ${build.getEnvironment(listener).get('RELEASE_VERSION')} cut on develop is available.<BR/>
+All the cut details can be find on Jenkins <A href="${rooturl}${build.url}">job</A>.
+<BR/>
+Tags are available on <A href="https://github.com/AlbanAndrieu">GitHub</A>
+<BR/>
+</blockquote>
+<% def target_zone = build.getEnvironment(listener).get('TARGET_ZONE') %>
+<% if(target_zone == '016') { %>
+<BR/>
+<pre>
+<B>NEXT RELEASE SCHEDULE:</B>
+    Next cut will happen next Friday. Jobs will be disabled around 8 p.m and release process will start around 12 p.m.<BR/>
+<font size="3" color="red">Please do not merge any PR that might break the build on Friday evening.</font><BR/>
+Wait the cut to be available on Monday before merging...<BR/>
+<BR/>
+    Dates of new releases can be find on <a href="https://jira/secure/Dashboard.jspa?selectPageId=1111">Nabla Release Calendar</a> page.
+<BR/>
+</pre>
+<% } %>
+<pre>
+<!-- INSTALLER -->
+<pre>
 <B>INSTALLER:</B>
 <%
+threshold = Result.SUCCESS
+
 try {
   aggregate_results()
 } catch(Exception e) {
@@ -129,32 +159,89 @@ try {
 %></pre>
 <pre>
 <B>ZONE:</B>
-Project installer has been deployed on dataset:</BR>
-home.test.10.push
-syb157.test.10.push
-</BR>
-Integration zone <a href="https://zone:8080/test/">016</a> is available on <a href="https://openstack/#">Openstack</a>
+FR installer has been deployed on dataset:</BR>
+<ul>
+<li>${build.getEnvironment(listener).get('TARGET_HOME_DATASET_PREFIX')}</li>
+<li>${build.getEnvironment(listener).get('TARGET_DATABASE_DATASET_PREFIX')}</li>
+</ul>
+<BR/>
+<% if(target_zone == '027') { %>
+Integration zone <a href="https://zone027:9090/test/">003 (${build.getEnvironment(listener).get('TARGET_ZONE')})</a> is available.
+<% } %>
+<% if(target_zone == '016') { %>
+Integration QA zone <a href='${rooturl}job/NABLA_PROVISION-UPDATE_ZONE_016/'><img src='${rooturl}buildStatus/icon?job=NABLA_PROVISION-UPDATE_ZONE_016'></a> <a href="https://albandri${build.getEnvironment(listener).get('TARGET_ZONE')}.nabla.mobi:9090/test/">${build.getEnvironment(listener).get('TARGET_ZONE')}</a> is available (ask QA Team to start the zone).
+<BR/>
+Integration zone <a href='${rooturl}job/NABLA_PROVISION-UPDATE_ZONE_002/'><img src='${rooturl}buildStatus/icon?job=NABLA_PROVISION-UPDATE_ZONE_002'></a> <a href="https://zone31.nabla.mobi:9090/test/">031 (${build.getEnvironment(listener).get('TARGET_ZONE')})</a> is available.
+<% } %>
 <BR/>
 </pre>
+<% if(target_zone.equals('016')) { %>
+<B>SHARE:</B>
+FR installer CUT has been deployed on <a href="http://nabla/download/release/1.6.0/${build.getEnvironment(listener).get('RELEASE_VERSION')}">share</a>.
+<BR/>
+Latest available installer is available to download <a href="http://nabla/download/release/1.6.0/latest/">here</a> <a href='${rooturl}job/NABLA_DEPLOY-RELEASE/'><img src='${rooturl}buildStatus/icon?job=NABLA_DEPLOY-RELEASE'>Installers</a> <a href='${rooturl}job/NABLA_DEPLOY-DIST/'><img src='${rooturl}buildStatus/icon?job=NABLA_DEPLOY-DIST'>DIST</a>.
+<% } %>
+<% if(target_zone == '027') { %>
+<B>SHARE:</B>
+FR installer CUT has been deployed on <a href="http://nabla/download/release/1.5.3/${build.getEnvironment(listener).get('RELEASE_VERSION')}">share</a>.
+<BR/>
+Latest available installer is available to download <a href="http://nabla/download/release/1.5.3/latest/">here</a>.
+<% } %>
+<BR/>
+</pre>
+<% if(target_zone == '016') { %>
+<pre>
+<B>COMPONENT VERSIONS:</B>
+TODO: <a href="http://nabla/download/release/1.6.0/${build.getEnvironment(listener).get('RELEASE_VERSION')}/standard-install-${build.getEnvironment(listener).get('RELEASE_VERSION')}.txt">here</a>.</BR>
+<pre>
+<BR/>
+<pre>
+<B>OTHER:</B>
+<font size="3" color="red">Several issues have been created for dev team to fix the build</font><BR/>
+Use below JIRA <a href="https://jira/issues/?filter=106952">filter</a> to find them<BR/>
+<code>project = NABLA AND type = Build AND resolution = Unresolved ORDER BY priority DESC, updated DESC</code><BR/>
+<BR/>
+<em>Please fix them, especially the one due to unstable unit tests.</em><BR/>
+If unity tests are too difficult to fix, please move them to integration test (pattern _IT)<BR/>
+<a href="https://confluence/display/ENG/Releases+Information">Release Information</a><BR/>
+<a href="https://confluence/display/RLN/Nabla">Release Notes</a><BR/>
+<pre>
+<BR/>
 <pre>
 <B>QUALITY:</B>
-Project quality reports are available:</BR>
-On <a href="https://sonar:8999/">Sonar</a>
-On <a href="${rooturl}job/MGR_ZaProxy_Sample/lastSuccessfulBuild/ZaProxy_Report/">ZaProxy</a>
-On <a href="${rooturl}job/MGR_ZaProxy_Sample/Phantomas_KGR_Report/">Phantomas KGR</a>
-On <a href="${rooturl}job/MGR_ZaProxy_Sample/Phantomas_RiskInsight_Report/">Phantomas RiskInsight</a>
-On <a href="${rooturl}job/MGR_ZaProxy_Sample/lastSuccessfulBuild/ZaProxy_Report/">ZaProxy</a>
-On <a href="${rooturl}job/MGR_All_Dependency_check/lastSuccessfulBuild/dependency-check-jenkins-pluginResult/">DependencyCheck</a>
-On <a href="https://checkmarx/CxWebClient/">Checkmarx</a>
+FR quality reports are available:</BR>
+<ul>
+<li><a href="https://sonar.nabla.mobi/">NABLA Sonar</a> <a href='${rooturl}view/Sonar/job/NABLA_SONAR/'>
+<ul>
+<li><a href='${rooturl}job/NABLA_SONAR-ADVANCED_MEASURES/'><img src='${rooturl}buildStatus/icon?job=NABLA_SONAR'>NABLA Java</a></li>
+<li><a href='${rooturl}job/NABLA_SONAR-CPP-ADVANCED_MEASURES/'><img src='https:/jenkins.nabla.mobi/jenkins/buildStatus/icon?job=NABLA_CPPSONAR'>NABLA C++</a></li>
+</ul>
+</li>
+<li><a href="https://sonar.nabla.mobi/">Global Sonar</a></li>
+<li><a href="${rooturl}job/NABLA_ZaProxy_Sample/lastSuccessfulBuild/ZaProxy_Report/">OWASP ZaProxy</a> <a href='${rooturl}view/MGR/job/NABLA_ZaProxy_Sample/'><img src='${rooturl}buildStatus/icon?job=NABLA_ZaProxy_Sample'></a></li>
+<li><a href="${rooturl}job/NABLA_ZaProxy_Sample/Phantomas_KGR_Report/">Phantomas KGR</a></li>
+<li><a href="${rooturl}job/NABLA_ZaProxy_Sample/Phantomas_RiskInsight_Report/">Phantomas RiskInsight</a></li>
+<li><a href="${rooturl}job/NABLA_All_Dependency_check/lastSuccessfulBuild/dependency-check-jenkins-pluginResult/">OWASP Dependency Check</a> <a href='${rooturl}view/Security/job/NABLA_All_Dependency_check/'><img src='${rooturl}buildStatus/icon?job=NABLA_All_Dependency_check'></a></li>
+<li><a href="https://checkmarx/CxWebClient/">Checkmarx</a>
+</ul>
+</li>
+<li><a href="${rooturl}job/ansible-albandri-workstation-docker-container/lastCompletedBuild/">Docker compose check (from DTR)</a> <a href='${rooturl}view/Admin/job/ansible-albandri-workstation-docker-container/'><img src='${rooturl}buildStatus/icon?job=ansible-albandri-workstation-docker-container'></a></li>
+<li><a href="${rooturl}job/docker-scap-admin/lastCompletedBuild/console">Docker SCAP Security</a> <a href='${rooturl}view/Security/job/docker-scap-admin/'><img src='${rooturl}view/Security/job/docker-scap-admin/badge/icon'></a> </li>
+<li><a href="${rooturl}job/docker-security-admin/lastCompletedBuild/console">Docker Workbench Security</a> <a href='${rooturl}view/Security/job/docker-security-admin/'><img src='${rooturl}view/Security/job/docker-security-admin/badge/icon'></a></li>
+</ul>
 </pre>
-<!-- CHANGE SET
-<%
-//def changeSet = build.changeSet
-def lastSuccessfulBuild = project.lastSuccessfulBuild
+<% } %>
+<% } else { %>
 
-for(int i = lastSuccessfulBuild.number; i <= build.number; i++)
-{
-  changeSet = project.getBuildByNumber(i).changeSet
+<!-- CHANGE SET -->
+
+<%
+def changeSet = build.changeSet
+//def lastSuccessfulBuild = project.lastSuccessfulBuild
+
+//for(int i = lastSuccessfulBuild.number; i <= build.number; i++)
+//{
+//  changeSet = project.getBuildByNumber(i).changeSet
 
   if(changeSet != null) {
 	def hadChanges = false %>
@@ -209,7 +296,8 @@ if(artifacts != null && artifacts.size() > 0) { %>
 <!-- MAVEN ARTIFACTS -->
 <%
 try {
-  def mbuilds = build.moduleBuilds
+  //def mbuilds = build.moduleBuilds
+  def mbuilds = null
   if(mbuilds != null) { %>
   <TABLE width="100%">
       <TR><TD class="bg1"><B>BUILD ARTIFACTS</B></TD></TR>
@@ -296,8 +384,7 @@ if (junitResultList.size() > 0) { %>
 <!-- BUTTOM MESAGE -->
 <table class="bottom-message" align="left">
   <tr>
-    <td class="message">Please do not hesitate to contact us at <a href="admin@localhost">admin@localhost</a> regarding any issues.
-    </td>
+    <td class="message">Please do not hesitate to contact us at <a href="admin@localhost">admin@localhost</a> regarding any issues. <a href='${rooturl}view/Admin/job/nabla/'><img src='${rooturl}buildStatus/icon?job=nabla'></a></td>
   </tr>
   <tr>
     <td class="message">Or fill an issue in our <a href="http://jira/secure/RapidBoard.jspa?rapidView=31&quickFilter=799">JIRA</a> Kanban.

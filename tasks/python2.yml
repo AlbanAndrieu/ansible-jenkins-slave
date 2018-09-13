@@ -12,7 +12,21 @@
   with_items:
     - scl-utils
     - python27
+
+#python27-pip not available on CentOS 7
+- name: python | Install python 2.7 requirement
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+  when: (ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6') )
+  with_items:
     - python27-pip
+
+- name: python | Install python 2.7 requirement
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  become: yes
+  when: (ansible_distribution == 'CentOS')
+  with_items:
+    - python2-pip
 
 #update-alternatives --install /usr/bin/python python /usr/bin/python2.6  5
 #update-alternatives --install /usr/bin/python python /usr/bin/python2.7 10
@@ -21,7 +35,6 @@
 - name: python | Install python 2 requirement
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
   become: yes
-#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - python-dev
@@ -31,14 +44,21 @@
 - name: python | Set python link to python version
   set_fact: python2_version=2.7
 
+- name: python | Install missing pip2.7
+  shell: "curl https://bootstrap.pypa.io/get-pip.py -o - | sudo python2.7"
+  register: curl_result
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  changed_when: false
+  become: yes
+
 - name: python | Install virtualenv
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-  become: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04'])
   with_items:
     - python-virtualenv
     - virtualenv
 #    - virtualenvwrapper
+  become: yes
 
 - name: python | Install python check tools
   pip:
@@ -51,7 +71,7 @@
     - pre-commit #See http://pre-commit.com/
   become: yes
   when: ansible_python_version | version_compare('2.7', '>=')
-  ignore_errors: true
+#  ignore_errors: true
 
 - name: python | Install aws tools
   pip:

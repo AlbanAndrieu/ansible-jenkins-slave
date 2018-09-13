@@ -88,7 +88,16 @@
 
 - name: jenkins-slave | Install C++ librairies openssl for building 64bits (CentOS based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' )
+  when: (ansible_distribution == 'CentOS' and not ansible_distribution_major_version in ('5', '6'))
+  tags: cpp
+  with_items:
+   - openssl098e
+   - openssl098e.i686
+  become: yes
+
+- name: jenkins-slave | Install C++ librairies openssl for building 64bits (CentOS based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' and ansible_distribution_major_version in ('5', '6'))
   tags: cpp
   with_items:
    - libssl.so.0.9.8
@@ -302,15 +311,15 @@
 
 - name: jenkins-slave | Install C++ librairies xerces 3.1 (CentOS based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  when: (ansible_distribution == 'CentOS')
   tags: cpp
   with_items:
-   - lxerces-c-devel
+   - xerces-c-devel
   become: yes
 
 - name: jenkins-slave | Install C++ librairies xerces 3.1 (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
+  when: (ansible_distribution == 'RedHat' or ansible_distribution == 'Red Hat Enterprise Linux' and not ansible_distribution_major_version == '5')
   tags: cpp
   with_items:
    - xerces-c-devel
@@ -760,36 +769,6 @@
   tags: cpp
   with_items:
    - libxml2-devel
-  become: yes
-
-#GNUSTEP
-- name: jenkins-slave | Install gobjc gnustep (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  with_items:
-    - gnustep
-    - gnustep-devel
-    - gobjc
-  become: yes
-  ignore_errors: true
-
-- name: jenkins-slave | Install objc (CentOS and RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-  tags: cpp
-  with_items:
-   - gcc-objc
-   - libobjc
-  become: yes
-
-- name: jenkins-slave | Install gnustep (CentOS and RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
-  tags: cpp
-  with_items:
-   - gnustep-base-devel
-   - gnustep-make
-   - gnustep-filesystem
   become: yes
 
 #GNU LIBTOOL

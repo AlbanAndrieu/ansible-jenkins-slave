@@ -36,6 +36,14 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk7_enable   
   become: yes
 
+- name: jdk8 | Install default openjdk
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  tags: jdk_setup
+  with_items:
+   - openjdk-8-jdk
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
+  become: yes
+
 #- name: jdk8 | Install default oracle
 #  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ default_pkg_state|default('present') }} update_cache=yes"
 #  with_items:

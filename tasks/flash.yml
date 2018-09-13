@@ -15,7 +15,15 @@
   become: yes
 
 - name: jenkins-slave | Install flashplayer dependencies
-  yum: name={{ item }} state=present
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"
+  with_items:
+    - xvfb
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  become: yes
+  ignore_errors: true
+
+- name: jenkins-slave | Install flashplayer dependencies
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"
   with_items:
     - libX11
     - libXext
@@ -32,7 +40,8 @@
     - xorg-x11-fonts-truetype
     - xorg-x11-drv-v4l
     - xorg-x11-xauth
-  when: (ansible_distribution == 'CentOS' and ansible_lsb.major_release|int <= 5) or (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  #when: (ansible_distribution == 'CentOS' and ansible_lsb.major_release|int <= 5) or (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat' or ansible_distribution == 'Red Hat Enterprise Linux')
   become: yes
   ignore_errors: true
 

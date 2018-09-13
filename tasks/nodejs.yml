@@ -118,35 +118,26 @@
 #npm config list
 #npm install --unsafe-perm -g node-sass
 
+- name: jenkins-slave | Ensure npm registry settings
+  command: chdir=/usr/bin npm config set registry {{ npm_nexus_private_npm_url }}
+  when: not( (npm_nexus_private_npm_url is undefined) or (npm_nexus_private_npm_url is none) or (npm_nexus_private_npm_url | trim == '') ) and nodejs_enabled
+  become: yes
+
+- name: Javascript | Ensure npm ssl settings
+  command: chdir=/usr/bin npm config set strict-ssl {{ npm_strict_ssl }}
+  when: not( (npm_strict_ssl is undefined) or (npm_strict_ssl is none) or (npm_strict_ssl | trim == '') ) and nodejs_enabled
+  become: yes
+  
 #TODO use jenkins to install phantomjs
 - name: npm | Ensure the npm dependencies are installed
   npm: >
     name={{ item }}
     state=present
     global=yes
-  with_items:
-    - phantomjs-prebuilt@2.1.16
-    - phantomas@1.18.0
-    - nsp@2.6.1
-    - grunt@1.0.1
-    - grunt-cli@1.2.0
-    - bower@1.8.0
-    - connect@1.9.2
-    - node-sass@3.11.2
-    - jshint@2.9.5
-    - jsonlint@1.6.2
-    - node-gyp@3.6.2
-    - slimerjs@0.10.3
-    - casperjs@1.1.4
-    - critical@0.7.3
-    - coffee-script@1.10.0
-    - analyze-css@0.10.2
-    - tap-eater@0.0.3
-    - yarn@1.3.2
-    - sharp@0.19.0
+  with_items: "{{ npm_global_packages }}"
   when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04")) or
         (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
-  ignore_errors: yes  
+#  ignore_errors: yes  
   become: yes
   
 - name: jenkins-slave | Install compass (Debian based)
@@ -156,8 +147,3 @@
     - ruby-compass
   become: yes
   ignore_errors: yes
-
-- name: jenkins-slave | Ensure npm settings
-  command: chdir=/usr/bin npm config set registry {{ npm_nexus_private_npm_url }}
-  when: not( (npm_nexus_private_npm_url is undefined) or (npm_nexus_private_npm_url is none) or (npm_nexus_private_npm_url | trim == '') ) and nodejs_enabled
-  become: yes

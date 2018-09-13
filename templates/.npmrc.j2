@@ -1,23 +1,23 @@
 # {{ ansible_managed }}
-cache = .node_cache
-tmp = .node_tmp
-{% for i in npm_nexus_private_npm_data %}
-{{i}}
-{% endfor %}
+; loglevel=verbose
+cache=.node_cache
+tmp=.node_tmp
+chromedriver_version={{ npm_chromedriver_version }}
 {% if npm_nexus_private_npm_url is defined %}
-registry = {{ npm_nexus_private_npm_url }}
+registry={{ npm_nexus_private_npm_url }}
 {% endif %}
 {% if npm_prefix is defined %}
-prefix = {{ npm_prefix }}
+prefix={{ npm_prefix }}
 {% endif %}
 {% if npm_strict_ssl is defined %}
-strict-ssl = {{ npm_strict_ssl }}
+strict-ssl={{ npm_strict_ssl }}
 {% endif %}
 {% if npm_phantomjs_cdnurl is defined %}
-phantomjs_cdnurl = {{ npm_phantomjs_cdnurl }}
+phantomjs_cdnurl={{ npm_phantomjs_cdnurl }}
 {% endif %}
 {% if npm_slimerjs_cdnurl is defined %}
-slimerjs_cdnurl = {{ npm_slimerjs_cdnurl }}
+slimerjs_cdnurl={{ npm_slimerjs_cdnurl }}
 {% endif %}
-chromedriver_version=2.35
-;loglevel=verbose
+{% for npmrc_entry in npm_nexus_private_npm_data %}
+{{ npmrc_entry }}
+{% endfor %}

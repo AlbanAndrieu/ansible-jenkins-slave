@@ -54,6 +54,7 @@
     - python3-pip
     - python3.6
     - python3.6-dbg
+    - python3.6-gdbm
 #    - idle-python3.6
 
 - name: python3 | Install missing pip3.6

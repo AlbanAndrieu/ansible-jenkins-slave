@@ -98,6 +98,8 @@
   set_fact: cpp_version=4.8
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
 
+#https://developers.redhat.com/blog/2018/07/07/yum-install-gcc7-clang/
+
 - name: cpp | Install C++ clang
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
@@ -111,7 +113,10 @@
   tags: cpp
   with_items:
    - clang-analyzer
+   - llvm-toolset-7-git-clang-format
   become: yes
+
+#scl enable devtoolset-7 llvm-toolset-7 bash
 
 - name: cpp | Install C++ clang
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes" 

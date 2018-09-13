@@ -17,23 +17,16 @@
 #mkdir -p /usr/local/sonar-build-wrapper/bin/
 #cp ${WORKSPACE}/build-wrapper-*-x86/* /usr/local/sonar-build-wrapper/bin/
 
-- name: sonar | Create sonar repository directory {{ sonar_build_wrapper_target_dir }}
-  file: path={{ sonar_build_wrapper_target_dir }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
-  become: yes
-  changed_when: false
-
 - name: sonar | Download and expand C++ sonar build-wrapper
   unarchive:
     src: "{{ sonar_build_wrapper_download_url }}"
-    dest: "{{ sonar_build_wrapper_target_dir }}"
+    dest: "{{ sonar_target_dir }}"
     remote_src: yes
-  become: yes
-  ignore_errors: "{{ ansible_check_mode }}"
-
-- name: sonar | Move sonar-build-wrapper into place.
-  shell: >
-    mv {{ workspace }}/{{ sonar_build_wrapper_expanded_file }}/* {{ sonar_build_wrapper_target_dir }}
-  become: yes
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0777
+  become: yes                 ansible_ssh_keys
+#  ignore_errors: "{{ ansible_check_mode }}"
   ignore_errors: "true"
 
 #cd /usr/local
@@ -44,7 +37,10 @@
 - name: sonar | Download and expand sonar scanner
   unarchive:
     src: "{{ sonar_scanner_download_url }}"
-    dest: "{{ sonar_scanner_target_dir }}"
+    dest: "{{ sonar_target_dir }}"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0777
     remote_src: yes
   become: yes
   ignore_errors: "{{ ansible_check_mode }}"
@@ -52,6 +48,22 @@
 #TODO
 #sudo ln -s /usr/local/sonar-scanner-3.2.0.1227/bin/sonar-scanner /usr/bin/sonar-runner
 #sudo ln -s /usr/local/sonar-scanner-3.2.0.1227 /usr/local/sonar-runner
+
+- name: sonar | Create link to {{ sonar_scanner_target_dir }} directory
+  file:
+    dest: "{{ item.dest }}"
+    src: "{{ item.from }}/"
+    path: "{{ item.from }}/"
+    group: "{{ jenkins_user }}"
+    owner: "{{ jenkins_group }}"
+    state: link
+    force: yes
+  with_items:
+    - { from: '{{ sonar_target_dir }}{{ sonar_scanner_name }}', dest: '{{ sonar_scanner_target_dir }}' }
+    - { from: '{{ sonar_target_dir }}{{ sonar_build_wrapper_name }}', dest: '{{ sonar_build_wrapper_target_dir }}' }
+  become: yes
+  changed_when: false
+  ignore_errors: true
 
 - name: sonar | Copy sonar MGR CAM runner configuration
   copy: src=sonar-runner-mgr-cam.properties dest={{ jenkins_slave_home }}/sonar-runner-mgr-cam.properties backup=yes owner=jenkins

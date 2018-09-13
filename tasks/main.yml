@@ -95,6 +95,8 @@
 
 - import_tasks: cpp.yml
 
+- import_tasks: objc.yml
+
 - import_tasks: perl.yml
 
 ##
@@ -179,13 +181,13 @@
 
 - name: jenkins-slave | Set nproc limits for Jenkins
   lineinfile: dest="/etc/security/limits.d/90-nproc.conf" line='jenkins    soft    nproc     unlimited'
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and ansible_distribution_major_version in ('5','6'))
   become: yes
   changed_when: false
 
 - name: jenkins-slave | Set nproc limits for Jenkins
   lineinfile: dest="/etc/security/limits.d/20-nproc.conf" line='jenkins    soft    nproc     unlimited'
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version not in ('5','6'))
   become: yes
   changed_when: false
 

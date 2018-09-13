@@ -13,29 +13,42 @@
 # cd ..
 # rm -f Python-3.5.5.tgz
 
-#On RedHat
+#On RedHat 6
 #sudo yum install -y https://centos6.iuscommunity.org/ius-release.rpm
 #sudo yum install -y python35u python35u-pip
 
+#On CentOS 7
 #sudo yum install -y https://centos7.iuscommunity.org/ius-release.rpm
 #sudo yum install -y python35u python35u-pip
+#Other way below
+#See https://www.softwarecollections.org/en/scls/rhscl/rh-python35/
+# 1. Install a package with repository for your system:
+# On CentOS, install package centos-release-scl available in CentOS repository:
+#$ sudo yum install centos-release-scl
+# On RHEL, enable RHSCL repository for you system:
+#$ sudo yum-config-manager --enable rhel-server-rhscl-7-rpms
+# 2. Install the collection:
+#$ sudo yum install rh-python35
+# 3. Start using software collections:
+#$ scl --list
+#$ scl enable rh-python35 bash
 
-- name: jenkins-slave | Install python (RedHat based)
+- name: jenkins-slave | Install python (RedHat and CentOS based)
   yum:
     name: "{{ item }}"
     state: "{{ jenkins_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
   with_items:
    - "https://centos6.iuscommunity.org/ius-release.rpm"
    - python35u
    - python35u-pip
   become: yes
 
-- name: jenkins-slave | Install python (RedHat based)
+- name: jenkins-slave | Install python (RedHat and CentOS based)
   yum:
     name: "{{ item }}"
     state: "{{ jenkins_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
   with_items:
    - "https://centos7.iuscommunity.org/ius-release.rpm"
    - python35u

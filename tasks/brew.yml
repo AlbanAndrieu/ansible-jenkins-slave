@@ -27,15 +27,18 @@
   become: yes
 
 - name: brew | Install brew
-  action: command ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"
+  shell: 'ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"'
   changed_when: false
   become: yes
-  ignore_errors: true
+  become_user: "{{ jenkins_user }}"
+#TCP connection reset by peer need ignore_errors: true
+#  ignore_errors: true
 
 - name: brew | docker-compose check #2
   shell: "brew install cairo libxml2 libffi"
   ignore_errors: yes
   become: yes
+  become_user: "{{ jenkins_user }}"
         
 - name: brew | Install brew requirements
   pip:
@@ -53,6 +56,7 @@
   action: command brew uninstall mercurial python2
   changed_when: false
   become: yes
+  become_user: "{{ jenkins_user }}"
   ignore_errors: true
 
 #brew install openssl
