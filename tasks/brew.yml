@@ -32,7 +32,7 @@
   become: yes
   become_user: "{{ jenkins_user }}"
 #TCP connection reset by peer need ignore_errors: true
-#  ignore_errors: true
+  ignore_errors: true
 
 - name: brew | docker-compose check #2
   shell: "brew install cairo libxml2 libffi"
