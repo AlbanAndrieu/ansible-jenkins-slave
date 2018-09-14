@@ -35,13 +35,27 @@
   with_items:
     - gobjc
     - gobjc++
-    - libobjc-4.8-dev
-    - libobjc-5-dev #GCC runtime libobjc
 #    - libobjc2 #GNUstep runtime
 #Add cross compil
     - gobjc-mingw-w64
     - gobjc++-mingw-w64
   become: yes
+  
+- name: jenkins-slave | Install gobjc gnustep (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04','14.04']
+  with_items:
+    - libobjc-4.8-dev  #GCC runtime libobjc
+  become: yes
+  ignore_errors: true    
+  
+- name: jenkins-slave | Install gobjc gnustep (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','14.04']
+  with_items:
+    - libobjc-5-dev #GCC runtime libobjc
+  become: yes
+  ignore_errors: true  
 
 - name: jenkins-slave | Install objc (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
