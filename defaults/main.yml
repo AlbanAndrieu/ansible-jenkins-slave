@@ -68,7 +68,7 @@ proxy_cdnurl_server: "localhost"
 npm_phantomjs_cdnurl: ""
 npm_slimerjs_cdnurl: ""
 npm_strict_ssl: "false"
-#npm_prefix: "/usr/local"
+npm_prefix: "" # "/usr/local/bin" or "/usr/bin"
 # Define a list of global packages to be installed with NPM.
 npm_global_packages:
   #- phantomjs-prebuilt@2.1.16 #EACCES: permission denied
