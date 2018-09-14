@@ -119,12 +119,14 @@
 #npm install --unsafe-perm -g node-sass
 
 - name: jenkins-slave | Ensure npm registry settings
-  command: chdir=/usr/bin npm config set registry {{ npm_nexus_private_npm_url }}
+  #command: chdir=/usr/bin npm config set registry {{ npm_nexus_private_npm_url }}
+  command: npm config set registry {{ npm_nexus_private_npm_url }}
   when: not( (npm_nexus_private_npm_url is undefined) or (npm_nexus_private_npm_url is none) or (npm_nexus_private_npm_url | trim == '') ) and nodejs_enabled
   become: yes
 
 - name: Javascript | Ensure npm ssl settings
-  command: chdir=/usr/bin npm config set strict-ssl {{ npm_strict_ssl }}
+  #command: chdir=/usr/bin npm config set strict-ssl {{ npm_strict_ssl }}
+  command: npm config set strict-ssl {{ npm_strict_ssl }}
   when: not( (npm_strict_ssl is undefined) or (npm_strict_ssl is none) or (npm_strict_ssl | trim == '') ) and nodejs_enabled
   become: yes
   
