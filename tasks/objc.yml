@@ -1,0 +1,61 @@
+
+##
+ # Objective C libs
+ #
+
+#TO fix error: use of undeclared identifier 'NS_DURING'
+#See https://github.com/gnustep/libobjc2
+##'-fobjc-runtime=gcc', # For RedHat 7 and Ubuntu
+#'-fobjc-runtime=gnustep-1.9', # For RedHat 7 and Ubuntu
+##'-fobjc-runtime=gnustep-2.0', # For RedHat 7 and Ubuntu
+
+#GNUSTEP
+- name: jenkins-slave | Install gobjc gnustep (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - gnustep
+    - gnustep-devel
+  become: yes
+
+- name: jenkins-slave | Install gnustep (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
+  tags: cpp
+  with_items:
+   - gnustep-base-devel
+   - gnustep-make
+   - gnustep-filesystem
+  become: yes
+
+#OBJC
+- name: jenkins-slave | Install gobjc gnustep (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - gobjc
+    - gobjc++
+    - libobjc-4.8-dev
+    - libobjc-5-dev #GCC runtime libobjc
+#    - libobjc2 #GNUstep runtime
+#Add cross compil
+    - gobjc-mingw-w64
+    - gobjc++-mingw-w64
+  become: yes
+
+- name: jenkins-slave | Install objc (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+   - gcc-objc
+   - gcc-objc++
+   - libobjc #GCC runtime libobjc
+#Add cross compil
+#   - mingw32-gcc-objc
+#   - mingw32-gcc-objc++
+   - mingw64-gcc-objc
+   - mingw64-gcc-objc++
+  become: yes
+
+# yum install make libpng libpng-devel libtiff libtiff-devel libobjc libxml2 libxml2-devel libX11-devel libXt-devel libjpeg libjpeg-devel
