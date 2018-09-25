@@ -44,6 +44,13 @@
 - name: python | Set python link to python version
   set_fact: python2_version=2.7
 
+- name: python | Install missing pip2.7 (fix 'module' object has no attribute 'SSL_ST_INIT') part 1
+  shell: "pip{{ python2_version }} uninstall pyOpenSSL"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  changed_when: false
+  become: yes
+  ignore_errors: true
+
 - name: python | Install missing pip2.7
   shell: "curl https://bootstrap.pypa.io/get-pip.py -o - | sudo python2.7"
   register: curl_result

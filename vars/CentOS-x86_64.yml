@@ -9,6 +9,8 @@ jdk8_url: "http://download.oracle.com/otn-pub/java/jdk/8/{{ jdk8_archive }}"
 jdk8_archive_extracted: "jdk1.8.0"
 jvm_folder: "/usr/lib/jvm/"
 
+docker_base_opts: "/usr/bin/dockerd"
+
 #PostgreSQL
 odbcinst_PostgreSQL_Driver: /usr/lib/psqlodbcw.so
 odbcinst_PostgreSQL_Setup: /usr/lib/x86_64-linux-gnu/odbc/psqlodbca.so

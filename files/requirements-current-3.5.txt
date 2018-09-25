@@ -6,8 +6,9 @@
 #pip3 install CairoSVG==2.0.3
 #sudo /opt/ansible/env35/bin/pip3.5 uninstall docker-py; sudo /opt/ansible/env35/bin/pip3.5 uninstall docker; sudo /opt/ansible/env35/bin/pip3.5 uninstall docker-compose;
 #sudo /opt/ansible/env35/bin/pip3.5 install --upgrade --force-reinstall --no-cache-dir docker-compose==1.12.0
-ansible==2.6.0
-ansible-cmdb==1.27
+#sudo apt-get install unixodbc-dev #needed for pyodbc
+ansible==2.6.3
+ansible-cmdb==1.28
 ansible-lint==3.4.23
 ansicolors==1.1.8
 appdirs==1.4.3
@@ -40,12 +41,11 @@ defusedxml==0.5.0
 devscripts==1.0.0
 # Reference / disabled for now to avoid issues with docker
 # docker==3.4.1
-# docker-compose==1.22.0
 # molecule==2.16.0
 # testinfra==1.14.1
 # tox==3.1.2
 docker==3.3.0
-docker-compose==1.21.2
+docker-compose==1.22.0
 docker-pycreds==0.2.3
 dockerpty==0.4.1
 docopt==0.6.2

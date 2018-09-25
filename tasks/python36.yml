@@ -19,22 +19,22 @@
 
 #virtualenv py3-ansible -p /usr/local/bin/python3.6
 
-- name: jenkins-slave | Install python (RedHat based)
+- name: jenkins-slave | Install python (RedHat and CentOS based)
   yum:
     name: "{{ item }}"
     state: "{{ jenkins_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
   with_items:
    - "https://centos6.iuscommunity.org/ius-release.rpm"
    - python36u
    - python36u-pip
   become: yes
 
-- name: jenkins-slave | Install python (RedHat based)
+- name: jenkins-slave | Install python (RedHat and CentOS based)
   yum:
     name: "{{ item }}"
     state: "{{ jenkins_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
   with_items:
    - "https://centos7.iuscommunity.org/ius-release.rpm"
    - python36u
@@ -98,12 +98,12 @@
     name: virtualenv
     executable: pip{{ python3_version }}
 
-- name: python3 | Copy the minimal requirements configuration file for python
-  copy: src=requirements-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-minimal-{{ python3_version }}.txt backup=yes
-  become: true
+#- name: python3 | Copy the minimal requirements configuration file for python
+#  copy: src=requirements-minimal-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-minimal-current-{{ python3_version }}.txt backup=yes
+#  become: true
 
 - name: python3 | Copy the requirements configuration file for python
-  copy: src=requirements-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-{{ python3_version }}.txt backup=yes
+  copy: src=requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-current-{{ python3_version }}.txt backup=yes
   become: true
 
 - name: python3 | Install apt dependencies for python 3 requirements
@@ -124,7 +124,7 @@
     - python-dev
     - python3-lxml
 
-- name: python3 | Uninstall apt dependencies for python 3 requirement
+- name: python3 | Uninstall apt dependencies for python 3 requirements
   pip:
     name: "{{ item }}"
     executable: "pip{{ python_version }}"
@@ -135,9 +135,24 @@
   ignore_errors: '{{ ansible_check_mode }}'
   become: yes
 
+- name: python3 | Install C++ librairies database (Debian based) for pyodbc
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - unixodbc-dev #ODBC
+  become: yes
+
+- name: python3 | Install C++ librairies for database (CentOS and RedHat based) for pyodbc
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+   - unixODBC-devel #ODBC
+  become: yes
+
 - name: python3 | Create venv and install requirements
   pip:
-    requirements: "{{ ansible_user_dir }}/requirements-minimal-{{ python3_version }}.txt"
+    requirements: "{{ ansible_user_dir }}/requirements-minimal-current-{{ python3_version }}.txt"
     virtualenv: /opt/ansible/env36
     virtualenv_python: "python{{ python3_version }}"
   tags:

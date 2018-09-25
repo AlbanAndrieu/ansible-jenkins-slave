@@ -25,7 +25,6 @@
   with_items:
     - test
     - postgres
-#  become_method: su
   become: true
   when: ansible_os_family != "Windows"
 
@@ -39,7 +38,6 @@
       - net.bridge.bridge-nf-call-arptables
       - net.bridge.bridge-nf-call-iptables
       - net.bridge.bridge-nf-call-ip6tables
-#  become_method: su
   become: true
   when: ansible_os_family == "GosLinux" or ansible_os_family == "ROSA"
 
@@ -52,10 +50,23 @@
 
 - name: jenkins-slave | Change coredump filename pattern
   sysctl: name="kernel.core_pattern" value="/home/{{ jenkins_user }}/coredumps/core-%e-%p-%t" sysctl_set=yes state=present
-#  become_method: su
   become: true
   when:
     - ansible_os_family != "Windows"
+
+- name: jenkins-slave | Change coredump fs.file-max
+  sysctl: name="fs.file-max" value="100000" sysctl_set=yes state=present
+  become: true
+  when:
+    - ansible_os_family != "Windows"
+
+- name: jenkins-slave | Fix WARNING bridge-nf-call-iptables is disabled
+  sysctl: name="fs.file-max" value="1" sysctl_set=yes state=present
+  with_items:
+      - net.bridge.bridge-nf-call-iptables
+      - net.bridge.bridge-nf-call-ip6tables
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  become: true
 
 - name: jenkins-slave | Install utility tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
