@@ -1,3 +1,4 @@
+---
 
 - name: Workstation | Install the 'Development tools' package group
   yum:
@@ -5,18 +6,18 @@
     state: present
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
 
-#TODO buggy on CentOS 7
-#Repository zabbix-non-supported is listed more than once in the configuration\nError: rsync31u conflicts with rsync-3.1.2-4.el7.x86_64
+# TODO buggy on CentOS 7
+# Repository zabbix-non-supported is listed more than once in the configuration\nError: rsync31u conflicts with rsync-3.1.2-4.el7.x86_64
 - name: Workstation | Install the 'Gnome desktop' environment group
   yum:
     name: "@^gnome-desktop-environment"
     state: present
   when: ((ansible_distribution == 'CentOS' and ansible_distribution_major_version not in '7') or ansible_distribution == 'Red Hat Enterprise Linux')
 
-#https://developers.redhat.com/products/developertoolset/hello-world/#fndtn-rhel-6
-#subscription-manager repos --list | egrep rhscl
-#subscription-manager repos --enable rhel-server-rhscl-6-rpms
-#subscription-manager repos --enable rhel-6-server-optional-rpms
+# https://developers.redhat.com/products/developertoolset/hello-world/#fndtn-rhel-6
+# subscription-manager repos --list | egrep rhscl
+# subscription-manager repos --enable rhel-server-rhscl-6-rpms
+# subscription-manager repos --enable rhel-6-server-optional-rpms
 
 - name: Workstation | Install the 'RHSCL 7' repo (RedHat)
   command: "subscription-manager repos --enable={{ item }}"
@@ -24,7 +25,7 @@
       - rhel-server-rhscl-6-rpms
       - rhel-6-server-optional-rpms
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
-  become: yes
+  become: true
 
 - name: Workstation | Install the 'RHSCL 7' repo (RedHat)
   command: "subscription-manager repos --enable={{ item }}"
@@ -32,73 +33,73 @@
       - rhel-server-rhscl-7-rpms
       - rhel-7-server-optional-rpms
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
-  become: yes
+  become: true
 
-#See https://www.softwarecollections.org/en/scls/rhscl/devtoolset-4/
+# See https://www.softwarecollections.org/en/scls/rhscl/devtoolset-4/
 - name: Workstation | Install the 'RHSCL 7' repo (CentOS)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - centos-release-scl
-#sudo yum install centos-release-scl
-#sudo yum install devtoolset-4
+# sudo yum install centos-release-scl
+# sudo yum install devtoolset-4
   when: (ansible_distribution == 'CentOS')
-  become: yes
+  become: true
 
 - name: Workstation | Install the 'Development tools 7'
   yum:
     name: "yum"
     state: present
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
-  become: yes
+  become: true
 
-#scl enable devtoolset-7 bash
+# scl enable devtoolset-7 bash
 
 # yum list available devtoolset-7-\*
 
-#- name: Workstation | Install the 'Development tools 7' repo (RedHat)
-#  command: "subscription-manager repos --enable={{ item }}"
-#  with_items:
-#      - rhel-6-server-devtools-rpms #Server
-#      #- rhel-6-workstation-devtools-rpms #Workstation
-#  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
-#  become: yes
+# - name: Workstation | Install the 'Development tools 7' repo (RedHat)
+#   command: "subscription-manager repos --enable={{ item }}"
+#   with_items:
+#       - rhel-6-server-devtools-rpms #Server
+#       #- rhel-6-workstation-devtools-rpms #Workstation
+#   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+#   become: true
 
 - name: Workstation | Install the 'Development tools 7' repo (RedHat)
   command: "subscription-manager repos --enable={{ item }}"
   with_items:
-      - rhel-7-server-devtools-rpms #Server
-      #- rhel-7-workstation-devtools-rpms #Workstation
+    - rhel-7-server-devtools-rpms       # Server
+#   - rhel-7-workstation-devtools-rpms  # Workstation
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
-  become: yes
+  become: true
 
-#https://access.redhat.com/documentation/en-us/red_hat_developer_tools/2018.1/html/using_eclipse/eclipse_4_7_2
-#cd /etc/pki/rpm-gpg
-#wget -O RPM-GPG-KEY-redhat-devel https://www.redhat.com/security/data/a5787476.txt
-#rpm --import RPM-GPG-KEY-redhat-devel
+# https://access.redhat.com/documentation/en-us/red_hat_developer_tools/2018.1/html/using_eclipse/eclipse_4_7_2
+# cd /etc/pki/rpm-gpg
+# wget -O RPM-GPG-KEY-redhat-devel https://www.redhat.com/security/data/a5787476.txt
+# rpm --import RPM-GPG-KEY-redhat-devel
 
-#https://access.redhat.com/documentation/en-us/red_hat_software_collections/2/html/2.3_release_notes/chap-rhscl#sect-RHSCL-Changes-Eclipse
+# https://access.redhat.com/documentation/en-us/red_hat_software_collections/2/html/2.3_release_notes/chap-rhscl#sect-RHSCL-Changes-Eclipse
 
 - name: Workstation | Install the eclipse
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - eclipse
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
-  become: yes
+  become: true
 
 - name: Workstation | Install the eclipse
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - rh-eclipse47
   when: ((ansible_distribution == 'CentOS' and ansible_distribution_major_version not in '7') or (ansible_distribution == 'Red Hat Enterprise Linux' and not ansible_distribution_major_version == '6'))
-  become: yes
+  become: true
 
-#scl enable rh-eclipse47 eclipse
+# scl enable rh-eclipse47 eclipse
 
 - name: Workstation | Install the rh package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   #- rh-nodejs6
+#   - rh-nodejs6
    - rh-maven33
    - rh-java
   when: ((ansible_distribution == 'CentOS' and ansible_distribution_major_version not in '7') or (ansible_distribution == 'Red Hat Enterprise Linux' and not ansible_distribution_major_version == '5'))
-  become: yes
+  become: true

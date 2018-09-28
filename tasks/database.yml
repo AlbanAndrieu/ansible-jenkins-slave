@@ -1,7 +1,7 @@
+---
 
-#DATABASE
-#TODO instead use role https://github.com/marcusianlevine/ansible-role-odbc-container
-#See Connecting to MSSQL from Linux with unixODBC + FreeTDS http://help.interfaceware.com/kb/904
+# TODO instead use role https://github.com/marcusianlevine/ansible-role-odbc-container
+# See Connecting to MSSQL from Linux with unixODBC + FreeTDS http://help.interfaceware.com/kb/904
 - name: database | Install C++ librairies database (Solaris based)
   pkgutil: name={{ item }} state=present
   when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
@@ -14,117 +14,117 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
-    - unixodbc-dev #ODBC
-    - freetds-dev #freetds
-  become: yes
+    - unixodbc-dev    # ODBC
+    - freetds-dev     # freetds
+  become: true
 
 - name: database | Install C++ librairies for database (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-   - unixODBC-devel #ODBC
-   - libtool-ltdl-devel #ODBC
-   - freetds-devel #freetds
-  become: yes
+    - unixODBC-devel        # ODBC
+    - libtool-ltdl-devel    # ODBC
+    - freetds-devel         # freetds
+  become: true
 
 # Install unixodbc (ODBC connections), freetds (SQL Server connections) and tdsodbc (bridge between the former)
 - name: database | Install C++ librairies for running (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
-    - unixodbc #ODBC
-    - unixodbc-bin #ODBC
-    - freetds-common #freetds
-    - freetds-bin #freetds
-    - tdsodbc #freetds
-    #- libmyodbc #ODBC mysql
-    - odbc-postgresql #ODBC postgreSQL
-    - libaio1 #ODBC oracle install client
-  become: yes
+    - unixodbc              # ODBC
+    - unixodbc-bin          # ODBC
+    - freetds-common        # freetds
+    - freetds-bin           # freetds
+    - tdsodbc               # freetds
+# - libmyodbc               # ODBC mysql
+    - odbc-postgresql       # ODBC postgreSQL
+    - libaio1               # ODBC oracle install client
+  become: true
 
 - name: database | Install C++ librairies for running (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-    - unixODBC #ODBC
-    - libtool-ltdl #ODBC
-    - freetds #freetds
-    - mysql-connector-odbc #ODBC mysql
-    - postgresql-odbc #ODBC postgreSQL
-    - libaio #ODBC oraacle install client
-  become: yes
+    - unixODBC                 # ODBC
+    - libtool-ltdl             # ODBC
+    - freetds                  # freetds
+    - mysql-connector-odbc     # ODBC mysql
+    - postgresql-odbc          # ODBC postgreSQL
+    - libaio                   # ODBC oraacle install client
+  become: true
 
-#TODO automate install oracle open client in /opt/oracle/
+# TODO automate install oracle open client in /opt/oracle/
 
-#TODO for Almonde, database configuration are scripted on:
-#http://par-castor/viewvc/almonde/AlmondeFactory/trunk/Almonde/Data/Scripts/x86_64-linux-rhel/installunixodbc.sh?revision=81030&view=markup
-#http://par-castor/viewvc/almonde/AlmondeFactory/trunk/Almonde/Data/Scripts/x86_64-linux-rhel/oracle_adddsn_dataconnector.sh?revision=80883&view=markup
+# TODO for Almonde, database configuration are scripted on:
+# http://par-castor/viewvc/almonde/AlmondeFactory/trunk/Almonde/Data/Scripts/x86_64-linux-rhel/installunixodbc.sh?revision=81030&view=markup
+# http://par-castor/viewvc/almonde/AlmondeFactory/trunk/Almonde/Data/Scripts/x86_64-linux-rhel/oracle_adddsn_dataconnector.sh?revision=80883&view=markup
 
 - name: database | Copy unixODBC database configuration (step 1)
   template: src=database/odbcinst.ini.j2 dest=/etc/odbcinst.ini backup=yes  mode=0755
-  become: yes
+  become: true
   changed_when: false
 
 - name: database | Copy unixODBC database configuration (step 2)
   template: src=database/odbc.ini.j2 dest=/etc/odbc.ini backup=yes  mode=0755
-  become: yes
+  become: true
   changed_when: false
 
 - name: database | Copy freetds database configuration
   template: src=database/freetds.conf.j2 dest=/etc/freetds.conf backup=yes  mode=0755
-  become: yes
+  become: true
   changed_when: false
 
 - name: database | Create oracle instantclient directory
   file: path={{ database_docker_instantclient }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
-  become: yes
+  become: true
   changed_when: false
 
 - name: database | Copy tnsnames database configuration
   template: src=database/oracle/tnsnames.ora.j2 dest={{ database_docker_instantclient }}/tnsnames.ora backup=yes  mode=0755
-  become: yes
+  become: true
   ignore_errors: true
   changed_when: false
 
-#For MacOSX
-#See
-#brew install unixodbc
-#brew install freetds --with-tdsver=7.2 --with-unixodbc
+# For MacOSX
+# See
+# brew install unixodbc
+# brew install freetds --with-tdsver=7.2 --with-unixodbc
 
-#otool -L /usr/local/lib/libtdsodbc.so
+# otool -L /usr/local/lib/libtdsodbc.so
 
-#sudo port install wget
-#sudo port install freetds
-#sudo port install unixODBC
+# sudo port install wget
+# sudo port install freetds
+# sudo port install unixODBC
 
-#unixODBC (can check with isql)
-#isql parl011138_2014 sa Almonde01 -v
-#freeTDS (can check with tsql)
-#tsql -S parl011138_2014 -U sa -P Almonde01
+# unixODBC (can check with isql)
+# isql parl011138_2014 sa Almonde01 -v
+# freeTDS (can check with tsql)
+# tsql -S parl011138_2014 -U sa -P Almonde01
 
-#Oracle
-#osql -S pard013448_2012 -U sa -P Almonde01
+# Oracle
+# osql -S pard013448_2012 -U sa -P Almonde01
 
-#See rlwrap sqlplus64 username/password@//dbhost:1521/SID
+# See rlwrap sqlplus64 username/password@//dbhost:1521/SID
 - name: database | Install wrapper and alien tool for sqlplus (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - rlwrap
     - alien
-  become: yes
-  ignore_errors: yes
+  become: true
+  ignore_errors: true
 
 - name: database | Create oracle data container directory
   file: path={{ database_docker_oradata }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
-  become: yes
+  become: true
   changed_when: false
 
 - name: database | Create oracle container directory
   file: path={{ database_docker_scripts }}/startup state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
-  become: yes
+  become: true
   changed_when: false
 
 - name: database | Configure oracle tablespaces
@@ -135,7 +135,7 @@
     group: '{{ jenkins_group }}'
     mode: 0600
 #  when: shell_git_configure_enabled
-  become: yes
+  become: true
   changed_when: false
 
 - name: database | Configure oracle users
@@ -146,5 +146,5 @@
     group: '{{ jenkins_group }}'
     mode: 0600
 #  when: shell_git_configure_enabled
-  become: yes
+  become: true
   changed_when: false

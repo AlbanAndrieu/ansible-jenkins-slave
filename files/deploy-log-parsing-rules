@@ -15,6 +15,12 @@ warning /Error requesting archive./
 warning /Error extracting archive/
 warning /tar: Error is not recoverable: exiting now/
 
+#filebeat
+error /error loading config file/
+
+#database
+error /- Native Error/- Native Error
+
 #docker
 ok /Error: No such object:/
 #javascript uncss

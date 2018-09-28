@@ -1,3 +1,4 @@
+---
 
 - name: jenkins-slave | Install X debug tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
@@ -17,7 +18,7 @@
    - libXrender
    - libXtst
   become: true
-  ignore_errors: true     
+  ignore_errors: true
   changed_when: false
 
 - name: jenkins-slave | Coredump handling
@@ -41,12 +42,12 @@
   become: true
   when: ansible_os_family == "GosLinux" or ansible_os_family == "ROSA"
 
-#Check with
-#sysctl -p /etc/sysctl.conf
+# Check with
+# sysctl -p /etc/sysctl.conf
 
-#net.ipv6.conf.all.disable_ipv6 = 1
-#net.ipv6.conf.default.disable_ipv6 = 1
-#net.ipv6.conf.lo.disable_ipv6 = 1
+# net.ipv6.conf.all.disable_ipv6 = 1
+# net.ipv6.conf.default.disable_ipv6 = 1
+# net.ipv6.conf.lo.disable_ipv6 = 1
 
 - name: jenkins-slave | Change coredump filename pattern
   sysctl: name="kernel.core_pattern" value="/home/{{ jenkins_user }}/coredumps/core-%e-%p-%t" sysctl_set=yes state=present
@@ -73,7 +74,7 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' or ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - lsof
-  become: yes
+  become: true
   ignore_errors: true
   changed_when: false
 
@@ -82,7 +83,7 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' or ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - gdb
-  become: yes
+  become: true
   ignore_errors: true
   changed_when: false
 
@@ -91,6 +92,6 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - pstack
-  become: yes
+  become: true
   ignore_errors: true
   changed_when: false

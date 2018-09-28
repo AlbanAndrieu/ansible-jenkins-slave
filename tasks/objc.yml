@@ -1,22 +1,19 @@
+---
 
-##
- # Objective C libs
- #
+# TO fix error: use of undeclared identifier 'NS_DURING'
+# See https://github.com/gnustep/libobjc2
+# #'-fobjc-runtime=gcc', # For RedHat 7 and Ubuntu
+# '-fobjc-runtime=gnustep-1.9', # For RedHat 7 and Ubuntu
+# #'-fobjc-runtime=gnustep-2.0', # For RedHat 7 and Ubuntu
 
-#TO fix error: use of undeclared identifier 'NS_DURING'
-#See https://github.com/gnustep/libobjc2
-##'-fobjc-runtime=gcc', # For RedHat 7 and Ubuntu
-#'-fobjc-runtime=gnustep-1.9', # For RedHat 7 and Ubuntu
-##'-fobjc-runtime=gnustep-2.0', # For RedHat 7 and Ubuntu
-
-#GNUSTEP
+# GNUSTEP
 - name: jenkins-slave | Install gobjc gnustep (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - gnustep
     - gnustep-devel
-  become: yes
+  become: true
 
 - name: jenkins-slave | Install gnustep (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -26,36 +23,36 @@
    - gnustep-base-devel
    - gnustep-make
    - gnustep-filesystem
-  become: yes
+  become: true
 
-#OBJC
+# OBJC
 - name: jenkins-slave | Install gobjc gnustep (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - gobjc
     - gobjc++
-#    - libobjc2 #GNUstep runtime
-#Add cross compil
+#    - libobjc2            # GNUstep runtime
+# Add cross compil
     - gobjc-mingw-w64
     - gobjc++-mingw-w64
-  become: yes
+  become: true
   
 - name: jenkins-slave | Install gobjc gnustep (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04','14.04']
   with_items:
-    - libobjc-4.8-dev  #GCC runtime libobjc
-  become: yes
-  ignore_errors: true    
+    - libobjc-4.8-dev     # GCC runtime libobjc
+  become: true
+  ignore_errors: true
   
 - name: jenkins-slave | Install gobjc gnustep (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','14.04']
   with_items:
-    - libobjc-5-dev #GCC runtime libobjc
-  become: yes
-  ignore_errors: true  
+    - libobjc-5-dev       # GCC runtime libobjc
+  become: true
+  ignore_errors: true
 
 - name: jenkins-slave | Install objc (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -64,12 +61,12 @@
   with_items:
    - gcc-objc
    - gcc-objc++
-   - libobjc #GCC runtime libobjc
-#Add cross compil
+    - libobjc              # GCC runtime libobjc
+# Add cross compil
 #   - mingw32-gcc-objc
 #   - mingw32-gcc-objc++
    - mingw64-gcc-objc
    - mingw64-gcc-objc++
-  become: yes
+  become: true
 
 # yum install make libpng libpng-devel libtiff libtiff-devel libobjc libxml2 libxml2-devel libX11-devel libXt-devel libjpeg libjpeg-devel

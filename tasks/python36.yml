@@ -1,9 +1,9 @@
+---
+# TODO on RedHat add python3.6 by hand
 
-#TODO on RedHat add python3.6 by hand
-
-#TODO RedHat https://www.tecmint.com/install-python-in-linux/ install python 3.6 for ansible
-#yum -y groupinstall development
-#yum -y install zlib-devel
+# TODO RedHat https://www.tecmint.com/install-python-in-linux/ install python 3.6 for ansible
+# yum -y groupinstall development
+# yum -y install zlib-devel
 
 # wget https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tar.xz
 # tar xJf Python-3.6.3.tar.xz
@@ -11,13 +11,13 @@
 # ./configure
 # make
 # make install
-#rm Python-3.6.3.tgz
+# rm Python-3.6.3.tgz
 
 # which python3
 # python3 -V
 # python3.6.3 -V
 
-#virtualenv py3-ansible -p /usr/local/bin/python3.6
+# virtualenv py3-ansible -p /usr/local/bin/python3.6
 
 - name: jenkins-slave | Install python (RedHat and CentOS based)
   yum:
@@ -28,7 +28,7 @@
    - "https://centos6.iuscommunity.org/ius-release.rpm"
    - python36u
    - python36u-pip
-  become: yes
+  become: true
 
 - name: jenkins-slave | Install python (RedHat and CentOS based)
   yum:
@@ -39,14 +39,14 @@
    - "https://centos7.iuscommunity.org/ius-release.rpm"
    - python36u
    - python36u-pip
-  become: yes
+  become: true
 
 - name: python3 | Set python link to python version
   set_fact: python3_version=3.6
 
 - name: python3 | Install python 3 requirement
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-  become: yes
+  become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
   with_items:
     - python3-dev
@@ -62,24 +62,24 @@
   register: curl_result
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
   changed_when: false
-  become: yes
+  become: true
 
-#python3.6 -m pip install --user pipenv
+# python3.6 -m pip install --user pipenv
 
-#- debug: msg="{{ curl_result.stdout }}"
+# - debug: msg="{{ curl_result.stdout }}"
 
 - name: python3 | Run pip check
   shell: (pip - && pip3.6 -V) | uniq
   when: curl_result.changed
-  become: yes
+  become: true
   ignore_errors: true
 
-#- name: python3 | Install devops tools requirements
-#  pip: name:{{ item }}
-#       executable:pip{{ python3_version }}
-#  with_items:
-#    - "pywinrm>=0.2.2"
-#  become: yes
+# - name: python3 | Install devops tools requirements
+#   pip: name:{{ item }}
+#        executable:pip{{ python3_version }}
+#   with_items:
+#     - "pywinrm>=0.2.2"
+#   become: true
 
 - name: python3 | Install virtualenv via pip
   pip:
@@ -90,7 +90,7 @@
   shell: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
   when: not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
 
 - name: python3 | Install virtualenv via pip
@@ -98,9 +98,9 @@
     name: virtualenv
     executable: pip{{ python3_version }}
 
-#- name: python3 | Copy the minimal requirements configuration file for python
-#  copy: src=requirements-minimal-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-minimal-current-{{ python3_version }}.txt backup=yes
-#  become: true
+# - name: python3 | Copy the minimal requirements configuration file for python
+#   copy: src=requirements-minimal-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-minimal-current-{{ python3_version }}.txt backup=yes
+#   become: true
 
 - name: python3 | Copy the requirements configuration file for python
   copy: src=requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-current-{{ python3_version }}.txt backup=yes
@@ -108,7 +108,7 @@
 
 - name: python3 | Install apt dependencies for python 3 requirements
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-  become: yes
+  become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - libcups2-dev
@@ -116,7 +116,7 @@
 
 - name: python3 | Install apt dependencies for python 3 lxml requirements
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-  become: yes
+  become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - libxml2-dev
@@ -133,22 +133,22 @@
   with_items:
     - libxml2-python
   ignore_errors: '{{ ansible_check_mode }}'
-  become: yes
+  become: true
 
 - name: python3 | Install C++ librairies database (Debian based) for pyodbc
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
-    - unixodbc-dev #ODBC
-  become: yes
+    - unixodbc-dev    # ODBC
+  become: true
 
 - name: python3 | Install C++ librairies for database (CentOS and RedHat based) for pyodbc
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-   - unixODBC-devel #ODBC
-  become: yes
+    - unixODBC-devel   # ODBC
+  become: true
 
 - name: python3 | Create venv and install requirements
   pip:
@@ -159,10 +159,11 @@
     - venv
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ ansible_user_dir }}/.local/bin"
-  ignore_errors: true
-
-#- name: python3 | Install missing pip requirement
-#  shell: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
-#  changed_when: false
-#  become: yes
+# TODO remove ignore_errors
 #  ignore_errors: true
+
+# - name: python3 | Install missing pip requirement
+#   shell: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
+#   changed_when: false
+#   become: true
+#   ignore_errors: true

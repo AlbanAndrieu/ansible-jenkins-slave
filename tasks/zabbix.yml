@@ -1,8 +1,9 @@
+---
 
-#wget -q -O - http://linux.dell.com/repo/hardware/latest/bootstrap.cgi > bootstrap.cgi
-#bash bootstrap.cgi
-#yum install srvadmin-base
-#yum install srvadmin-storageservices
+# wget -q -O - http://linux.dell.com/repo/hardware/latest/bootstrap.cgi > bootstrap.cgi
+# bash bootstrap.cgi
+# yum install srvadmin-base
+# yum install srvadmin-storageservices
 
 - name: zabbix | Remove srvadmin-storelib-sysfs conflict megacli
   action: "{{ ansible_pkg_mgr }} name={{ item }} state=absent update_cache=yes"
@@ -10,7 +11,7 @@
   with_items:
    - srvadmin-storelib-sysfs
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
 
 - name: zabbix | Install sensors package
@@ -20,7 +21,7 @@
    - lm_sensors
    - xsensors
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
 
 - name: zabbix | Create /opt/zabbix/externalscripts folder
@@ -86,14 +87,14 @@
   command: systemctl disable chronyd
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6') )
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
 
 - name: zabbix | Disable ufw (to allow access port 10050 for zabbix)
   command: systemctl disable ufw
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
 
 - name: zabbix | Install locate package
@@ -103,27 +104,27 @@
    - mlocate
 #  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
 
 - name: zabbix | updatedb
   command: updatedb
 #  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
 
-#TODO
-##See https://libstorage.github.io/libstoragemgmt-doc/doc/install.html
-#sudo yum install libstoragemgmt
-#sudo yum install libstoragemgmt-\*-plugin
-#sudo systemctl start libstoragemgmt.service
-#lsmcli -u 'sim://' list --type systems
+# TODO
+# #See https://libstorage.github.io/libstoragemgmt-doc/doc/install.html
+# sudo yum install libstoragemgmt
+# sudo yum install libstoragemgmt-\*-plugin
+# sudo systemctl start libstoragemgmt.service
+# lsmcli -u 'sim://' list --type systems
 
-#FYI perccli64 is installed on administrations role dell.yml
+# FYI perccli64 is installed on administrations role dell.yml
 - name: zabbix | Check perccli64 properly installed
   command: /opt/MegaRAID/perccli/perccli64 --version
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and (ansible_system_vendor == 'Dell Inc.' or ansible_system_vendor == 'VMware, Inc.')
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true

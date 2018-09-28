@@ -1,3 +1,4 @@
+---
       
 - name: Install qa package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -14,5 +15,5 @@
     - docbook2x
     - make
     - autoconf
-  become: yes
+  become: true
   ignore_errors: true

@@ -1,4 +1,4 @@
-#ansible-playbook jenkins.yml --extra-vars "host=myhost user=myuser" -i hosts --ask-sudo-pass
+---
 
 - name: Assert platform is supported
   assert:
@@ -11,10 +11,10 @@
 
 - name: jenkins-slave | Update the apt cache (in case of issue)
   action: apt update-cache=yes
-  become: yes
+  become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 
-#FYI hdd.yml must be first (before creating slave folders)
+# FYI hdd.yml must be first (before creating slave folders)
 - import_tasks: hdd.yml
 
 - import_tasks: java.yml
@@ -23,16 +23,13 @@
 
 - import_tasks: python.yml
 
-#FYI ansible.yml need python.yml
+# FYI ansible.yml need python.yml
 - import_tasks: ansible.yml
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
-  
-##
- # other
- #
+
 - name: Install ant package
   action: "{{ ansible_pkg_mgr }} name='ant' state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  become: yes
+  become: true
 
 - name: Install zip package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -40,7 +37,7 @@
     - zip
     - unzip
     - bzip2
-  become: yes
+  become: true
   ignore_errors: true
 
 - import_tasks: qa.yml
@@ -55,7 +52,7 @@
   #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
   #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-  become: yes
+  become: true
 
 - name: jenkins-slave | Install tools needed by grunt-zaproxy html report
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -64,7 +61,7 @@
 #Needed for having /usr/bin/xml2-config in the PATH
    - libxml2-dev
    - libxslt-dev
-  become: yes
+  become: true
 
 - name: jenkins-slave | Install tools needed by grunt-zaproxy html report
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -73,7 +70,7 @@
    - libxml2 #Needed for having /usr/bin/xml2-config in the PATH
    - libxslt
    - libexslt
-  become: yes
+  become: true
 
 #TODO first install pip on RedHat and Ubuntu
 #- name: jenkins-slave | Install Ansible syntax check (Debian based)
@@ -81,7 +78,7 @@
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 #  with_items:
 #    - ansible-lint
-#  become: yes
+#  become: true
 
 - import_tasks: docker.yml
 
@@ -91,48 +88,13 @@
 
 - import_tasks: security.yml
 
-#- import_tasks: gcc.yml
+# - import_tasks: gcc.yml
 
 - import_tasks: cpp.yml
 
 - import_tasks: objc.yml
 
 - import_tasks: perl.yml
-
-##
- # Jenkins user
- #
-
-#- name: Kill connection used by user jenkins
-#  action: shell killall -u {{ jenkins_user }} || true
-#  changed_when: false
-#  become: yes
-#  ignore_errors: true
-
-#TODO https://stackoverflow.com/questions/26677064/create-and-use-group-without-restart
-
-- name: jenkins-slave | Create a jenkins group
-  group:
-      name=jenkins
-      state=present
-  become: yes
-
-- name: jenkins-slave | Create jenkins user
-  user: name={{ jenkins_user }} password={{ jenkins_password }} update_password=always comment="Jenkins user" home={{ jenkins_home }} shell={{ jenkins_shell }} groups=docker,{{ jenkins_group }}
-  become: yes
-  ignore_errors: true
-
-- name: jenkins-slave | Create .ssh folder
-  file: path={{ jenkins_home }}/.ssh state=directory mode=0700 owner={{ jenkins_user }} group={{ jenkins_group }}
-  ignore_errors: true
-
-- import_tasks: ssh.yml
-  when: jenkins_ssh_key_file != ""
-  tags: [jenkins, jenkins-ssh]
-
-- name: jenkins-slave | Update authorized_keys rights
-  file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-  ignore_errors: true
 
 - import_tasks: shell.yml
 
@@ -160,51 +122,51 @@
 - name: jenkins-slave | Set limits
   lineinfile: dest=/etc/security/limits.conf line="{{item.key}}" regexp="{{item.value}}"
   with_dict:
-     "*               soft    nofile          65536" : '\*\s+soft\s+nofile'
-     "*               hard    nofile          65536" : '\*\s+hard\s+nofile'
-     "root            soft    nofile          16384" : 'root\s+soft\s+nofile'
-     "root            hard    nofile          65536" : 'root\s+hard\s+nofile'
+    "*               soft    nofile          65536": '\*\s+soft\s+nofile'
+    "*               hard    nofile          65536": '\*\s+hard\s+nofile'
+    "root            soft    nofile          16384": 'root\s+soft\s+nofile'
+    "root            hard    nofile          65536": 'root\s+hard\s+nofile'
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-  become: yes
+  become: true
   changed_when: false
 
 - name: jenkins-slave | Set limits
   lineinfile: dest=/etc/security/limits.conf line="{{item.key}}" regexp="{{item.value}}"
   with_dict:
-     "*               soft    nofile          65536" : '\*\s+soft\s+nofile'
-     "*               hard    nofile          65536" : '\*\s+hard\s+nofile'
-     "root            soft    nofile          65536" : 'root\s+soft\s+nofile'
-     "root            hard    nofile          65536" : 'root\s+hard\s+nofile'
+    "*               soft    nofile          65536": '\*\s+soft\s+nofile'
+    "*               hard    nofile          65536": '\*\s+hard\s+nofile'
+    "root            soft    nofile          65536": 'root\s+soft\s+nofile'
+    "root            hard    nofile          65536": 'root\s+hard\s+nofile'
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  become: yes
+  become: true
   changed_when: false
 
 - name: jenkins-slave | Set nproc limits for Jenkins
   lineinfile: dest="/etc/security/limits.d/90-nproc.conf" line='jenkins    soft    nproc     unlimited'
-  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and ansible_distribution_major_version in ('5','6'))
-  become: yes
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version in ('5','6'))
+  become: true
   changed_when: false
 
 - name: jenkins-slave | Set nproc limits for Jenkins
   lineinfile: dest="/etc/security/limits.d/20-nproc.conf" line='jenkins    soft    nproc     unlimited'
   when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version not in ('5','6'))
-  become: yes
+  become: true
   changed_when: false
 
 - name: jenkins-slave | Set core limits for Jenkins
   lineinfile: dest="/etc/security/limits.conf" line='jenkins    soft    core     unlimited'
-  become: yes
+  become: true
   changed_when: false
 
 - name: jenkins-slave | Create {{ jenkins_slave_home }} directory
   file: path={{ jenkins_slave_home }} state=directory
-  become: yes
+  become: true
   changed_when: false
   ignore_errors: true
 
 - name: jenkins-slave | Create maven repository directory
   file: path={{ maven_repository }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
-  become: yes
+  become: true
   changed_when: false
 
 - name: jenkins-slave | Checking slave folders
@@ -213,7 +175,7 @@
   register: folder_stats
   with_items: "{{ jenkins_slave_directory }}"
   when: jenkins_slave_directory | length > 0
-  become: yes
+  become: true
   changed_when: false
 
 - name: jenkins-slave | Creating multiple folders without disturbing previous permissions
@@ -226,14 +188,14 @@
   when: item.stat.exists == false
   with_items:
   - "{{folder_stats.results}}"
-  become: yes
+  become: true
   changed_when: false
   ignore_errors: true
   
 - name: jenkins-slave | Create Jenkins thin backup directory
   file: path={{ jenkins_remote_thinbackup }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
 
 - import_tasks: sonar.yml
@@ -244,12 +206,12 @@
 
 - name: jenkins-slave | Copy the .npmrc script
   template: src=.npmrc.j2 dest={{ jenkins_home }}/.npmrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-  become: yes
+  become: true
   changed_when: false
 
 - name: jenkins-slave | Copy the .bowerrc script
   template: src=.bowerrc.j2 dest={{ jenkins_home }}/.bowerrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-  become: yes
+  become: true
   changed_when: false
 
 - import_tasks: tmp.yml
@@ -273,9 +235,9 @@
 #    url: "http://localhost:8080"
 #    user: admin
 
-#TODO Add source /etc/profile for RedHat to find lsof command
+# TODO Add source /etc/profile for RedHat to find lsof command
 
-#- import_tasks: browser.yml
+# - import_tasks: browser.yml
 
 - import_tasks: selenium.yml
 
@@ -293,7 +255,7 @@
    - libsaxonb-java
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
 
 - name: jenkins-slave | Install log4j package for better display of log for slave
@@ -304,8 +266,8 @@
    - libslf4j-java
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['12.04'])
   changed_when: false
-  become: yes
-  ignore_errors: true 
+  become: true
+  ignore_errors: true
 
 - name: jenkins-slave | Install log4j package for better display of log for slave
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -315,7 +277,7 @@
    - libslf4j-java
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
 
 - name: jenkins-slave | Install log4j package for better display of log for slave
@@ -325,7 +287,7 @@
    - log4j
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
 
 - name: jenkins-slave | Install rsync package
@@ -335,12 +297,12 @@
    - rsync
    - pv
   changed_when: false
-  become: yes
+  become: true
 
-#- name: jenkins-slave | Clone the application
-#  action: git repo=https://github.com/AlbanAndrieu/nabla.git dest=/jenkins/nabla
+# - name: jenkins-slave | Clone the application
+#   action: git repo=https://github.com/AlbanAndrieu/nabla.git dest=/jenkins/nabla
 
-#- import_tasks: subversion.yml
+# - import_tasks: subversion.yml
 
 - import_tasks: database.yml
 

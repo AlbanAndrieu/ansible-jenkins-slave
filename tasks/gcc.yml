@@ -1,23 +1,19 @@
-
-##
- # C++
- #
- 
-#TODO Solaris 10
-#Check gcc
-#/usr/sfw/bin/gcc -v 
+---
+# TODO Solaris 10
+# Check gcc
+# /usr/sfw/bin/gcc -v
  
 - name: cpp | Set cpp link to gcc
   set_fact: cpp_dir=/usr/bin/
 
 - name: cpp | Remove {{ cpp_dir }}/cpp
   file: path={{ cpp_dir }}/cpp state=absent
-  become: yes
+  become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
 
 - name: cpp | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  become: yes
+  become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("12.04")
   with_items:
    - gcc-4.6
@@ -25,7 +21,7 @@
 
 - name: cpp | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  become: yes
+  become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("14.04", "16.04")
   with_items:
    - gcc-4.8
@@ -33,43 +29,43 @@
 
 - name: cpp | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  become: yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04")
   with_items:
    - gcc-5
    - g++-5
 
 - name: cpp | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  become: yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("17.04")
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04", "16.04")
   with_items:
    - gcc-6
    - g++-6
 
-#SEE https://www.vultr.com/docs/how-to-install-gcc-on-centos-6
+# SEE https://www.vultr.com/docs/how-to-install-gcc-on-centos-6
 - name: cpp | Install C++ compiler (CentOS based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  become: yes
+  become: true
   when: (ansible_distribution == 'CentOS')
-  #On purpose, we do not install gcc for RedHat because MiCloud VM already havea default one installed
-  #or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat'
+  # On purpose, we do not install gcc for RedHat because MiCloud VM already havea default one installed
+  # or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat'
   with_items:
    - gcc
    - gcc-c++
-#TODO add all required versions
+# TODO add all required versions
 #   - compat-libstdc++-33
 #   - glibc-devel.i386
 #   - glibc-devel
 
 - name: cpp | Install C++ compiler (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  become: yes
+  become: true
   when: (ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
-#On purpose, we do not install gcc for RedHat because MiCloud VM already havea default one installed  
+# On purpose, we do not install gcc for RedHat because MiCloud VM already havea default one installed
 #   - gcc
-#Only install c++
+# Only install c++
    - gcc-c++
 
 - debug: msg="Version {{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_architecture }}"
@@ -84,28 +80,28 @@
 
 - name: cpp | Set cpp link to gcc version 5
   set_fact: cpp_version=5
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04", "18.04")
 
 - name: cpp | Set cpp link to gcc version 6
   set_fact: cpp_version=6
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("17.04")
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04", "16.04")
 
-#- name: cpp | Set cpp link to gcc version
-#  set_fact: cpp_version=4.4.7
-#  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+# - name: cpp | Set cpp link to gcc version
+#   set_fact: cpp_version=4.4.7
+#   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: cpp | Set cpp link to gcc version
   set_fact: cpp_version=4.8
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
 
-#https://developers.redhat.com/blog/2018/07/07/yum-install-gcc7-clang/
+# https://developers.redhat.com/blog/2018/07/07/yum-install-gcc7-clang/
 
 - name: cpp | Install C++ clang
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   - clang  
+   - clang
   tags: cpp
-  become: yes
+  become: true
   
 - name: jenkins-slave | Install clang scan-build (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -114,19 +110,19 @@
   with_items:
    - clang-analyzer
    - llvm-toolset-7-git-clang-format
-  become: yes
+  become: true
 
-#scl enable devtoolset-7 llvm-toolset-7 bash
+# scl enable devtoolset-7 llvm-toolset-7 bash
 
 - name: cpp | Install C++ clang
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes" 
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - clang-format
    - clang-tools
    - clang-tidy
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')       
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   tags: cpp
-  become: yes  
+  become: true
   ignore_errors: true
 
 - name: cpp | Install C++ clang llvm dev
@@ -136,10 +132,10 @@
    - llvm
    - llvm-3.8-dev
   tags: cpp
-  become: yes
+  become: true
   ignore_errors: true
   
-- name: cpp | Install C++ quality tool 
+- name: cpp | Install C++ quality tool
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - colormake
@@ -149,7 +145,7 @@
    - valkyrie
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   tags: cpp
-  become: yes
+  become: true
   ignore_errors: true
 
 - name: cpp | Install C++ quality tool
@@ -160,7 +156,7 @@
    - ggcov   
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')      
   tags: cpp
-  become: yes
+  become: true
   ignore_errors: true
     
 - name: cpp | Install C++ quality tool 
@@ -170,7 +166,7 @@
    - gperf
    - lcov
   tags: cpp
-  become: yes
+  become: true
   ignore_errors: true
   
 - name: cpp | Install C++ quality tool rats
@@ -179,7 +175,7 @@
    - rats
   tags: cpp
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['16.04']
-  become: yes
+  become: true
   ignore_errors: true  
 
 #- name: cpp | Install dragonegg for gcc
@@ -188,21 +184,21 @@
 #   - dragonegg
 #  tags: cpp
 #  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
-#  become: yes
+#  become: true
 #  ignore_errors: true
 
 - name: cpp | Display cpp link before
   action: command update-alternatives --display gcc
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
 
-#sudo update-alternatives --remove-all gcc
-#sudo update-alternatives --remove-all cpp
-#sudo update-alternatives --remove-all g++
+# sudo update-alternatives --remove-all gcc
+# sudo update-alternatives --remove-all cpp
+# sudo update-alternatives --remove-all g++
 
-#TODO : Waiting ansible 2.2 to manage priority https://docs.ansible.com/ansible/alternatives_module.html
+# TODO : Waiting ansible 2.2 to manage priority https://docs.ansible.com/ansible/alternatives_module.html
 - name: cpp | Configure cpp alternatives
   alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }} priority={{ item.priority }}
   with_items:
@@ -212,38 +208,38 @@
   when: not( (cpp_dir is undefined) or (cpp_dir is none) or (cpp_dir | trim == '') )
         and
         not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )
-  become: yes
+  become: true
   ignore_errors: true
 
-#sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60
-#sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-6 60
-#sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 60
+# sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60
+# sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-6 60
+# sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 60
 
-#sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 50
-#sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-5 50
-#sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 50
+# sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 50
+# sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-5 50
+# sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 50
 
-#sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 40
-#sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.9 40
-#sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 40
+# sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 40
+# sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.9 40
+# sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 40
 
-#sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 30
-#sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.8 30
-#sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 30
+# sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 30
+# sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.8 30
+# sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 30
 
-#sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 20
-#sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.7 20
-#sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.7 20
+# sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 20
+# sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.7 20
+# sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.7 20
 
-#sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 10
-#sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.6 10
-#sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.6 10
+# sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 10
+# sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.6 10
+# sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.6 10
 
-#sudo update-alternatives --config gcc
-#sudo update-alternatives --config cpp
-#sudo update-alternatives --config g++
+# sudo update-alternatives --config gcc
+# sudo update-alternatives --config cpp
+# sudo update-alternatives --config g++
 
-#ls -la /etc/alternatives/gcc*
+# ls -la /etc/alternatives/gcc*
 
 - name: cpp | Display cpp link after
   action: command update-alternatives --display gcc
@@ -252,4 +248,4 @@
         not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )
         and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   changed_when: false
-  become: yes
+  become: true

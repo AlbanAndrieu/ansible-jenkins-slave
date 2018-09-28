@@ -1,37 +1,38 @@
+---
 
-- name: jenkins-slave | Install gcovr coverage and metrics tools 
+- name: jenkins-slave | Install gcovr coverage and metrics tools
   pip: name={{ item }}
   with_items:
     - gcovr
-  become: yes
+  become: true
   ignore_errors: true
   
-- name: jenkins-slave | Install lcov coverage and metrics tools 
+- name: jenkins-slave | Install lcov coverage and metrics tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - lcov
-  become: yes
+  become: true
   ignore_errors: true
   
-- name: jenkins-slave | Install gperf monitoring and metrics tools 
+- name: jenkins-slave | Install gperf monitoring and metrics tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
-  when: not (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
+# when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+# when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  when: not (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
    - gperf
-  become: yes
+  become: true
   ignore_errors: true
   
-- name: jenkins-slave | Install documentation tools 
+- name: jenkins-slave | Install documentation tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
-  #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
+# when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+# when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+# when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
    - graphviz
    - doxygen
-  become: yes
+  become: true
   ignore_errors: true
   
 - name: jenkins-slave | Install findbugs
@@ -39,8 +40,8 @@
   tags: package
   with_items:
    - findbugs
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
-  become: yes       
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  become: true
   ignore_errors: true
   
 - name: cpp | Install C++ quality tool
@@ -49,7 +50,7 @@
    - ggcov
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   tags: cpp
-  become: yes
+  become: true
   ignore_errors: true
 
 - name: cpp | Install C++ quality tool
@@ -63,32 +64,32 @@
    - tcl
    - tk
   tags: cpp
-  become: yes
+  become: true
   ignore_errors: true
 
-#TODO install rats and flawfinder on RedHat
+# TODO install rats and flawfinder on RedHat
 
 - name: cpp | Install flawfinder
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
    - flawfinder
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD') 
-  become: yes      
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  become: true
   ignore_errors: true
 
-#wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/rough-auditing-tool-for-security/rats-2.4.tgz
-#tar -xzvf rats-2.4.tgz
-#cd rats-2.4
-#./configure && make && sudo make install
-#./rats
+# wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/rough-auditing-tool-for-security/rats-2.4.tgz
+# tar -xzvf rats-2.4.tgz
+# cd rats-2.4
+# ./configure && make && sudo make install
+# ./rats
    
 - name: cpp | Install rats
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
    - rats
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' and (ansible_distribution_version not in ['16.04'])) or 
-        (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD') 
-  become: yes      
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' and (ansible_distribution_version not in ['16.04'])) or
+        (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  become: true
   ignore_errors: true

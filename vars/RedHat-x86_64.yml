@@ -11,22 +11,22 @@ jvm_folder: "/usr/lib/jvm/"
 
 docker_base_opts: "/usr/bin/dockerd"
 
-#PostgreSQL
+# PostgreSQL
 odbcinst_PostgreSQL_Driver: /usr/lib/psqlodbcw.so
 odbcinst_PostgreSQL_Setup: /usr/lib/x86_64-linux-gnu/odbc/psqlodbca.so
 odbcinst_PostgreSQL_Driver64: /usr/lib64/psqlodbcw.so
 odbcinst_PostgreSQL_Setup64: /usr/lib64/libodbcpsqlS.so
 
-#MySQL
+# MySQL
 odbcinst_MySQL_Driver: /usr/lib/libmyodbc5.so
 odbcinst_MySQL_Setup: /usr/lib/libodbcmyS.so
 odbcinst_MySQL_Driver64: /usr/lib64/libmyodbc5.so
 odbcinst_MySQL_Setup64: /usr/lib64/libodbcmyS.so
 
-#FreeTDS
+# FreeTDS
 odbcinst_FreeTDS_Driver: /usr/lib64/libtdsodbc.so.0
 odbcinst_FreeTDS_Setup: /usr/lib64/libtdsodbc.so.0
 
-#Oracle
+# Oracle
 odbcinst_Oracle_Driver: /opt/oracle/instantclient_12_2/libsqora.so.12.1
 odbcinst_Oracle_Driver64: /opt/oracle/instantclient_12_2/libsqora.so.12.1

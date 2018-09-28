@@ -1,3 +1,4 @@
+---
 
 - name: docker | Set python link to python version
   set_fact: python_version=3.5
@@ -7,31 +8,31 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   with_items:
     - python-docker
-  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version not in ['14.04']  
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version not in ['14.04']
   tags: package
-  become: yes
+  become: true
   
-##TODO fix docker-compose
-#FUI by default docker-compose==1.12.0 is not installed for python 2.7 (it is on purpose)
-#it is installed on python 3.5 (without virtualenv)
-#sudo pip2.7 uninstall docker
-#sudo pip2.7 uninstall docker-py
-#sudo pip2.7 uninstall docker-compose
-#sudo pip2.7 install docker-compose==1.12.0
+# #TODO fix docker-compose
+# FUI by default docker-compose==1.12.0 is not installed for python 2.7 (it is on purpose)
+# it is installed on python 3.5 (without virtualenv)
+# sudo pip2.7 uninstall docker
+# sudo pip2.7 uninstall docker-py
+# sudo pip2.7 uninstall docker-compose
+# sudo pip2.7 install docker-compose==1.12.0
 
-#sudo pip3.5 uninstall docker
-#sudo pip3.5 uninstall docker-py
-#sudo pip3.5 uninstall docker-compose
-#sudo pip3.5 install docker-compose==1.12.0
+# sudo pip3.5 uninstall docker
+# sudo pip3.5 uninstall docker-py
+# sudo pip3.5 uninstall docker-compose
+# sudo pip3.5 install docker-compose==1.12.0
 
-- name: docker | docker-compose check #1
+- name: docker | docker-compose check 1
   shell: "docker-compose --version"
   register: docker_compose_result
-  ignore_errors: yes
-  become: yes
+  ignore_errors: true
+  become: true
 
-#- debug: msg="{{ docker_compose_result.rc }} - {{ docker_compose_result.stdout }}"
-#  when: not ansible_check_mode
+# - debug: msg="{{ docker_compose_result.rc }} - {{ docker_compose_result.stdout }}"
+#   when: not ansible_check_mode
 
 - name: docker | Uninstall docker-py
   pip:
@@ -44,7 +45,7 @@
     - docker-py
     - docker-compose
   ignore_errors: '{{ ansible_check_mode }}'
-  become: yes
+  become: true
 
 - name: docker | Install Docker/Ansible compatible compose tools
   pip:
@@ -55,13 +56,13 @@
   with_items:
     - docker-compose==1.22.0
   ignore_errors: '{{ ansible_check_mode }}'
-  become: yes
+  become: true
 
-- name: docker | docker-compose check #2
+- name: docker | docker-compose check 2
   shell: "docker-compose --version"
   register: docker_compose_result
-  ignore_errors: yes
-  become: yes
+  ignore_errors: true
+  become: true
 
 - name: docker | Fail the play if the previous command did not succeed
   fail: msg="The command docker-compose --version failed"
@@ -72,8 +73,8 @@
   group:
       name={{ docker_group }}
       state=present
-      gid="{{ docker_gid }}"      
-  become: yes
+    gid="{{ docker_gid }}"
+  become: true
 
 - name: docker | Add user(s) to docker group
   user:
@@ -82,29 +83,29 @@
       state=present
   with_items: "{{ docker_users }}"
   when: docker_users is defined
-  become: yes
+  become: true
 
-#sudo gpasswd -a ${USER} docker
-#sudo gpasswd -a jenkins docker
+# sudo gpasswd -a ${USER} docker
+# sudo gpasswd -a jenkins docker
 
-#See https://github.com/tensorflow/tensorflow/issues/4078
-#For https://github.com/NVIDIA/nvidia-docker
-#- name: docker | Install requirement for nvidia
-#  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-#  with_items:
-#    - nvidia-361-dev
-#  become: yes
-#  changed_when: false
+# See https://github.com/tensorflow/tensorflow/issues/4078
+# For https://github.com/NVIDIA/nvidia-docker
+# - name: docker | Install requirement for nvidia
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+#   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+#   with_items:
+#     - nvidia-361-dev
+#   become: true
+#   changed_when: false
 
-#nvidia-smi
+# nvidia-smi
 
-#See issue https://github.com/geerlingguy/ansible-role-docker/issues/56
+# See issue https://github.com/geerlingguy/ansible-role-docker/issues/56
 - name: docker | Set notify_only to 0
   lineinfile: dest=/etc/yum/pluginconf.d/search-disabled-repos.conf line='notify_only=0' regexp='^notify_only=1'
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-  become: yes
-  ignore_errors: yes
+  become: true
+  ignore_errors: true
   changed_when: false
 
 #grubby --args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"

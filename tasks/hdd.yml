@@ -1,21 +1,21 @@
+---
+# WARNING below order is important
 
-#TODO use ansible modules
-#http://docs.ansible.com/ansible/latest/modules/lvol_module.html
-#http://docs.ansible.com/ansible/latest/modules/lvg_module.html
-
-#WARNING below order is important
+# TODO use ansible modules
+# http://docs.ansible.com/ansible/latest/modules/lvol_module.html
+# http://docs.ansible.com/ansible/latest/modules/lvg_module.html
 
 - name: hdd | Create sdb
   command: pvcreate /dev/sdb
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
 
-#- name: hdd | Extend sdb
-#  command: vgextend rhel_fr1cslvcacrhel71 /dev/sdb
-#  changed_when: false
-#  become: yes
-#  ignore_errors: true
+# - name: hdd | Extend sdb
+#   command: vgextend rhel_fr1cslvcacrhel71 /dev/sdb
+#   changed_when: false
+#   become: true
+#   ignore_errors: true
 
 #
 #lvcreate -l 12805 -n workspace rhel_fr1cslvcacrhel71
@@ -67,15 +67,15 @@
 #RedHat 6
 #lvextend --resizefs -L +6G /dev/VolGroup00/usrvol
 
-#IMPORTANT
-#Do not reboot the server if entry in wrong in fstab you will have IS team to get console on booting
+# IMPORTANT
+# Do not reboot the server if entry in wrong in fstab you will have IS team to get console on booting
 
 - name: hdd | Install hdd tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
   when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')
   with_items:
     - system-storage-manager
-  become: yes
+  become: true
   changed_when: false
 
 - name: hdd | Install hdd tools
@@ -84,7 +84,7 @@
   with_items:
     - gnome-disk-utility
     - baobab
-  become: yes
+  become: true
 
 #TODO
 #- name: hdd | Mount containers storage
@@ -101,16 +101,16 @@
 #    fstype: ext4
 #    state: mounted
 
-#Change quota on xfs for oracle database
-#See https://help.directadmin.com/item.php?id=557
+# Change quota on xfs for oracle database
+# See https://help.directadmin.com/item.php?id=557
 
-#nano /etc/default/grub
-#GRUB_CMDLINE_LINUX="rd.lvm.lv=rhel_fr1cslvcacrhel71/swap rd.lvm.lv=rhel_fr1cslvcacrhel71/root rhgb quiet rootflags=uquota,pquota"
+# nano /etc/default/grub
+# GRUB_CMDLINE_LINUX="rd.lvm.lv=rhel_fr1cslvcacrhel71/swap rd.lvm.lv=rhel_fr1cslvcacrhel71/root rhgb quiet rootflags=uquota,pquota"
 
-#cp /boot/grub2/grub.cfg /boot/grub2/grub.cfg.orig
-#grub2-mkconfig -o /boot/grub2/grub.cfg
+# cp /boot/grub2/grub.cfg /boot/grub2/grub.cfg.orig
+# grub2-mkconfig -o /boot/grub2/grub.cfg
 
-#lvextend -l +100%FREE /dev/rhel_fr1cslvcacrhel71/root
-#xfs_info /dev/mapper/rhel_fr1cslvcacrhel71-root
-#xfs_growfs -d /dev/rhel_fr1cslvcacrhel71/root
+# lvextend -l +100%FREE /dev/rhel_fr1cslvcacrhel71/root
+# xfs_info /dev/mapper/rhel_fr1cslvcacrhel71-root
+# xfs_growfs -d /dev/rhel_fr1cslvcacrhel71/root
   
