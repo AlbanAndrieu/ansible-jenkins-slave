@@ -9,7 +9,7 @@
    - git-core
   become: yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  
+
 - name: git | Install git
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
@@ -48,7 +48,7 @@
 - name: git | Copy the .netrc script for git credentials
   template: src=.netrc.j2 dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   when: shell_git_configure_enabled
-  become: yes  
+  become: yes
   changed_when: false
   tags: git
 
@@ -60,7 +60,7 @@
     group: '{{ jenkins_group }}'
     mode: 0600
   when: shell_git_configure_enabled
-  become: yes  
+  become: yes
   changed_when: false
   tags: git
 

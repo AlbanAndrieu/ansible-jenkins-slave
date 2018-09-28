@@ -112,4 +112,3 @@
 # lvextend -l +100%FREE /dev/rhel_fr1cslvcacrhel71/root
 # xfs_info /dev/mapper/rhel_fr1cslvcacrhel71-root
 # xfs_growfs -d /dev/rhel_fr1cslvcacrhel71/root
-

@@ -69,7 +69,7 @@
   when: key|failed
   become: true
   ignore_errors: true
-    
+
 - name: jenkins-ssh | Setup SSH hosts
   lineinfile:
     line="{{item}}"

@@ -117,7 +117,7 @@ String architecture
 Boolean something_failed = false
 
 // We want to initial all status maps to SUCCESS
-// We use runs to get actual matrix values because matrix_axis keeps a record of all 
+// We use runs to get actual matrix values because matrix_axis keeps a record of all
 // matrix/values. So, if you remove things they can still show up there.
 
 for (hudson.matrix.MatrixRun run : runs) {
@@ -413,4 +413,3 @@ for (hudson.matrix.MatrixRun run : runs) {
 %>
 
 </BODY>
-

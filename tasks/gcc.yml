@@ -2,7 +2,7 @@
 # TODO Solaris 10
 # Check gcc
 # /usr/sfw/bin/gcc -v
- 
+
 - name: cpp | Set cpp link to gcc
   set_fact: cpp_dir=/usr/bin/
 
@@ -102,7 +102,7 @@
    - clang
   tags: cpp
   become: true
-  
+
 - name: jenkins-slave | Install clang scan-build (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
@@ -134,7 +134,7 @@
   tags: cpp
   become: true
   ignore_errors: true
-  
+
 - name: cpp | Install C++ quality tool
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
@@ -153,13 +153,13 @@
   with_items:
    - findbugs
    - flawfinder
-   - ggcov   
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')      
+   - ggcov
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   tags: cpp
   become: true
   ignore_errors: true
-    
-- name: cpp | Install C++ quality tool 
+
+- name: cpp | Install C++ quality tool
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - cppcheck
@@ -168,7 +168,7 @@
   tags: cpp
   become: true
   ignore_errors: true
-  
+
 - name: cpp | Install C++ quality tool rats
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   with_items:
@@ -176,7 +176,7 @@
   tags: cpp
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['16.04']
   become: true
-  ignore_errors: true  
+  ignore_errors: true
 
 #- name: cpp | Install dragonegg for gcc
 #  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"

@@ -11,7 +11,7 @@
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version not in ['14.04']
   tags: package
   become: true
-  
+
 # #TODO fix docker-compose
 # FUI by default docker-compose==1.12.0 is not installed for python 2.7 (it is on purpose)
 # it is installed on python 3.5 (without virtualenv)
@@ -112,21 +112,21 @@
 - name: docker | Enable "user" namespace
   shell: "grubby --args=\"user_namespace.enable=1\" --update-kernel=\"$(grubby --default-kernel)\""
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
-  become: yes  
+  become: yes
   ignore_errors: true
- 
+
 #TO REVOKE
-# grubby --remove-args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)" 
- 
+# grubby --remove-args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
+
 #Check docker
 - name: docker | Install check docker
   shell: "curl https://raw.githubusercontent.com/docker/docker/master/contrib/check-config.sh > check-config.sh"
   register: cpan_result
   changed_when: false
   become: yes
-  
+
 - name: docker | Run check docker
   shell: bash ./check-config.sh
   when: cpan_result.changed
-  become: yes  
+  become: yes
   ignore_errors: true

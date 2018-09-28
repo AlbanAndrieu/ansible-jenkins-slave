@@ -58,7 +58,7 @@ under the License.
   <!--<localRepository>~/.m2/repository</localRepository>-->
   <!--<localRepository>C:/repo</localRepository>-->
   <!--<localRepository>${env.WORKSPACE}/.repository</localRepository>-->
-  <!--<localRepository>[[MAVEN_LOCAL_REPO_PATH]]</localRepository>-->  
+  <!--<localRepository>[[MAVEN_LOCAL_REPO_PATH]]</localRepository>-->
   <localRepository>{{maven_repository}}</localRepository>
 
   <!-- interactiveMode
@@ -176,7 +176,7 @@ under the License.
       <username>admin</username>
       <password>admin123</password>
     </server>
-    
+
     <server>
       <id>nexus-releases</id>
       <username>admin</username>
@@ -418,7 +418,7 @@ under the License.
       <properties>
         <env.WORKSPACE>${env.HOME}</env.WORKSPACE>
       </properties>
-    </profile>    
+    </profile>
     <profile>
       <id>[[PROJECT_USER]]</id>
       <!-- http://mvnrepository.com/search.html -->

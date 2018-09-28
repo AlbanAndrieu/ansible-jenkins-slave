@@ -12,7 +12,7 @@ env:
 #  - ANSIBLE_VERSION=latest
   - ANSIBLE_VERSION=2.4.1.0
 #  - ANSIBLE_VERSION=2.3.1.0
-#  - ANSIBLE_VERSION=2.2.2.0  
+#  - ANSIBLE_VERSION=2.2.2.0
 cache: bundler
 #sudo: false
 sudo: required
@@ -34,7 +34,7 @@ install:
 
   # Add ansible.cfg to pick up roles path.
   - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
-  
+
   # Update Ansible submodule.
   - git pull && git submodule init && git submodule update && git submodule status
   - git submodule foreach git checkout master
@@ -57,7 +57,7 @@ script:
 
   # First run
   # Run the role/playbook with ansible-playbook.
-#  - travis_wait 30 
+#  - travis_wait 30
   - ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local --sudo -vvvv -e "python_versions=[2.7, 3.5]" -e "docker_gid=3000"
 
   # Run the role/playbook again, checking to make sure it's idempotent.

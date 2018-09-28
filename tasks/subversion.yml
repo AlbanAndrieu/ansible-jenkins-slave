@@ -9,7 +9,7 @@
   become: true
   ignore_errors: true
   changed_when: false
-  
+
 - name: subversion | Configure svn
   template:
     src: servers.j2

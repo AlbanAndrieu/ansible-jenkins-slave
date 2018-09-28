@@ -77,7 +77,7 @@
   changed_when: false
   become: true
   ignore_errors: true
-  
+
 - name: sonar | Cleanup temporary directory
   file: name={{ tempdir.stdout }} state=absent
   changed_when: false

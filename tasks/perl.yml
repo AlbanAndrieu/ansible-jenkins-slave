@@ -192,17 +192,17 @@
 # TODO For windows
 # - cpanm:
 #     name: XML::DOM
-    
+
 # TODO on Ubuntu configure cpan by hand
 # sudo perl -MCPAN -e 'install Bundle::CPAN'
-    
+
 # Below is same has above but with CPAN
 - name: jenkins-slave | Install cpan perl modules needed by cpp generator
   shell: "cpan {{ item }}"
   with_items:
     - XML::DOM
     - XML::Handler::YAWriter
-   - Pod::Coverage
+    - Pod::Coverage
     - Test::Harness
     - Test::Pod
     - JSON
@@ -283,7 +283,7 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
    - libtime-y2038-perl
-   
+
 - name: jenkins-slave | Install tools needed by sample a runtime (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
   become: true

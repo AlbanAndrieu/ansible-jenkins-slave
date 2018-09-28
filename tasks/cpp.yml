@@ -159,7 +159,7 @@
   with_items:
    - libldap-2.4-2
   become: true
-  
+
 - name: jenkins-slave | Install C++ librairies ldap (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04', '16.04']
@@ -176,14 +176,14 @@
 # ldap-2.3 is still needed by tibco adapter
    - compat-openldap
   become: true
-  
+
 - name: jenkins-slave | Install C++ librairies ldap (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
   with_items:
    - compat-openldap
   become: true
-  
+
 # LIBCURL
 - name: jenkins-slave | Install C++ librairies curl (Solaris based)
   pkgutil: name={{ item }} state=present
@@ -347,7 +347,7 @@
   become: true
 
 #TODO ???
-#cross compatibility for i386 i686  
+#cross compatibility for i386 i686
 #- name: jenkins-slave | Install C++ librairies log4cxx (RedHat based)
 #  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
 #  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
@@ -355,7 +355,7 @@
 #  with_items:
 #   - log4cxx-devel.i686
 #  become: true
-  
+
 # APR nedded by ACTIVEMQ
 - name: jenkins-slave | Install C++ librairies apr (Solaris based)
   pkgutil: name={{ item }} state=present
@@ -452,7 +452,7 @@
   with_items:
    - bc
   become: true
- 
+
 # LIBSTD
 - name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -515,7 +515,7 @@
    - libc6-dev-i386
   become: true
   ignore_errors: true
-  
+
 - name: jenkins-slave | Install C++ librairies for building 32bits RMDSExtractor (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04', '16.04']
@@ -531,7 +531,7 @@
    - libstdc++-4.8-dev
   become: true
   ignore_errors: true
-  
+
 #TODO on Ubuntu 16.04 cros compatibility build for 32bit is not working
 #See https://akizuki.moe/?p=416
 #without below link workaround
@@ -552,7 +552,7 @@
    - libstdc++-5-dev
   become: true
   ignore_errors: true
-  
+
 # cross compatibility for i386 i686
 - name: jenkins-slave | Install C++ librairies for building 32bits for cross compatibility (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -586,7 +586,7 @@
 #  - compat-readline5-5.2-17.1.el6.i686
 #  - compat-readline5-5.2-17.1.el6.x86_64
   become: true
-  
+
 - name: jenkins-slave | Install C++ librairies for building old gcc (RedHat based)
   yum:
     name: "{{ item }}"
@@ -636,7 +636,7 @@
    - libicu-dev
   become: true
   ignore_errors: true
-  
+
 # cross compatibility for i386 i686
 - name: jenkins-slave | Install C++ librairies for unicode for database (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -649,7 +649,7 @@
    - libicu-dev:i386
   become: true
   ignore_errors: true
-  
+
 # cross compatibility for i386 i686
 - name: jenkins-slave | Install C++ librairies for unicode for database (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
@@ -685,7 +685,7 @@
     - dwarfdump
   become: true
   ignore_errors: true
-  
+
 - name: jenkins-slave | Install C++ librairies for libdwarf (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')

@@ -8,7 +8,7 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   become: true
   ignore_errors: true
-  
+
 - name: jenkins-slave | Install tmpreaper package
   action: "{{ ansible_pkg_mgr}} name='tmpreaper' state={{ jenkins_pkg_state|default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')

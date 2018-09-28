@@ -191,7 +191,7 @@
   become: true
   changed_when: false
   ignore_errors: true
-  
+
 - name: jenkins-slave | Create Jenkins thin backup directory
   file: path={{ jenkins_remote_thinbackup }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
   changed_when: false

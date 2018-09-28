@@ -67,7 +67,7 @@
   changed_when: false
   become: true
   ignore_errors: true
-  
+
 # sudo apt-get install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
 
 # sudo apt-cache show python3
@@ -101,15 +101,15 @@
     name: python-owasp-zap-v2.4
     executable: pip{{ python3_version }}
   become: yes
-  ignore_errors: true    
-  
+  ignore_errors: true
+
 - name: python3 | Gather current pip requirement
   shell: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
   when: not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
   changed_when: false
   become: true
   ignore_errors: true
-  
+
 - name: python3 | Install virtualenv via pip
   pip:
     name: virtualenv
@@ -167,7 +167,7 @@
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ ansible_user_dir }}/.local/bin"
   ignore_errors: true
-  
+
 # - name: python3 | Install missing pip requirement
 #   shell: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
 #   changed_when: false

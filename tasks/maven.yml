@@ -25,7 +25,7 @@
   when: not( (mvn_dir is undefined) or (mvn_dir is none) or (mvn_dir | trim == '') )
   become: true
   ignore_errors: true
-  
+
 # TODO Verify the symlinks all point to the new mvn location:
 
 # ls -la /etc/alternatives/mvn*

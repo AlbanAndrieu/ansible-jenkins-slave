@@ -21,13 +21,13 @@
     - echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
     - echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04'])
-  
+
 - name: jdk | Install ppa
   apt_repository: repo="ppa:webupd8team/java" state={{ util_repository_state|default('present') }} update_cache=yes
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['12.04','13.04','14.04'])
   tags: jdk_setup
   become: true
-  
+
 - name: jdk7 | Install default oracle
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   tags: jdk_setup
@@ -49,7 +49,7 @@
 #   with_items:
 #    - name=oracle-java8-installer
 #   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
-  
+
 - name: jdk8 | Install default oracle
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   tags: jdk_setup

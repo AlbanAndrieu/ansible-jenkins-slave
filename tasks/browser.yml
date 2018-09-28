@@ -56,7 +56,7 @@
     - google-chrome-stable_current_x86_64.rpm
   become: true
   changed_when: false
-  
+
 # yum -y localinstall google-chrome-stable_current_x86_64.rpm
 
 # - name: jenkins-slave | Install firefox for zaproxy
