@@ -1,7 +1,7 @@
 ---
 # TODO move to its own role
 - name: subversion | Install subversion package
-  action: "{{ ansible_pkg_mgr }} name='subversion' state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name='subversion' state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
 
 - name: subversion | Create subversion directory

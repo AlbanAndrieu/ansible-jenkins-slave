@@ -7,7 +7,7 @@
 # pip install --upgrade pip
 
 - name: python | Install python 2.7 requirement
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6') )
   with_items:
@@ -16,14 +16,14 @@
 
 # python27-pip not available on CentOS 7
 - name: python | Install python 2.7 requirement
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6') )
   with_items:
     - python27-pip
 
 - name: python | Install python 2.7 requirement
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'CentOS')
   with_items:
@@ -34,7 +34,7 @@
 # update-alternatives --install /usr/bin/python python /usr/bin/python3.5 20
 
 - name: python | Install python 2 requirement
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
@@ -67,7 +67,7 @@
   become: true
 
 - name: python | Install virtualenv
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04'])
   with_items:
     - python-virtualenv
@@ -193,7 +193,7 @@
   ignore_errors: true
 
 - name: python | Install MySQL requirement for sonar
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:

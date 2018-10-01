@@ -44,7 +44,7 @@ jenkins_url: "http://{{ jenkins_http_host }}:{{ jenkins_http_port }}{{jenkins_pr
 jenkins_slave_name: swarm-{{ ansible_hostname }}
 
 # Package states: present or installed or latest
-jenkins_pkg_state: present
+util_pkg_state: present
 # Repository states: present or absent
 jenkins_repository_state: present
 

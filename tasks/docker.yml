@@ -91,7 +91,7 @@
 # See https://github.com/tensorflow/tensorflow/issues/4078
 # For https://github.com/NVIDIA/nvidia-docker
 # - name: docker | Install requirement for nvidia
-#   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
 #   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 #   with_items:
 #     - nvidia-361-dev

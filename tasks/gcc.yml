@@ -12,7 +12,7 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
 
 - name: cpp | Install C++ compiler (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("12.04")
   with_items:
@@ -20,7 +20,7 @@
    - g++-4.6
 
 - name: cpp | Install C++ compiler (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("14.04", "16.04")
   with_items:
@@ -28,7 +28,7 @@
    - g++-4.8
 
 - name: cpp | Install C++ compiler (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04")
   with_items:
@@ -36,7 +36,7 @@
    - g++-5
 
 - name: cpp | Install C++ compiler (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04", "16.04")
   with_items:
@@ -45,7 +45,7 @@
 
 # SEE https://www.vultr.com/docs/how-to-install-gcc-on-centos-6
 - name: cpp | Install C++ compiler (CentOS based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'CentOS')
   # On purpose, we do not install gcc for RedHat because MiCloud VM already havea default one installed
@@ -59,7 +59,7 @@
 #   - glibc-devel
 
 - name: cpp | Install C++ compiler (RedHat based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
@@ -97,14 +97,14 @@
 # https://developers.redhat.com/blog/2018/07/07/yum-install-gcc7-clang/
 
 - name: cpp | Install C++ clang
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - clang
   tags: cpp
   become: true
 
 - name: jenkins-slave | Install clang scan-build (CentOS and RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
@@ -115,7 +115,7 @@
 # scl enable devtoolset-7 llvm-toolset-7 bash
 
 - name: cpp | Install C++ clang
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - clang-format
    - clang-tools
@@ -126,7 +126,7 @@
   ignore_errors: true
 
 - name: cpp | Install C++ clang llvm dev
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - libclang-dev
    - llvm
@@ -136,7 +136,7 @@
   ignore_errors: true
 
 - name: cpp | Install C++ quality tool
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - colormake
    - valgrind
@@ -149,7 +149,7 @@
   ignore_errors: true
 
 - name: cpp | Install C++ quality tool
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - findbugs
    - flawfinder
@@ -160,7 +160,7 @@
   ignore_errors: true
 
 - name: cpp | Install C++ quality tool
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - cppcheck
    - gperf
@@ -170,7 +170,7 @@
   ignore_errors: true
 
 - name: cpp | Install C++ quality tool rats
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - rats
   tags: cpp
@@ -179,7 +179,7 @@
   ignore_errors: true
 
 #- name: cpp | Install dragonegg for gcc
-#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
 #  with_items:
 #   - dragonegg
 #  tags: cpp

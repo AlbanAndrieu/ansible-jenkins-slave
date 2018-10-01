@@ -37,7 +37,7 @@
 
 # See https://www.softwarecollections.org/en/scls/rhscl/devtoolset-4/
 - name: Workstation | Install the 'RHSCL 7' repo (CentOS)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - centos-release-scl
 # sudo yum install centos-release-scl
@@ -80,14 +80,14 @@
 # https://access.redhat.com/documentation/en-us/red_hat_software_collections/2/html/2.3_release_notes/chap-rhscl#sect-RHSCL-Changes-Eclipse
 
 - name: Workstation | Install the eclipse
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - eclipse
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   become: true
 
 - name: Workstation | Install the eclipse
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
    - rh-eclipse47
   when: ((ansible_distribution == 'CentOS' and ansible_distribution_major_version not in '7') or (ansible_distribution == 'Red Hat Enterprise Linux' and not ansible_distribution_major_version == '6'))
@@ -96,7 +96,7 @@
 # scl enable rh-eclipse47 eclipse
 
 - name: Workstation | Install the rh package
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
 #   - rh-nodejs6
    - rh-maven33
