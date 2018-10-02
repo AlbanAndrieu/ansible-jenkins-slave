@@ -4,15 +4,15 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
-   - bash
-   - ksh
+    - bash
+    - ksh
   become: true
 
 - name: jenkins-slave | Install shell tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
-   - shellcheck
+    - shellcheck
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
   become: true
   ignore_errors: true
@@ -21,7 +21,7 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
-   - ShellCheck
+    - ShellCheck
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   become: true
   ignore_errors: true
@@ -90,15 +90,15 @@
 - name: jenkins-slave | Install fonts and ttf
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   with_items:
-   - libfontconfig
-   - libfreetype6
-   - xfonts-cyrillic
-   - xfonts-scalable
-   - fonts-liberation
-   - fonts-ipafont-gothic
-   - fonts-wqy-zenhei
-   - ttf-ubuntu-font-family
-   - ttf-xfree86-nonfree
+    - libfontconfig
+    - libfreetype6
+    - xfonts-cyrillic
+    - xfonts-scalable
+    - fonts-liberation
+    - fonts-ipafont-gothic
+    - fonts-wqy-zenhei
+    - ttf-ubuntu-font-family
+    - ttf-xfree86-nonfree
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04'])
   become: true
   ignore_errors: true

@@ -71,16 +71,16 @@
 
 - name: docker | Create a docker group
   group:
-      name={{ docker_group }}
-      state=present
+    name={{ docker_group }}
+    state=present
     gid="{{ docker_gid }}"
   become: true
 
 - name: docker | Add user(s) to docker group
   user:
-      name={{ item }}
-      group={{ docker_group }}
-      state=present
+    name={{ item }}
+    group={{ docker_group }}
+    state=present
   with_items: "{{ docker_users }}"
   when: docker_users is defined
   become: true
@@ -108,25 +108,25 @@
   ignore_errors: true
   changed_when: false
 
-#grubby --args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
+# grubby --args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
 - name: docker | Enable "user" namespace
   shell: "grubby --args=\"user_namespace.enable=1\" --update-kernel=\"$(grubby --default-kernel)\""
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
-  become: yes
+  become: true
   ignore_errors: true
 
-#TO REVOKE
+# TO REVOKE
 # grubby --remove-args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
 
-#Check docker
+# Check docker
 - name: docker | Install check docker
   shell: "curl https://raw.githubusercontent.com/docker/docker/master/contrib/check-config.sh > check-config.sh"
   register: cpan_result
   changed_when: false
-  become: yes
+  become: true
 
 - name: docker | Run check docker
   shell: bash ./check-config.sh
   when: cpan_result.changed
-  become: yes
+  become: true
   ignore_errors: true

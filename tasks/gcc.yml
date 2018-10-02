@@ -16,32 +16,32 @@
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("12.04")
   with_items:
-   - gcc-4.6
-   - g++-4.6
+    - gcc-4.6
+    - g++-4.6
 
 - name: cpp | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("14.04", "16.04")
   with_items:
-   - gcc-4.8
-   - g++-4.8
+    - gcc-4.8
+    - g++-4.8
 
 - name: cpp | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04")
   with_items:
-   - gcc-5
-   - g++-5
+    - gcc-5
+    - g++-5
 
 - name: cpp | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04", "16.04")
   with_items:
-   - gcc-6
-   - g++-6
+    - gcc-6
+    - g++-6
 
 # SEE https://www.vultr.com/docs/how-to-install-gcc-on-centos-6
 - name: cpp | Install C++ compiler (CentOS based)
@@ -51,8 +51,8 @@
   # On purpose, we do not install gcc for RedHat because MiCloud VM already havea default one installed
   # or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat'
   with_items:
-   - gcc
-   - gcc-c++
+    - gcc
+    - gcc-c++
 # TODO add all required versions
 #   - compat-libstdc++-33
 #   - glibc-devel.i386
@@ -66,7 +66,7 @@
 # On purpose, we do not install gcc for RedHat because MiCloud VM already havea default one installed
 #   - gcc
 # Only install c++
-   - gcc-c++
+    - gcc-c++
 
 - debug: msg="Version {{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_architecture }}"
 
@@ -99,7 +99,7 @@
 - name: cpp | Install C++ clang
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   - clang
+    - clang
   tags: cpp
   become: true
 
@@ -108,8 +108,8 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-   - clang-analyzer
-   - llvm-toolset-7-git-clang-format
+    - clang-analyzer
+    - llvm-toolset-7-git-clang-format
   become: true
 
 # scl enable devtoolset-7 llvm-toolset-7 bash
@@ -117,9 +117,9 @@
 - name: cpp | Install C++ clang
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   - clang-format
-   - clang-tools
-   - clang-tidy
+    - clang-format
+    - clang-tools
+    - clang-tidy
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   tags: cpp
   become: true
@@ -128,9 +128,9 @@
 - name: cpp | Install C++ clang llvm dev
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   - libclang-dev
-   - llvm
-   - llvm-3.8-dev
+    - libclang-dev
+    - llvm
+    - llvm-3.8-dev
   tags: cpp
   become: true
   ignore_errors: true
@@ -138,11 +138,11 @@
 - name: cpp | Install C++ quality tool
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   - colormake
-   - valgrind
-   - gawk
-   - kcachegrind
-   - valkyrie
+    - colormake
+    - valgrind
+    - gawk
+    - kcachegrind
+    - valkyrie
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   tags: cpp
   become: true
@@ -151,9 +151,9 @@
 - name: cpp | Install C++ quality tool
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   - findbugs
-   - flawfinder
-   - ggcov
+    - findbugs
+    - flawfinder
+    - ggcov
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   tags: cpp
   become: true
@@ -162,9 +162,9 @@
 - name: cpp | Install C++ quality tool
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   - cppcheck
-   - gperf
-   - lcov
+    - cppcheck
+    - gperf
+    - lcov
   tags: cpp
   become: true
   ignore_errors: true
@@ -172,20 +172,20 @@
 - name: cpp | Install C++ quality tool rats
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   - rats
+    - rats
   tags: cpp
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['16.04']
   become: true
   ignore_errors: true
 
-#- name: cpp | Install dragonegg for gcc
-#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-#  with_items:
-#   - dragonegg
-#  tags: cpp
-#  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
-#  become: true
-#  ignore_errors: true
+# - name: cpp | Install dragonegg for gcc
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+#   with_items:
+#    - dragonegg
+#   tags: cpp
+#   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+#   become: true
+#   ignore_errors: true
 
 - name: cpp | Display cpp link before
   action: command update-alternatives --display gcc
@@ -202,9 +202,9 @@
 - name: cpp | Configure cpp alternatives
   alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }} priority={{ item.priority }}
   with_items:
-  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-{{ cpp_version }}", priority: 5 }
-  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-{{ cpp_version }}", priority: 5 }
-  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-{{ cpp_version }}", priority: 5 }
+    - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-{{ cpp_version }}", priority: 5 }
+    - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-{{ cpp_version }}", priority: 5 }
+    - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-{{ cpp_version }}", priority: 5 }
   when: not( (cpp_dir is undefined) or (cpp_dir is none) or (cpp_dir | trim == '') )
         and
         not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )

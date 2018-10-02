@@ -6,9 +6,9 @@
   pkgutil: name={{ item }} state=present
   when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
   with_items:
-   - CSWfreetds
-   - CSWfreetds-dev
-   - CSWsqsh-freetds
+    - CSWfreetds
+    - CSWfreetds-dev
+    - CSWsqsh-freetds
 
 - name: database | Install C++ librairies database (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"

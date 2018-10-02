@@ -3,8 +3,8 @@
 jenkins_name: jenkins
 jenkins_user: jenkins
 # python -c "from passlib.hash import sha512_crypt; import getpass; print sha512_crypt.encrypt(getpass.getpass())"
-#jenkins1234
-#http://docs.ansible.com/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
+# jenkins1234
+# http://docs.ansible.com/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
 jenkins_password: "$6$rounds=656000$ITswjqU77/RgGDEv$Vbv6Pw5UJEQQGXwZ4JiR0WXsZVSNAHY7NuWgid.yGLIxro27nZt7CIMwQrh4encLm9Db1RDscEjC1T9ldCgx61"
 jenkins_group: jenkins
 jenkins_id: "2000"
@@ -34,7 +34,7 @@ jdk_group: "{{ jdk_owner }}"
 # For CentOS/RedHat
 # jdk_home: "/usr/java/jdk1.8.0_182/"
 # jdk_home: "/usr/java/latest/"
-#TODO normalize with for Ubuntu /usr/lib/jvm/java-8-oracle/
+# TODO normalize with for Ubuntu /usr/lib/jvm/java-8-oracle/
 jdk_home: "/usr/lib/jvm/java-8-oracle/"
 
 jenkins_http_host: 127.0.0.1                # Set HTTP host
@@ -70,7 +70,7 @@ proxy_cdnurl_server: "localhost"
 npm_phantomjs_cdnurl: ""
 npm_slimerjs_cdnurl: ""
 npm_strict_ssl: "false"
-npm_prefix: "" # "/usr/local/bin" or "/usr/bin"
+npm_prefix: ""           # "/usr/local/bin" or "/usr/bin"
 # Define a list of global packages to be installed with NPM.
 npm_global_packages:
 # - phantomjs-prebuilt@2.1.16 #EACCES: permission denied
@@ -98,7 +98,7 @@ npm_chromedriver_version: 2.37
 
 # maven_repository: "{{ jenkins_slave_home }}/repository"
 maven_repository: "/usr/share/maven-repo"
-#TODO sudo chmod 755 -R /usr/share/maven-repo
+# TODO sudo chmod 755 -R /usr/share/maven-repo
 mvn_home: "/opt/apache-maven-3.2.1/"
 
 bower_directory: "bower_components"
@@ -111,17 +111,17 @@ bower_publish_url: "{{ bower_url }}"
 
 shell_git_configure_enabled: true         # Enable git configuration
 shell_git: []
-  # Additional properties: 'shell_git_machine, shell_git_login, shell_git_email, shell_git_password, shell_git_name, shell_git_path, shell_git_ssl, shell_git_meld_enabled, shell_git_editor'
-  # - shell_git_machine: 'localhost',
-  #   shell_git_login: 'jenkins',
-  #   shell_git_email: 'jenkins@localhost.com',
-  #   shell_git_password: 'todo',
-  #   # Optional.
-  #   shell_git_name: '{{ shell_git_login }}',
-  #   shell_git_path: '/usr/bin',
-  #   shell_git_ssl: false,
-  #   shell_git_meld_enabled: true,
-  #   shell_git_editor: "gedit",
+# Additional properties: 'shell_git_machine, shell_git_login, shell_git_email, shell_git_password, shell_git_name, shell_git_path, shell_git_ssl, shell_git_meld_enabled, shell_git_editor'
+# - shell_git_machine: 'localhost',
+#   shell_git_login: 'jenkins',
+#   shell_git_email: 'jenkins@localhost.com',
+#   shell_git_password: 'todo',
+#   # Optional.
+#   shell_git_name: '{{ shell_git_login }}',
+#   shell_git_path: '/usr/bin',
+#   shell_git_ssl: false,
+#   shell_git_meld_enabled: true,
+#   shell_git_editor: "gedit",
 
 shell_sa_password: "microsoft"
 svn_user: "jenkins"
@@ -179,8 +179,8 @@ sonar_scanner_download_url: "https://sonarsource.bintray.com/Distribution/sonar-
 sonar_scanner_target_dir: "{{ sonar_target_dir }}sonar-runner"
 
 docker_files_generated_directory: "./"
-docker_files_enable: no
+docker_files_enable: false
 docker_volume_directory: "{{ jenkins_home }}"
 docker_working_directory: "/tmp/ansible"
-#docker_working_directory: "{{ docker_volume_directory }}"
+# docker_working_directory: "{{ docker_volume_directory }}"
 docker_image_name: "nabla/ansible-jenkins-slave"

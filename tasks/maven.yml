@@ -15,8 +15,8 @@
   become: true
   ignore_errors: true
 
-#TODO
-#sudo update-alternatives --remove-all mvn
+# TODO
+# sudo update-alternatives --remove-all mvn
 
 - name: jenkins-slave | Configure Maven alternatives
   alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }}

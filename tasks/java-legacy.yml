@@ -1,7 +1,5 @@
+---
 
-#######
-# JAVA
-#
 - name: jdk7 | Create {{ jvm_folder }} directory
   file: path={{ jvm_folder }} state=directory
   tags: jdk_setup
@@ -13,7 +11,7 @@
 
 - name: jdk7 | Download JDK7 (Ubuntu)
   action: command creates={{ jvm_folder }}/{{ jdk7_archive_extracted }} chdir={{ jvm_folder }} {{ jdk_dir_tmp }}/download-jdk7.sh {{ jdk7_url }} {{ jdk7_archive }}
-  become: yes
+  become: true
   register: jdk7_download
   when: jenkins_jdk7_enable
   tags: jdk_setup
@@ -21,16 +19,14 @@
 - name: jdk7 | Unpack JDK7
   action: command creates={{ jvm_folder }}/{{ jdk7_archive_extracted }} chdir={{ jvm_folder }} tar zxvf {{ jvm_folder }}/{{ jdk7_archive }} --owner=root
   register: jdk7_installed
-#  ignore_errors: true
-  become: yes
+  become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jdk7_download.changed and jenkins_jdk7_enable
   tags: jdk_setup
 
 - name: jdk7 | Install JDK7 RPM package
   action: command creates={{ jvm_folder }}/{{ jdk7_archive_extracted }} chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk7_archive }}
   register: jdk7_installed
-#  ignore_errors: true
-  become: yes
+  become: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and jdk7_download.changed and jenkins_jdk7_enable
   tags: jdk_setup
 
@@ -52,7 +48,7 @@
   when: (jenkins_jdk7_enable and jdk7_archive_extracted_present.stat.pw_name != jdk_owner)
   tags: jdk_setup
 
-#- debug: msg="jdk7_installed value is {{ jdk7_installed.stdout }} "
+# - debug: msg="jdk7_installed value is {{ jdk7_installed.stdout }} "
 
 - debug: msg=" jdk7 | jdk7_installed value is {{ jdk7_installed }} {{ jdk7_installed.skipped }} {{ jdk7_installed.changed }}"
   when: jenkins_jdk7_enable
@@ -69,7 +65,7 @@
 
 - name: jdk8 | Download JDK8 (Ubuntu)
   action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} {{ jdk_dir_tmp }}/download-jdk8.sh {{ jdk8_url }} {{ jdk8_archive }}
-  become: yes
+  become: true
   register: jdk8_download
   when: jenkins_jdk8_enable
   tags: jdk_setup
@@ -78,7 +74,7 @@
   action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} tar zxvf {{jvm_folder}}/{{ jdk8_archive }} --owner=root
   register: jdk8_installed
 #  ignore_errors: true
-  become: yes
+  become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jdk8_download.changed and jenkins_jdk8_enable
   tags: jdk_setup
 
@@ -86,7 +82,7 @@
   action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk8_archive }}
   register: jdk8_installed
 #  ignore_errors: true
-  become: yes
+  become: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and jdk8_download.changed and jenkins_jdk8_enable
   tags: jdk_setup
 
@@ -108,7 +104,7 @@
   when: (jenkins_jdk8_enable and jdk8_archive_extracted_present.stat.pw_name != jdk_owner)
   tags: jdk_setup
 
-#- debug: msg=" jenkins-slave | jdk8_installed value is {{ jdk8_installed.stdout }} "
+# - debug: msg=" jenkins-slave | jdk8_installed value is {{ jdk8_installed.stdout }} "
 
 - debug: msg=" jenkins-slave | jdk8_installed value is {{ jdk8_installed }} {{ jdk8_installed.skipped }} {{ jdk8_installed.changed }}"
   when: jenkins_jdk8_enable
@@ -121,6 +117,6 @@
 - name: jenkins-slave | Create Java directory link (legacy required)
   file: path={{ jenkins_slave_home }}/jdk1.7 src={{ jvm_folder }}/{{ jdk7_archive_extracted }} state=link
   when: jenkins_jdk7_enable
-  become: yes
+  become: true
 
-#END OF TODO extract jenkins user to another script
+# END OF TODO extract jenkins user to another script

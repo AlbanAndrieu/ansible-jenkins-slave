@@ -1,34 +1,31 @@
-
-##
- # BROWSER
- #
+---
 
 - name: jenkins-slave | Install requirement for zaproxy
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
-    - chromium-chromedriver # see selenium role
-  become: yes
+    - chromium-chromedriver           # see selenium role
+  become: true
   changed_when: false
 
 - name: jenkins-slave | Install requirement for zaproxy
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
-    - chromedriver # see selenium role
-  become: yes
+    - chromedriver                    # see selenium role
+  become: true
   changed_when: false
 
-#TODO sudo ln -s /usr/lib/chromium-browser/chromedriver /var/lib/chromedriver
+# TODO sudo ln -s /usr/lib/chromium-browser/chromedriver /var/lib/chromedriver
 - name: jenkins-slave | Create chromedriver directory link (legacy required)
   file: path=/var/lib/chromedriver src=/usr/lib/chromium-browser/chromedriver state=link
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   ignore_errors: true
-  become: yes
+  become: true
 
-#TODO sudo ln -s /usr/bin/chromedrive /var/lib/chromedriver
+# TODO sudo ln -s /usr/bin/chromedrive /var/lib/chromedriver
 - name: jenkins-slave | Create chromedriver directory link (legacy required)
   file: path=/var/lib/chromedriver src=/usr/bin/chromedriver state=link
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   ignore_errors: true
-  become: yes
+  become: true

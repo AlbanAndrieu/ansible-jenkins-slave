@@ -32,7 +32,7 @@
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   tags: jdk_setup
   with_items:
-   - oracle-java7-set-default
+    - oracle-java7-set-default
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk7_enable
   become: true
 
@@ -40,7 +40,7 @@
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   tags: jdk_setup
   with_items:
-   - openjdk-8-jdk
+    - openjdk-8-jdk
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
   become: true
 
@@ -54,7 +54,7 @@
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   tags: jdk_setup
   with_items:
-   - oracle-java8-set-default
+    - oracle-java8-set-default
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
   become: true
 
@@ -87,20 +87,20 @@
 - name: jenkins-slave | Configure Java alternatives
   alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }} priority={{ item.priority }}
   with_items:
-  - { name: jar, link: /usr/bin/jar, path: "{{ jdk_dir }}/bin/jar", priority: 5 }
-  - { name: jps, link: /usr/bin/jps, path: "{{ jdk_dir }}/bin/jps", priority: 5 }
-  - { name: java, link: /usr/bin/java, path: "{{ jdk_dir }}/bin/java", priority: 5 }
-  - { name: jmap, link: /usr/bin/jmap, path: "{{ jdk_dir }}/bin/jmap", priority: 5 }
-  - { name: javac, link: /usr/bin/javac, path: "{{ jdk_dir }}/bin/javac", priority: 5 }
-  - { name: javaws, link: /usr/bin/javaws, path: "{{ jdk_dir }}/bin/javaws", priority: 5 }
-  - { name: jstack, link: /usr/bin/jstack, path: "{{ jdk_dir }}/bin/jstack", priority: 5 }
-  - { name: javadoc, link: /usr/bin/javadoc, path: "{{ jdk_dir }}/bin/javadoc", priority: 5 }
-  - { name: javafxpackager, link: /usr/bin/javafxpackager, path: "{{ jdk_dir }}/bin/javafxpackager", priority: 5 }
-  - { name: javah, link: /usr/bin/javah, path: "{{ jdk_dir }}/bin/javah", priority: 5 }
-  - { name: javap, link: /usr/bin/javap, path: "{{ jdk_dir }}/bin/javap", priority: 5 }
-  - { name: jarsigner, link: /usr/bin/jarsigner, path: "{{ jdk_dir }}/bin/jarsigner", priority: 5 }
-#    - { name: java_vm, link: /usr/bin/java_vm, path: "{{ jdk_dir }}/bin/java_vm", priority: 5 }
-  - { name: jvisualvm, link: /usr/bin/jvisualvm, path: "{{ jdk_dir }}/bin/jvisualvm", priority: 5 }
+    - { name: jar, link: /usr/bin/jar, path: "{{ jdk_dir }}/bin/jar", priority: 5 }
+    - { name: jps, link: /usr/bin/jps, path: "{{ jdk_dir }}/bin/jps", priority: 5 }
+    - { name: java, link: /usr/bin/java, path: "{{ jdk_dir }}/bin/java", priority: 5 }
+    - { name: jmap, link: /usr/bin/jmap, path: "{{ jdk_dir }}/bin/jmap", priority: 5 }
+    - { name: javac, link: /usr/bin/javac, path: "{{ jdk_dir }}/bin/javac", priority: 5 }
+    - { name: javaws, link: /usr/bin/javaws, path: "{{ jdk_dir }}/bin/javaws", priority: 5 }
+    - { name: jstack, link: /usr/bin/jstack, path: "{{ jdk_dir }}/bin/jstack", priority: 5 }
+    - { name: javadoc, link: /usr/bin/javadoc, path: "{{ jdk_dir }}/bin/javadoc", priority: 5 }
+    - { name: javafxpackager, link: /usr/bin/javafxpackager, path: "{{ jdk_dir }}/bin/javafxpackager", priority: 5 }
+    - { name: javah, link: /usr/bin/javah, path: "{{ jdk_dir }}/bin/javah", priority: 5 }
+    - { name: javap, link: /usr/bin/javap, path: "{{ jdk_dir }}/bin/javap", priority: 5 }
+    - { name: jarsigner, link: /usr/bin/jarsigner, path: "{{ jdk_dir }}/bin/jarsigner", priority: 5 }
+#      - { name: java_vm, link: /usr/bin/java_vm, path: "{{ jdk_dir }}/bin/java_vm", priority: 5 }
+    - { name: jvisualvm, link: /usr/bin/jvisualvm, path: "{{ jdk_dir }}/bin/jvisualvm", priority: 5 }
   when: not( (jdk_dir is undefined) or (jdk_dir is none) or (jdk_dir | trim == '') )
   become: true
   ignore_errors: true

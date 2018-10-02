@@ -236,26 +236,26 @@
    - libzip-devel
   become: true
 
-#TODO ???
-#cross compatibility for i386 i686
-#- name: jenkins-slave | Install C++ librairies curl (CentOS and RedHat based)
-#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-#  tags: cpp
-#  with_items:
-#   - libcurl.i686
-#  become: true
+# TODO ???
+# cross compatibility for i386 i686
+# - name: jenkins-slave | Install C++ librairies curl (CentOS and RedHat based)
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+#   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+#   tags: cpp
+#   with_items:
+#    - libcurl.i686
+#   become: true
 
-#LOG4CXX
-#- name: jenkins-slave | Install C++ librairies log4cxx (Debian based)
-#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04']
-#  with_items:
-##do not install log4cxx it because provided by 3rparties for RedHat
-##   - liblog4cxx10
-##   - libcrypto++9
-##   - libxerces-c28
-#  become: true
+# LOG4CXX
+# - name: jenkins-slave | Install C++ librairies log4cxx (Debian based)
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+#   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04']
+#   with_items:
+# #do not install log4cxx it because provided by 3rparties for RedHat
+# #   - liblog4cxx10
+# #   - libcrypto++9
+# #   - libxerces-c28
+#   become: true
 #
 - name: jenkins-slave | Install C++ librairies log4cxx (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
@@ -346,15 +346,15 @@
    - libssh2-devel
   become: true
 
-#TODO ???
-#cross compatibility for i386 i686
-#- name: jenkins-slave | Install C++ librairies log4cxx (RedHat based)
-#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-#  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
-#  tags: cpp
-#  with_items:
-#   - log4cxx-devel.i686
-#  become: true
+# TODO ???
+# cross compatibility for i386 i686
+# - name: jenkins-slave | Install C++ librairies log4cxx (RedHat based)
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+#   when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
+#   tags: cpp
+#   with_items:
+#    - log4cxx-devel.i686
+#   become: true
 
 # APR nedded by ACTIVEMQ
 - name: jenkins-slave | Install C++ librairies apr (Solaris based)
@@ -532,9 +532,9 @@
   become: true
   ignore_errors: true
 
-#TODO on Ubuntu 16.04 cros compatibility build for 32bit is not working
-#See https://akizuki.moe/?p=416
-#without below link workaround
+# TODO on Ubuntu 16.04 cros compatibility build for 32bit is not working
+# See https://akizuki.moe/?p=416
+# without below link workaround
 
 # cross compatibility for i386 i686
 # sudo dpkg --add-architecture i386
@@ -747,7 +747,7 @@
 #   - ocl-icd-opencl-dev
 #   - libnuma-dev
 
- # Devtools
+# Devtools
 # For wget tar unzip, see common role
 
 - name: jenkins-slave | Install cppunit tools

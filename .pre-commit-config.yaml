@@ -1,73 +1,74 @@
+---
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks.git
-    rev: v1.3.0
-    hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: autopep8-wrapper
-    -   id: check-added-large-files
-    -   id: check-case-conflict
-    -   id: check-docstring-first
-    -   id: check-executables-have-shebangs
-    -   id: check-json
-    -   id: check-xml
-    -   id: check-yaml
-    -   id: check-symlinks
-    -   id: debug-statements
-    -   id: detect-private-key
-        exclude: >
-                  (?x)^(
-                      roles/jenkins-master/defaults/main.yml|
-                      roles/jenkins-master/README.md
-                  )$
-    -   id: double-quote-string-fixer
-    -   id: name-tests-test
-        exclude: >
-                  (?x)^(
-                      .*/molecule/default/tests/test_default.py
-                  )$
-    -   id: end-of-file-fixer
-    -   id: fix-encoding-pragma
-    -   id: requirements-txt-fixer
-    -   id: sort-simple-yaml
-    -   id: flake8
-        args: [--max-line-length=120]
--   repo: https://github.com/pre-commit/pre-commit.git
-    rev: v1.10.1
-    hooks:
-    -   id: validate_manifest
--   repo: https://github.com/asottile/reorder_python_imports.git
-    rev: v1.0.1
-    hooks:
-    -   id: reorder-python-imports
-#        language_version: python2.7
--   repo: https://github.com/asottile/add-trailing-comma
-    rev: v0.6.4
-    hooks:
-    -   id: add-trailing-comma
-#-   repo: meta
-#    hooks:
-#    -   id: check-hooks-apply
-#    -   id: check-useless-excludes
-#-   repo: https://github.com/willthames/ansible-lint.git
-#    sha: v3.4.20
-#    hooks:
-#    -   id: ansible-lint
-#        files: \.(yaml|yml)$
-#        exclude: '.travis.yml'
--   repo: git://github.com/doublify/pre-commit-hindent
-    rev: 73078a9ff6f276461c63568445972d6365dfeab2
-    hooks:
-    -   id: hindent
-#-   repo: git://github.com/detailyang/pre-commit-shell
-#    sha: 1.0.2
-#    hooks:
+ - repo: https://github.com/pre-commit/pre-commit-hooks.git
+   rev: v1.3.0
+   hooks:
+    - id: trailing-whitespace
+    - id: end-of-file-fixer
+    - id: autopep8-wrapper
+    - id: check-added-large-files
+    - id: check-case-conflict
+    - id: check-docstring-first
+    - id: check-executables-have-shebangs
+    - id: check-json
+    - id: check-xml
+    - id: check-yaml
+    - id: check-symlinks
+    - id: debug-statements
+    - id: detect-private-key
+      exclude: >
+                (?x)^(
+                    roles/jenkins-master/defaults/main.yml|
+                    roles/jenkins-master/README.md
+                )$
+    - id: double-quote-string-fixer
+    - id: name-tests-test
+      exclude: >
+                (?x)^(
+                    .*/molecule/default/tests/test_default.py
+                )$
+    - id: end-of-file-fixer
+    - id: fix-encoding-pragma
+    - id: requirements-txt-fixer
+    - id: sort-simple-yaml
+    - id: flake8
+      args: [--max-line-length=120]
+ - repo: https://github.com/pre-commit/pre-commit.git
+   rev: v1.10.1
+   hooks:
+    - id: validate_manifest
+ - repo: https://github.com/asottile/reorder_python_imports.git
+   rev: v1.0.1
+   hooks:
+    - id: reorder-python-imports
+ #    language_version: python2.7
+ - repo: https://github.com/asottile/add-trailing-comma
+   rev: v0.6.4
+   hooks:
+    - id: add-trailing-comma
+# - repo: meta
+#   hooks:
+#    - id: check-hooks-apply
+#    - id: check-useless-excludes
+# - repo: https://github.com/willthames/ansible-lint.git
+#   sha: v3.4.20
+#   hooks:
+#    - id: ansible-lint
+#      files: \.(yaml|yml)$
+#      exclude: '.travis.yml'
+ - repo: git://github.com/doublify/pre-commit-hindent
+   rev: 73078a9ff6f276461c63568445972d6365dfeab2
+   hooks:
+    - id: hindent
+# - repo: git://github.com/detailyang/pre-commit-shell
+#   sha: 1.0.2
+#   hooks:
 #    - id: shell-lint
-#-   repo: git://github.com/doublify/pre-commit-clang-format
-#    sha: 994f99b6498e9c76341367ecaf76c69dfb4ea4f2
-#    hooks:
-#    -   id: clang-format
--   repo: git://github.com/pre-commit/pre-commit-docker-flake8
-    rev: v0.0.3  # Fill this in with a current revision
-    hooks:
-    -   id: flake8-docker-not-for-production
+# - repo: git://github.com/doublify/pre-commit-clang-format
+#   sha: 994f99b6498e9c76341367ecaf76c69dfb4ea4f2
+#   hooks:
+#    - id: clang-format
+ - repo: git://github.com/pre-commit/pre-commit-docker-flake8
+   rev: v0.0.3  # Fill this in with a current revision
+   hooks:
+    - id: flake8-docker-not-for-production

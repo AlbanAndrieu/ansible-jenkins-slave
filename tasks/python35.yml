@@ -40,9 +40,9 @@
     state: "{{ util_pkg_state|default('present') }}"
   when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
   with_items:
-   - "https://centos6.iuscommunity.org/ius-release.rpm"
-   - python35u
-   - python35u-pip
+    - "https://centos6.iuscommunity.org/ius-release.rpm"
+    - python35u
+    - python35u-pip
   become: true
 
 - name: jenkins-slave | Install python (RedHat and CentOS based)
@@ -51,9 +51,9 @@
     state: "{{ util_pkg_state|default('present') }}"
   when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
   with_items:
-   - "https://centos7.iuscommunity.org/ius-release.rpm"
-   - python35u
-   - python35u-pip
+    - "https://centos7.iuscommunity.org/ius-release.rpm"
+    - python35u
+    - python35u-pip
   become: true
 
 - name: python3 | Set python link to python version
@@ -100,7 +100,7 @@
   pip:
     name: python-owasp-zap-v2.4
     executable: pip{{ python3_version }}
-  become: yes
+  become: true
   ignore_errors: true
 
 - name: python3 | Gather current pip requirement

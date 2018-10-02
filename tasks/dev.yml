@@ -22,16 +22,16 @@
 - name: Workstation | Install the 'RHSCL 7' repo (RedHat)
   command: "subscription-manager repos --enable={{ item }}"
   with_items:
-      - rhel-server-rhscl-6-rpms
-      - rhel-6-server-optional-rpms
+    - rhel-server-rhscl-6-rpms
+    - rhel-6-server-optional-rpms
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
   become: true
 
 - name: Workstation | Install the 'RHSCL 7' repo (RedHat)
   command: "subscription-manager repos --enable={{ item }}"
   with_items:
-      - rhel-server-rhscl-7-rpms
-      - rhel-7-server-optional-rpms
+    - rhel-server-rhscl-7-rpms
+    - rhel-7-server-optional-rpms
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   become: true
 
@@ -39,7 +39,7 @@
 - name: Workstation | Install the 'RHSCL 7' repo (CentOS)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   - centos-release-scl
+    - centos-release-scl
 # sudo yum install centos-release-scl
 # sudo yum install devtoolset-4
   when: (ansible_distribution == 'CentOS')
@@ -82,14 +82,14 @@
 - name: Workstation | Install the eclipse
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   - eclipse
+    - eclipse
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   become: true
 
 - name: Workstation | Install the eclipse
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   - rh-eclipse47
+    - rh-eclipse47
   when: ((ansible_distribution == 'CentOS' and ansible_distribution_major_version not in '7') or (ansible_distribution == 'Red Hat Enterprise Linux' and not ansible_distribution_major_version == '6'))
   become: true
 
@@ -98,8 +98,8 @@
 - name: Workstation | Install the rh package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
-#   - rh-nodejs6
-   - rh-maven33
-   - rh-java
+#    - rh-nodejs6
+    - rh-maven33
+    - rh-java
   when: ((ansible_distribution == 'CentOS' and ansible_distribution_major_version not in '7') or (ansible_distribution == 'Red Hat Enterprise Linux' and not ansible_distribution_major_version == '5'))
   become: true

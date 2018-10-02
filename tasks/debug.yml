@@ -14,9 +14,9 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
-   - libXext
-   - libXrender
-   - libXtst
+    - libXext
+    - libXrender
+    - libXtst
   become: true
   ignore_errors: true
   changed_when: false
@@ -36,9 +36,9 @@
 - name: jenkins-slave | Remove unknown keys from sysctl.conf
   sysctl: name={{ item }} state=absent reload=no
   with_items:
-      - net.bridge.bridge-nf-call-arptables
-      - net.bridge.bridge-nf-call-iptables
-      - net.bridge.bridge-nf-call-ip6tables
+    - net.bridge.bridge-nf-call-arptables
+    - net.bridge.bridge-nf-call-iptables
+    - net.bridge.bridge-nf-call-ip6tables
   become: true
   when: ansible_os_family == "GosLinux" or ansible_os_family == "ROSA"
 
@@ -64,8 +64,8 @@
 - name: jenkins-slave | Fix WARNING bridge-nf-call-iptables is disabled
   sysctl: name="fs.file-max" value="1" sysctl_set=yes state=present
   with_items:
-      - net.bridge.bridge-nf-call-iptables
-      - net.bridge.bridge-nf-call-ip6tables
+    - net.bridge.bridge-nf-call-iptables
+    - net.bridge.bridge-nf-call-ip6tables
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   become: true
 
