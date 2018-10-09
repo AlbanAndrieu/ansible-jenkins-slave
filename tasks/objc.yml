@@ -20,9 +20,9 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
   tags: cpp
   with_items:
-   - gnustep-base-devel
-   - gnustep-make
-   - gnustep-filesystem
+    - gnustep-base-devel
+    - gnustep-make
+    - gnustep-filesystem
   become: true
 
 # OBJC
@@ -59,14 +59,14 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-   - gcc-objc
-   - gcc-objc++
+    - gcc-objc
+    - gcc-objc++
     - libobjc              # GCC runtime libobjc
 # Add cross compil
 #   - mingw32-gcc-objc
 #   - mingw32-gcc-objc++
-   - mingw64-gcc-objc
-   - mingw64-gcc-objc++
+    - mingw64-gcc-objc
+    - mingw64-gcc-objc++
   become: true
 
 # yum install make libpng libpng-devel libtiff libtiff-devel libobjc libxml2 libxml2-devel libX11-devel libXt-devel libjpeg libjpeg-devel

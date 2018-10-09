@@ -82,18 +82,25 @@
 - name: Workstation | Install the eclipse
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
-    - eclipse
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+    - rh-eclipse46
+  when: (ansible_distribution == 'CentOS' and ansible_distribution_major_version in '7')
   become: true
 
 - name: Workstation | Install the eclipse
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
     - rh-eclipse47
-  when: ((ansible_distribution == 'CentOS' and ansible_distribution_major_version not in '7') or (ansible_distribution == 'Red Hat Enterprise Linux' and not ansible_distribution_major_version == '6'))
+  when: (ansible_distribution == 'Red Hat Enterprise Linux' and ansible_distribution_major_version == '6')
   become: true
 
-# scl enable rh-eclipse47 eclipse
+- name: Workstation | Install the eclipse
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+    - rh-eclipse48
+  when: (ansible_distribution == 'Red Hat Enterprise Linux' not ansible_distribution_major_version == '7')
+  become: true
+
+# scl enable rh-eclipse48 eclipse
 
 - name: Workstation | Install the rh package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"

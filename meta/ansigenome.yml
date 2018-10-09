@@ -1,20 +1,20 @@
 ---
 dependencies:
   - { role: alban.andrieu.common }
-  #- { role: alban.andrieu.hostname }
-  #- { role: geerlingguy.ntp }
-  #- { role: locale }
-  #- { role: alban.andrieu.subversion }
+# - { role: alban.andrieu.hostname }
+# - { role: geerlingguy.ntp }
+# - { role: locale }
+# - { role: alban.andrieu.subversion }
   - { role: geerlingguy.git }
   - { role: alban.andrieu.cpp }
   - { role: alban.andrieu.xvbf }
   - { role: alban.andrieu.selenium }
   - { role: maven }
-  #- { role: java }
+# - { role: java }
   - { role: chrome }
-  #- { role: python }
-  #- { role: security }
-  #- { role: nodejs }
+# - { role: python }
+# - { role: security }
+# - { role: nodejs }
   - { role: alban.andrieu.tomcat }
   - { role: alban.andrieu.jboss }
 
@@ -23,23 +23,23 @@ galaxy_info:
   description: A role for installing jenkins-slave
   company: Nabla
   license: Apache
-  min_ansible_version: 2.3.1.0
+  min_ansible_version: 2.6.0
   platforms:
-  - name: Ubuntu
-    versions:
-    - all
-    - lucid
-    - maverick
-    - natty
-    - oneiric
-    - precise
-    - quantal
-    - raring
-    - saucy
-    - trusty
+    - name: Ubuntu
+      versions:
+        - all
+        - lucid
+        - maverick
+        - natty
+        - oneiric
+        - precise
+        - quantal
+        - raring
+        - saucy
+        - trusty
   categories:
-  - development
-  - jenkins
+    - development
+    - jenkins
 
 ansigenome_info:
   galaxy_id: '1998'
@@ -48,10 +48,10 @@ ansigenome_info:
   galaxy_name: 'jenkins-slave'
   galaxy_docker_name: 'ansible-jenkins-slave-docker'
 
-  travis: True
+  travis: true
 
   authors:
-    - name:  'Alban Andrieu'
+    - name: 'Alban Andrieu'
       url: 'fr.linkedin.com/in/nabla/'
       email: 'alban.andrieu@free.fr'
       twitter: 'AlbanAndrieu'
@@ -71,5 +71,5 @@ ansigenome_info:
   usage: |
     Describe how to use in more detail...
 
-  #custom: |
-  #  Any custom output you want after the usage section..
+  # custom: |
+  #   Any custom output you want after the usage section..

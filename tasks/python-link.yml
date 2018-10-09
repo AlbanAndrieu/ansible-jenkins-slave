@@ -20,6 +20,11 @@
 
 - name: python3 | Set python 3 link to python version
   set_fact: python3_version=3.5
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04', '14.04']
+
+- name: python3 | Set python 3 link to python version
+  set_fact: python3_version=3.6
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
 
 # ls -la /etc/alternatives/python*
 # sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.6 30

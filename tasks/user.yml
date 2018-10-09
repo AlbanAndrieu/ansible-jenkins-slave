@@ -16,9 +16,9 @@
 
 - name: jenkins-slave | Create a jenkins group
   group:
-      name={{ jenkins_group }}
-      state=present
-      gid={{ jenkins_gid }}
+    name={{ jenkins_group }}
+    state=present
+    gid={{ jenkins_gid }}
   become: true
 
 - name: jenkins-slave | Create all groups tentatively needed by jenkins user
@@ -30,9 +30,9 @@
 
 - name: jenkins-slave | Create a www-data group
   group:
-      name={{ data_group }}
-      state=present
-      gid={{ data_gid }}
+    name={{ data_group }}
+    state=present
+    gid={{ data_gid }}
   become: true
   ignore_errors: true
 
@@ -49,6 +49,7 @@
     append=yes
   changed_when: false
   become: true
+  ignore_errors: true  # when user already exist and used by process it is failing
 
 - name: jenkins-slave | Add user(s) to docker group
   user:

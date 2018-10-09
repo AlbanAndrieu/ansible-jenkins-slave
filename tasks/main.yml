@@ -48,37 +48,37 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
-   - flex
-  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
-  #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+    - flex
+# when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+# when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+# when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   become: true
 
 - name: jenkins-slave | Install tools needed by grunt-zaproxy html report
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:
-#Needed for having /usr/bin/xml2-config in the PATH
-   - libxml2-dev
-   - libxslt-dev
+# Needed for having /usr/bin/xml2-config in the PATH
+    - libxml2-dev
+    - libxslt-dev
   become: true
 
 - name: jenkins-slave | Install tools needed by grunt-zaproxy html report
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
   with_items:
-   - libxml2 #Needed for having /usr/bin/xml2-config in the PATH
-   - libxslt
-   - libexslt
+    - libxml2       # Needed for having /usr/bin/xml2-config in the PATH
+    - libxslt
+    - libexslt
   become: true
 
-#TODO first install pip on RedHat and Ubuntu
-#- name: jenkins-slave | Install Ansible syntax check (Debian based)
-#  pip: name={{ item }}
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-#  with_items:
-#    - ansible-lint
-#  become: true
+# TODO first install pip on RedHat and Ubuntu
+# - name: jenkins-slave | Install Ansible syntax check (Debian based)
+#   pip: name={{ item }}
+#   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+#   with_items:
+#     - ansible-lint
+#   become: true
 
 - import_tasks: docker.yml
 
@@ -171,7 +171,7 @@
 
 - name: jenkins-slave | Checking slave folders
   stat:
-   path: "{{item}}"
+    path: "{{item}}"
   register: folder_stats
   with_items: "{{ jenkins_slave_directory }}"
   when: jenkins_slave_directory | length > 0
@@ -180,14 +180,14 @@
 
 - name: jenkins-slave | Creating multiple folders without disturbing previous permissions
   file:
-   path: "{{item.item}}"
-   state: directory
-   mode: 0755
-   group: "{{ jenkins_user }}"
-   owner: "{{ jenkins_group }}"
+    path: "{{item.item}}"
+    state: directory
+    mode: 0755
+    group: "{{ jenkins_user }}"
+    owner: "{{ jenkins_group }}"
   when: item.stat.exists == false
   with_items:
-  - "{{folder_stats.results}}"
+    - "{{folder_stats.results}}"
   become: true
   changed_when: false
   ignore_errors: true
@@ -216,24 +216,24 @@
 
 - import_tasks: tmp.yml
 
-#TODO
-#https://docs.ansible.com/ansible/jenkins_plugin_module.html
-#- name: Install plugins with a specific version
-#  jenkins_plugin:
-#    name: "{{ item.key }}"
-#    version: "{{ item.value['version'] }}"
-#  register: my_jenkins_plugin_versioned
-#  when: >
-#    'version' in item.value
-#  with_dict: my_jenkins_plugins
+# TODO
+# https://docs.ansible.com/ansible/jenkins_plugin_module.html
+# - name: Install plugins with a specific version
+#   jenkins_plugin:
+#     name: "{{ item.key }}"
+#     version: "{{ item.value['version'] }}"
+#   register: my_jenkins_plugin_versioned
+#   when: >
+#     'version' in item.value
+#   with_dict: my_jenkins_plugins
 
-# Create a jenkins job using basic authentication
-#- jenkins_job:
-#    config: "{{ lookup('file', 'templates/test.xml') }}"
-#    name: test
-#    password: admin
-#    url: "http://localhost:8080"
-#    user: admin
+#  Create a jenkins job using basic authentication
+# - jenkins_job:
+#     config: "{{ lookup('file', 'templates/test.xml') }}"
+#     name: test
+#     password: admin
+#     url: "http://localhost:8080"
+#     user: admin
 
 # TODO Add source /etc/profile for RedHat to find lsof command
 
@@ -246,13 +246,14 @@
 - import_tasks: zabbix.yml
 
 - import_tasks: debug.yml
+  when: workstation_enabled
 
 - name: jenkins-slave | Install saxon package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
-   - libsaxon-java
-   - libsaxonb-java
+    - libsaxon-java
+    - libsaxonb-java
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   changed_when: false
   become: true
@@ -262,8 +263,8 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
-   - liblog4j1.2-java
-   - libslf4j-java
+    - liblog4j1.2-java
+    - libslf4j-java
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['12.04'])
   changed_when: false
   become: true
@@ -273,8 +274,8 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
-   - liblog4j2-java
-   - libslf4j-java
+    - liblog4j2-java
+    - libslf4j-java
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
   changed_when: false
   become: true
@@ -284,7 +285,7 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
-   - log4j
+    - log4j
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   changed_when: false
   become: true
@@ -294,8 +295,8 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
-   - rsync
-   - pv
+    - rsync
+    - pv
   changed_when: false
   become: true
 
@@ -307,6 +308,8 @@
 - import_tasks: database.yml
 
 - import_tasks: dev.yml
+
+- import_tasks: tuning.yml
 
 - name: jenkins-slave | Copy Dockerfile
   template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0777

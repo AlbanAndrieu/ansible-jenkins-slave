@@ -30,6 +30,8 @@
   register: docker_compose_result
   ignore_errors: true
   become: true
+  check_mode: false
+  changed_when: false
 
 # - debug: msg="{{ docker_compose_result.rc }} - {{ docker_compose_result.stdout }}"
 #   when: not ansible_check_mode
@@ -39,7 +41,7 @@
     name: "{{ item }}"
     executable: "pip{{ python_version }}"
     state: absent
-  when: not ansible_check_mode and docker_compose_result.rc != 0
+  when: not ansible_check_mode and (docker_compose_result.rc != 0 and docker_compose_result.rc != 127)
   with_items:
     - docker
     - docker-py

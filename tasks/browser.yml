@@ -36,6 +36,11 @@
   become: true
   changed_when: false
 
+- name: jenkins-slave | Add Google Chrome repo (apt)
+  apt_repository: repo="deb http://dl.google.com/linux/chrome/deb/ stable main" state={{ google_agent_repository_state|default('yes') }} update_cache=no
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_architecture in ['x86_64'] and ansible_distribution_version in ("12.04", "14.04", "16.04")
+  become: true
+
 - name: jenkins-slave | Install google-chrome-stable
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("12.04", "14.04", "16.04")

@@ -2,17 +2,17 @@
 
 - name: jenkins-slave | Download flashplayer archive
   get_url: url={{ flashplayer_standalone_download_url }}/{{ flashplayer_standalone_filename }} dest=/tmp/{{ flashplayer_standalone_filename }}
-  when: (ansible_distribution == 'CentOS' and ansible_lsb.major_release|int <= 5)
+  when: (ansible_distribution == 'CentOS' and ansible_distribution_version == 5)
   become: true
 
 - name: jenkins-slave | Install flashplayer
   unarchive: src=/tmp/{{ flashplayer_standalone_filename }} dest=/usr/local/bin creates=/usr/local/bin/flashplayerdebugger copy=no
-  when: (ansible_distribution == 'CentOS' and ansible_lsb.major_release|int <= 5)
+  when: (ansible_distribution == 'CentOS' and ansible_distribution_version == 5)
   become: true
 
 - name: jenkins-slave | Create symbolic link for flashplayer
   file: src=/usr/local/bin/flashplayerdebugger dest=/usr/local/bin/flashplayer owner=root group=root state=link
-  when: (ansible_distribution == 'CentOS' and ansible_lsb.major_release|int <= 5)
+  when: (ansible_distribution == 'CentOS' and ansible_distribution_version == 5)
   become: true
 
 - name: jenkins-slave | Install flashplayer dependencies
@@ -38,7 +38,7 @@
     - ipa-gothic-fonts
     - ipa-pgothic-fonts
     - xorg-x11-fonts-base
-    - xorg-x11-fonts-truetype
+#    - xorg-x11-fonts-truetype
     - xorg-x11-drv-v4l
     - xorg-x11-xauth
 # when: (ansible_distribution == 'CentOS' and ansible_lsb.major_release|int <= 5) or (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')

@@ -1,23 +1,23 @@
 ---
-# TODO on RedHat add python3.6 by hand
+# TODO on RedHat add python3.7 by hand
 
-# TODO RedHat https://www.tecmint.com/install-python-in-linux/ install python 3.6 for ansible
-# yum -y groupinstall development
-# yum -y install zlib-devel
+# TODO RedHat https://www.tecmint.com/install-python-in-linux/ install python 3.7 for ansible
+# yum -y groupinstall util_pkg_stateopment
+# yum -y install zlib-util_pkg_state
 
-# wget https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tar.xz
-# tar xJf Python-3.6.3.tar.xz
-# cd Python-3.6.3
+# wget https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tar.xz
+# tar xJf Python-3.7.3.tar.xz
+# cd Python-3.7.3
 # ./configure
 # make
 # make install
-# rm Python-3.6.3.tgz
+# rm Python-3.7.3.tgz
 
 # which python3
 # python3 -V
-# python3.6.3 -V
+# python3.7.3 -V
 
-# virtualenv py3-ansible -p /usr/local/bin/python3.6
+# virtualenv py3-ansible -p /usr/local/bin/python3.7
 
 - name: jenkins-slave | Install python (RedHat and CentOS based)
   yum:
@@ -26,8 +26,8 @@
   when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
   with_items:
     - "https://centos6.iuscommunity.org/ius-release.rpm"
-    - python36u
-    - python36u-pip
+    - python37u
+    - python37u-pip
   become: true
 
 - name: jenkins-slave | Install python (RedHat and CentOS based)
@@ -37,28 +37,23 @@
   when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
   with_items:
     - "https://centos7.iuscommunity.org/ius-release.rpm"
-    - python36u
-    - python36u-pip
+    - python37u
+    - python37u-pip
   become: true
 
 - name: python3 | Set python link to python version
-  set_fact: python3_version=3.6
+  set_fact: python3_version=3.7
 
-- name: python3 | Install python 3.6 ppa
-  apt_repository: repo="ppa:deadsnakes/ppa" state={{ util_pkg_state|default('present') }} update_cache=yes
-  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04'])
-  become: true
-
-- name: python3 | Install python 3 requirements
+- name: python3 | Install python 3 requirement
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   become: true
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04'])
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
   with_items:
-    - python3.6-dev
-    - python3.6
-    - python3.6-dbg
-    - python3.6-gdbm
-#    - idle-python3.6
+    - python3.7-dev
+    - python3.7
+    - python3.7-dbg
+    - python3.7-gdbm
+#    - idle-python3.7
 
 - name: python3 | Install missing pip{{ python3_version }} (1)
   shell: "wget https://bootstrap.pypa.io/get-pip.py && python{{ python3_version }} get-pip.py"
@@ -71,12 +66,12 @@
   when: not ansible_check_mode
   ignore_errors: true
 
-# python3.6 -m pip install --user pipenv
+# python3.7 -m pip install --user pipenv
 
 # - debug: msg="{{ curl_result.stdout }}"
 
 - name: python3 | Run pip check
-  shell: (pip - && pip3.6 -V) | uniq
+  shell: (pip - && pip3.7 -V) | uniq
   when: curl_result.changed
   become: true
   ignore_errors: true
@@ -112,7 +107,7 @@
     executable: pip{{ python3_version }}
 
 - name: python3 | Copy the requirements configuration file for python
-  copy: src=requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-current-{{ python3_version }}.txt backup=yes
+  copy: src=requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-minimal-current-{{ python3_version }}.txt backup=yes
   become: true
 
 - name: python3 | Install apt dependencies for python 3 requirements
@@ -121,7 +116,6 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - libcups2-dev
-    - python3-apt
 
 - name: python3 | Install apt dependencies for python 3 lxml requirements
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
@@ -155,27 +149,27 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-    - unixODBC-devel   # ODBC
+    - unixODBC-util_pkg_state   # ODBC
   become: true
 
 - name: python3 | Remove venv
-  file: path=/opt/ansible/env36 state=absent
+  file: path=/opt/ansible/env37 state=absent
   become: true
-  
+
 - name: python3 | Create venv and install requirements
   pip:
     requirements: "{{ ansible_user_dir }}/requirements-minimal-current-{{ python3_version }}.txt"
-    virtualenv: /opt/ansible/env36
+    virtualenv: /opt/ansible/env37
     virtualenv_python: "python{{ python3_version }}"
+    virtualenv_site_packages: false
   tags:
     - venv
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ ansible_user_dir }}/.local/bin"
 # TODO remove ignore_errors
-#  ignore_errors: true
+  ignore_errors: true
 
-# - name: python3 | Install missing pip requirements
+# - name: python3 | Install missing pip requirement
 #   shell: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
 #   changed_when: false
 #   become: true
-#   ignore_errors: true

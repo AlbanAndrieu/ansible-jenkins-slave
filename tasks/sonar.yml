@@ -26,9 +26,9 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0777
-  become: true                 ansible_ssh_keys
+  become: true
 #  ignore_errors: "{{ ansible_check_mode }}"
-  ignore_errors: "true"
+#  ignore_errors: true
 
 # cd /usr/local
 # sudo wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip

@@ -71,7 +71,7 @@
     insertafter: EOF
     create: true
   with_items:
-    - { regexp: '', line: 'export PATH=/opt/local/bin:/usr/local/opt/gnu-getopt/bin:/usr/local/opt/llvm/bin:$PATH' }    # NEEDED clang specific for for OSX
+    - { regexp: '', line: 'export PATH=/opt/local/bin:/usr/local/opt/gnu-getopt/bin:/usr/local/opt/llvm/bin:$PATH' }          # NEEDED clang specific for for OSX
   when: (ansible_distribution == 'MacOSX')
   become: true
   become_user: "{{ jenkins_user }}"

@@ -109,8 +109,16 @@
   tags: cpp
   with_items:
     - clang-analyzer
+  become: true
+
+- name: jenkins-slave | Install clang-format (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
     - llvm-toolset-7-git-clang-format
   become: true
+  ignore_errors: true
 
 # scl enable devtoolset-7 llvm-toolset-7 bash
 

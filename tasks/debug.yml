@@ -33,42 +33,6 @@
   file: path="{{ jenkins_home }}/coredumps" state=directory owner={{ jenkins_user }} group={{ jenkins_group }}
   when: ansible_os_family != "Windows"
 
-- name: jenkins-slave | Remove unknown keys from sysctl.conf
-  sysctl: name={{ item }} state=absent reload=no
-  with_items:
-    - net.bridge.bridge-nf-call-arptables
-    - net.bridge.bridge-nf-call-iptables
-    - net.bridge.bridge-nf-call-ip6tables
-  become: true
-  when: ansible_os_family == "GosLinux" or ansible_os_family == "ROSA"
-
-# Check with
-# sysctl -p /etc/sysctl.conf
-
-# net.ipv6.conf.all.disable_ipv6 = 1
-# net.ipv6.conf.default.disable_ipv6 = 1
-# net.ipv6.conf.lo.disable_ipv6 = 1
-
-- name: jenkins-slave | Change coredump filename pattern
-  sysctl: name="kernel.core_pattern" value="/home/{{ jenkins_user }}/coredumps/core-%e-%p-%t" sysctl_set=yes state=present
-  become: true
-  when:
-    - ansible_os_family != "Windows"
-
-- name: jenkins-slave | Change coredump fs.file-max
-  sysctl: name="fs.file-max" value="100000" sysctl_set=yes state=present
-  become: true
-  when:
-    - ansible_os_family != "Windows"
-
-- name: jenkins-slave | Fix WARNING bridge-nf-call-iptables is disabled
-  sysctl: name="fs.file-max" value="1" sysctl_set=yes state=present
-  with_items:
-    - net.bridge.bridge-nf-call-iptables
-    - net.bridge.bridge-nf-call-ip6tables
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-  become: true
-
 - name: jenkins-slave | Install utility tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' or ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')

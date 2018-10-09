@@ -6,7 +6,12 @@ python:
 #  - 3.4
 #  - 3.5
   - 3.6
+
+services:
+  - docker
+
 cache:
+  bundler:
   directories:
     - $HOME/.cache/pip
 env:
@@ -14,14 +19,14 @@ env:
   - ANSIBLE_VERSION=2.4.1.0
 #  - ANSIBLE_VERSION=2.3.1.0
 #  - ANSIBLE_VERSION=2.2.2.0
-cache: bundler
-#sudo: false
+
+# sudo: false
 sudo: required
 dist: trusty
 
 virtualenv:
   system_site_packages: false
-  
+
 branches:
   only:
     - master
@@ -39,6 +44,8 @@ install:
   # Add ansible.cfg to pick up roles path.
   - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
 
+  - pip install molecule
+
   # Update Ansible submodule.
   - git pull && git submodule init && git submodule update && git submodule status
   - git submodule foreach git checkout master
@@ -49,15 +56,14 @@ script:
   # Check ansible version
   - ansible --version
 
-  # Add ansible.cfg to pick up roles path.
-  #- "{ echo '[defaults]'; echo 'roles_path = ./roles'; } >> ansible.cfg"
-  #- export ANSIBLE_ROLES_PATH="../"
-
   # Prepare tests
   #- echo localhost > hosts
 
   # Check syntax
   - ansible-playbook -i ./hosts --syntax-check ./jenkins-slave.yml -vvvv --connection=local -e "python_versions=[2.7, 3.5]" -e "docker_gid=3000" -e "jenkins_id=3000"
+
+  # Molecule test
+  # - molecule test
 
   # First run
   # Run the role/playbook with ansible-playbook.
@@ -77,7 +83,6 @@ notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
   email:
     recipients:
-      - alban.andrieu@nabla.mobi
-#      - other@example.com
+      - alban.andrieu@free.fr
     on_success: [always|never|change] # default: change
     on_failure: [always|never|change] # default: always
