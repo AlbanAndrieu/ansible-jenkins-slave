@@ -166,7 +166,6 @@
 
 - name: python3 | Install apt dependencies for python 3 requirements
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
-  become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - python3-dev

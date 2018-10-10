@@ -110,6 +110,53 @@
   ignore_errors: true
   changed_when: false
 
+
+- name: docker | Set docker daemon options
+  copy:
+    content: "DOCKER_OPTS=\"{{ docker_opts.rstrip('\n') }}\""
+    dest: /etc/default/docker
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Reload docker
+  when: docker_opts != "" and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '<'))
+  tags: docker
+
+- name: docker | Create systemd configuration directory for Docker service (systemd)
+  file:
+    dest: /etc/systemd/system/docker.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: docker_opts != "" and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>='))
+  tags: docker
+
+# - name: Set docker daemon options (systemd)
+#   copy:
+#     content: |
+#       [Service]
+#       Environment="DOCKER_OPTS={{ docker_opts.rstrip('\n') }}"
+#     dest: /etc/systemd/system/docker.service.d/env.conf
+#     owner: root
+#     group: root
+#     mode: 0644
+#   notify:
+#     - restart docker
+#   when: docker_opts != "" and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>='))
+#   tags: docker
+#
+# - name: Ensure docker daemon options used (systemd)
+#   lineinfile:
+#     dest: /lib/systemd/system/docker.service
+#     regexp: "^ExecStart=/usr/bin/dockerd"
+#     line: ExecStart={{ docker_base_opts }} {{ docker_opts.rstrip('\n') }}
+#   notify:
+#     - restart docker
+#   when: docker_opts != "" and ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') or (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>=')))
+#   tags: docker
+
 # grubby --args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
 - name: docker | Enable "user" namespace
   shell: "grubby --args=\"user_namespace.enable=1\" --update-kernel=\"$(grubby --default-kernel)\""

@@ -112,7 +112,7 @@
     executable: pip{{ python3_version }}
 
 - name: python3 | Copy the requirements configuration file for python
-  copy: src=requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-current-{{ python3_version }}.txt backup=yes
+  copy: src=requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-minimal-current-{{ python3_version }}.txt backup=yes
   become: true
 
 - name: python3 | Install apt dependencies for python 3 requirements
@@ -161,7 +161,7 @@
 - name: python3 | Remove venv
   file: path=/opt/ansible/env36 state=absent
   become: true
-  
+
 - name: python3 | Create venv and install requirements
   pip:
     requirements: "{{ ansible_user_dir }}/requirements-minimal-current-{{ python3_version }}.txt"

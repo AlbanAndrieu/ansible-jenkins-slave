@@ -388,10 +388,10 @@
   scm: 'git'
   version: 'master'
 
-#- src: 'https://github.com/AlbanAndrieu/ansible-monit'
-#  name: 'monit'
-#  scm: 'git'
-#  version: 'master'
+# - src: 'https://github.com/AlbanAndrieu/ansible-monit'
+#   name: 'monit'
+#   scm: 'git'
+#   version: 'master'
 
 - src: 'https://github.com/AlbanAndrieu/ansible-sonatype_nexus'
   name: 'nexus'
@@ -436,7 +436,7 @@
 - src: 'https://github.com/andrewrothstein/ansible-trust-ca'
   name: 'ssl.ca-certificate'
   scm: 'git'
-  version:  'master'
+  version: 'master'
 
 - src: 'https://github.com/AlbanAndrieu/ansible-supervisor_task'
   name: 'supervisor'
@@ -473,7 +473,7 @@
   scm: 'git'
   version: 'master'
 
-#- src: 'https://github.com/geerlingguy/mac-dev-playbook'
-#  name: 'mac-dev-playbook'
-#  scm: 'git'
-#  version: 'master'
+# - src: 'https://github.com/geerlingguy/mac-dev-playbook'
+#   name: 'mac-dev-playbook'
+#   scm: 'git'
+#   version: 'master'
