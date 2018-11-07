@@ -38,7 +38,7 @@
 
 # update-alternatives --install /usr/bin/python python /usr/bin/python2.6  5
 # update-alternatives --install /usr/bin/python python /usr/bin/python2.7 10
-# update-alternatives --install /usr/bin/python python /usr/bin/python3.5 util_pkg_state
+# update-alternatives --install /usr/bin/python python /usr/bin/python3.5 20
 
 - name: python | Install python 2 requirement
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"

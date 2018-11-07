@@ -2,8 +2,8 @@
 # TODO on RedHat add python3.7 by hand
 
 # TODO RedHat https://www.tecmint.com/install-python-in-linux/ install python 3.7 for ansible
-# yum -y groupinstall util_pkg_stateopment
-# yum -y install zlib-util_pkg_state
+# yum -y groupinstall development
+# yum -y install zlib-devel
 
 # wget https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tar.xz
 # tar xJf Python-3.7.3.tar.xz
@@ -149,7 +149,7 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-    - unixODBC-util_pkg_state   # ODBC
+    - unixODBC-devel   # ODBC
   become: true
 
 - name: python3 | Remove venv
