@@ -44,7 +44,8 @@
     mode: 0777
     remote_src: true
   become: true
-  ignore_errors: "{{ ansible_check_mode }}"
+#  ignore_errors: "{{ ansible_check_mode }}"
+  ignore_errors: true # 401: Unauthorized
 
 # TODO
 # sudo ln -s /usr/local/sonar-scanner-3.2.0.1227/bin/sonar-scanner /usr/bin/sonar-runner
@@ -64,12 +65,6 @@
     - { from: '{{ sonar_target_dir }}{{ sonar_build_wrapper_name }}', dest: '{{ sonar_build_wrapper_target_dir }}' }
   become: true
   changed_when: false
-  ignore_errors: true
-
-- name: sonar | Copy sonar MGR CAM runner configuration
-  copy: src=sonar-runner-mgr-cam.properties dest={{ jenkins_slave_home }}/sonar-runner-mgr-cam.properties backup=yes owner=jenkins
-  changed_when: false
-  become: true
   ignore_errors: true
 
 - name: sonar | Copy sonar runner configuration
