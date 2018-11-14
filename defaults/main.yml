@@ -170,7 +170,6 @@ sonar_build_wrapper_name: "build-wrapper-linux-x86"
 sonar_build_wrapper_download_file: "{{ sonar_build_wrapper_name }}.zip"
 # sonar_build_wrapper_download_url: "http://localhost:9000/static/cpp/{{ sonar_build_wrapper_download_file }}"
 sonar_build_wrapper_download_url: "https://sonarcloud.io/static/cpp/{{ sonar_build_wrapper_download_file }}"
-# sonar_build_wrapper_target_dir: "{{ sonar_target_dir }}sonar-build-wrapper/bin/"
 sonar_build_wrapper_target_dir: "{{ sonar_target_dir }}sonar-build-wrapper"
 
 sonar_scanner_name: "sonar-scanner-3.2.0.1227"

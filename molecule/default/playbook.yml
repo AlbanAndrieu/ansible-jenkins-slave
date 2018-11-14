@@ -1,5 +1,13 @@
 ---
+
+- name: Converge
+  hosts: centos_7
+
+  roles:
+    - role: geerlingguy.repo-epel
+
 - name: Converge
   hosts: all
+
   roles:
     - role: alban.andrieu.jenkins-slave

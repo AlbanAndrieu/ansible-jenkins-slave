@@ -16,6 +16,7 @@
     - python-configargparse
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
   become: true
+  ignore_errors: true
 
 - name: jenkins-slave | Install ansible cryptography requirements
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
@@ -23,6 +24,7 @@
     - openssl-devel
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   become: true
+  ignore_errors: true
 
 # dnf install openssl-devel
 
