@@ -1,63 +1,117 @@
+---
 
-- name: jenkins-slave | Install gcovr coverage and metrics tools 
+- name: jenkins-slave | Install gcovr coverage and metrics tools
   pip: name={{ item }}
   with_items:
     - gcovr
-  become: yes
+  become: true
   ignore_errors: true
-  
-- name: jenkins-slave | Install lcov coverage and metrics tools 
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+
+- name: jenkins-slave | Install lcov coverage and metrics tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   - lcov
-  become: yes
+    - lcov
+  become: true
   ignore_errors: true
-  
-- name: jenkins-slave | Install gperf monitoring and metrics tools 
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
-  when: not (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
+
+- name: jenkins-slave | Install gperf monitoring and metrics tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+# when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+# when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  when: not (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
-   - gperf
-  become: yes
+    - gperf
+  become: true
   ignore_errors: true
-  
-- name: jenkins-slave | Install documentation tools 
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
-  #when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  #when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
-  #when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')  
+
+- name: jenkins-slave | Install documentation tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+# when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+# when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+# when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
-   - graphviz
-   - doxygen
-  become: yes
+    - graphviz
+    - doxygen
+  become: true
   ignore_errors: true
-  
+
 - name: jenkins-slave | Install findbugs
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
-   - findbugs
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')   
-  become: yes       
+    - findbugs
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  become: true
   ignore_errors: true
-  
+
+- name: jenkins-slave | Install C++ quality tool ggcov
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+    - ggcov
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  tags: cpp
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install C++ quality tool others
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=qyes"
+  with_items:
+    - cppcheck
+    - gperf
+    - lcov
+    - vera++
+    - lua5.3
+    - tcl
+    - tk
+  tags: cpp
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install C++ quality tool
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+    - colormake
+    - valgrind
+    - gawk
+    - kcachegrind
+    - valkyrie
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  tags: cpp
+  become: true
+  ignore_errors: true
+
+# - name: jenkins-slave | Install dragonegg for gcc
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+#   with_items:
+#    - dragonegg
+#   tags: cpp
+#   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+#   become: true
+#   ignore_errors: true
+
+# TODO install rats and flawfinder on RedHat
+
 - name: jenkins-slave | Install flawfinder
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
-   - flawfinder
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD') 
-  become: yes      
+    - flawfinder
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  become: true
   ignore_errors: true
-   
+
+# wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/rough-auditing-tool-for-security/rats-2.4.tgz
+# tar -xzvf rats-2.4.tgz
+# cd rats-2.4
+# ./configure && make && sudo make install
+# ./rats
+
 - name: jenkins-slave | Install rats
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
-   - rats
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' and (ansible_distribution_version not in ['16.04'])) or 
-        (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD') 
-  become: yes      
+    - rats
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' and (ansible_distribution_version not in ['16.04'])) or
+        (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  become: true
   ignore_errors: true

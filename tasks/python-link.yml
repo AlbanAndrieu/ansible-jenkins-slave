@@ -1,9 +1,10 @@
+---
 
 - name: python3 | Set python link to python
   set_fact: python_dir=/usr/bin
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 
-#TODO on RedHat add python3.6 by hand
+# TODO on RedHat add python3.6 by hand
 
 - name: python3 | Set python link to python
   set_fact: python_dir=/usr/local/bin
@@ -19,19 +20,24 @@
 
 - name: python3 | Set python 3 link to python version
   set_fact: python3_version=3.5
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04', '14.04']
 
-#ls -la /etc/alternatives/python*
-#sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.6 30
-#sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.5 20
-#sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 100
-#sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.6  5
-#sudo update-alternatives --config python
+- name: python3 | Set python 3 link to python version
+  set_fact: python3_version=3.6
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
+
+# ls -la /etc/alternatives/python*
+# sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.6 30
+# sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.5 20
+# sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 100
+# sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.6  5
+# sudo update-alternatives --config python
 
 - name: python3 | Display python link before
   action: command update-alternatives --display python
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
 
 - name: python3 | Configure python alternatives
@@ -43,8 +49,8 @@
   when: not( (python_dir is undefined) or (python_dir is none) or (python_dir | trim == '') )
         and
         not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
-        and ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04'])        
-  become: yes
+        and ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04'])
+  become: true
   ignore_errors: true
 
 - name: python3 | Display python link after
@@ -54,19 +60,19 @@
         not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
         and ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04'])
   changed_when: false
-  become: yes
+  become: true
 
-##alternatives --install /usr/bin/python python /usr/local/bin/python3.6 2
-#alternatives --install /usr/bin/python python /usr/bin/python3.6 2
-#alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+# #alternatives --install /usr/bin/python python /usr/local/bin/python3.6 2
+# alternatives --install /usr/bin/python python /usr/bin/python3.6 2
+# alternatives --install /usr/bin/python python /usr/bin/python2.7 1
 
-#alternatives --list | grep -i python
+# alternatives --list | grep -i python
 
-#alternatives --install /usr/bin/python python /usr/local/bin/python3.6 2
-#alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+# alternatives --install /usr/bin/python python /usr/local/bin/python3.6 2
+# alternatives --install /usr/bin/python python /usr/bin/python2.7 1
 
-#pip3 install docker-py
-#pip3 install -U docker-compose
-#pip3 install ansible
+# pip3 install docker-py
+# pip3 install -U docker-compose
+# pip3 install ansible
 
-#python3 /usr/bin/ansible localhost -m ping
+# python3 /usr/bin/ansible localhost -m ping

@@ -1,10 +1,16 @@
+---
 
-#TODO on RedHat add python3.5 by hand
+# TODO on RedHat add python3.5 by hand
 
-#TODO RedHat https://www.tecmint.com/install-python-in-linux/ install python 3.5 for ansible
-#yum -y groupinstall development
-#yum -y install zlib-devel
+# See there is 3 ways to install pyton
+# https://www.2daygeek.com/3-methods-to-install-latest-python3-package-on-centos-6-system/#
 
+# We use Method-3 : Using IUS Community Repository
+# This wasy is also working with https://github.com/Stouts/Stouts.python role
+
+# TODO RedHat https://www.tecmint.com/install-python-in-linux/ install python 3.5 for ansible
+# yum -y groupinstall development
+# yum -y install zlib-devel
 
 # wget https://www.python.org/ftp/python/3.5.5/Python-3.5.5.tgz
 # tar xzf Python-3.5.5.tgz
@@ -14,111 +20,192 @@
 # cd ..
 # rm -f Python-3.5.5.tgz
 
-#On RedHat
-#sudo yum install -y https://centos6.iuscommunity.org/ius-release.rpm
-#sudo yum install -y python35u python35u-pip
+# On RedHat 6
+# sudo yum install -y https://centos6.iuscommunity.org/ius-release.rpm
+# sudo yum install -y python35u python35u-pip
 
-#sudo yum install -y https://centos7.iuscommunity.org/ius-release.rpm
-#sudo yum install -y python35u python35u-pip
+# On CentOS 7
+# sudo yum install -y https://centos7.iuscommunity.org/ius-release.rpm
+# sudo yum install -y python35u python35u-pip
+# Other way below
+# See https://www.softwarecollections.org/en/scls/rhscl/rh-python35/
+#  1. Install a package with repository for your system:
+#  On CentOS, install package centos-release-scl available in CentOS repository:
+# $ sudo yum install centos-release-scl
+#  On RHEL, enable RHSCL repository for you system:
+# $ sudo yum-config-manager --enable rhel-server-rhscl-7-rpms
+#  2. Install the collection:
+# $ sudo yum install rh-python35
+#  3. Start using software collections:
+# $ scl --list
+# $ scl enable rh-python35 bash
 
-- name: jenkins-slave | Install python (RedHat based)
+- name: jenkins-slave | Install python (RedHat and CentOS based)
   yum:
     name: "{{ item }}"
-    state: "{{ jenkins_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+    state: "{{ util_pkg_state|default('present') }}"
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
   with_items:
-   - "https://centos6.iuscommunity.org/ius-release.rpm"
-   - python35u
-   - python35u-pip
-  become: yes
+    - "https://centos6.iuscommunity.org/ius-release.rpm"
+    - python35u
+    - python35u-pip
+  become: true
 
-- name: jenkins-slave | Install python (RedHat based)
+- name: jenkins-slave | Install python (RedHat and CentOS based)
   yum:
     name: "{{ item }}"
-    state: "{{ jenkins_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+    state: "{{ util_pkg_state|default('present') }}"
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
   with_items:
-   - "https://centos7.iuscommunity.org/ius-release.rpm"
-   - python35u
-   - python35u-pip
-  become: yes
+    - "https://centos7.iuscommunity.org/ius-release.rpm"
+    - python35u
+    - python35u-pip
+  become: true
 
-# sudo apt-get install python3-pip --reinstall
-- name: python3 | Install missing pip3.5
-  shell: "curl https://bootstrap.pypa.io/ez_setup.py -o - | sudo python3.5 && easy_install pip"
-  register: curl_result
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
-  changed_when: false
-  become: yes
-  
 - name: python3 | Set python link to python version
   set_fact: python3_version=3.5
 
-#- name: python3 | Run pip check
-#  shell: (pip -V && pip3.5 -V) | uniq
-#  become: yes
-#  ignore_errors: true
+# sudo apt-get install python3-pip --reinstall
 
-#MySQL-python is not supported on python3 instead of this you can use mysqlclient
+- name: python3 | Install missing pip{{ python3_version }} (1)
+  shell: "wget https://bootstrap.pypa.io/get-pip.py && python{{ python3_version }} get-pip.py"
+  register: curl_result
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  changed_when: false
+  become: true
+
+- debug: msg="curl_result - {{ curl_result.rc }} - {{ curl_result.stdout }}"
+  when: not ansible_check_mode
+  ignore_errors: true
+
+# - name: python3 | Install missing pip{{ python3_version }} (2)
+#   shell: "curl https://bootstrap.pypa.io/ez_setup.py -o - | python{{ python3_version }} && easy_install pip"
+#   register: curl_result
+#   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+#   changed_when: false
+#   become: true
+#
+# - debug: msg="curl_result - {{ curl_result.rc }} - {{ curl_result.stdout }}"
+#   when: not ansible_check_mode
+#   ignore_errors: true
+
+# sudo apt-get install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
+
+# sudo apt-cache show python3
+# sudo apt-get install python3=3.5.1*
+
+- name: python3 | Install python 3 requirements
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
+  with_items:
+    - python3-dev=3.5.1*
+    - python3=3.5.1*
+    - python3-dbg=3.5.1*
+    - python3-pip
+
+# - name: python3 | Run pip check
+#   shell: (pip -V && pip3.5 -V) | uniq
+#   become: true
+#   ignore_errors: true
+
+- name: python | Install which pip{{ python3_version }}
+  shell: "which pip{{ python3_version }}"
+  register: pip_result
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  changed_when: false
+  become: true
+
+- debug: msg="pip_result - {{ pip_result.rc }} - {{ pip_result.stdout }}"
+  when: not ansible_check_mode
+  ignore_errors: true
+
+- name: python3 | Upgrade setuptools
+  shell: "pip{{ python3_version }} install --upgrade setuptools"
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+# MySQL-python is not supported on python3 instead of this you can use mysqlclient
 - name: python3 | Install MySQL for sonar
   pip:
     name: "{{ item }}"
     executable: "pip{{ python3_version }}"
   with_items:
-    #- MySQL-python
+# - MySQL-python
     - mysqlclient
-  become: yes
-  ignore_errors: true    
+  become: true
+  ignore_errors: true
 
 - name: python3 | Install python-owasp-zap-v2.4 via pip
   pip:
     name: python-owasp-zap-v2.4
     executable: pip{{ python3_version }}
-  become: yes
-  ignore_errors: true    
-  
+  become: true
+  ignore_errors: true
+
 - name: python3 | Gather current pip requirement
   shell: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
   when: not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
   changed_when: false
-  become: yes
+  become: true
   ignore_errors: true
-  
+
 - name: python3 | Install virtualenv via pip
   pip:
     name: virtualenv
     executable: pip{{ python3_version }}
 
 - name: python3 | Copy the minimal requirements configuration file for python
-  copy: src=requirements-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-minimal-{{ python3_version }}.txt backup=yes
+  copy: src=requirements-minimal-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-minimal-current-{{ python3_version }}.txt backup=yes
   become: true
 
 - name: python3 | Copy the requirements configuration file for python
-  copy: src=requirements-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-{{ python3_version }}.txt backup=yes
+  copy: src=requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-current-{{ python3_version }}.txt backup=yes
   become: true
 
 - name: python3 | Install apt dependencies for python 3 requirements
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-  become: yes
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
+    - python3-dev
     - libcups2-dev
     - python3-apt
+  become: true
 
 - name: python3 | Uninstall apt dependencies for python 3 requirements
   pip:
     name: "{{ item }}"
-    executable: "pip{{ python_version }}"
+    executable: "pip{{ python3_version }}"
     state: absent
-  when: not ansible_check_mode and docker_compose_result.rc != 0
+  when: not ansible_check_mode
   with_items:
     - libxml2-python
   ignore_errors: '{{ ansible_check_mode }}'
-  become: yes
+  become: true
+
+- name: python3 | Install C++ librairies database (Debian based) for pyodbc
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - unixodbc-dev     # ODBC
+  become: true
+
+- name: python3 | Install C++ librairies for database (CentOS and RedHat based) for pyodbc
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+    - unixODBC-devel    # ODBC
+  become: true
+
+- name: python3 | Remove venv
+  file: path=/opt/ansible/env35 state=absent
+  become: true
 
 - name: python3 | Create venv and install requirements
   pip:
-    requirements: "{{ ansible_user_dir }}/requirements-minimal-{{ python3_version }}.txt"
+    requirements: "{{ ansible_user_dir }}/requirements-minimal-current-{{ python3_version }}.txt"
     virtualenv: /opt/ansible/env35
     virtualenv_python: "python{{ python3_version }}"
   tags:
@@ -126,9 +213,9 @@
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ ansible_user_dir }}/.local/bin"
   ignore_errors: true
-  
-#- name: python3 | Install missing pip requirement
-#  shell: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
-#  changed_when: false
-#  become: yes
-#  ignore_errors: true
+
+# - name: python3 | Install missing pip requirement
+#   shell: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
+#   changed_when: false
+#   become: true
+#   ignore_errors: true

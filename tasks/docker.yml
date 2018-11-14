@@ -1,3 +1,4 @@
+---
 
 - name: docker | Set python link to python version
   set_fact: python_version=3.5
@@ -7,140 +8,174 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   with_items:
     - python-docker
-  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version not in ['14.04']  
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version not in ['14.04']
   tags: package
-  become: yes
-  
-##TODO fix docker-compose
-#sudo pip2.7 uninstall docker
-#sudo pip2.7 uninstall docker-py
-#sudo pip2.7 uninstall docker-compose
-#sudo pip2.7 install docker-compose==1.12.0
+  become: true
 
-#sudo pip3.6 uninstall docker
-#sudo pip3.6 uninstall docker-py
-#sudo pip3.6 uninstall docker-compose
-#sudo pip3.6 install docker-compose==1.12.0
+# #TODO fix docker-compose
+# FUI by default docker-compose==1.12.0 is not installed for python 2.7 (it is on purpose)
+# it is installed on python 3.5 (without virtualenv)
+# sudo pip2.7 uninstall docker
+# sudo pip2.7 uninstall docker-py
+# sudo pip2.7 uninstall docker-compose
+# sudo pip2.7 install docker-compose==1.12.0
 
-- name: docker | docker-compose check #1
+# sudo pip3.5 uninstall docker
+# sudo pip3.5 uninstall docker-py
+# sudo pip3.5 uninstall docker-compose
+# sudo pip3.5 install docker-compose==1.12.0
+
+- name: docker | docker-compose check 1
   shell: "docker-compose --version"
   register: docker_compose_result
-  ignore_errors: yes
-  become: yes
+  ignore_errors: true
+  become: true
+  check_mode: false
+  changed_when: false
 
-#- debug: msg="{{ docker_compose_result.rc }} - {{ docker_compose_result.stdout }}"
-#  when: not ansible_check_mode
+# - debug: msg="{{ docker_compose_result.rc }} - {{ docker_compose_result.stdout }}"
+#   when: not ansible_check_mode
 
 - name: docker | Uninstall docker-py
   pip:
     name: "{{ item }}"
     executable: "pip{{ python_version }}"
     state: absent
-  when: not ansible_check_mode and docker_compose_result.rc != 0
+  when: not ansible_check_mode and (docker_compose_result.rc != 0 and docker_compose_result.rc != 127)
   with_items:
     - docker
     - docker-py
     - docker-compose
   ignore_errors: '{{ ansible_check_mode }}'
-  become: yes
+  become: true
 
 - name: docker | Install Docker/Ansible compatible compose tools
   pip:
     name: "{{ item }}"
     executable: "pip{{ python_version }}"
     state: forcereinstall
-  when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_version.full | version_compare('2.3', '>='))) or (ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  when: (ansible_version.full | version_compare('2.3', '>=')
   with_items:
-    - docker-compose==1.12.0
+    - docker-compose==1.22.0
   ignore_errors: '{{ ansible_check_mode }}'
-  become: yes
+  become: true
 
-- name: docker | docker-compose check #2
+- name: docker | docker-compose check 2
   shell: "docker-compose --version"
   register: docker_compose_result
-  ignore_errors: yes
-  become: yes
+  ignore_errors: true
+  become: true
 
 - name: docker | Fail the play if the previous command did not succeed
   fail: msg="The command docker-compose --version failed"
   when: "'FAILED' in docker_compose_result.stderr"
   ignore_errors: '{{ ansible_check_mode }}'
 
-#- name: docker | Install Docker/Ansible compatible tools (Debian based)
-#  pip: name={{ item }}
-#  executable: pip{{ python_version }}
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_version.full | version_compare('2.3', '>='))
-#  with_items:
-#    - docker==2.2.1
-#    - docker==2.7.0
-#  become: yes
-
-#- name: docker | Install Docker/Ansible compatible tools (Debian based)
-#  pip: name={{ item }}
-#  executable: pip{{ python_version }}
-#  when: (ansible_version.full | version_compare('2.3', '>='))
-#  with_items:
-#    - docker-py==1.10.6
-#  become: yes
-
 - name: docker | Create a docker group
   group:
-      name={{ docker_group }}
-      state=present
-      gid="{{ docker_gid }}"      
-  become: yes
+    name={{ docker_group }}
+    state=present
+    gid="{{ docker_gid }}"
+  become: true
 
 - name: docker | Add user(s) to docker group
   user:
-      name={{ item }}
-      group={{ docker_group }}
-      state=present
+    name={{ item }}
+    group={{ docker_group }}
+    state=present
   with_items: "{{ docker_users }}"
   when: docker_users is defined
-  become: yes
+  become: true
 
-#sudo gpasswd -a ${USER} docker
-#sudo gpasswd -a jenkins docker
+# sudo gpasswd -a ${USER} docker
+# sudo gpasswd -a jenkins docker
 
-#See https://github.com/tensorflow/tensorflow/issues/4078
-#For https://github.com/NVIDIA/nvidia-docker
-#- name: docker | Install requirement for nvidia
-#  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-#  with_items:
-#    - nvidia-361-dev
-#  become: yes
-#  changed_when: false
+# See https://github.com/tensorflow/tensorflow/issues/4078
+# For https://github.com/NVIDIA/nvidia-docker
+# - name: docker | Install requirement for nvidia
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+#   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+#   with_items:
+#     - nvidia-361-dev
+#   become: true
+#   changed_when: false
 
-#nvidia-smi
+# nvidia-smi
 
-#See issue https://github.com/geerlingguy/ansible-role-docker/issues/56
+# See issue https://github.com/geerlingguy/ansible-role-docker/issues/56
 - name: docker | Set notify_only to 0
   lineinfile: dest=/etc/yum/pluginconf.d/search-disabled-repos.conf line='notify_only=0' regexp='^notify_only=1'
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-  become: yes
-  ignore_errors: yes
+  become: true
+  ignore_errors: true
   changed_when: false
 
-#grubby --args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
+
+- name: docker | Set docker daemon options
+  copy:
+    content: "DOCKER_OPTS=\"{{ docker_opts.rstrip('\n') }}\""
+    dest: /etc/default/docker
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Reload docker
+  when: docker_opts != "" and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '<'))
+  tags: docker
+
+- name: docker | Create systemd configuration directory for Docker service (systemd)
+  file:
+    dest: /etc/systemd/system/docker.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: docker_opts != "" and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>='))
+  tags: docker
+
+# - name: Set docker daemon options (systemd)
+#   copy:
+#     content: |
+#       [Service]
+#       Environment="DOCKER_OPTS={{ docker_opts.rstrip('\n') }}"
+#     dest: /etc/systemd/system/docker.service.d/env.conf
+#     owner: root
+#     group: root
+#     mode: 0644
+#   notify:
+#     - restart docker
+#   when: docker_opts != "" and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>='))
+#   tags: docker
+#
+# - name: Ensure docker daemon options used (systemd)
+#   lineinfile:
+#     dest: /lib/systemd/system/docker.service
+#     regexp: "^ExecStart=/usr/bin/dockerd"
+#     line: ExecStart={{ docker_base_opts }} {{ docker_opts.rstrip('\n') }}
+#   notify:
+#     - restart docker
+#   when: docker_opts != "" and ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') or (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>=')))
+#   tags: docker
+
+# grubby --args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
 - name: docker | Enable "user" namespace
   shell: "grubby --args=\"user_namespace.enable=1\" --update-kernel=\"$(grubby --default-kernel)\""
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
-  become: yes  
+  become: true
   ignore_errors: true
- 
-#TO REVOKE
-# grubby --remove-args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)" 
- 
-#Check docker
+
+# TO REVOKE
+# grubby --remove-args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
+
+# Check docker
 - name: docker | Install check docker
   shell: "curl https://raw.githubusercontent.com/docker/docker/master/contrib/check-config.sh > check-config.sh"
   register: cpan_result
   changed_when: false
-  become: yes
-  
+  become: true
+
 - name: docker | Run check docker
   shell: bash ./check-config.sh
   when: cpan_result.changed
-  become: yes  
+  become: true
   ignore_errors: true

@@ -1,3 +1,4 @@
+---
 
 - name: jenkins-slave | Set python link to python version
   set_fact: python_version=3.5
@@ -7,33 +8,61 @@
   fail:
     msg: "Ansible 2.3+ is required to use Python3 interpreter."
   when: ansible_version.full | version_compare('2.3', '<') and ansible_python_interpreter is defined and 'python3' in ansible_python_interpreter
-  
+
+- name: jenkins-slave | Install ansible cryptography requirements
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+    - libssl-dev
+    - python-configargparse
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install ansible cryptography requirements
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  with_items:
+    - openssl-devel
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  become: true
+  ignore_errors: true
+
+# dnf install openssl-devel
+
 - name: jenkins-slave | Install Ansible (Debian based)
   pip:
     name: "{{ item }}"
     executable: "pip{{ python_version }}"
   with_items:
     - paramiko
-    - ansible==2.4.3.0
-    - ansible-cmdb==1.25
+    - ansible==2.6.0
   when: not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
-  become: yes
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install Ansible add ons (Debian based)
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python_version }}"
+  with_items:
+    - ansible-cmdb==1.27
+  when: not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+  become: true
 
 - name: jenkins-slave | Install ansible requirements
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
     - sshpass
-  become: yes
+  become: true
   ignore_errors: true
 
 - name: jenkins-slave | Install ansible requirements
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   with_items:
     - python-selinux
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  become: yes
+  become: true
   ignore_errors: true
-  
+
 - name: jenkins-slave | Install devops tools for ansible windows
   pip:
     name: "{{ item }}"
@@ -41,7 +70,7 @@
   with_items:
     - "pywinrm>=0.2.2"
   when: not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
-  become: yes
+  become: true
 
 - name: jenkins-slave | Install devops tools for ansible accelerate mode
   pip:
@@ -49,10 +78,10 @@
     executable: "pip{{ python_version }}"
   with_items:
     - python-keyczar
-  become: yes
+  become: true
   ignore_errors: true
-  
-#sudo apt-get install krb5-kdc krb5-admin-server
+
+# sudo apt-get install krb5-kdc krb5-admin-server
 
 - name: jenkins-slave | Install devops tools for ansible kerberos
   pip:
@@ -63,5 +92,5 @@
     - libkrb5-dev
     - krb5-user
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
-  become: yes
+  become: true
   ignore_errors: true

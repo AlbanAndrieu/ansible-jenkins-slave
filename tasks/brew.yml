@@ -1,43 +1,47 @@
+---
 
 - name: brew | Install dependencies for brew requirement
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   with_items:
     - curl
     - file
     - git
-  become: yes
+  become: true
 
 - name: brew | Install apt dependencies for brew requirement
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   with_items:
-    - build-essential 
-    - python-setuptools 
+    - build-essential
+    - python-setuptools
     - ruby
-    #- linuxbrew-wrapper
+# - linuxbrew-wrapper
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  become: yes
+  become: true
 
 - name: brew | Install yum dependencies for brew requirement
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   with_items:
     - irb
     - python-setuptools
     - ruby
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-  become: yes
+  become: true
 
 - name: brew | Install brew
-  action: command ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"
+  shell: 'ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"'
   changed_when: false
-  become: yes
+  become: true
+  become_user: "{{ jenkins_user }}"
+# TCP connection reset by peer need ignore_errors: true
   ignore_errors: true
 
-- name: brew | docker-compose check #2
-  shell: "brew install cairo libxml2 libffi"
-  ignore_errors: yes
-  become: yes
-        
 - name: brew | Install brew requirements
+  shell: "brew install cairo libxml2 libffi"
+  ignore_errors: true
+  become: true
+  become_user: "{{ jenkins_user }}"
+
+- name: brew | Install brew requirements using python
   pip:
     name: "{{ item }}"
     executable: "pip{{ python_version }}"
@@ -47,23 +51,24 @@
     - CairoSVG==2.0.3
   ignore_errors: '{{ ansible_check_mode }}'
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  become: yes
+  become: true
 
 - name: brew | Uninstall messing brew python 2 package
   action: command brew uninstall mercurial python2
   changed_when: false
-  become: yes
+  become: true
+  become_user: "{{ jenkins_user }}"
   ignore_errors: true
 
-#brew install openssl
-#brew link openssl --force
-#brew uninstall python
-#brew install python --with-brewed-openssl
-#brew update
+# brew install openssl
+# brew link openssl --force
+# brew uninstall python
+# brew install python --with-brewed-openssl
+# brew update
 
-#For MacOSX
-#See
-#brew install unixodbc
-#brew install freetds --with-tdsver=7.2 --with-unixodbc
+# For MacOSX
+# See
+# brew install unixodbc
+# brew install freetds --with-tdsver=7.2 --with-unixodbc
 
-#sudo yum groupinstall 'Development Tools' && sudo yum install
+# sudo yum groupinstall 'Development Tools' && sudo yum install

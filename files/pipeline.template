@@ -15,6 +15,18 @@ TD.test_failed { color:red; }
 TD.console { font-family:Courier New; }
 </STYLE>
 
+<%
+def getResultAsString(build)
+{
+    def result = build?.result
+    if (result == null) {
+        result = "SUCCESS"
+    }
+    return result;
+}
+def currResult = getResultAsString(build)
+%>
+
 <!-- HEADER -->
 <BODY>
 <div class="round_border">
@@ -22,7 +34,7 @@ TD.console { font-family:Courier New; }
   <TR><TD align="right">
     <IMG SRC="${rooturl}static/e59dfe28/images/32x32/<%= build.result.toString() == 'SUCCESS' ? "blue.gif" : build.result.toString() == 'FAILURE' ? 'red.gif' : 'yellow.gif' %>" />
       </TD><TD valign="center">
-        <B style="font-size: 200%;">BUILD ${build.result}</B>
+        <B style="font-size: 200%;">BUILD ${currResult}</B>
       </TD></TR>
       <TR><TD>
         Project:</TD><TD>${project.name}

@@ -7,23 +7,26 @@ jdk8_url: "http://download.oracle.com/otn-pub/java/jdk/8-b132/{{ jdk8_archive }}
 jdk8_archive_extracted: "jdk1.8.0"
 jvm_folder: "/usr/lib/jvm/"
 
-#PostgreSQL
-#odbcinst_PostgreSQL_Driver: /usr/lib/psqlodbcw.so
-odbcinst_PostgreSQL_Setup: /usr/lib/x86_64-linux-gnu/odbc/libodbcpsqlS.so
-#odbcinst_PostgreSQL_Driver64: /usr/lib64/psqlodbcw.so
-#odbcinst_PostgreSQL_Setup64: /usr/lib64/libodbcpsqlS.so
+# docker_base_opts: "/usr/bin/docker daemon -H fd:// $DOCKER_OPTS"
+docker_base_opts: "/usr/bin/dockerd -H fd://"
 
-#MySQL
+# PostgreSQL
+# odbcinst_PostgreSQL_Driver: /usr/lib/psqlodbcw.so
+odbcinst_PostgreSQL_Setup: /usr/lib/x86_64-linux-gnu/odbc/libodbcpsqlS.so
+# odbcinst_PostgreSQL_Driver64: /usr/lib64/psqlodbcw.so
+# odbcinst_PostgreSQL_Setup64: /usr/lib64/libodbcpsqlS.so
+
+# MySQL
 odbcinst_MySQL_Driver: /usr/lib/x86_64-linux-gnu/odbc/libmyodbc5a.so
 odbcinst_MySQL_Setup: /usr/lib/x86_64-linux-gnu/odbc/libodbcmyS.so
-#odbcinst_MySQL_Driver64: /usr/lib64/libmyodbc5.so
-#odbcinst_MySQL_Setup64: /usr/lib64/libodbcmyS.so
+# odbcinst_MySQL_Driver64: /usr/lib64/libmyodbc5.so
+# odbcinst_MySQL_Setup64: /usr/lib64/libodbcmyS.so
 
-#FreeTDS
-#Ubuntu
+# FreeTDS
+# Ubuntu
 odbcinst_FreeTDS_Driver: /usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so
 odbcinst_FreeTDS_Setup: /usr/lib/x86_64-linux-gnu/odbc/libtdsS.so
 
-#Oracle
+# Oracle
 odbcinst_Oracle_Driver: /opt/oracle/instantclient_12_2/libsqora.so.12.1
 odbcinst_Oracle_Driver64: /opt/oracle/instantclient_12_2/libsqora.so.12.1

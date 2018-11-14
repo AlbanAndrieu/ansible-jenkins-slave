@@ -1,4 +1,4 @@
-#sudo ansible-playbook -i hosts-albandri -c local -v python.yml --limit albandri.misys.global.ad --ask-pass | tee setup.log
+---
 
 - hosts: all
   gather_facts: true
@@ -24,43 +24,43 @@
 
 - name: Install python
   hosts: Ubuntu-12*:Ubuntu-13*:Ubuntu-14*:Ubuntu-16*
-  become: yes
-  ignore_errors: yes
+  become: true
+  ignore_errors: true
 
   roles:
     - python
 
   vars:
-      python_versions: [2.7, 3.5]
-      python_install: [numpy, pylint, pandas]
-      python_virtualenvs:
-        - path: /opt/ansible/env
-          python: python2.7
-#        - path: /opt/ansible/env36
-#          python: python3.6
-        - path: /opt/ansible/env35
-          python: python3.5
-        - path: /opt/scons/env
-          python: python2.7
+    python_versions: [2.7, 3.5]
+    python_install: [numpy, pylint, pandas]
+    python_virtualenvs:
+      - path: /opt/ansible/env
+        python: python2.7
+#      - path: /opt/ansible/env36
+#        python: python3.6
+      - path: /opt/ansible/env35
+        python: python3.5
+      - path: /opt/scons/env
+        python: python2.7
 
 - name: Install python
   hosts: RedHat-7*:RedHat-6*:RedHat-5*:CentOS-7*:CentOS-6*
-  become: yes
-  ignore_errors: yes
+  become: true
+  ignore_errors: true
 
   roles:
     - python
 
   vars:
-      python_versions: [2]
-      python_pkg_bin: /bin
-      python_bin: /bin/python
-      python_virtualenvs:
-        - path: /opt/ansible/env
-          python: python2.7
-#        - path: /opt/ansible/env36
-#          python: python3.6
-#        - path: /opt/ansible/env35
-#          python: python3.5
-        - path: /opt/scons/env
-          python: python2.7
+    python_versions: [2]
+    python_pkg_bin: /bin
+    python_bin: /bin/python
+    python_virtualenvs:
+      - path: /opt/ansible/env
+        python: python2.7
+#      - path: /opt/ansible/env36
+#        python: python3.6
+#      - path: /opt/ansible/env35
+#        python: python3.5
+      - path: /opt/scons/env
+        python: python2.7

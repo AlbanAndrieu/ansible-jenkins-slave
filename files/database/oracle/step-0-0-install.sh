@@ -60,7 +60,7 @@ export LD_LIBRARY_PATH=/opt/oracle/instantclient_12_2:$LD_LIBRARY_PATH
 export PATH=/opt/oracle/Developer/instantclient_12_2:$PATH
 
 # Set the $TNS_ADMIN environment variable so that sqlplus knows where to look
-export TNS_ADMIN=/home/jenkins/Developer/instantclient_12_2
+export TNS_ADMIN=/opt/oracle/instantclient_12_2
 
 #Run odbcinst -j to get the location of the odbcinst.ini and odbc.ini
 odbcinst -j

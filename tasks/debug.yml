@@ -1,6 +1,7 @@
+---
 
 - name: jenkins-slave | Install X debug tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   with_items:
     - xclock
     - xauth
@@ -10,14 +11,14 @@
   changed_when: false
 
 - name: jenkins-slave | Install X debug tools (CentOS and RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
-   - libXext
-   - libXrender
-   - libXtst
+    - libXext
+    - libXrender
+    - libXtst
   become: true
-  ignore_errors: true     
+  ignore_errors: true
   changed_when: false
 
 - name: jenkins-slave | Coredump handling
@@ -25,7 +26,6 @@
   with_items:
     - test
     - postgres
-#  become_method: su
   become: true
   when: ansible_os_family != "Windows"
 
@@ -33,53 +33,29 @@
   file: path="{{ jenkins_home }}/coredumps" state=directory owner={{ jenkins_user }} group={{ jenkins_group }}
   when: ansible_os_family != "Windows"
 
-- name: jenkins-slave | Remove unknown keys from sysctl.conf
-  sysctl: name={{ item }} state=absent reload=no
-  with_items:
-      - net.bridge.bridge-nf-call-arptables
-      - net.bridge.bridge-nf-call-iptables
-      - net.bridge.bridge-nf-call-ip6tables
-#  become_method: su
-  become: true
-  when: ansible_os_family == "GosLinux" or ansible_os_family == "ROSA"
-
-#Check with
-#sysctl -p /etc/sysctl.conf
-
-#net.ipv6.conf.all.disable_ipv6 = 1
-#net.ipv6.conf.default.disable_ipv6 = 1
-#net.ipv6.conf.lo.disable_ipv6 = 1
-
-- name: jenkins-slave | Change coredump filename pattern
-  sysctl: name="kernel.core_pattern" value="/home/{{ jenkins_user }}/coredumps/core-%e-%p-%t" sysctl_set=yes state=present
-#  become_method: su
-  become: true
-  when:
-    - ansible_os_family != "Windows"
-
 - name: jenkins-slave | Install utility tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' or ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - lsof
-  become: yes
+  become: true
   ignore_errors: true
   changed_when: false
 
 - name: jenkins-slave | Install CPP gdb tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' or ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - gdb
-  become: yes
+  become: true
   ignore_errors: true
   changed_when: false
 
 - name: jenkins-slave | Install CPP debug tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - pstack
-  become: yes
+  become: true
   ignore_errors: true
   changed_when: false
