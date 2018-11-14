@@ -7,6 +7,7 @@
 #sudo /opt/ansible/env35/bin/pip3.5 uninstall docker-py; sudo /opt/ansible/env35/bin/pip3.5 uninstall docker; sudo /opt/ansible/env35/bin/pip3.5 uninstall docker-compose;
 #sudo /opt/ansible/env35/bin/pip3.5 install --upgrade --force-reinstall --no-cache-dir docker-compose==1.12.0
 #sudo apt-get install unixodbc-dev #needed for pyodbc
+#sudo apt-get install python3-dev #fatal error: Python.h: No such file or directory
 ansible==2.6.3
 ansible-cmdb==1.28
 ansible-lint==3.4.23
@@ -41,7 +42,10 @@ defusedxml==0.5.0
 devscripts==1.0.0
 # Reference / disabled for now to avoid issues with docker
 # docker==3.4.1
+<<<<<<< HEAD
 # molecule==2.16.0
+=======
+>>>>>>> 08d8f9c421d27f3ddd93431a52f3bf73cece059b
 # testinfra==1.14.1
 # tox==3.1.2
 docker==3.3.0
@@ -80,7 +84,7 @@ lxml==4.2.1
 Mako==1.0.7
 MarkupSafe==1.0
 mccabe==0.6.1
-#molecule==2.16.0
+molecule==2.18.1
 ndg-httpsclient==0.4.4
 nodeenv==1.3.0
 ntlm-auth==1.0.6
@@ -106,7 +110,7 @@ ptyprocess==0.5.2
 pyasn1==0.4.2
 pycodestyle==2.3.1
 pycparser==2.18
-pycrypto==2.6.1
+#pycrypto==2.6.1
 pyflakes==1.6.0
 pygal==2.4.0
 PyJWT==1.6.1
@@ -137,12 +141,20 @@ rsa==3.4.2
 s3cmd==2.0.1
 s3transfer==0.1.12
 SecretStorage==2.3.1
+<<<<<<< HEAD
+=======
+selenium==3.14.1
+>>>>>>> 08d8f9c421d27f3ddd93431a52f3bf73cece059b
 simplejson==3.13.2
 six==1.11.0
 SQLAlchemy==1.2.2
 svn==0.3.45
 termcolor==1.1.0
+<<<<<<< HEAD
 testinfra==1.14.0
+=======
+testinfra==1.14.1
+>>>>>>> 08d8f9c421d27f3ddd93431a52f3bf73cece059b
 testresources==2.0.1
 texttable==0.8.8
 tinycss==0.4

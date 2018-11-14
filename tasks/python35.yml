@@ -196,7 +196,7 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-    - unixODBC-util_pkg_state    # ODBC
+    - unixODBC-devel    # ODBC
   become: true
 
 - name: python3 | Remove venv

@@ -9,12 +9,11 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: centos_7
-#    image: centos:7
+  - name: centos_7_jenkins_slave
     image: centos/systemd
     privileged: true
     command: /usr/sbin/init
-  - name: ubuntu_16_04
+  - name: ubuntu_16_04_jenkins_slave
     image: ubuntu:16.04
 provisioner:
   name: ansible
