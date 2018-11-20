@@ -59,7 +59,7 @@
     dest: "{{ jenkins_home }}/.ssh/id_rsa.pub"
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
-    mode=0600
+    mode: 0600
   register: key
   when: jenkins_ssh_key_file != ""
   become: true

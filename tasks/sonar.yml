@@ -73,6 +73,19 @@
   become: true
   ignore_errors: true
 
+- name: sonar | Make sure jobs has permission to download sonar-scanner inside {{ jenkins_slave_home }} tools directory
+  file:
+    dest: "{{ jenkins_slave_home }}/{{ item.dest }}/tools"
+    group: "{{ jenkins_user }}"
+    owner: "{{ jenkins_group }}"
+    state: directory
+    mode: 0755    
+  with_items:
+    - { dest: 'slave' }
+  become: true
+  changed_when: false
+  ignore_errors: true
+
 - name: sonar | Cleanup temporary directory
   file: name={{ tempdir.stdout }} state=absent
   changed_when: false
