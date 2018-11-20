@@ -145,3 +145,8 @@
     - ruby-compass
   become: true
   ignore_errors: true
+
+- name: jenkins-slave | Ensure webdriver is installed
+  command: "webdriver-manager update --versions.chrome {{ npm_chromedriver_version }}"
+  when: nodejs_enabled
+  become: true

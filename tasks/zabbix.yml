@@ -24,6 +24,21 @@
   become: true
   ignore_errors: true
 
+- name: zabbix | Install zabbix python api
+  pip:
+    name: "{{ item }}"
+    #executable: "pip{{ python2_version }}"
+  with_items:
+    - zabbix-api
+  #when: ansible_python_version | version_compare('2.7', '>=')
+  become: true
+
+- name: zabbix | Add +x to zabbix script files
+  file:
+    dest: /etc/zabbix/scripts/jenkins/
+    recurse: true
+    mode: a+x
+
 - name: zabbix | Create /opt/zabbix/externalscripts folder
   file: path=/opt/zabbix/externalscripts state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
   become: true

@@ -82,7 +82,7 @@
   become: true
 
 - debug: msg="curl_result - {{ curl_result.rc }} - {{ curl_result.stdout }}"
-  when: not ansible_check_mode
+  when: not ansible_check_mode and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   ignore_errors: true
 
 # - name: python | Install missing pip2.7 (2)
@@ -112,7 +112,7 @@
   become: true
 
 - debug: msg="pip_result - {{ pip_result.rc }} - {{ pip_result.stdout }}"
-  when: not ansible_check_mode
+  when: not ansible_check_mode and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   ignore_errors: true
 
 - name: python | Create pip2.7 link

@@ -171,8 +171,6 @@
     - venv
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ ansible_user_dir }}/.local/bin"
-# TODO remove ignore_errors
-#  ignore_errors: true
 
 # - name: python3 | Install missing pip requirements
 #   shell: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
