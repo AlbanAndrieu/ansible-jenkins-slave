@@ -57,7 +57,7 @@ script:
   - ansible --version
 
   # Check syntax
-  - ansible-playbook -i ./hosts --syntax-check ./jenkins-slave.yml -vvvv --connection=local -e "python_versions=[2.7, 3.5]" -e "docker_gid=3000" -e "jenkins_id=3000"
+  - ansible-playbook -i ./hosts --syntax-check ./jenkins-slave.yml -vvvv --connection=local -e "python_versions=[2.7, 3.5]" -e "docker_gid=3000" -e "jenkins_id=3000" -e "python_enabled=false"
 
   # Molecule test
   # - molecule test
@@ -65,7 +65,7 @@ script:
   # First run
   # Run the role/playbook with ansible-playbook.
 #  - travis_wait 30
-  - ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local --sudo -vvvv -e "python_versions=[2.7, 3.5]" -e "docker_gid=3000" -e "jenkins_id=3000"
+  - ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local --sudo -vvvv -e "python_versions=[2.7, 3.5]" -e "docker_gid=3000" -e "jenkins_id=3000" -e "python_enabled=false"
 
   # Run the role/playbook again, checking to make sure it's idempotent.
 #  - >
