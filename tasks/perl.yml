@@ -1,7 +1,7 @@
 ---
 
 - name: jenkins-slave | Install tools needed for development (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - perl
@@ -81,14 +81,14 @@
   become: true
 
 - name: jenkins-slave | Install tools needed for development (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['18.04']
   with_items:
     - libnet-ping-external-perl
   become: true
 
 - name: jenkins-slave | Install tools needed by cpp generator (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - libwww-perl
@@ -112,7 +112,7 @@
   become: true
 
 - name: jenkins-slave | Install tools needed by cpp generator (CentOS based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'CentOS')
   with_items:
@@ -121,7 +121,7 @@
     - perl-File-Find-Rule
 
 - name: jenkins-slave | Install tools needed by cpp generator (CentOS based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'CentOS' and ansible_distribution_major_version in ('5', '6'))
   with_items:
@@ -136,7 +136,7 @@
   become: true
 
 - name: jenkins-slave | Install CPAN tools needed by cpp generator (RedHat based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
@@ -161,7 +161,7 @@
   become: true
 
 - name: jenkins-slave | Install tools needed by cpp generator (RedHat based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
   with_items:
@@ -172,7 +172,7 @@
     - perl-libxml-perl
 
 - name: jenkins-slave | Install tools needed by cpp generator (RedHat based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')
   with_items:
@@ -278,14 +278,14 @@
   when: cpan_result.changed
 
 - name: jenkins-slave | Install tools needed by sample at runtime (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - libtime-y2038-perl
 
 - name: jenkins-slave | Install tools needed by sample a runtime (RedHat based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
   with_items:

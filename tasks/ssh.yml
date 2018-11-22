@@ -96,4 +96,3 @@
   with_items: "{{ jenkins_ssh_fingerprints }}"
   when: jenkins_ssh_fingerprints | length > 0
   become: true
-

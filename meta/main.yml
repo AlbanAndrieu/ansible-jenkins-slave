@@ -39,6 +39,6 @@ galaxy_info:
         - raring
         - saucy
         - trusty
-  categories:
+  galaxy_tags:
     - development
     - jenkins

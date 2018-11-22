@@ -12,7 +12,7 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
 
 - name: cpp | Install C++ compiler (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("12.04")
   with_items:
@@ -20,7 +20,7 @@
     - g++-4.6
 
 - name: cpp | Install C++ compiler (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("14.04", "16.04")
   with_items:
@@ -28,7 +28,7 @@
     - g++-4.8
 
 - name: cpp | Install C++ compiler (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04")
   with_items:
@@ -36,7 +36,7 @@
     - g++-5
 
 - name: cpp | Install C++ compiler (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04", "16.04")
   with_items:
@@ -45,7 +45,7 @@
 
 # SEE https://www.vultr.com/docs/how-to-install-gcc-on-centos-6
 - name: cpp | Install C++ compiler (CentOS based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'CentOS')
   # On purpose, we do not install gcc for RedHat because MiCloud VM already havea default one installed
@@ -59,7 +59,7 @@
 #   - glibc-devel
 
 - name: cpp | Install C++ compiler (RedHat based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:

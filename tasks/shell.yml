@@ -97,7 +97,7 @@
 # https://coolaj86.com/articles/how-to-get-more-fonts-on-ubuntu.html
 
 - name: jenkins-slave | Install fonts and ttf
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   with_items:
     - libfontconfig
     - libfreetype6
