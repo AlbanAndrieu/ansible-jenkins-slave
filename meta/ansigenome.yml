@@ -37,7 +37,7 @@ galaxy_info:
         - raring
         - saucy
         - trusty
-  categories:
+  galaxy_tags:
     - development
     - jenkins
 
@@ -46,7 +46,7 @@ ansigenome_info:
   galaxy_url: 'https://galaxy.ansible.com/alban.andrieu/jenkins-slave/'
   galaxy_user: 'alban.andrieu'
   galaxy_name: 'jenkins-slave'
-  galaxy_docker_name: 'ansible-jenkins-slave-docker'
+  galaxy_docker_name: 'ansible-jenkins-slave'
 
   travis: true
 
