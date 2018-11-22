@@ -16,9 +16,7 @@ cache:
     - $HOME/.cache/pip
 env:
 #  - ANSIBLE_VERSION=latest
-  - ANSIBLE_VERSION=2.4.1.0
-#  - ANSIBLE_VERSION=2.3.1.0
-#  - ANSIBLE_VERSION=2.2.2.0
+  - ANSIBLE_VERSION=2.7.2
 
 # sudo: false
 sudo: required
