@@ -10,7 +10,7 @@
     - name: Assert platform is supported
       assert:
         that:
-          - ansible_os_family in ['Debian', 'RedHat', 'Windows', 'Solaris']
+          - ansible_os_family in ['Debian', 'RedHat', 'CentOS', 'Windows', 'Solaris']
           - ansible_architecture in ['x86_64']
 
 - hosts: all
@@ -19,7 +19,7 @@
     - name: group hosts by distribution
       group_by: key="{{ ansible_distribution }}-{{ ansible_distribution_version }}"
 
-- hosts: RedHat-7*:RedHat-6*:CentOS-7*:CentOS-6*:Ubuntu-17*:Ubuntu-16*:Ubuntu-15*:Ubuntu-13*:Ubuntu-14*:Ubuntu-12*
+- hosts: RedHat-7*:RedHat-6*:CentOS-7*:CentOS-6*:Ubuntu-18*:Ubuntu-17*:Ubuntu-16*:Ubuntu-15*:Ubuntu-13*:Ubuntu-14*:Ubuntu-12*
   gather_facts: false
   tasks:
     - name: group hosts for supported distributions
@@ -44,7 +44,7 @@
       ignore_errors: true
 
 - name: Bootstrap python onto server
-  hosts: Ubuntu-17*:Ubuntu-16*:Ubuntu-14*:Ubuntu-13*:Ubuntu-12*
+  hosts: Ubuntu-18*:Ubuntu-17*:Ubuntu-16*:Ubuntu-14*:Ubuntu-13*:Ubuntu-12*
 #  become: true
 
   pre_tasks:

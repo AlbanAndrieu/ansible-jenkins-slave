@@ -1,7 +1,7 @@
 ---
 
 - name: Converge
-  hosts: centos_7
+  hosts: centos_7_jenkins_slave
 
   roles:
     - role: geerlingguy.repo-epel
