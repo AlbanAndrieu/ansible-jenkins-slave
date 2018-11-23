@@ -54,8 +54,8 @@
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04'])
   with_items:
-    - python3.6-dev
     - python3.6
+    - python3.6-dev
     - python3.6-dbg
     - python3.6-gdbm
 #    - idle-python3.6

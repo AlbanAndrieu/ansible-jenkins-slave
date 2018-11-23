@@ -123,7 +123,7 @@
   when: not( (npm_nexus_private_npm_url is undefined) or (npm_nexus_private_npm_url is none) or (npm_nexus_private_npm_url | trim == '') ) and nodejs_enabled
   become: true
 
-- name: Javascript | Ensure npm ssl settings
+- name: jenkins-slave | Ensure npm ssl settings
   command: "{{ npm_prefix }}npm config set strict-ssl {{ npm_strict_ssl }}"
   when: not( (npm_strict_ssl is undefined) or (npm_strict_ssl is none) or (npm_strict_ssl | trim == '') ) and nodejs_enabled
   become: true
@@ -137,6 +137,7 @@
   when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04")) or
         (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
   become: true
+  become_user: "{{ jenkins_user }}"
 
 - name: jenkins-slave | Install compass (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"

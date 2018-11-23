@@ -38,16 +38,18 @@
   ignore_errors: true
 
 - name: jenkins-slave | Create jenkins user and group
-  user: name={{ jenkins_user }}
-    password={{ jenkins_password }}
-    update_password=always
-    comment="Jenkins user"
-    home={{ jenkins_home }}
-    shell={{ jenkins_shell }}
-    uid={{ jenkins_id }}
-    group={{ jenkins_primary_group }}
-    groups={{ jenkins_groups }}
-    append=yes
+  user:
+    name: "{{ jenkins_user }}"
+    password: "{{ jenkins_password }}"
+    update_password: always
+    comment: "Jenkins"
+    home: "{{ jenkins_home }}"
+    shell: "{{ jenkins_shell }}"
+    uid: "{{ jenkins_id }}"
+    group: "{{ jenkins_primary_group }}"
+    groups: "{{ jenkins_groups }}"
+    # Important to not remove user from existing groups, such as docker
+    append: true
   changed_when: false
   become: true
   ignore_errors: true  # when user already exist and used by process it is failing
@@ -113,3 +115,20 @@
   become: true
   ignore_errors: true
   changed_when: false
+
+- name: jenkins-slave | Setup editor
+  alternatives:
+    name: editor
+    path: /usr/bin/vim.basic
+  # vim.basic will not be available on docker images
+  ignore_errors: true
+  become: true
+
+# When nis user are mounted and we ovveride jenkins_home to /jenkins, home still belong to root
+- name: jenkins-slave | Assert that home directory has proper right
+  file:
+    dest: "{{ jenkins_home }}"
+    state: directory
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0775

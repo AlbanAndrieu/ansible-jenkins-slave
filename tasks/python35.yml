@@ -67,6 +67,43 @@
 
 # sudo apt-get install python3-pip --reinstall
 
+# sudo apt-get install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
+
+# sudo apt-cache show python3
+# sudo apt-get install python3=3.5.1*
+
+- name: python3 | Install python 3.5 requirements
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
+  with_items:
+    - python3=3.5.1*
+    - python3-dbg=3.5.1*
+    - python3-pip
+
+- name: python3 | Install python 3.5 requirements
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
+  with_items:
+    - python3-dev=3.5.1*
+
+- name: python3 | Install python 3.5 ppa
+  apt_repository: repo="ppa:deadsnakes/ppa" state={{ util_repository_state|default('present') }} update_cache=yes
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04', '16.04'])
+  become: true
+
+- name: python3 | Install python 3.5 requirements
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
+  with_items:
+    - python3.5
+    - python3.5-dev
+#    - python3.5-dbg
+#    - python3.5-gdbm
+#    - python3-pip
+
 - name: python3 | Install missing pip{{ python3_version }} (1)
   shell: "wget https://bootstrap.pypa.io/get-pip.py && python{{ python3_version }} get-pip.py"
   register: curl_result
@@ -88,21 +125,6 @@
 # - debug: msg="curl_result - {{ curl_result.rc }} - {{ curl_result.stdout }}"
 #   when: not ansible_check_mode
 #   ignore_errors: true
-
-# sudo apt-get install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
-
-# sudo apt-cache show python3
-# sudo apt-get install python3=3.5.1*
-
-- name: python3 | Install python 3 requirements
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
-  become: true
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
-  with_items:
-    - python3-dev=3.5.1*
-    - python3=3.5.1*
-    - python3-dbg=3.5.1*
-    - python3-pip
 
 # - name: python3 | Run pip check
 #   shell: (pip -V && pip3.5 -V) | uniq

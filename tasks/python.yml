@@ -6,7 +6,7 @@
 # TODO once fixed https://bugs.launchpad.net/ubuntu/+source/python3.6/+bug/1685596
 - import_tasks: python36.yml
   when: not ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04', '14.04']) and python_enabled
-#- import_tasks: python37.yml
+# - import_tasks: python37.yml
 #  when: not ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']) and python_enabled
 
 # BELOW IS WRONG on docker image
