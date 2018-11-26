@@ -45,9 +45,9 @@ install:
   - id -a
   - getent passwd 3000 || true # 3000 not found we can use it for jenkins user
 #  - groupadd -g ${GID} docker && \
-  - adduser --quiet --uid ${UID} --gid ${GID} --home ${JENKINS_HOME} jenkins
+  - sudo adduser --quiet --uid ${UID} --gid ${GID} --home ${JENKINS_HOME} jenkins
   # Set password for the jenkins user (you may want to alter this).
-  - echo "jenkins:jenkins1234" | chpasswd
+  - echo "jenkins:jenkins1234" | sudo chpasswd
 
   - pip install molecule
 
