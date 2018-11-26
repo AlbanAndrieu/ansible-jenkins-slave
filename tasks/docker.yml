@@ -110,6 +110,7 @@
   notify:
     - restart docker
   become: true
+  ignore_errors: true  # Ignore failure on Travis
   tags:
     - restart
     - notify
