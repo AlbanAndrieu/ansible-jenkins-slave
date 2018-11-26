@@ -27,3 +27,5 @@ odbcinst_FreeTDS_Setup: /usr/lib/x86_64-linux-gnu/odbc/libtdsS.so
 # Oracle
 odbcinst_Oracle_Driver: /opt/oracle/instantclient_12_2/libsqora.so.12.1
 # odbcinst_Oracle_Driver64: /opt/oracle/instantclient_12_2/libsqora.so.12.1
+
+jdk_home: "/usr/lib/jvm/java-8-oracle"
