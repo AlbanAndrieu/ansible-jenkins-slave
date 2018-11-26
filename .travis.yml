@@ -47,7 +47,7 @@ install:
 #  - groupadd -g ${DOCKER_GID} docker && \
   - sudo adduser --quiet --uid ${JENKINS_UID} --gid ${DOCKER_GID} --home ${JENKINS_HOME} jenkins
   # Set password for the jenkins user (you may want to alter this).
-  - echo "jenkins:jenkins1234" | sudo chpasswd
+#  - sudo echo "jenkins:jenkins1234" | sudo chpasswd
 
   - pip install molecule
 
