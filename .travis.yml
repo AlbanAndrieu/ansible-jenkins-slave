@@ -16,7 +16,7 @@ env:
   global:
     - JENKINS_HOME=/home/jenkins
     - UID=3000
-    - GID=3000
+    - GID=999
     - secure: MD73NCVzctbVmi2QnQtwtH/ISXN2K0alsLbixoaXl7gr3XvTB4sYB0u+KKtPV46jbeAlQqTRObPfQouPrsLsiNDYcpuN0I5bKsn3TTs4ZHIkD0I2Q9Wh3qNM2fYf9mw3ZUhvXVTEod0W7jzkVGb6kitRCJj8rioKKzvE/YdVsG4=
   matrix:
 #  - ANSIBLE_VERSION=latest
@@ -41,9 +41,9 @@ install:
   - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
 
   # Prepare tests
-  # Add user jenkins to the image
+  # Add user jenkins to the image (travis is 2000)
   - id -a
-  - getent passwd 3000
+  - getent passwd 3000 || true # 3000 not found we can use it for jenkins user
 #  - groupadd -g ${GID} docker && \
   - adduser --quiet --uid ${UID} --gid ${GID} --home ${JENKINS_HOME} jenkins
   # Set password for the jenkins user (you may want to alter this).
