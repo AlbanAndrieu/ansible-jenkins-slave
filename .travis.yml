@@ -42,8 +42,10 @@ install:
 
   # Prepare tests
   # Add user jenkins to the image
-  - groupadd -g ${GID} docker && \
-    adduser --quiet --uid ${UID} --gid ${GID} --home ${JENKINS_HOME} jenkins
+  - id -a
+  - getent passwd 3000
+#  - groupadd -g ${GID} docker && \
+  - adduser --quiet --uid ${UID} --gid ${GID} --home ${JENKINS_HOME} jenkins
   # Set password for the jenkins user (you may want to alter this).
   - echo "jenkins:jenkins1234" | chpasswd
 
