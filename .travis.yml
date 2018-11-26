@@ -15,8 +15,8 @@ cache:
 env:
   global:
     - JENKINS_HOME=/home/jenkins
-    - UID=3000
-    - GID=999
+    - JENKINS_UID=3000
+    - DOCKER_GID=999
     - secure: MD73NCVzctbVmi2QnQtwtH/ISXN2K0alsLbixoaXl7gr3XvTB4sYB0u+KKtPV46jbeAlQqTRObPfQouPrsLsiNDYcpuN0I5bKsn3TTs4ZHIkD0I2Q9Wh3qNM2fYf9mw3ZUhvXVTEod0W7jzkVGb6kitRCJj8rioKKzvE/YdVsG4=
   matrix:
 #  - ANSIBLE_VERSION=latest
@@ -44,8 +44,8 @@ install:
   # Add user jenkins to the image (travis is 2000)
   - id -a
   - getent passwd 3000 || true # 3000 not found we can use it for jenkins user
-#  - groupadd -g ${GID} docker && \
-  - sudo adduser --quiet --uid ${UID} --gid ${GID} --home ${JENKINS_HOME} jenkins
+#  - groupadd -g ${DOCKER_GID} docker && \
+  - sudo adduser --quiet --uid ${JENKINS_UID} --gid ${DOCKER_GID} --home ${JENKINS_HOME} jenkins
   # Set password for the jenkins user (you may want to alter this).
   - echo "jenkins:jenkins1234" | sudo chpasswd
 
@@ -62,7 +62,7 @@ script:
   - ansible --version
 
   # Check syntax
-  - ansible-playbook -i ./hosts --syntax-check ./jenkins-slave.yml -vvvv --connection=local -e "python_versions=[2.7, 3.5]" -e "docker_gid=${GID}" -e "jenkins_id=${UID}" -e "python_enabled=false"
+  - ansible-playbook -i ./hosts --syntax-check ./jenkins-slave.yml -vvvv --connection=local -e "python_versions=[2.7, 3.5]" -e "docker_gid=${DOCKER_GID}" -e "jenkins_id=${JENKINS_UID}" -e "python_enabled=false"
 
   # Molecule test
   # - molecule test
@@ -70,7 +70,7 @@ script:
   # First run
   # Run the role/playbook with ansible-playbook.
 #  - travis_wait 30
-  - ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local -vvvv -e "python_versions=[2.7, 3.5]" -e "docker_gid=${GID}" -e "jenkins_id=${UID}" -e "python_enabled=false"
+  - ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local -vvvv -e "python_versions=[2.7, 3.5]" -e "docker_gid=${DOCKER_GID}" -e "jenkins_id=${JENKINS_UID}" -e "python_enabled=false"
 
   # Run the role/playbook again, checking to make sure it's idempotent.
 #  - >
