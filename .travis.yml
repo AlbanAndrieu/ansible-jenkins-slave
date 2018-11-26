@@ -45,7 +45,7 @@ install:
   - id -a
   - getent passwd 3000 || true # 3000 not found we can use it for jenkins user
 #  - groupadd -g ${DOCKER_GID} docker && \
-  - sudo adduser --quiet --uid ${JENKINS_UID} --gid ${DOCKER_GID} --home ${JENKINS_HOME} jenkins
+  - sudo adduser --quiet --disabled-password --shell /bin/bash --uid ${JENKINS_UID} --gid ${DOCKER_GID} --home ${JENKINS_HOME} --gecos "Jenkins" jenkins
   # Set password for the jenkins user (you may want to alter this).
 #  - sudo echo "jenkins:jenkins1234" | sudo chpasswd
 
