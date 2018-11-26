@@ -13,10 +13,14 @@ cache:
   directories:
     - $HOME/.cache/pip
 env:
-#  - ANSIBLE_VERSION=latest
+  - JENKINS_HOME=/home/jenkins
+  - UID=1000
+  - GID=1000
   - ANSIBLE_VERSION=2.7.2
-  global:
-    secure: MD73NCVzctbVmi2QnQtwtH/ISXN2K0alsLbixoaXl7gr3XvTB4sYB0u+KKtPV46jbeAlQqTRObPfQouPrsLsiNDYcpuN0I5bKsn3TTs4ZHIkD0I2Q9Wh3qNM2fYf9mw3ZUhvXVTEod0W7jzkVGb6kitRCJj8rioKKzvE/YdVsG4=
+# matrix:
+#   - ANSIBLE_VERSION=latest
+global:
+  secure: MD73NCVzctbVmi2QnQtwtH/ISXN2K0alsLbixoaXl7gr3XvTB4sYB0u+KKtPV46jbeAlQqTRObPfQouPrsLsiNDYcpuN0I5bKsn3TTs4ZHIkD0I2Q9Wh3qNM2fYf9mw3ZUhvXVTEod0W7jzkVGb6kitRCJj8rioKKzvE/YdVsG4=
 sudo: required
 dist: trusty
 branches:
@@ -35,6 +39,13 @@ install:
 
   # Add ansible.cfg to pick up roles path.
   - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
+
+  # Prepare tests
+  # Add user jenkins to the image
+#  - groupadd -g ${GID} docker && \
+#    adduser --quiet --uid ${UID} --gid ${GID} --home ${JENKINS_HOME} jenkins
+  # Set password for the jenkins user (you may want to alter this).
+#  - echo "jenkins:jenkins1234" | chpasswd
 
   - pip install molecule
 

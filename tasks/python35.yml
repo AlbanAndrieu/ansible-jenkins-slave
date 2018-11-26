@@ -107,12 +107,12 @@
 - name: python3 | Install missing pip{{ python3_version }} (1)
   shell: "wget https://bootstrap.pypa.io/get-pip.py && python{{ python3_version }} get-pip.py"
   register: curl_result
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
   changed_when: false
   become: true
 
 - debug: msg="curl_result - {{ curl_result.rc }} - {{ curl_result.stdout }}"
-  when: not ansible_check_mode
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04']) and not ansible_check_mode
   ignore_errors: true
 
 # - name: python3 | Install missing pip{{ python3_version }} (2)
@@ -134,12 +134,12 @@
 - name: python | Install which pip{{ python3_version }}
   shell: "which pip{{ python3_version }}"
   register: pip_result
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
   changed_when: false
   become: true
 
 - debug: msg="pip_result - {{ pip_result.rc }} - {{ pip_result.stdout }}"
-  when: not ansible_check_mode
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04']) and not ansible_check_mode
   ignore_errors: true
 
 - name: python3 | Upgrade setuptools
