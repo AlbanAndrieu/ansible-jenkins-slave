@@ -149,5 +149,6 @@
 
 - name: jenkins-slave | Ensure webdriver is installed
   command: "webdriver-manager update --versions.chrome {{ npm_chromedriver_version }}"
-  when: nodejs_enabled
+  when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','13.04','14.04']) or
+        (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
   become: true
