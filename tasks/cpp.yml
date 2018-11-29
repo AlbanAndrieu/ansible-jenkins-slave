@@ -162,7 +162,7 @@
 
 - name: jenkins-slave | Install C++ librairies ldap (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04', '16.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04']
   with_items:
     - libldap2-dev
     - libsasl2-dev
@@ -196,8 +196,8 @@
 
 - name: jenkins-slave | Install C++ librairies curl (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-# and ansible_distribution_version in ['12.04', '14.04', '16.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['16.04', '18.04']
+  # Do not install libcurl3 on Ubuntu 18.04 it is uninstalling curl libcurl4 libcurl4-openssl-dev
   with_items:
     - libcurl3
     - zlib1g
@@ -205,7 +205,7 @@
 
 - name: jenkins-slave | Install C++ librairies curl (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04', '14.04', '16.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - libcurl4-gnutls-dev
     - zlib1g-dev
@@ -259,7 +259,7 @@
 #
 - name: jenkins-slave | Install C++ librairies log4cxx (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04', '14.04']
   with_items:
     - liblog4cxx10-dev
 #   - libcrypto++9
@@ -268,7 +268,7 @@
 
 - name: jenkins-slave | Install C++ librairies log4cxx (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
   tags: cpp
   with_items:
     - liblog4cxx-dev
@@ -299,7 +299,7 @@
 # XERCES (XERCES 2.8 still nedded by OLD LDAP)
 - name: jenkins-slave | Install C++ librairies xerces 3.1 (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04', '16.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04']
   tags: cpp
   with_items:
     - libxerces-c-dev
@@ -324,7 +324,7 @@
 # LIBSSH2 nedded by LIBCURL
 - name: jenkins-slave | Install C++ librairies libssh2 (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04', '16.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04']
   tags: cpp
   with_items:
     - libssh2-1-dev
@@ -373,7 +373,7 @@
 
 - name: jenkins-slave | Install C++ librairies apr (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04', '16.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04']
   with_items:
     - libapr1-dev
     - libaprutil1-dev
@@ -437,7 +437,7 @@
 
 - name: jenkins-slave | Install C++ librairies activemq (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04', '16.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04']
   with_items:
     - libdb-dev
     - uuid-dev
@@ -468,7 +468,7 @@
 
 - name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04', '16.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04']
   with_items:
 # libstdc++6
     - libstdc++-4.8-dev
@@ -480,9 +480,9 @@
 # cross compatibility for i386 i686
 - name: jenkins-slave | Install C++ librairies for building cross compatibility 32bits (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
   with_items:
-#    - libstdc++5
+#   - libstdc++5
 # libstdc++6
     - libstdc++-5-dev
     - libstdc++-5-dev:i386
@@ -519,12 +519,12 @@
 
 - name: jenkins-slave | Install C++ librairies for building 32bits RMDSExtractor (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04', '16.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04']
   with_items:
 # needed for 32 bits cross compilation
     - g++-4.8-multilib
     - gcc-4.8-multilib
-#    - ia32-libs
+#   - ia32-libs
 # sudo ln -s /usr/lib32/libstdc++.so.6 /usr/lib32/libstdc++.so fixed by lib32gcc-4.8-dev
 # sudo ln -s /usr/lib32/libgcc_s.so.1 /usr/lib32/libgcc_s.so    fixed by lib32gcc-4.8-dev
 #   - lib32stdc++4.8-dev
@@ -567,7 +567,7 @@
 # See https://gcc.gnu.org/onlinedocs/libstdc++/faq.html#faq.how_to_set_paths
 - name: jenkins-slave | Install C++ librairies for building old gcc (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04','14.04', '16.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
 # needed for linking old libraries
 # ldconfig -v | grep libstdc++
@@ -641,7 +641,7 @@
 # cross compatibility for i386 i686
 - name: jenkins-slave | Install C++ librairies for unicode for database (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
   with_items:
 # unicode libicuuc.so
     - libicu55
@@ -744,9 +744,9 @@
   with_items:
     - numactl
     - redhat-lsb-core
-#    - ocl-icd-libopencl1
-#    - ocl-icd-opencl-dev
-#    - libnuma-dev
+#   - ocl-icd-libopencl1
+#   - ocl-icd-opencl-dev
+#   - libnuma-dev
 
 # Devtools
 # For wget tar unzip, see common role

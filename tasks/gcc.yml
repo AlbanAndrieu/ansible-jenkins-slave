@@ -9,7 +9,7 @@
 - name: cpp | Remove {{ cpp_dir }}/cpp
   file: path={{ cpp_dir }}/cpp state=absent
   become: true
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04")
 
 - name: cpp | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
@@ -22,7 +22,7 @@
 - name: cpp | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("14.04", "16.04")
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04")
   with_items:
     - gcc-4.8
     - g++-4.8
@@ -140,6 +140,7 @@
     - llvm
     - llvm-3.8-dev
   tags: cpp
+  when: not ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
   become: true
   ignore_errors: true
 
@@ -196,7 +197,7 @@
 #   ignore_errors: true
 
 - name: cpp | Display cpp link before
-  action: command update-alternatives --display gcc
+  action: command update-alternatives --display cpp
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   changed_when: false
   become: true
@@ -250,7 +251,7 @@
 # ls -la /etc/alternatives/gcc*
 
 - name: cpp | Display cpp link after
-  action: command update-alternatives --display gcc
+  action: command update-alternatives --display cpp
   when: not( (cpp_dir is undefined) or (cpp_dir is none) or (cpp_dir | trim == '') )
         and
         not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )
