@@ -79,7 +79,7 @@
 # sudo apt-get install python3=3.5.1*
 
 - name: python3 | Install python 3.5 requirements
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
   with_items:
@@ -88,14 +88,14 @@
     - python3-pip
 
 - name: python3 | Install python 3.5 requirements
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
   with_items:
     - python3-dev=3.5.1*
 
 - name: python3 | Install python 3.5 requirements
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '16.04'])
   with_items:

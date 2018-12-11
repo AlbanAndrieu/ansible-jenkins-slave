@@ -176,4 +176,7 @@
 #   shell: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
 #   changed_when: false
 #   become: true
-#   ignore_errors: true
+
+# TODO : Do not upgrade pip to lastest version (it is not working with pre-commit
+# DOWGRADE it with
+# python3 -m pip install --upgrade pip==9.0.3

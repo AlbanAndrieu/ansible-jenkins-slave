@@ -27,10 +27,10 @@
 - name: zabbix | Install zabbix python api
   pip:
     name: "{{ item }}"
-    #executable: "pip{{ python2_version }}"
+    # executable: "pip{{ python2_version }}"
   with_items:
     - zabbix-api
-  #when: ansible_python_version | version_compare('2.7', '>=')
+  # when: ansible_python_version | version_compare('2.7', '>=')
   become: true
 
 - name: zabbix | Add +x to zabbix script files

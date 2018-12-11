@@ -34,6 +34,14 @@
 # TODO use fix version of node/npm
 # node v6.13.0
 # npm 3.10.10
+
+- name: jenkins-slave | Clean cache before upgrade
+  shell: 'npm cache clean -f'
+  when: nodejs_enabled
+  become: true
+  changed_when: false
+  ignore_errors: true
+
 - name: jenkins-slave | Get node repo
 # shell: 'curl -sL https://rpm.nodesource.com/setup_7.x | sudo -E bash -'
   shell: 'curl -sL https://rpm.nodesource.com/setup_6.x | sudo -E bash -'

@@ -112,16 +112,16 @@
   become: true
 
 - debug: msg="pip_result - {{ pip_result.rc }} - {{ pip_result.stdout }}"
-  when: not ansible_check_mode and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: not ansible_check_mode and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
   ignore_errors: true
 
 - name: python | Create pip2.7 link
 #  file: path=/usr/bin/pip2.7 src=/usr/bin/pip2 state=link
   file: path=/usr/bin/pip2.7 src=/usr/local/bin/pip2.7 state=link
 #  force=yes
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ( pip_result.rc != 0 )
   become: true
-#  ignore_errors: true
+  ignore_errors: true
 
 - name: python | Install missing pip2.7 (fix 'module' object has no attribute 'SSL_ST_INIT') part 1
   shell: "pip{{ python2_version }} uninstall pyOpenSSL"

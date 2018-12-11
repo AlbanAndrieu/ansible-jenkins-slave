@@ -9,6 +9,15 @@
   changed_when: false
   become: true
 
+- name: sonar | Remove sonar cache (upgrade mode)
+  file: path="{{ jenkins_home }}/.sonar" state=absent
+  become: true
+  ignore_errors: true
+
+- name: sonar | Create sonar cache (upgrade mode)
+  file: path="{{ jenkins_home }}/.sonar/cache" state=directory recurse=yes mode=0777
+  become: true
+
 # export WORKSPACE="/root/"
 # ON OSX cd /var/root
 # cd ${WORKSPACE}
@@ -79,7 +88,7 @@
     group: "{{ jenkins_user }}"
     owner: "{{ jenkins_group }}"
     state: directory
-    mode: 0755    
+    mode: 0755
   with_items:
     - { dest: 'slave' }
   become: true
