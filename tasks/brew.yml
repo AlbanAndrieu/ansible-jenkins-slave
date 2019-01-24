@@ -9,34 +9,43 @@
   become: true
 
 - name: brew | Install apt dependencies for brew requirement
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=true state={{ util_pkg_state|default('present') }}"
-  with_items:
-    - build-essential
-    - python-setuptools
-    - ruby
+  apt:
+    pkg: ['build-essential', 'python-setuptools', 'ruby']
+    state: "{{ util_pkg_state|default('present') }}"
+    update_cache: true
 # - linuxbrew-wrapper
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: true
 
 - name: brew | Install yum dependencies for brew requirement
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=true state={{ util_pkg_state|default('present') }}"
-  with_items:
-    - irb
-    - python-setuptools
-    - ruby
+  yum:
+    pkg: ['irb', 'python-setuptools', 'ruby']
+    state: "{{ util_pkg_state|default('present') }}"
+    update_cache: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   become: true
+# TODO fix on CentOS 7
+  ignore_errors: true
+
+- name: brew | Check if Homebrew is already installed
+  stat:
+    path: /usr/bin/brew
+  register: brew
 
 - name: brew | Install brew
   shell: 'ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"'
   changed_when: false
   become: true
   become_user: "{{ jenkins_user }}"
+  when: not brew.stat.exists
 # TCP connection reset by peer need ignore_errors: true
   ignore_errors: true
 
 - name: brew | Install brew requirements
-  shell: "brew install cairo libxml2 libffi"
+  homebrew:
+    name: ['cairo', 'libxml2', 'libffi']
+    state: present
+    update_homebrew: yes
   ignore_errors: true
   become: true
   become_user: "{{ jenkins_user }}"
@@ -54,7 +63,9 @@
   become: true
 
 - name: brew | Uninstall messing brew python 2 package
-  action: command brew uninstall mercurial python2
+  homebrew:
+    name: ['mercurial', 'python2']
+    state: absent
   changed_when: false
   become: true
   become_user: "{{ jenkins_user }}"

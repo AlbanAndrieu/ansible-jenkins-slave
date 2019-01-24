@@ -14,8 +14,8 @@
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 
-# FYI hdd.yml must be first (before creating slave folders)
-- import_tasks: hdd.yml
+# FYI hdd.yml playbook must be first (before creating slave folders)
+#- import_tasks: hdd.yml
 
 - import_tasks: java.yml
 
@@ -308,6 +308,7 @@
 - import_tasks: database.yml
 
 - import_tasks: dev.yml
+  when: workstation_enabled
 
 - import_tasks: tuning.yml
 

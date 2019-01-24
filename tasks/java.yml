@@ -18,8 +18,8 @@
 - name: jdk | Add Oracle Java Repository
   apt_repository: repo="ppa:webupd8team/java" state={{ util_repository_state|default('present') }} update_cache=yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04'])
-  tags: jdk_setup
   become: true
+  tags: jdk_setup
 
 - name: jdk | Accept license
   shell: "{{ item }}"
@@ -27,13 +27,13 @@
     - echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
     - echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04'])
-  tags: jdk_setup
   become: true
+  tags: jdk_setup
 
 - name: jdk8 | Accept Java 8 License
   debconf: name='oracle-java8-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04'])
-  become: yes
+  become: true
   tags: jdk_setup
 
 - name: jdk7 | Install default oracle
@@ -55,7 +55,7 @@
 - name: jdk8 | Install default oracle
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ default_pkg_state|default('present') }} update_cache=yes"
   with_items:
-   - oracle-java8-installer
+    - oracle-java8-installer
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
 
 - name: jdk8 | Install default oracle
@@ -137,3 +137,19 @@
   ignore_errors: true
 
 # ln -s /etc/ssl/certs/java/cacerts /usr/lib/jvm/java-8-oracle/jre/lib/security/
+
+#TODO
+#- name: jenkins-slave | Check if certificate is already imported
+#  shell: '{{ java_keytool_executable }} -list -keystore {{ java_certificate_ca_path }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias }}'
+#  ignore_errors: true
+#  register: java_cert_imported
+#
+#- name: jenkins-slave | Import certificate
+#  shell: '{{ java_keytool_executable }} -import -trustcacerts -keystore {{ java_certificate_ca_path }} -keypass {{ java_certificate_key_pass }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias }} -file /tmp/{{ java_certificate_alias }}.crt'
+#  when: java_cert_imported is failed
+
+# Belowe need to be done especially because we set JAVA_HOME=/usr/java/default inside .bashrc
+- name: jenkins-slave | Normalize JAVA_HOME across architectures
+  file: path=/usr/java/default src={{ jdk_home }} state=link #force=yes
+  become: true
+  ignore_errors: true

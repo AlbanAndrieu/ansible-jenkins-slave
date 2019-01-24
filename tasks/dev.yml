@@ -1,5 +1,15 @@
 ---
 
+# Below is recommended to use scl, because scons still need python 27 (and eclipse)
+# scl -l
+# scl enable python27 bash
+
+- name: Workstation | Install python for scons
+  yum:
+    name: "python27-python-pip"
+    state: present
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+
 - name: Workstation | Install the 'Development tools' package group
   yum:
     name: "@Development tools"

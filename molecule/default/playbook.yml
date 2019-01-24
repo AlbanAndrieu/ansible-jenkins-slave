@@ -1,7 +1,7 @@
 ---
 
 - name: Converge
-  hosts: centos_7_jenkins_slave
+  hosts: zabbix-agent-centos
 
   roles:
     - role: geerlingguy.repo-epel
@@ -11,3 +11,5 @@
 
   roles:
     - role: alban.andrieu.jenkins-slave
+      verbose: yes
+  no_log: False

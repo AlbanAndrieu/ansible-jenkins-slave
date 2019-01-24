@@ -29,6 +29,7 @@ ok /Error: No such object:/
 #javascript uncss
 warning /Error: Could not load script:/
 warning /Error: Uncaught \[ReferenceError: angular is not defined\]/
+warning /Error: No such volume/
 
 #ssh
 error /Failed to add the host to the list of known hosts/
@@ -179,12 +180,17 @@ warning /^\[ANSIBLE/
 warning /Permission denied/
 warning /[WARNING]:/
 #warning /[WARNING]: Consider using/
+#CMDB syntax
+warning /Unsupported vars syntax. Skipping line/
 #error /[WARNING]: Could not match supplied host pattern/
-error /unreachable=[0-9]+/
-error /failed=[0-9]+/
+error /unreachable=[1-9]+/
+error /failed=[1-9]+/
 #error /The error appears to have been in/
 #Below for inventory ansible-cmdb
 error /Whoops, it looks like something went wrong while rendering the template/
+
+#molecule
+error /FAILED \- RETRYING:/
 
 #Git
 # all of these errors relate to git not being able to access remote 
@@ -197,6 +203,7 @@ error /fatal: branch [a-zA-Z0-9\/\'\-_]+ does not exist/
 error /fatal:/
 warning /error: pathspec/
 warning /FAILED/
+
 #sendmail in ansible
 ok /ERROR: FEATURE/
 

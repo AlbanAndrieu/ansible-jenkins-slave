@@ -4,15 +4,15 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
-   - bash
-   - ksh
+    - bash
+    - ksh
   become: true
 
 - name: jenkins-slave | Install shell for running
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
-   - bash-completion
+    - bash-completion
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: true
 

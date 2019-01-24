@@ -54,7 +54,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install C++ quality tool others
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=qyes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
     - cppcheck
     - gperf

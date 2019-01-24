@@ -38,6 +38,12 @@ jdk_group: "{{ jdk_owner }}"
 # jdk_home: "/usr/lib/jvm/java-8-oracle"
 # jdk_home: "/usr/java/default"
 
+java_keytool_executable: "{{ jdk_home }}/bin/keytool"
+java_certificate_ca_path: "{{ jdk_home }}/jre/lib/security/cacerts"
+java_certificate_alias: test
+java_certificate_key_pass: changeit
+java_certificate_store_pass: changeit
+
 jenkins_http_host: 127.0.0.1                # Set HTTP host
 jenkins_http_port: 8000                     # Set HTTP port
 jenkins_prefix: "/"
@@ -86,6 +92,7 @@ npm_global_packages:
   - node-sass@3.11.2
   - jshint@2.9.5
   - jsonlint@1.6.2
+  - json2csv@4.3.3
 # - node-gyp@3.6.2 need python / gcc
   - slimerjs@0.10.3
   - casperjs@1.1.4
