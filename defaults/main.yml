@@ -106,6 +106,48 @@ npm_global_packages:
 
 npm_chromedriver_version: 2.37
 
+brew_enabled: false
+brew_packages:
+  - 'randomize-lines' # for git-radar
+#  - 'autoconf'
+#  - 'bash-completion'
+#  - 'boot2docker'
+#  - 'consul'
+#  - 'docker-compose'
+#  - 'docker-machine'
+#  - 'doxygen'
+#  - 'git'
+#  - 'git-lfs'
+#  - 'go'
+#  - 'jq'
+#  - 'nmap'
+#  - 'nomad'
+#  - 'openssl'
+#  - 'packer'
+#  - 'pyenv'
+#  - 'python'
+#  - 'rancher-compose'
+#  - 'rbenv'
+#  - 'ruby-build'
+#  - 'ssh-copy-id'
+#  - 'terraform'
+#  - 'terraform-inventory'
+#  - 'terraform-provisioner-ansible'
+#  - 'tmux'
+#  - 'tree'
+#  - 'vault'
+#  - 'wget'
+#  - 'zsh'
+#  - 'zsh-syntax-highlighting'
+install_homebrew_if_missing: true
+# python_modules:
+#   - 'configparser'
+#   - 'pylint'
+#   - 'virtualenv'
+upgrade_homebrew_packages: false
+homebrew_home_check_path: "{{ lookup('env','HOME') }}/.linuxbrew"
+homebrew_check_path: "{{ homebrew_home_check_path }}/homebrew/bin/brew"
+
 # maven_repository: "{{ jenkins_slave_home }}/repository"
 maven_repository: "/usr/share/maven-repo"
 # TODO sudo chmod 755 -R /usr/share/maven-repo

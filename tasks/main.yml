@@ -85,6 +85,8 @@
 - import_tasks: user.yml
 
 - import_tasks: brew.yml
+  when: brew_enabled
+  tags: [brew]
 
 - import_tasks: security.yml
 

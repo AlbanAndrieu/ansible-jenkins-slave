@@ -13,7 +13,6 @@
     pkg: ['build-essential', 'python-setuptools', 'ruby']
     state: "{{ util_pkg_state|default('present') }}"
     update_cache: true
-# - linuxbrew-wrapper
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: true
 
@@ -26,20 +25,64 @@
   become: true
 # TODO fix on CentOS 7
   ignore_errors: true
+  
+- name: brew | Uninstall homebrew on Ubuntu
+  apt: pkg={{ item }} state=absent
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '13.04', '14.04']
+  with_items:
+    - linuxbrew-wrapper
+  become: true  
 
-- name: brew | Check if Homebrew is already installed
+- name: brew | Check Homebrew is installed
   stat:
-    path: /usr/bin/brew
-  register: brew
+    path: "{{ homebrew_check_path }}"
+  register: "homebrew_check"
 
-- name: brew | Install brew
-  shell: 'ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"'
-  changed_when: false
+- name: brew | Fail if homebrew is not installed and install_homebrew_if_missing is false
+  fail:
+    msg: "Homebrew is missing...Install from http://brew.sh/"
+  when: >
+        not homebrew_check.stat.exists and
+        not install_homebrew_if_missing
+
+- name: brew | Installing homebrew to custom directory
+  git: repo={{ homebrew_repository }} dest="{{ home }}/.linuxbrew" accept_hostkey=yes update=no
+#  shell: "git clone {{ homebrew_repository }} {{ home }}/.linuxbrew"
+  when: >
+        not homebrew_check.stat.exists and
+        install_homebrew_if_missing
+#  become_user: "{{ shell_owner }}"
   become: true
-  become_user: "{{ jenkins_user }}"
-  when: not brew.stat.exists
-# TCP connection reset by peer need ignore_errors: true
-  ignore_errors: true
+
+#BELOW do not work when /home cannot be wrote due to nis user
+#- name: brew | Installing Homebrew
+#  command: '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+#  when: >
+#        not homebrew_check.stat.exists and
+#        install_homebrew_if_missing
+
+- name: brew | Ensuring Homebrew bin is installed
+  stat:
+    path: "{{ homebrew_check_path }}"
+  register: "homebrew_check_path"
+
+#test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+#test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+
+- name: brew | Fail if Homebrew bin does not exist
+  fail:
+    msg: "Homebrew bin is missing... {{ homebrew_check_path }}"
+  when: >
+        not homebrew_check_path.stat.exists
+
+#- name: brew | Check Homebrew
+#  shell: "{{ homebrew_check_path }} list"
+#  when: >
+#        homebrew_check_path.stat.exists
+##  become_user: "{{ shell_owner }}"
+#  become: true
+
+#export PATH=$HOME/homebrew/bin:$PATH
 
 - name: brew | Install brew requirements
   homebrew:
@@ -83,3 +126,16 @@
 # brew install freetds --with-tdsver=7.2 --with-unixodbc
 
 # sudo yum groupinstall 'Development Tools' && sudo yum install
+
+#brew update && brew upgrade; brew cleanup
+- name: brew | Homebrew Cleaning
+  shell: "{{ homebrew_check_path }} cleanup"
+  with_items: "{{ brew_packages }}"
+  when: homebrew_check_path.stat.exists
+  become: true
+  ignore_errors: true
+
+#- name: brew | Updating Homebrew
+#  homebrew:
+#    update_homebrew: true
+#  when: homebrew_check.stat.exists
