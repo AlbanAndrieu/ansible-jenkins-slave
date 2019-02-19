@@ -140,10 +140,7 @@ brew_packages:
 #  - 'zsh'
 #  - 'zsh-syntax-highlighting'
 install_homebrew_if_missing: true
-# python_modules:
-#   - 'configparser'
-#   - 'pylint'
-#   - 'virtualenv'
+
 upgrade_homebrew_packages: false
 homebrew_home_check_path: "{{ lookup('env','HOME') }}/.linuxbrew"
 homebrew_check_path: "{{ homebrew_home_check_path }}/homebrew/bin/brew"

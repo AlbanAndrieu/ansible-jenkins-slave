@@ -4,8 +4,12 @@
   package: name=unzip state=present
 
 - name: sonar | Create temporary directory
-  shell: mktemp -d
+  tempfile:
+    state: directory
+    suffix: staging
+#    path: "{{ lookup('env', 'HOME') }}"
   register: tempdir
+  connection: local    
   changed_when: false
   become: true
 
