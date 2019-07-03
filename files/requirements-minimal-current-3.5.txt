@@ -70,7 +70,7 @@ rsa==3.4.2
 simplejson==3.13.2
 six==1.11.0
 termcolor==1.1.0
-texttable==0.9.1
+texttable==0.8.8
 urllib3==1.22
 ushlex==0.99
 virtualenv==15.1.0

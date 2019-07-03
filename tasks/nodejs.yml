@@ -36,21 +36,21 @@
 # npm 3.10.10
 
 - name: jenkins-slave | Clean cache before upgrade
-  shell: 'npm cache clean -f'
+  command: 'npm cache clean -f'
   when: nodejs_enabled
   become: true
   changed_when: false
   ignore_errors: true
 
-- name: jenkins-slave | Get node repo
-# shell: 'curl -sL https://rpm.nodesource.com/setup_7.x | sudo -E bash -'
-  shell: 'curl -sL https://rpm.nodesource.com/setup_6.x | sudo -E bash -'
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
-  become: true
-  changed_when: false
-  ignore_errors: true
+#- name: jenkins-slave | Get node repo # noqa 303
+#  shell: 'curl -sL https://rpm.nodesource.com/setup_7.x | sudo -E bash -'
+##  shell: 'curl -sL https://rpm.nodesource.com/setup_6.x | sudo -E bash -'
+#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
+#  become: true
+#  changed_when: false
+#  ignore_errors: true
 
-- name: jenkins-slave | Get node repo
+- name: jenkins-slave | Get node repo # noqa 303
   shell: 'curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -'
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04']) and nodejs_enabled
   become: true
@@ -142,7 +142,9 @@
     state=present
     global=yes
   with_items: "{{ npm_global_packages }}"
-  when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','13.04','14.04']) or
+  when: not( (npm_global_packages is undefined) or (npm_global_packages is none) or (npm_global_packages | trim == '') )
+        and
+        ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','13.04','14.04']) or
         (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
   become: true
 #  become_user: "{{ jenkins_user }}"

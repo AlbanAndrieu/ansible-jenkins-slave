@@ -12,61 +12,63 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04")
 
 - name: cpp | Install C++ compiler (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  apt:
+    pkg: ['gcc-4.6', 'g++-4.6']
+    state: "{{ util_pkg_state|default('present') }}"
+    update_cache: true
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("12.04")
-  with_items:
-    - gcc-4.6
-    - g++-4.6
 
 - name: cpp | Install C++ compiler (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  apt:
+    pkg: ['gcc-4.8', 'g++-4.8']
+    state: "{{ util_pkg_state|default('present') }}"
+    update_cache: true
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04")
-  with_items:
-    - gcc-4.8
-    - g++-4.8
 
 - name: cpp | Install C++ compiler (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  apt:
+    pkg: ['gcc-5', 'g++-5']
+    state: "{{ util_pkg_state|default('present') }}"
+    update_cache: true
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04")
-  with_items:
-    - gcc-5
-    - g++-5
 
 - name: cpp | Install C++ compiler (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  apt:
+    name: ['gcc-6', 'g++-6']
+    state: "{{ util_pkg_state|default('present') }}"
+    update_cache: true
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04", "16.04")
-  with_items:
-    - gcc-6
-    - g++-6
 
 # SEE https://www.vultr.com/docs/how-to-install-gcc-on-centos-6
 - name: cpp | Install C++ compiler (CentOS based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  yum:
+    name: ['gcc', 'gcc-c++']
+    state: "{{ util_pkg_state|default('present') }}"
+    update_cache: true
   become: true
   when: (ansible_distribution == 'CentOS')
   # On purpose, we do not install gcc for RedHat because MiCloud VM already havea default one installed
   # or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat'
-  with_items:
-    - gcc
-    - gcc-c++
 # TODO add all required versions
 #   - compat-libstdc++-33
 #   - glibc-devel.i386
 #   - glibc-devel
 
 - name: cpp | Install C++ compiler (RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  yum:
+    name: ['gcc-c++']
+    state: "{{ util_pkg_state|default('present') }}"
+    update_cache: true
   become: true
   when: (ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
-  with_items:
 # On purpose, we do not install gcc for RedHat because MiCloud VM already havea default one installed
 #   - gcc
 # Only install c++
-    - gcc-c++
+#   - gcc-c++
 
 - debug: msg="Version {{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_architecture }}"
 
@@ -96,49 +98,43 @@
 
 # https://developers.redhat.com/blog/2018/07/07/yum-install-gcc7-clang/
 
-- name: cpp | Install C++ clang
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
-  with_items:
-    - clang
-  tags: cpp
-  become: true
-
 - name: jenkins-slave | Install clang scan-build (CentOS and RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  yum:
+    pkg: ['clang', 'clang-analyzer']
+    state: "{{ util_pkg_state|default('present') }}"
+    update_cache: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
-  with_items:
-    - clang-analyzer
   become: true
 
 - name: jenkins-slave | Install clang-format (CentOS and RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  yum:
+    name: ['llvm-toolset-7-git-clang-format']
+    state: "{{ util_pkg_state|default('present') }}"
+    update_cache: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
-  with_items:
-    - llvm-toolset-7-git-clang-format
   become: true
   ignore_errors: true
 
 # scl enable devtoolset-7 llvm-toolset-7 bash
 
 - name: cpp | Install C++ clang
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
-  with_items:
-    - clang-format
-    - clang-tools
-    - clang-tidy
+  apt:
+    pkg: ['clang-format', 'clang-tools', 'clang-tidy']
+    state: "{{ util_pkg_state|default('present') }}"
+    update_cache: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   tags: cpp
   become: true
   ignore_errors: true
 
 - name: cpp | Install C++ clang llvm dev
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
-  with_items:
-    - libclang-dev
-    - llvm
-    - llvm-3.8-dev
+  yum:
+    pkg: ['libclang-dev', 'llvm', 'llvm-3.8-dev']
+    state: "{{ util_pkg_state|default('present') }}"
+    update_cache: true
+# - clang-devel
   tags: cpp
   when: not ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
   become: true

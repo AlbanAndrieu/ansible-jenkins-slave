@@ -48,6 +48,7 @@
   with_items:
     - "https://centos6.iuscommunity.org/ius-release.rpm"
     - python35u
+    - python35u-devel
     - python35u-pip
   become: true
 
@@ -59,6 +60,7 @@
   with_items:
     - "https://centos7.iuscommunity.org/ius-release.rpm"
     - python35u
+    - python35u-devel
     - python35u-pip
   become: true
 
@@ -79,7 +81,7 @@
 # sudo apt-get install python3=3.5.1*
 
 - name: python3 | Install python 3.5 requirements
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
   with_items:
@@ -88,14 +90,14 @@
     - python3-pip
 
 - name: python3 | Install python 3.5 requirements
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
   with_items:
     - python3-dev=3.5.1*
 
 - name: python3 | Install python 3.5 requirements
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ jenkins_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '16.04'])
   with_items:
@@ -106,9 +108,16 @@
 #    - python3-pip
 
 - name: python3 | Install missing pip{{ python3_version }} (1)
-  shell: "wget https://bootstrap.pypa.io/get-pip.py && python{{ python3_version }} get-pip.py"
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/get-pip.py
   register: curl_result
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
+  become: true
+
+- name: python3 | Install missing pip{{ python3_version }} (2) # noqa 503
+  command: "python{{ python3_version }} /tmp/get-pip.py"
+  when: curl_result|changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
   changed_when: false
   become: true
 
@@ -127,13 +136,13 @@
 #   when: not ansible_check_mode
 #   ignore_errors: true
 
-# - name: python3 | Run pip check
+# - name: python3 | Run pip check # noqa 503
 #   shell: (pip -V && pip3.5 -V) | uniq
 #   become: true
 #   ignore_errors: true
 
 - name: python | Install which pip{{ python3_version }}
-  shell: "which pip{{ python3_version }}"
+  command: "which pip{{ python3_version }}"
   register: pip_result
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
   changed_when: false
@@ -144,7 +153,7 @@
   ignore_errors: true
 
 - name: python3 | Upgrade setuptools
-  shell: "pip{{ python3_version }} install --upgrade setuptools"
+  command: "pip{{ python3_version }} install --upgrade setuptools"
   changed_when: false
   become: true
   ignore_errors: true
@@ -177,7 +186,8 @@
 - name: python3 | Install virtualenv via pip
   pip:
     name: virtualenv
-    executable: pip{{ python3_version }}
+    executable: "pip{{ python3_version }}"
+  become: true
 
 - name: python3 | Copy the minimal requirements configuration file for python
   copy: src=requirements-minimal-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-minimal-current-{{ python3_version }}.txt backup=yes
@@ -187,7 +197,7 @@
   copy: src=requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-current-{{ python3_version }}.txt backup=yes
   become: true
 
-- name: python3 | Install apt dependencies for python 3 requirements
+- name: python3 | Install dependencies for python 3 requirements
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
@@ -196,7 +206,7 @@
     - python3-apt
   become: true
 
-- name: python3 | Uninstall apt dependencies for python 3 requirements
+- name: python3 | Uninstall dependencies for python 3 requirements
   pip:
     name: "{{ item }}"
     executable: "pip{{ python3_version }}"

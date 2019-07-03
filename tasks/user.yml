@@ -96,7 +96,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Jenkins can run any command with no password
-  lineinfile: dest=/etc/sudoers line="{{item}}" validate='visudo -cf %s'
+  lineinfile: dest=/etc/sudoers line="{{ item }}" validate='visudo -cf %s'
   with_items:
     - "Defaults:jenkins    !requiretty"
     - "jenkins ALL=NOPASSWD: ALL"

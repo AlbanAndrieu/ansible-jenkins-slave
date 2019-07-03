@@ -47,7 +47,9 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install the adobe repo installed
-  command: rpm -q adobe-release-{{ ansible_machine }}
+  yum:
+    name: "adobe-release-{{ ansible_machine }}"
+    state: present
   register: adobe_release_installed
   changed_when: adobe_release_installed|failed
   when: (ansible_distribution == 'RedHat')

@@ -56,6 +56,7 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - pstack
+    - valgrind
   become: true
   ignore_errors: true
   changed_when: false

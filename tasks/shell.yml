@@ -67,7 +67,7 @@
     - { regexp: '', line: 'export TNS_ADMIN=/opt/oracle/instantclient_12_2/' }  # For Oracle
     - { regexp: '', line: 'export ACCEPT_EULA=Y' }                              # For MsSQL
     - { regexp: '', line: 'export SA_PASSWORD="{{ shell_sa_password }}"' }      # For MsSQL
-    - { regexp: '', line: 'export PATH=${PATH}:${JAVA_HOME}/bin' }
+    - { regexp: '', line: 'export PATH=${JAVA_HOME}/bin:${PATH}' }
   become: true
   become_user: "{{ jenkins_user }}"
   changed_when: false

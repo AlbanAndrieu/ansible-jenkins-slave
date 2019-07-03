@@ -28,15 +28,17 @@
 
 - name: jenkins-slave | Yarn global add node-gyp
   command: yarn global add node-gyp
+  changed_when: false
   become: true
   ignore_errors: true
 
 - name: jenkins-slave | Yarn global add sharp
   command: yarn global add sharp
+  changed_when: false
   become: true
   ignore_errors: true
 
-- name: jenkins-slave | Disable yarn ssl check
+- name: jenkins-slave | Disable yarn ssl check # noqa 503
 #  command: yarn config set cafile ~/NABLA.crt
   command: yarn config set "strict-ssl" false -g
   when: yarn_result.changed

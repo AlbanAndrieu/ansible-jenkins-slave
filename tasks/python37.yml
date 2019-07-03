@@ -27,6 +27,7 @@
   with_items:
     - "https://centos6.iuscommunity.org/ius-release.rpm"
     - python37u
+    - python37u-devel
     - python37u-pip
   become: true
 
@@ -38,6 +39,7 @@
   with_items:
     - "https://centos7.iuscommunity.org/ius-release.rpm"
     - python37u
+    - python37u-devel
     - python37u-pip
   become: true
 
@@ -56,9 +58,16 @@
 #    - idle-python3.7
 
 - name: python3 | Install missing pip{{ python3_version }} (1)
-  shell: "wget https://bootstrap.pypa.io/get-pip.py && python{{ python3_version }} get-pip.py"
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/get-pip.py
   register: curl_result
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
+  become: true
+
+- name: python3 | Install missing pip{{ python3_version }} (2) # noqa 503
+  command: "python{{ python3_version }} /tmp/get-pip.py"
+  when: curl_result|changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04', '17.04'])
   changed_when: false
   become: true
 
@@ -70,7 +79,7 @@
 
 # - debug: msg="{{ curl_result.stdout }}"
 
-- name: python3 | Run pip check
+- name: python3 | Run pip check # noqa 503
   shell: (pip - && pip3.7 -V) | uniq
   when: curl_result.changed
   become: true
@@ -84,7 +93,7 @@
 #   become: true
 
 - name: python3 | Upgrade setuptools
-  shell: "pip{{ python3_version }} install --upgrade setuptools"
+  command: "pip{{ python3_version }} install --upgrade setuptools"
   changed_when: false
   become: true
   ignore_errors: true
@@ -95,7 +104,7 @@
     executable: pip{{ python3_version }}
 
 - name: python3 | Gather current pip requirement
-  shell: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
+  command: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
   when: not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
   changed_when: false
   become: true
@@ -110,14 +119,14 @@
   copy: src=requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-minimal-current-{{ python3_version }}.txt backup=yes
   become: true
 
-- name: python3 | Install apt dependencies for python 3 requirements
+- name: python3 | Install dependencies for python 3 requirements
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - libcups2-dev
 
-- name: python3 | Install apt dependencies for python 3 lxml requirements
+- name: python3 | Install dependencies for python 3 lxml requirements
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
@@ -134,6 +143,16 @@
   when: not ansible_check_mode
   with_items:
     - libxml2-python
+  ignore_errors: '{{ ansible_check_mode }}'
+  become: true
+
+- name: python3 | Install missing for python 3 (for dpkg)
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python3_version }}"
+  when: not ansible_check_mode
+  with_items:
+    - chardet
   ignore_errors: '{{ ansible_check_mode }}'
   become: true
 
@@ -169,7 +188,16 @@
 # TODO remove ignore_errors
   ignore_errors: true
 
+# - name: python3 | Ensure jenkins ownership
+#   file:
+#     path: "/opt/ansible/env37"
+#     state: directory
+#     recurse: yes
+#     group: "{{ jenkins_user }}"
+#     owner: "{{ jenkins_group }}"
+#   become: true
+
 # - name: python3 | Install missing pip requirement
-#   shell: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
+#   command: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
 #   changed_when: false
 #   become: true

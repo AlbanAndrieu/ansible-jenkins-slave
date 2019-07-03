@@ -9,7 +9,6 @@
     suffix: staging
 #    path: "{{ lookup('env', 'HOME') }}"
   register: tempdir
-  connection: local    
   changed_when: false
   become: true
 

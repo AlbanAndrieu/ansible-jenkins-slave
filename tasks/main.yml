@@ -28,7 +28,7 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
 
 - name: Install ant package
-  action: "{{ ansible_pkg_mgr }} name='ant' state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name='ant' state={{ util_pkg_state|default('present') }} update_cache=true"
   become: true
 
 - name: Install zip package
@@ -45,7 +45,7 @@
 - import_tasks: quality.yml
 
 - name: jenkins-slave | Install flex
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
   tags: package
   with_items:
     - flex
@@ -121,8 +121,13 @@
   become: true
   changed_when: false
 
+- name: jenkins-slave | Copy maven security configuration
+  template: src=settings-security.xml.j2 dest={{ jenkins_home }}/.m2/settings-security.xml.j2 backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
+  become: true
+  changed_when: false
+
 - name: jenkins-slave | Set limits
-  lineinfile: dest=/etc/security/limits.conf line="{{item.key}}" regexp="{{item.value}}"
+  lineinfile: dest=/etc/security/limits.conf line="{{ item.key }}" regexp="{{ item.value }}"
   with_dict:
     "*               soft    nofile          65536": '\*\s+soft\s+nofile'
     "*               hard    nofile          65536": '\*\s+hard\s+nofile'
@@ -133,7 +138,7 @@
   changed_when: false
 
 - name: jenkins-slave | Set limits
-  lineinfile: dest=/etc/security/limits.conf line="{{item.key}}" regexp="{{item.value}}"
+  lineinfile: dest=/etc/security/limits.conf line="{{ item.key }}" regexp="{{ item.value }}"
   with_dict:
     "*               soft    nofile          65536": '\*\s+soft\s+nofile'
     "*               hard    nofile          65536": '\*\s+hard\s+nofile'
@@ -173,7 +178,7 @@
 
 - name: jenkins-slave | Checking slave folders
   stat:
-    path: "{{item}}"
+    path: "{{ item }}"
   register: folder_stats
   with_items: "{{ jenkins_slave_directory }}"
   when: jenkins_slave_directory | length > 0
@@ -182,14 +187,14 @@
 
 - name: jenkins-slave | Creating multiple folders without disturbing previous permissions
   file:
-    path: "{{item.item}}"
+    path: "{{ item.item }}"
     state: directory
     mode: 0755
     group: "{{ jenkins_user }}"
     owner: "{{ jenkins_group }}"
-  when: item.stat.exists == false
+  when: not item.stat.exists
   with_items:
-    - "{{folder_stats.results}}"
+    - "{{ folder_stats.results }}"
   become: true
   changed_when: false
   ignore_errors: true
@@ -251,7 +256,7 @@
   when: workstation_enabled
 
 - name: jenkins-slave | Install saxon package
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
   tags: package
   with_items:
     - libsaxon-java
@@ -262,7 +267,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install log4j package for better display of log for slave
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
   tags: package
   with_items:
     - liblog4j1.2-java
@@ -273,7 +278,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install log4j package for better display of log for slave
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
   tags: package
   with_items:
     - liblog4j2-java
@@ -284,7 +289,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install log4j package for better display of log for slave
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
   tags: package
   with_items:
     - log4j
@@ -294,7 +299,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install rsync package
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
   tags: package
   with_items:
     - rsync

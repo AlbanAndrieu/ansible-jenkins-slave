@@ -25,13 +25,13 @@
   become: true
 # TODO fix on CentOS 7
   ignore_errors: true
-  
+
 - name: brew | Uninstall homebrew on Ubuntu
   apt: pkg={{ item }} state=absent
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '13.04', '14.04']
   with_items:
     - linuxbrew-wrapper
-  become: true  
+  become: true
 
 - name: brew | Check Homebrew is installed
   stat:
@@ -46,8 +46,12 @@
         not install_homebrew_if_missing
 
 - name: brew | Installing homebrew to custom directory
-  git: repo={{ homebrew_repository }} dest="{{ home }}/.linuxbrew" accept_hostkey=yes update=no
-#  shell: "git clone {{ homebrew_repository }} {{ home }}/.linuxbrew"
+  git:
+    repo: "{{ homebrew_repository }}"
+    dest: "{{ home }}/.linuxbrew"
+    accept_hostkey: yes
+    update: no
+    version: master
   when: >
         not homebrew_check.stat.exists and
         install_homebrew_if_missing
@@ -127,9 +131,16 @@
 
 # sudo yum groupinstall 'Development Tools' && sudo yum install
 
+- name: brew | Install kitchen package
+  homebrew:
+    name: ['test-kitchen', 'kitchen-vagrant', 'kitchen-ansible', 'kitchen-docker']
+  changed_when: false
+  become: true
+  become_user: "{{ jenkins_user }}"
+
 #brew update && brew upgrade; brew cleanup
 - name: brew | Homebrew Cleaning
-  shell: "{{ homebrew_check_path }} cleanup"
+  command: "{{ homebrew_check_path }} cleanup"
   with_items: "{{ brew_packages }}"
   when: homebrew_check_path.stat.exists
   become: true

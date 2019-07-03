@@ -10,11 +10,6 @@
 # sudo apt-get install oracle-java8-set-default
 # sudo apt-get install oracle-java9-set-default
 
-# Switching between Oracle Java 8 and Java 7
-# sudo update-java-alternatives -s java-7-oracle
-# sudo update-java-alternatives -s java-8-oracle
-# sudo update-java-alternatives -s java-9-oracle
-
 - name: jdk | Add Oracle Java Repository
   apt_repository: repo="ppa:webupd8team/java" state={{ util_repository_state|default('present') }} update_cache=yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04'])
@@ -22,7 +17,7 @@
   tags: jdk_setup
 
 - name: jdk | Accept license
-  shell: "{{ item }}"
+  command: "{{ item }}"
   with_items:
     - echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
     - echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
@@ -36,35 +31,50 @@
   become: true
   tags: jdk_setup
 
-- name: jdk7 | Install default oracle
+#- name: jdk7 | Install default oracle
+#  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+#  tags: jdk_setup
+#  with_items:
+#    - oracle-java7-set-default
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk7_enable
+#  become: true
+
+- name: jdk8 | Install default openjdk
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   tags: jdk_setup
   with_items:
-    - oracle-java7-set-default
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk7_enable
+    - openjdk-8-jdk # to execute java applications
+#    - openjdk-8-jre-headless # no audio/video. Just SE. E.g for embedded systems
+    - openjdk-8-source # Java sources, to review api implementation.
+    - openjfx
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
   become: true
 
 - name: jdk8 | Install default openjdk
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   tags: jdk_setup
   with_items:
-    - openjdk-8-jdk
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
+    - java-1.8.0-openjdk                 # to execute java applications
+    - java-1.8.0-openjdk-devel           # for compilation of Java. javac etc..
+    - java-1.8.0-openjdk-headless        # no audio/video. Just SE. E.g for embedded systems
+    - java-1.8.0-openjdk-javadoc.noarch  # Javadoc that can be included in your IDE.
+    - java-1.8.0-openjdk-src             # Java sources, to review api implementation.
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' and (ansible_distribution_version not in ['5'])) and jenkins_jdk8_enable
   become: true
 
-- name: jdk8 | Install default oracle
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ default_pkg_state|default('present') }} update_cache=yes"
-  with_items:
-    - oracle-java8-installer
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
-
-- name: jdk8 | Install default oracle
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
-  tags: jdk_setup
-  with_items:
-    - oracle-java8-set-default
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
-  become: true
+#- name: jdk8 | Install default oracle
+#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ default_pkg_state|default('present') }} update_cache=yes"
+#  with_items:
+#    - oracle-java8-installer
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
+#
+#- name: jdk8 | Install default oracle
+#  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+#  tags: jdk_setup
+#  with_items:
+#    - oracle-java8-set-default
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
+#  become: true
 
 # - import_tasks: java-legacy.yml
 
@@ -113,6 +123,18 @@
   become: true
   ignore_errors: true
 
+# Switching between Oracle Java 8 and Java 7
+# sudo update-java-alternatives -s java-7-oracle
+# sudo update-java-alternatives -s java-8-oracle
+# sudo update-java-alternatives -s java-9-oracle
+
+# sudo update-java-alternatives -s java-1.8.0-openjdk-amd64
+
+- name: jenkins-slave | Configure Java alternatives
+  action: command update-java-alternatives -s java-1.8.0-openjdk-amd64
+  changed_when: false
+  become: true
+
 # TODO Verify the symlinks all point to the new java location:
 
 # ls -la /etc/alternatives/java*
@@ -138,18 +160,41 @@
 
 # ln -s /etc/ssl/certs/java/cacerts /usr/lib/jvm/java-8-oracle/jre/lib/security/
 
-#TODO
-#- name: jenkins-slave | Check if certificate is already imported
-#  shell: '{{ java_keytool_executable }} -list -keystore {{ java_certificate_ca_path }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias }}'
-#  ignore_errors: true
-#  register: java_cert_imported
-#
-#- name: jenkins-slave | Import certificate
-#  shell: '{{ java_keytool_executable }} -import -trustcacerts -keystore {{ java_certificate_ca_path }} -keypass {{ java_certificate_key_pass }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias }} -file /tmp/{{ java_certificate_alias }}.crt'
-#  when: java_cert_imported is failed
+- name: jenkins-slave | Check if certificate is already imported
+  command: '{{ java_keytool_executable }} -list -keystore {{ java_certificate_ca_path }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias }}'
+  ignore_errors: true
+  changed_when: false
+  register: java_cert_imported
 
-# Belowe need to be done especially because we set JAVA_HOME=/usr/java/default inside .bashrc
-- name: jenkins-slave | Normalize JAVA_HOME across architectures
+# See certificate.yml playbook to get the CA certificate
+
+- name: jenkins-slave | Import certificate
+  command: '{{ java_keytool_executable }} -import -trustcacerts -keystore {{ java_certificate_ca_path }} -keypass {{ java_certificate_key_pass }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias }} -file ~/pki/ca.pem'
+  when: java_cert_imported is failed
+
+# Belowe need to be done especially because we set JAVA_HOME=/usr/java/default inside .bashrc (see jdk_home)
+
+- name: jenkins-slave | Normalize JAVA_HOME across architectures for oracle jdk
+  file: path=/usr/lib/jvm/java-oraclejdk src={{ oracle_jdk_home }} state=link #force=yes
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Normalize JAVA_HOME across architectures for oracle jre
+  file: path=/usr/lib/jvm/java-oraclejre src={{ oracle_jre_home }} state=link #force=yes
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Normalize JAVA_HOME across architectures for open jdk
+  file: path=/usr/lib/jvm/java-openjdk src={{ open_jdk_home }} state=link #force=yes
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Normalize JAVA_HOME across architectures for open jre
+  file: path=/usr/lib/jvm/jre-openjdk src={{ open_jre_home }} state=link #force=yes
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Normalize JAVA_HOME across architectures for global jdk
   file: path=/usr/java/default src={{ jdk_home }} state=link #force=yes
   become: true
   ignore_errors: true

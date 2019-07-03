@@ -105,7 +105,7 @@
 
 - name: jenkins-slave | Install perl for running
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')) # noqa 204
   tags: package
   with_items:
     - perl-Env
@@ -129,7 +129,7 @@
 
 - name: jenkins-slave | Install cpanminus (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')) # noqa 204
   tags: package
   with_items:
     - perl-App-cpanminus
@@ -151,9 +151,11 @@
   shell: "echo $PERL_MM_USE_DEFAULT"
   environment:
     PERL_MM_USE_DEFAULT: 1
+  changed_when: false
 
 - name: jenkins-slave | Echo PERL_MM_USE_DEFAULT again
   shell: "echo $PERL_MM_USE_DEFAULT"
+  changed_when: false
 
 - name: jenkins-slave | Check perl
   shell: perl -e 'use FileHandle; print $FileHandle::VERSION'
@@ -170,6 +172,8 @@
     - perl-XML-LibXML
     - perl-XML-Parser
     - perl-libxml-perl
+  environment:
+    PERL_MM_USE_DEFAULT: 1
 
 - name: jenkins-slave | Install tools needed by cpp generator (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
@@ -184,6 +188,8 @@
     - perl-XML-Parser
 #    - perl-XML-SAX
     - perl-libxml-perl
+  environment:
+    PERL_MM_USE_DEFAULT: 1
 
 # TODO
 # See http://almtools/confluence/display/ENG/The+MGR+developer+server+changelog
@@ -198,7 +204,7 @@
 
 # Below is same has above but with CPAN
 - name: jenkins-slave | Install cpan perl modules needed by cpp generator
-  shell: "cpan {{ item }}"
+  command: "cpan {{ item }}"
   with_items:
     - XML::DOM
     - XML::Handler::YAWriter
@@ -217,7 +223,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install cpan perl modules needed by cpp generator
-  shell: "cpan -f {{ item }}"
+  shell: "yes y | cpan -f {{ item }}"
   with_items:
     - XML::Simple               # Force install on CentOS 7, tests are failing!
     - File::Copy::Recursive     # Force install on Ubuntu 16.04, tests are failing!
@@ -230,7 +236,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install cpan perl modules needed by cpp generator
-  shell: "cpan {{ item }}"
+  command: "cpan {{ item }}"
   with_items:
     - Text::SimpleTable
   register: cpan_result
@@ -273,8 +279,8 @@
 # install Crypt::SSLeay
 # install File::Copy::Recursive
 
-- name: jenkins-slave | Run perl cpan check
-  shell: perl -MLWP::Simple -e 1
+- name: jenkins-slave | Run perl cpan check # noqa 503
+  command: perl -MLWP::Simple -e 1
   when: cpan_result.changed
 
 - name: jenkins-slave | Install tools needed by sample at runtime (Debian based)
@@ -287,6 +293,6 @@
 - name: jenkins-slave | Install tools needed by sample a runtime (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   become: true
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')) # noqa 204
   with_items:
     - perl-Time-y2038

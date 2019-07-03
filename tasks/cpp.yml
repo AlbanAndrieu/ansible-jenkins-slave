@@ -204,8 +204,8 @@
   become: true
 
 - name: jenkins-slave | Install C++ librairies curl (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
   with_items:
     - libcurl4-gnutls-dev
     - zlib1g-dev
@@ -339,8 +339,8 @@
   become: true
 
 - name: jenkins-slave | Install C++ librairies libssh2 (RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
-  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} enablerepo=rhel-6-server-eus-optional-rpms update_cache=yes"
+  when: (ansible_distribution == 'RedHat' and not (ansible_distribution_major_version == '5' and ansible_distribution_major_version == '6'))
   tags: cpp
   with_items:
     - libssh2-devel
@@ -362,14 +362,14 @@
   when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
   with_items:
     - CSWlibaprutil1-ldap
-# - CSWlibaprutil1-0 #Dependencies CSWlibapr1-0 CSWlibexpat1 CSWlibiconv2
-# - CSWlibaprutil-dev
-# - CSWlibapr1-0
-# - CSWlibapr-dev
-# - CSWlibexpat0
-# - CSWlibexpat1
-# - CSWlibexpat-dev
-# - CSWlibiconv2
+#  - CSWlibaprutil1-0 #Dependencies CSWlibapr1-0 CSWlibexpat1 CSWlibiconv2
+#  - CSWlibaprutil-dev
+#  - CSWlibapr1-0
+#  - CSWlibapr-dev
+#  - CSWlibexpat0
+#  - CSWlibexpat1
+#  - CSWlibexpat-dev
+#  - CSWlibiconv2
 
 - name: jenkins-slave | Install C++ librairies apr (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
@@ -566,8 +566,8 @@
 
 # See https://gcc.gnu.org/onlinedocs/libstdc++/faq.html#faq.how_to_set_paths
 - name: jenkins-slave | Install C++ librairies for building old gcc (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
   with_items:
 # needed for linking old libraries
 # ldconfig -v | grep libstdc++

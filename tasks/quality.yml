@@ -92,7 +92,7 @@
 # TODO install rats and flawfinder on RedHat
 
 - name: jenkins-slave | Install flawfinder
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   tags: package
   with_items:
     - flawfinder
@@ -107,11 +107,19 @@
 # ./rats
 
 - name: jenkins-slave | Install rats
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
   tags: package
   with_items:
     - rats
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' and (ansible_distribution_version not in ['16.04'])) or
         (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install cloc
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  tags: package
+  with_items:
+    - cloc
   become: true
   ignore_errors: true

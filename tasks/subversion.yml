@@ -1,4 +1,5 @@
 ---
+
 # TODO move to its own role
 - name: subversion | Install subversion package
   action: "{{ ansible_pkg_mgr }} name='subversion' state={{ util_pkg_state|default('present') }} update_cache=yes"
@@ -22,7 +23,8 @@
   tags: git
 
 - name: subversion | Configure svn
-  shell: "mkdir -p {{ jenkins_home }}/.subversion/auth/svn.simple && echo -e \"K 8\npasstype\nV 6\nsimple\nK 8\npassword\nV 9\n{{ svn_password }}\nK 15\nsvn:realmstring\nV 54\n<http://par-castor:80> CollabNet Subversion Repository\nK 8\nusername\nV 16\n{{ svn_user }}\nEND\" >> {{ jenkins_home }}/.subversion/auth/svn.simple/ef18e09a57c44b1b03f412a5d6cabfb4"
+  shell: "mkdir -p {{ jenkins_home }}/.subversion/auth/svn.simple && echo -e \"K 8\npasstype\nV 6\nsimple\nK 8\npassword\nV 9\n{{ svn_password }}\nK 15\nsvn:realmstring\nV 54\n<http://par-castor:80> CollabNet Subversion Repository\nK 8\nusername\nV 16\n{{ svn_user }}\nEND\" >> {{ jenkins_home }}/.subversion/auth/svn.simple/ef18e09a57c44b1b03f412a5d6cabfb4" # noqa 204 302
+  changed_when: false
   ignore_errors: '{{ ansible_check_mode }}'
   become_user: "{{ jenkins_user }}"
   become: true

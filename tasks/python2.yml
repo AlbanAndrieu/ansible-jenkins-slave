@@ -13,14 +13,14 @@
   become: true
 
 - name: python | Install centos-release-scl
-  shell: "yum install -y centos-release-scl"
+  yum: name=centos-release-scl state=present
   when: (ansible_distribution == 'CentOS')
   changed_when: false
   become: true
   ignore_errors: true
 
 - name: python | Install rhel-server-rhscl-7-rpms
-  shell: "yum-config-manager --enable rhel-server-rhscl-7-rpms"
+  command: "yum-config-manager --enable rhel-server-rhscl-7-rpms"
   when: (ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   changed_when: false
   become: true
@@ -28,56 +28,76 @@
 
 - name: python | Install python 2.7 requirement
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }} enablerepo=centos-sclo-rh"
+  with_items:
+    - scl-utils
+    - python27
+  when: (ansible_distribution == 'CentOS')
+  become: true
+
+# Below python27 should already be installed by python.yml playbook
+- name: python | Install python 2.7 requirement
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
 #  enablerepo={{python_yum_enablerepo or None}} disablerepo={{python_yum_disablerepo or None}}"
   with_items:
     - scl-utils
     - python27
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6') )
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
   become: true
-#  ignore_errors: true
 
 # update-alternatives --install /usr/bin/python python /usr/bin/python2.6  5
 # update-alternatives --install /usr/bin/python python /usr/bin/python2.7 10
 # update-alternatives --install /usr/bin/python python /usr/bin/python3.5 20
 
+# For python2.7 Python.h: No such file or directory
 - name: python | Install python 2 requirement
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   with_items:
     - python2.7-dev
-#    - python2.7-pip
     - python2.7-dbg
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: true
 
+- name: python | Install python 2 requirement
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  with_items:
+    - python2.7-devel
+  when: ((ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
+  become: true
+
 - name: python | Ensure python-apt is installed
-  command: >
-    apt-get install python-apt -y -q
-    creates=/usr/share/doc/python-apt
+  action: "{{ ansible_pkg_mgr }} name=python-apt update_cache=yes state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: true
 
 - name: python | Set python link to python version
   set_fact: python2_version=2.7
 
-# python27-pip not available on CentOS 7
+# python27-pip not available on CentOS 7 but needed for RedHat 6
 - name: python | Install python 2.7 pip requirement
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   with_items:
     - python27-pip
-  when: (ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6') )
+  when: ((ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
   become: true
 
 - name: python | Install python 2.7 pip requirement
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }} enablerepo={{python_yum_enablerepo or None}} disablerepo={{python_yum_disablerepo or None}}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }} enablerepo={{ python_yum_enablerepo or None }} disablerepo={{ python_yum_disablerepo or None }}"
   with_items:
     - python2-pip
   when: (ansible_distribution == 'CentOS')
   become: true
 
 - name: python | Install missing pip2.7 (1)
-  shell: "wget https://bootstrap.pypa.io/get-pip.py && python2.7 get-pip.py"
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/get-pip.py
   register: curl_result
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  become: true
+
+- name: python | Install missing pip2.7 (2) # noqa 503
+  command: "python2.7 /tmp/get-pip.py"
+  when: curl_result|changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
   changed_when: false
   become: true
 
@@ -105,7 +125,7 @@
 #   ignore_errors: true
 
 - name: python | Install which pip{{ python2_version }}
-  shell: "which pip{{ python2_version }}"
+  command: "which pip{{ python2_version }}"
   register: pip_result
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
   changed_when: false
@@ -115,22 +135,23 @@
   when: not ansible_check_mode and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
   ignore_errors: true
 
-# WARNING issue when /usr/bin/pip2.7 is used by ansible during run
-#- name: python | Create pip2.7 link
-#  file: path=/usr/bin/pip2.7 src=/usr/local/bin/pip2.7 state=link
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ( pip_result.rc != 0 )
-#  become: true
-#  ignore_errors: true
+- name: python | Create pip2.7 link
+  file: path=/usr/bin/pip2.7 src=/usr/local/bin/pip2.7 state=link
+#  force=yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ( pip_result.rc != 0 )
+  # or pip_result.stdout != '/usr/local/bin/pip2.7'
+  become: true
+  ignore_errors: true
 
 - name: python | Install missing pip2.7 (fix 'module' object has no attribute 'SSL_ST_INIT') part 1
-  shell: "pip{{ python2_version }} uninstall pyOpenSSL"
+  command: "pip{{ python2_version }} uninstall pyOpenSSL"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
   changed_when: false
   become: true
   ignore_errors: true
 
 - name: python | Install missing pip2.7 (fix 'module' object has no attribute 'SSL_ST_INIT') part 2
-  shell: "pip{{ python2_version }} install pyOpenSSL"
+  command: "pip{{ python2_version }} install pyOpenSSL"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
   changed_when: false
   become: true
@@ -138,7 +159,7 @@
 
 - name: python | Install virtualenv
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04'])
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04']) # noqa 204
   with_items:
     - python-virtualenv
     - virtualenv
@@ -146,9 +167,17 @@
   become: true
 
 - name: python | Upgrade setuptools
-  shell: "pip{{ python2_version }} install --upgrade setuptools"
+  command: "pip{{ python2_version }} install --upgrade setuptools"
   changed_when: false
   become: true
+  ignore_errors: true
+
+- name: python | Install dependencies for python 2 requirements
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=true state={{ util_pkg_state|default('present') }}"
+  become: true
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') #and ansible_distribution_major_version == '6')
+  with_items:
+    - cups-devel
   ignore_errors: true
 
 - name: python | Install python check tools

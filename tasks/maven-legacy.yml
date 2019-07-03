@@ -37,7 +37,7 @@
   become: true
 
 - name: jenkins-slave | Unpack Maven 3.0.5
-  action: command creates=/opt/maven305 chdir=/opt tar zxvf /opt/maven305.tar.gz
+  action: command creates=/opt/maven305 chdir=/opt tar zmxvf /opt/maven305.tar.gz # noqa 303
   become: true
 
 - name: jenkins-slave | Create Maven 3.0.5 directory link
@@ -54,7 +54,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Unpack Maven 3.0.4
-  action: command creates=/opt/maven3 chdir=/opt tar zxvf /opt/maven3.tar.gz
+  action: command creates=/opt/maven3 chdir=/opt tar zmxvf /opt/maven3.tar.gz # noqa 303
   become: true
   ignore_errors: true
 
@@ -74,7 +74,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Unpack Maven 2.2.1
-  action: command creates=/opt/maven2 chdir=/opt tar zxvf /opt/maven2.tar.gz
+  action: command creates=/opt/maven2 chdir=/opt tar zmxvf /opt/maven2.tar.gz # noqa 303
   become: true
   ignore_errors: true
 
@@ -94,7 +94,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Unpack Maven 2.0.9
-  action: command creates=/opt/maven209 chdir=/opt tar zxvf /opt/maven209.tar.gz
+  action: command creates=/opt/maven209 chdir=/opt tar zmxvf /opt/maven209.tar.gz # noqa 303
   become: true
   ignore_errors: true
 

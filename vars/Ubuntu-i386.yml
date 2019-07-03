@@ -1,11 +1,4 @@
 ---
-jdk7_archive: "jdk-7-linux-i586.tar.gz"
-jdk7_url: "http://download.oracle.com/otn-pub/java/jdk/7/{{ jdk7_archive }}"
-jdk7_archive_extracted: "jdk1.7.0_71"
-jdk8_archive: "jdk-8-linux-i586.tar.gz"
-jdk8_url: "http://download.oracle.com/otn-pub/java/jdk/8-b132/{{ jdk8_archive }}"
-jdk8_archive_extracted: "jdk1.8.0"
-jvm_folder: "/usr/lib/jvm/"
 
 # PostgreSQL
 # odbcinst_PostgreSQL_Driver: /usr/lib/psqlodbcw.so
@@ -28,4 +21,9 @@ odbcinst_FreeTDS_Setup: /usr/lib/x86_64-linux-gnu/odbc/libtdsS.so
 odbcinst_Oracle_Driver: /opt/oracle/instantclient_12_2/libsqora.so.12.1
 # odbcinst_Oracle_Driver64: /opt/oracle/instantclient_12_2/libsqora.so.12.1
 
-jdk_home: "/usr/lib/jvm/java-8-oracle"
+oracle_jdk_home: "/usr/lib/jvm/java-8-oracle"
+oracle_jre_home: "{{ oracle_jdk_home }}/jre/"
+open_jdk_home: "/usr/lib/jvm/java-8-openjdk-amd64"
+open_jre_home: "{{ open_jre_home }}/jre/"
+jdk_home: "{{ open_jdk_home }}"
+jre_home: "{{ open_jre_home }}"

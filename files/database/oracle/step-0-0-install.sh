@@ -10,7 +10,7 @@ echo -e "${yellow} ${bold}INSTALLING ORACLE INSTANT CLIENT ${NC}"
 #HOME="/home/jenkins" on linux
 #HOME="/Users/jenkins" on osx
 
-if [[ ! -d /opt/oracle/instantclient_12_2/ ]]; then
+if [[ ! -d /opt/oracle/instantclient_12_2/help/ ]]; then
   echo "${green} Installing oracle/instantclient ${NC}"
   if [[ "$(uname -s)" == "SunOS" ]]; then
     mkdir -p /opt/oracle
@@ -57,7 +57,7 @@ if [[ ! -d /opt/oracle/instantclient_12_2/ ]]; then
 fi
 
 export LD_LIBRARY_PATH=/opt/oracle/instantclient_12_2:$LD_LIBRARY_PATH
-export PATH=/opt/oracle/Developer/instantclient_12_2:$PATH
+export PATH=/opt/oracle/instantclient_12_2:$PATH
 
 # Set the $TNS_ADMIN environment variable so that sqlplus knows where to look
 export TNS_ADMIN=/opt/oracle/instantclient_12_2

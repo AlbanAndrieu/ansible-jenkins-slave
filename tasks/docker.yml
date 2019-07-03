@@ -18,15 +18,15 @@
 # sudo pip2.7 uninstall docker
 # sudo pip2.7 uninstall docker-py
 # sudo pip2.7 uninstall docker-compose
-# sudo pip2.7 install docker-compose==1.12.0
+# sudo pip2.7 install docker-compose==1.23.1
 
 # sudo pip3.5 uninstall docker
 # sudo pip3.5 uninstall docker-py
 # sudo pip3.5 uninstall docker-compose
-# sudo pip3.5 install docker-compose==1.12.0
+# sudo pip3.5 install docker-compose==1.23.1
 
 - name: docker | docker-compose check 1
-  shell: "docker-compose --version"
+  command: "docker-compose --version"
   register: docker_compose_result
   ignore_errors: true
   become: true
@@ -61,8 +61,9 @@
   ignore_errors: true      # For Ubuntu 18.04 Cannot uninstall 'PyYAML'
 
 - name: docker | docker-compose check 2
-  shell: "docker-compose --version"
+  command: "docker-compose --version"
   register: docker_compose_result
+  changed_when: false
   become: true
 
 - name: docker | Fail the play if the previous command did not succeed
@@ -93,7 +94,7 @@
   changed_when: false
   become: true
   ignore_errors: true  # when user already exist and used by process it is failing
-  
+
 - name: docker | Add user(s) to docker group
   user:
     name={{ item }}
@@ -110,7 +111,7 @@
 # See https://github.com/tensorflow/tensorflow/issues/4078
 # For https://github.com/NVIDIA/nvidia-docker
 # - name: docker | Install requirement for nvidia
-#   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=true state={{ util_pkg_state|default('present') }}"
 #   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 #   with_items:
 #     - nvidia-361-dev
@@ -209,6 +210,21 @@
 - name: docker | Enable "user" namespace
   shell: "grubby --args=\"user_namespace.enable=1\" --update-kernel=\"$(grubby --default-kernel)\""
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  become: true
+  ignore_errors: true
+
+# On Ubuntu 18.04 docker login is failing with jenkins user
+# Fix is apt remove golang-docker-credential-helpers
+
+- name: docker | docker login fix
+  shell: "apt remove -y golang-docker-credential-helpers && apt-get purge docker-credential-pass"
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version in ['18.04']
+  become: true
+  ignore_errors: true
+
+- name: docker | docker container-structure-test
+  shell: "curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64 && chmod +x container-structure-test-linux-amd64 && sudo mv container-structure-test-linux-amd64 /usr/local/bin/container-structure-test" # noqa 303
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(16.04, '>=')
   become: true
   ignore_errors: true
 

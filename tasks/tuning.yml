@@ -28,10 +28,10 @@
   when:
     - ansible_os_family != "Windows"
 
-- name: jenkins-slave | Fix WARNING bridge-nf-call-iptables is disabled
+- name: jenkins-slave | Fix WARNING bridge-nf-call-iptables is disabled for docker
   sysctl: name={{ item }} value="1" sysctl_set=yes state=present
   with_items:
     - net.bridge.bridge-nf-call-iptables
     - net.bridge.bridge-nf-call-ip6tables
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and not ansible_distribution_major_version == '6')
   become: true
