@@ -31,12 +31,12 @@
   tags: jdk_setup
 
 - name: jdk7 | Change archive jdk ownership
-  file: path={{jvm_folder}}/{{jdk7_archive_extracted}} owner={{jdk_owner}} group={{jdk_group}} state=directory recurse=yes
+  file: path={{ jvm_folder }}/{{jdk7_archive_extracted}} owner={{ jdk_owner }} group={{ jdk_group }} state=directory recurse=yes
   when: jdk7_download.changed and jenkins_jdk7_enable
   tags: jdk_setup
 
-- name: jdk7 | Stat {{jvm_folder}}/{{jdk7_archive_extracted}}
-  stat: path={{jvm_folder}}/{{jdk7_archive_extracted}}
+- name: jdk7 | Stat {{ jvm_folder }}/{{ jdk7_archive_extracted }}
+  stat: path={{ jvm_folder }}/{{ jdk7_archive_extracted }}
   register: jdk7_archive_extracted_present
   tags: jdk_setup
 
@@ -71,7 +71,7 @@
   tags: jdk_setup
 
 - name: jdk8 | Unpack JDK8
-  action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} tar zxvf {{jvm_folder}}/{{ jdk8_archive }} --owner=root
+  action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} tar zxvf {{ jvm_folder }}/{{ jdk8_archive }} --owner=root
   register: jdk8_installed
 #  ignore_errors: true
   become: true
@@ -87,12 +87,12 @@
   tags: jdk_setup
 
 - name: jdk8 | Change archive jdk ownership
-  file: path={{jvm_folder}}/{{jdk8_archive_extracted}} owner={{jdk_owner}} group={{jdk_group}} state=directory recurse=yes
+  file: path={{ jvm_folder }}/{{ jdk8_archive_extracted }} owner={{ jdk_owner }} group={{ jdk_group }} state=directory recurse=yes
   when: jdk8_download.changed and jenkins_jdk8_enable
   tags: jdk_setup
 
-- name: jdk8 | Stat {{jvm_folder}}/{{jdk8_archive_extracted}}
-  stat: path={{jvm_folder}}/{{jdk8_archive_extracted}}
+- name: jdk8 | Stat {{ jvm_folder }}/{{ jdk8_archive_extracted }}
+  stat: path={{ jvm_folder }}/{{ jdk8_archive_extracted }}
   register: jdk8_archive_extracted_present
   tags: jdk_setup
 
