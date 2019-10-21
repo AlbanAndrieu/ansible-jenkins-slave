@@ -22,7 +22,7 @@ docker-pycreds==0.2.1
 dockerpty==0.4.1
 docopt==0.6.2
 docutils==0.14
-ecdsa==0.13
+ecdsa==0.13.3
 feedparser==5.2.1
 git-pre-commit-hook-utils==0.0.5
 gprof2dot==2017.9.19
