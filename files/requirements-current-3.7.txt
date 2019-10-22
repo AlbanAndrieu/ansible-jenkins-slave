@@ -102,7 +102,7 @@ pep8==1.7.1
 pep8-naming==0.7.0
 pexpect==4.6.0
 pies==2.6.7
-Pillow==5.3.0
+Pillow==6.2.0
 pip-upgrader==1.4.6
 piston-mini-client==0.7.5
 pre-commit==1.16.1
