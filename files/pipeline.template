@@ -37,7 +37,7 @@ def currResult = getResultAsString(build)
         <B style="font-size: 200%;">BUILD ${currResult}</B>
       </TD></TR>
       <TR><TD>
-        Project:</TD><TD>${project.name}
+        Project:</TD><TD>${project.name.replaceAll("/", "-").replaceAll("%2F", "-")}
       </TD></TR>
       <TR><TD>
         Cause:</TD><TD><% build.causes.each() { cause -> %> ${cause.shortDescription} <%  } %>

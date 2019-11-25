@@ -8,6 +8,9 @@
   with_items:
     - chkrootkit
   become: true
+  tags:
+    - package
+    - vm
   ignore_errors: true
 
 - name: jenkins-slave | Install security basic tools
@@ -18,6 +21,9 @@
   with_items:
     - rkhunter
   become: true
+  tags:
+    - package
+    - vm
   ignore_errors: true
 
 - name: jenkins-slave | Install security basic tools
@@ -26,6 +32,9 @@
   with_items:
     - unhide
   become: true
+  tags:
+    - package
+    - vm
   ignore_errors: true
 
 - name: jenkins-slave | Install security basic tools for openscap check

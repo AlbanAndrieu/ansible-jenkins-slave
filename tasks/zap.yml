@@ -1,0 +1,35 @@
+---
+
+- name: zap | Ensure unzip is installed.
+  package: name=unzip state=present
+
+- name: zap | Remove zap cache (upgrade mode)
+  file: path="{{ jenkins_home }}/.ZAP" state=absent
+  become: true
+  ignore_errors: true
+  tags: vm
+
+- name: zap | Create zap cache (upgrade mode)
+  file: path="{{ jenkins_home }}/.ZAP" state=directory recurse=yes mode=0777
+  become: true
+
+- name: zap | Create zap target dir
+  file: path="{{ zap_target_dir }}" state=directory recurse=yes mode=0777
+  become: true
+
+#mkdir -p /workspace/slave/tools/com.cloudbees.jenkins.plugins.customtools.CustomTool/ZAPROXY/ZAP_2.8.0
+#cd /workspace/slave/tools/com.cloudbees.jenkins.plugins.customtools.CustomTool/ZAPROXY/ZAP_2.8.0
+#wget http://fr1cslfrbm0059/download/zap/ZAP_2.8.0_Core.zip
+#unzip ZAP_2.8.0_Core.zip
+#chown -R jenkins:docker /workspace/slave/tools/
+
+- name: zap | Download and expand C++ zap
+  unarchive:
+    src: "{{ zap_download_url }}"
+    dest: "{{ zap_target_dir }}"
+    remote_src: true
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0777
+  become: true
+  ignore_errors: true

@@ -55,9 +55,8 @@
     executable: "pip{{ python_version }}"
     state: forcereinstall
   with_items:
-    - docker-compose==1.23.1
+    - docker-compose==1.24.1
   become: true
-#  ignore_errors: '{{ ansible_check_mode }}'
   ignore_errors: true      # For Ubuntu 18.04 Cannot uninstall 'PyYAML'
 
 - name: docker | docker-compose check 2
@@ -111,7 +110,7 @@
 # See https://github.com/tensorflow/tensorflow/issues/4078
 # For https://github.com/NVIDIA/nvidia-docker
 # - name: docker | Install requirement for nvidia
-#   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=true state={{ util_pkg_state|default('present') }}"
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
 #   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 #   with_items:
 #     - nvidia-361-dev
@@ -130,6 +129,7 @@
   when: not docker.stat.islnk
   become: true
   ignore_errors: true
+  tags: vm
 
 - name: docker | Create link to docker filesystem
   file: path=/var/lib/docker src=/docker state=link force=yes
@@ -142,6 +142,7 @@
     - restart
     - notify
     - docker
+    - vm
 
 # See issue https://github.com/geerlingguy/ansible-role-docker/issues/56
 - name: docker | Set notify_only to 0
@@ -160,11 +161,12 @@
     mode: 0644
   notify:
     - restart docker
-  when: docker_opts != "" and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '<'))
+  when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '<'))
   tags:
     - restart
     - notify
     - docker
+    - vm
 
 - name: docker | Create systemd configuration directory for Docker service (systemd)
   file:
@@ -173,9 +175,10 @@
     owner: root
     group: root
     mode: 0755
-  when: docker_opts != "" and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>='))
-  tags: docker
-
+  when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>='))
+  tags:
+    - docker
+    - vm
 # - name: Set docker daemon options (systemd)
 #   copy:
 #     content: |
@@ -187,7 +190,7 @@
 #     mode: 0644
 #   notify:
 #     - restart docker
-#   when: docker_opts != "" and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>='))
+#   when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>='))
 #  tags:
 #    - restart
 #    - notify
@@ -200,7 +203,7 @@
 #     line: ExecStart={{ docker_base_opts }} {{ docker_opts.rstrip('\n') }}
 #   notify:
 #     - restart docker
-#   when: docker_opts != "" and ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') or (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>=')))
+#   when: docker_opts | length > 0 and ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') or (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>=')))
 #  tags:
 #    - restart
 #    - notify
@@ -221,12 +224,45 @@
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version in ['18.04']
   become: true
   ignore_errors: true
+  tags: vm
+
+- name: docker | Create docker directory for .docker/config.json
+  file: path={{ docker_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
+  become: true
+  changed_when: false
+
+- name: docker | Copy the .docker/config.json script
+  template: src=config.json.j2 dest={{ docker_directory }}/config.json owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
+  become: true
+  changed_when: false
+
+- import_tasks: tmp.yml
 
 - name: docker | docker container-structure-test
   shell: "curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64 && chmod +x container-structure-test-linux-amd64 && sudo mv container-structure-test-linux-amd64 /usr/local/bin/container-structure-test" # noqa 303
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(16.04, '>=')
   become: true
   ignore_errors: true
+
+- name: Get docker container-structure-test version # noqa 301
+  command: "container-structure-test version"
+  register: cst_version
+
+# - debug:
+#     msg: "version {{ item.stdout_lines }} for {{ item.item }}"
+#   with_items: '{{ cst_version.results }}'
+
+- debug: var=cst_version
+
+- name: Get docker container-structure-test version # noqa 301
+  command: "container-structure-test version"
+  register: cst_version
+
+# - debug:
+#     msg: "version {{ item.stdout_lines }} for {{ item.item }}"
+#   with_items: '{{ cst_version.results }}'
+
+- debug: var=cst_version
 
 # TO REVOKE
 # grubby --remove-args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"

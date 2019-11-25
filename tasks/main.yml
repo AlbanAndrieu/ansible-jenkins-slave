@@ -13,6 +13,7 @@
   action: apt update-cache=yes
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  tags: vm
 
 # FYI hdd.yml playbook must be first (before creating slave folders)
 #- import_tasks: hdd.yml
@@ -28,7 +29,7 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
 
 - name: Install ant package
-  action: "{{ ansible_pkg_mgr }} name='ant' state={{ util_pkg_state|default('present') }} update_cache=true"
+  action: "{{ ansible_pkg_mgr }} name='ant' state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
 
 - name: Install zip package
@@ -45,7 +46,7 @@
 - import_tasks: quality.yml
 
 - name: jenkins-slave | Install flex
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
     - flex
@@ -90,6 +91,8 @@
 
 - import_tasks: security.yml
 
+- import_tasks: zap.yml
+
 # - import_tasks: gcc.yml
 
 - import_tasks: cpp.yml
@@ -116,13 +119,18 @@
   become: true
   changed_when: false
 
+- name: jenkins-slave | Copy maven toolchains configuration
+  copy: src=toolchains.xml dest={{ jenkins_home }}/.m2/toolchains.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
+  changed_when: false
+  become: true
+
 - name: jenkins-slave | Copy maven configuration
   template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
   changed_when: false
 
 - name: jenkins-slave | Copy maven security configuration
-  template: src=settings-security.xml.j2 dest={{ jenkins_home }}/.m2/settings-security.xml.j2 backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
+  template: src=settings-security.xml.j2 dest={{ jenkins_home }}/.m2/settings-security.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
   changed_when: false
 
@@ -212,35 +220,13 @@
 - import_tasks: yarn.yml
 
 - name: jenkins-slave | Copy the .npmrc script
-  template: src=.npmrc.j2 dest={{ jenkins_home }}/.npmrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+  template: src=.npmrc.j2 dest={{ jenkins_home }}/.npmrc owner={{ jenkins_user }} group={{ jenkins_group }} mode=0644
   become: true
   changed_when: false
 
-- name: jenkins-slave | Copy the .bowerrc script
-  template: src=.bowerrc.j2 dest={{ jenkins_home }}/.bowerrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
-  become: true
-  changed_when: false
+- import_tasks: bower.yml
 
 - import_tasks: tmp.yml
-
-# TODO
-# https://docs.ansible.com/ansible/jenkins_plugin_module.html
-# - name: Install plugins with a specific version
-#   jenkins_plugin:
-#     name: "{{ item.key }}"
-#     version: "{{ item.value['version'] }}"
-#   register: my_jenkins_plugin_versioned
-#   when: >
-#     'version' in item.value
-#   with_dict: my_jenkins_plugins
-
-#  Create a jenkins job using basic authentication
-# - jenkins_job:
-#     config: "{{ lookup('file', 'templates/test.xml') }}"
-#     name: test
-#     password: admin
-#     url: "http://localhost:8080"
-#     user: admin
 
 # TODO Add source /etc/profile for RedHat to find lsof command
 
@@ -256,7 +242,7 @@
   when: workstation_enabled
 
 - name: jenkins-slave | Install saxon package
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
     - libsaxon-java
@@ -267,7 +253,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install log4j package for better display of log for slave
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
     - liblog4j1.2-java
@@ -278,7 +264,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install log4j package for better display of log for slave
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
     - liblog4j2-java
@@ -289,7 +275,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install log4j package for better display of log for slave
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
     - log4j
@@ -299,7 +285,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install rsync package
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   tags: package
   with_items:
     - rsync
@@ -318,6 +304,41 @@
   when: workstation_enabled
 
 - import_tasks: tuning.yml
+  tags:
+    - browser
+    - vm # do not install on docker image
+# See also jenkins_slave_directory
+- name: jenkins-slave | Create link to legacy {{ jenkins_slave_home }} directory
+  file:
+    src: "{{ jenkins_slave_home }}/{{ item.path }}"
+    dest: "{{ jenkins_slave_home }}/{{ item.dest }}"
+    group: "{{ jenkins_user }}"
+    owner: "{{ jenkins_group }}"
+    state: link
+  with_items:
+    - { path: 'Jenkins-slave', dest: 'slave' }
+  #  - { path: 'Jenkins-slave-todo', dest: 'slavetodo' }
+  become: true
+  changed_when: false
+  ignore_errors: true
+  tags:
+    - vm # do not install on docker image
+
+- name: jenkins-slave | Make sure jobs has permission to download sonar-scanner or zap inside {{ jenkins_slave_home }} tools directory
+  file:
+    dest: "{{ jenkins_slave_home }}/{{ item.dest }}/tools"
+    group: "{{ jenkins_user }}"
+    owner: "{{ jenkins_group }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - { dest: 'slave' }
+  #  - { dest: 'slavetodo' }
+  become: true
+  changed_when: false
+  ignore_errors: true
+  tags:
+    - vm # do not install on docker image
 
 - name: jenkins-slave | Copy Dockerfile
   template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0777

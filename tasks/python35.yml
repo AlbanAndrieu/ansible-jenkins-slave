@@ -74,14 +74,14 @@
 - name: python3 | Install python 3.5 ppa
   apt_repository: repo="ppa:deadsnakes/ppa" state={{ util_repository_state|default('present') }} update_cache=yes
   # when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04', '16.04'])
-  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' )
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['19.04'])
   become: true
 
 # sudo apt-cache show python3
 # sudo apt-get install python3=3.5.1*
 
 - name: python3 | Install python 3.5 requirements
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
   with_items:
@@ -90,14 +90,14 @@
     - python3-pip
 
 - name: python3 | Install python 3.5 requirements
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04'])
   with_items:
     - python3-dev=3.5.1*
 
 - name: python3 | Install python 3.5 requirements
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '16.04'])
   with_items:
@@ -177,8 +177,9 @@
   ignore_errors: true
 
 - name: python3 | Gather current pip requirement
-  shell: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
-  when: not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
+  command: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
+  when: not( (python3_version is undefined) or (python3_version is none) )
+        and (python3_version | length > 0)
   changed_when: false
   become: true
   ignore_errors: true
@@ -189,16 +190,12 @@
     executable: "pip{{ python3_version }}"
   become: true
 
-- name: python3 | Copy the minimal requirements configuration file for python
-  copy: src=requirements-minimal-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-minimal-current-{{ python3_version }}.txt backup=yes
-  become: true
-
 - name: python3 | Copy the requirements configuration file for python
-  copy: src=requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-current-{{ python3_version }}.txt backup=yes
+  copy: src=python/requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-current-{{ python3_version }}.txt backup=yes
   become: true
 
-- name: python3 | Install dependencies for python 3 requirements
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+- name: python3 | Install apt dependencies for python 3 requirements
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - python3-dev
@@ -221,7 +218,7 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
-    - unixodbc-dev     # ODBC
+    - unixodbc-dev    # ODBC
   become: true
 
 - name: python3 | Install C++ librairies for database (CentOS and RedHat based) for pyodbc
@@ -229,26 +226,6 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-    - unixODBC-devel    # ODBC
+    - unixODBC-devel   # ODBC
   become: true
 
-- name: python3 | Remove venv
-  file: path=/opt/ansible/env35 state=absent
-  become: true
-
-- name: python3 | Create venv and install requirements
-  pip:
-    requirements: "{{ ansible_user_dir }}/requirements-minimal-current-{{ python3_version }}.txt"
-    virtualenv: /opt/ansible/env35
-    virtualenv_python: "python{{ python3_version }}"
-  tags:
-    - venv
-  environment:
-    PATH: "{{ ansible_env.PATH }}:{{ ansible_user_dir }}/.local/bin"
-#  ignore_errors: true
-
-# - name: python3 | Install missing pip requirement
-#   shell: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
-#   changed_when: false
-#   become: true
-#   ignore_errors: true

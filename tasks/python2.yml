@@ -7,7 +7,7 @@
 # pip install --upgrade pip
 
 - name: python | Install wget
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
     - wget
   become: true
@@ -173,7 +173,7 @@
   ignore_errors: true
 
 - name: python | Install dependencies for python 2 requirements
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=true state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') #and ansible_distribution_major_version == '6')
   with_items:

@@ -22,7 +22,8 @@
   alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }}
   with_items:
     - { name: mvn, link: /usr/bin/mvn, path: "{{ mvn_dir }}/bin/mvn" }
-  when: not( (mvn_dir is undefined) or (mvn_dir is none) or (mvn_dir | trim == '') ) # noqa 602
+  when: not( (mvn_dir is undefined) or (mvn_dir is none) )
+        and (mvn_dir | length > 0) # noqa 602
   become: true
   ignore_errors: true
 
@@ -31,7 +32,8 @@
 # ls -la /etc/alternatives/mvn*
 - name: jenkins-slave | Display mvn link after
   action: command update-alternatives --display mvn
-  when: not( (mvn_dir is undefined) or (mvn_dir is none) or (mvn_dir | trim == '') ) # noqa 602
+  when: not( (mvn_dir is undefined) or (mvn_dir is none) )
+        and (mvn_dir | length > 0) # noqa 602
   changed_when: false
   become: true
   ignore_errors: true

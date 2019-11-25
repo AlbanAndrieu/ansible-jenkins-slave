@@ -1,0 +1,30 @@
+---
+
+- name: jenkins-slave | Checking bower folders
+  stat:
+    path: "{{ item }}"
+  register: folder_stats
+  with_items: "{{ bower_config_directory }}"
+  when: jenkins_slave_directory | length > 0
+  become: true
+  changed_when: false
+
+- name: jenkins-slave | Creating multiple folders without disturbing previous permissions
+  file:
+    path: "{{ item.item }}"
+    state: directory
+    mode: 0777
+    recurse: yes
+    group: "{{ jenkins_user }}"
+    owner: "{{ jenkins_group }}"
+  when: not item.stat.exists
+  with_items:
+    - "{{ folder_stats.results }}"
+  become: true
+  changed_when: false
+  ignore_errors: true
+
+- name: jenkins-slave | Copy the .bowerrc script
+  template: src=.bowerrc.j2 dest={{ jenkins_home }}/.bowerrc owner={{ jenkins_user }} group={{ jenkins_group }} mode=0644
+  become: true
+  changed_when: false

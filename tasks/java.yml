@@ -119,7 +119,10 @@
     - { name: jarsigner, link: /usr/bin/jarsigner, path: "{{ jdk_dir }}bin/jarsigner", priority: 5 }
 #    - { name: java_vm, link: /usr/bin/java_vm, path: "{{ jdk_dir }}/bin/java_vm", priority: 5 }
     - { name: jvisualvm, link: /usr/bin/jvisualvm, path: "{{ jdk_dir }}bin/jvisualvm", priority: 5 }
-  when: not( (jdk_dir is undefined) or (jdk_dir is none) or (jdk_dir | trim == '') )
+    - { name: keytool, link: /usr/bin/keytool, path: "{{ jdk_dir }}bin/keytool", priority: 5 }
+  when: not( (jdk_dir is undefined) or (jdk_dir is none) )
+        and (jdk_dir | length > 0)
+        and (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   become: true
   ignore_errors: true
 
@@ -132,6 +135,7 @@
 
 - name: jenkins-slave | Configure Java alternatives
   action: command update-java-alternatives -s java-1.8.0-openjdk-amd64
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
   changed_when: false
   become: true
 
@@ -140,7 +144,8 @@
 # ls -la /etc/alternatives/java*
 - name: jenkins-slave | Display java link after
   action: command update-alternatives --display java
-  when: not( (jdk_dir is undefined) or (jdk_dir is none) or (jdk_dir | trim == '') )
+  when: not( (jdk_dir is undefined) or (jdk_dir is none) )
+        and (jdk_dir | length > 0)
   changed_when: false
   become: true
   ignore_errors: true
@@ -162,15 +167,52 @@
 
 - name: jenkins-slave | Check if certificate is already imported
   command: '{{ java_keytool_executable }} -list -keystore {{ java_certificate_ca_path }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias }}'
+  become: true
   ignore_errors: true
   changed_when: false
   register: java_cert_imported
+
+- name: jenkins-slave | Create java cacerts link (jenkins 1)
+  file:
+    path: "/workspace/{{ item.dest }}/tools/hudson.model.JDK/java-latest/lib/security/cacerts"
+    src: /etc/pki/java/cacerts
+    state: link
+    group: "{{ jenkins_user }}"
+    owner: "{{ jenkins_group }}"
+    mode: 0755
+    force: yes
+  with_items:
+    - { dest: 'slave' }
+    - { dest: 'slavearc' }
+  become: true
+  ignore_errors: true
+
+#cd /workspace/slave/tools/hudson.model.JDK/jdk-18-latest/jre/lib/security
+#ln -sf /etc/ssl/certs/java/cacerts cacerts
+#chown -h jenkins:docker cacerts
+
+- name: jenkins-slave | Create java cacerts link (jenkins 2)
+  file:
+    path: "/workspace/{{ item.dest }}/tools/hudson.model.JDK/jdk-18-latest/jre/lib/security/cacerts"
+    src: /etc/pki/java/cacerts
+    state: link
+    group: "{{ jenkins_user }}"
+    owner: "{{ jenkins_group }}"
+    mode: 0755
+    force: yes
+  with_items:
+    - { dest: 'slave' }
+    - { dest: 'slavearc' }
+  become: true
+  ignore_errors: true
 
 # See certificate.yml playbook to get the CA certificate
 
 - name: jenkins-slave | Import certificate
   command: '{{ java_keytool_executable }} -import -trustcacerts -keystore {{ java_certificate_ca_path }} -keypass {{ java_certificate_key_pass }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias }} -file ~/pki/ca.pem'
   when: java_cert_imported is failed
+  become: true
+#  ignore_errors: true
 
 # Belowe need to be done especially because we set JAVA_HOME=/usr/java/default inside .bashrc (see jdk_home)
 

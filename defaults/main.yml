@@ -14,6 +14,8 @@ data_gid: "33"
 docker_users: "{{ jenkins_user }}"
 docker_gid: "2000"
 docker_group: "docker"
+docker_directory: "{{ jenkins_home }}/.docker"
+bower_config_directory: [ "{{ jenkins_home }}/.config/configstore", "{{ jenkins_home }}/.local/share/bower" ]
 jenkins_primary_group: jenkins
 jenkins_groups: [ "{{ docker_group }}", "{{ data_group }}", "{{ jenkins_group }}" ]
 # jenkins_shell: "/bin/false"
@@ -22,7 +24,7 @@ jenkins_home: /var/lib/jenkins              # Jenkins home location
 # NIS issue jenkins_home: /home/jenkins
 # jenkins_home: "/home/jenkins"
 jenkins_slave_home: "{{ jenkins_home }}"
-jenkins_slave_directory: ["{{ jenkins_slave_home }}/slave", "{{ jenkins_slave_home }}/slave-test"]
+jenkins_slave_directory: ["{{ jenkins_slave_home }}/slave", "{{ jenkins_slave_home }}/slave-test", "{{ jenkins_slave_home }}/tmp"]            # needed {{ jenkins_slave_home }}/tmp for -Djava.io.tmpdir=/workspace/tmp
 jenkins_sudo: false
 
 jenkins_jdk7_enable: false
@@ -85,27 +87,30 @@ npm_global_packages:
   - angular@1.3.15
   - bower@1.8.8
   - casperjs@1.1.4
-# - critical@0.7.3
   - coffee-script@1.10.0
   - connect@1.9.2
-  - grunt@1.0.1
-  - grunt-cli@1.2.0
+#  - grunt@1.0.4
+  - grunt-cli@1.3.2
+#  - grunt-version-check@0.3.8
   - jshint@2.9.5
   - jsonlint@1.6.2
   - json2csv@4.3.3
-  - node-sass@3.11.2
-# - node-gyp@3.6.2 need python / gcc
-  - nsp@2.6.1
+#  - karma@4.0.1
+#  - node-sass@3.11.2
+  - nsp@3.2.1
   - phantomjs-prebuilt@2.1.16              # EACCES: permission denied
-  - phantomas@1.18.0
+  - phantomas@1.20.1
   - slimerjs@0.10.3
   - tap-eater@0.0.3
-  - webdriver-manager@12.1.0
-  - yarn@1.12.3
-  - yo@2.0.5
-#  - sharp@0.19.0
+  - webdriver-manager@12.1.7
+  - yarn@1.19.1
+  - yo@3.1.0
+  - newman@4.5.5
+  - xunit-viewer@5.1.11
 
 npm_chromedriver_version: 2.37
+#apt_chromedriver_version: "=77.0.3865.90-0ubuntu0.18.04.1"
+apt_chromedriver_version:
 
 brew_enabled: false
 brew_packages:
@@ -178,7 +183,7 @@ shell_sa_password: "microsoft"
 svn_user: "jenkins"
 svn_password: "microsoft"
 
-nodejs_version: "7.8.0"
+nodejs_version: "11.15.0"
 nodejs_enabled: true
 epel_repo_enabled: false
 python_enabled: true
@@ -224,14 +229,24 @@ sonar_build_wrapper_download_file: "{{ sonar_build_wrapper_name }}.zip"
 sonar_build_wrapper_download_url: "https://sonarcloud.io/static/cpp/{{ sonar_build_wrapper_download_file }}"
 sonar_build_wrapper_target_dir: "{{ sonar_target_dir }}sonar-build-wrapper"
 
-sonar_scanner_name: "sonar-scanner-3.2.0.1227"
+# See http://mirror.serverion.com/jenkins/updates/updates/hudson.plugins.sonar.SonarRunnerInstaller.json
+sonar_scanner_version: "4.2.0.1873"
+sonar_scanner_name: "sonar-scanner-{{ sonar_scanner_version }}"
 sonar_scanner_download_file: "{{ sonar_scanner_name }}.zip"
-sonar_scanner_download_url: "https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip"
+sonar_scanner_download_url: "https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-{{ sonar_scanner_version }}.zip"
 sonar_scanner_target_dir: "{{ sonar_target_dir }}sonar-runner"
 
 python_yum_enablerepo: epel    # "no"
 python_yum_disablerepo:
 workstation_enabled: false
+jenkins_customtools_target_dir: "/workspace/slave/tools/com.cloudbees.jenkins.plugins.customtools.CustomTool"
+
+# See https://github.com/zaproxy/zaproxy/releases/download/v2.8.0/ZAP_2.8.0_Core.zip
+zap_version: "2.8.0"
+zap_name: "ZAP_{{ zap_version }}_Core"
+zap_download_file: "{{ zap_name }}.zip"
+zap_download_url: "https://github.com/zaproxy/zaproxy/releases/download/v{{ zap_version }}/{{ zap_download_file }}"
+zap_target_dir: "{{ jenkins_customtools_target_dir }}/ZAPROXY/ZAP_{{ zap_version }}"
 
 docker_files_generated_directory: "./"
 docker_files_enable: false

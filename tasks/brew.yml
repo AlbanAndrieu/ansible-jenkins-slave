@@ -1,7 +1,7 @@
 ---
 
 - name: brew | Install dependencies for brew requirement
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=true state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
     - curl
     - file

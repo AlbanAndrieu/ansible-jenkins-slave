@@ -1,15 +1,15 @@
 ---
 
-- name: jenkins-slave | Install requirement for phantomas/phantomjs (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=true state={{ util_pkg_state|default('present') }}"
+- name: javascript | Install requirement for phantomas/phantomjs (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - libfontconfig1
     - libfreetype6
   become: true
 
-- name: jenkins-slave | Install requirement for phantomas/phantomjs (RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=true state={{ util_pkg_state|default('present') }}"
+- name: javascript | Install requirement for phantomas/phantomjs (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
     - fontconfig
@@ -18,8 +18,8 @@
     - libfontconfig.so.1
   become: true
 
-- name: jenkins-slave | Install nodejs (RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=true state={{ util_pkg_state|default('present') }}"
+- name: javascript | Install nodejs (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
   with_items:
     - gcc-c++
@@ -35,51 +35,50 @@
 # node v6.13.0
 # npm 3.10.10
 
-- name: jenkins-slave | Clean cache before upgrade
+- name: javascript | Clean cache before upgrade
   command: 'npm cache clean -f'
   when: nodejs_enabled
   become: true
   changed_when: false
   ignore_errors: true
 
-#- name: jenkins-slave | Get node repo # noqa 303
-#  shell: 'curl -sL https://rpm.nodesource.com/setup_7.x | sudo -E bash -'
-##  shell: 'curl -sL https://rpm.nodesource.com/setup_6.x | sudo -E bash -'
-#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
-#  become: true
-#  changed_when: false
-#  ignore_errors: true
+- name: javascript | Get node repo # noqa 303
+  shell: 'curl -sL https://rpm.nodesource.com/setup_6.x | sudo -E bash -'
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
+  become: true
+  changed_when: false
+  ignore_errors: true
 
-- name: jenkins-slave | Get node repo # noqa 303
+- name: javascript | Get node repo # noqa 303
   shell: 'curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -'
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04']) and nodejs_enabled
   become: true
   changed_when: false
   ignore_errors: true
 
-- name: jenkins-slave | Install nodejs (RedHat based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=true state={{ util_pkg_state|default('present') }}"
+- name: javascript | Install nodejs (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
   with_items:
     - nodejs
 
 # Warning on Ubuntu command is nodejs (instead of node)
-- name: jenkins-slave | Install nodejs npm official (might be outdated) (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=true state={{ util_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['12.04', '14.04', '18.04']) and nodejs_enabled
+- name: javascript | Install nodejs npm official (might be outdated) (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['12.04', '14.04']) and nodejs_enabled
   with_items:
     - nodejs
   become: true
 
-- name: jenkins-slave | Install nodejs npm official (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=true state={{ util_pkg_state|default('present') }}"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04', '18.04']) and nodejs_enabled
+- name: javascript | Install nodejs npm official (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04']) and nodejs_enabled
   with_items:
     - npm
   become: true
 
-- name: npm | Ensure the n (node updater) is installed
+- name: javascript | Ensure the n (node updater) is installed
   npm: >
     name={{ item }}
     state=present
@@ -95,7 +94,7 @@
 # sudo npm install -g n
 # sudo npm view npm dist-tags
 # sudo n stable
-- name: jenkins-slave | Update node
+- name: javascript | Update node
   action: command n v{{ nodejs_version }}
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04") and nodejs_enabled
   become: true
@@ -107,7 +106,7 @@
 # Switch to new version
 # sudo ln -sf /usr/local/n/versions/node/7.8.0/ /usr/bin/node
 
-- name: jenkins-slave | Create node link
+- name: javascript | Create node link
   file: path=/usr/bin/node src=/usr/local/n/versions/node/{{ nodejs_version }}/bin/node state=link
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04") and nodejs_enabled
   ignore_errors: true
@@ -125,39 +124,52 @@
 # npm config list
 # npm install --unsafe-perm -g node-sass
 
-- name: jenkins-slave | Ensure npm registry settings
-# command: chdir=/usr/bin npm config set registry {{ npm_nexus_private_npm_url }}
+- name: Print nodejs_enabled
+  debug: msg="Nodejs are {{ nodejs_enabled }}"
+
+- name: javascript | Ensure npm registry settings
   command: "{{ npm_prefix }}npm config set registry {{ npm_nexus_private_npm_url }}"
-  when: not( (npm_nexus_private_npm_url is undefined) or (npm_nexus_private_npm_url is none) or (npm_nexus_private_npm_url | trim == '') ) and nodejs_enabled
+  when: not( (npm_nexus_private_npm_url is undefined) or (npm_nexus_private_npm_url is none) )
+        and (npm_nexus_private_npm_url | length > 0) and nodejs_enabled
   become: true
 
-- name: jenkins-slave | Ensure npm ssl settings
+- name: javascript | Ensure npm ssl settings
   command: "{{ npm_prefix }}npm config set strict-ssl {{ npm_strict_ssl }}"
-  when: not( (npm_strict_ssl is undefined) or (npm_strict_ssl is none) or (npm_strict_ssl | trim == '') ) and nodejs_enabled
+  when: not( (npm_strict_ssl is undefined) or (npm_strict_ssl is none) )
+        and (npm_strict_ssl | length > 0) and nodejs_enabled
   become: true
 
+- name: npm | Print npm global packages enabled
+  debug: msg="Packages are {{ npm_global_packages }}"
+
+# TODO to optimize, this is adding 4G of layer
 - name: npm | Ensure the npm dependencies are installed
   npm: >
     name={{ item }}
     state=present
     global=yes
   with_items: "{{ npm_global_packages }}"
-  when: not( (npm_global_packages is undefined) or (npm_global_packages is none) or (npm_global_packages | trim == '') )
-        and
-        ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','13.04','14.04']) or
-        (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
+  when: not( (npm_global_packages is undefined) or (npm_global_packages is none) )
+        and (npm_global_packages | length > 0)
+        and ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','13.04','14.04'])
+        or (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
   become: true
+  changed_when: false
 #  become_user: "{{ jenkins_user }}"
+  tags:
+    - npm
+    - data
+#    - vm
 
-- name: jenkins-slave | Install compass (Debian based)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=true state={{ util_pkg_state|default('present') }}"
+- name: javascript | Install compass (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and nodejs_enabled
   with_items:
     - ruby-compass
   become: true
   ignore_errors: true
 
-- name: jenkins-slave | Ensure webdriver is installed
+- name: javascript | Ensure webdriver is installed
   command: "webdriver-manager update --versions.chrome {{ npm_chromedriver_version }}"
   when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','13.04','14.04']) or
         (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled

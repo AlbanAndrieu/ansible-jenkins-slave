@@ -16,6 +16,7 @@
   file: path="{{ jenkins_home }}/.sonar" state=absent
   become: true
   ignore_errors: true
+  tags: vm
 
 - name: sonar | Create sonar cache (upgrade mode)
   file: path="{{ jenkins_home }}/.sonar/cache" state=directory recurse=yes mode=0777
@@ -57,7 +58,7 @@
     remote_src: true
   become: true
 #  ignore_errors: "{{ ansible_check_mode }}"
-  ignore_errors: true # 401: Unauthorized
+#  ignore_errors: true # 401: Unauthorized
 
 # TODO
 # sudo ln -s /usr/local/sonar-scanner-3.2.0.1227/bin/sonar-scanner /usr/bin/sonar-runner
@@ -97,6 +98,7 @@
   become: true
   changed_when: false
   ignore_errors: true
+  tags: vm
 
 - name: sonar | Cleanup temporary directory
   file: name={{ tempdir.stdout }} state=absent

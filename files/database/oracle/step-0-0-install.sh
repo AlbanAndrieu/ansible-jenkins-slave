@@ -16,42 +16,43 @@ if [[ ! -d /opt/oracle/instantclient_12_2/help/ ]]; then
     mkdir -p /opt/oracle
     cd /opt/oracle
     #cd ${HOME}/Developer
-    wget --no-check-certificate https://kgrdb01/download/oracle/instantclient-basic-solaris.x64-12.2.0.1.0.zip
+    wget --no-check-certificate https://albandri.nabla.mobi/download/oracle/instantclient-basic-solaris.x64-12.2.0.1.0.zip
     unzip instantclient-basic-solaris.x64-12.2.0.1.0.zip
-    wget --no-check-certificate https://kgrdb01/download/oracle/instantclient-jdbc-solaris.x64-12.2.0.1.0.zip
+    wget --no-check-certificate https://albandri.nabla.mobi/download/oracle/instantclient-jdbc-solaris.x64-12.2.0.1.0.zip
     unzip instantclient-jdbc-solaris.x64-12.2.0.1.0.zip
-    wget --no-check-certificate https://kgrdb01/download/oracle/instantclient-odbc-solaris.x64-12.2.0.1.0.zip
+    wget --no-check-certificate https://albandri.nabla.mobi/download/oracle/instantclient-odbc-solaris.x64-12.2.0.1.0.zip
     unzip instantclient-odbc-solaris.x64-12.2.0.1.0.zip
     ln -s /opt/oracle/instantclient_12_2 /jenkins/Developer/instantclient_12_2
     #LD_LIBRARY_PATH=${HOME}/Developer/instantclient_12_2:$LD_LIBRARY_PATH
   elif [[ "$(uname -s)" == "Darwin" ]]; then
-    #See http://kgrdb01/download/oracle/
+    #See http://albandri.nabla.mobi/download/oracle/
     mkdir -p /opt/oracle
     cd /opt/oracle
     #cd ${HOME}/Developer
-    wget --no-check-certificate https://kgrdb01/download/oracle/instantclient-basic-macos.x64-12.1.0.2.0.zip
+    wget --no-check-certificate https://albandri.nabla.mobi/download/oracle/instantclient-basic-macos.x64-12.1.0.2.0.zip
     unzip instantclient-basic-macos.x64-12.1.0.2.0.zip
-    wget --no-check-certificate https://kgrdb01/download/oracle/instantclient-jdbc-macos.x64-12.1.0.2.0.zip
+    wget --no-check-certificate https://albandri.nabla.mobi/download/oracle/instantclient-jdbc-macos.x64-12.1.0.2.0.zip
     unzip instantclient-jdbc-macos.x64-12.1.0.2.0.zip
-    wget --no-check-certificate https://kgrdb01/download/oracle/instantclient-odbc-macos.x64-12.1.0.2.0.zip
+    wget --no-check-certificate https://albandri.nabla.mobi/download/oracle/instantclient-odbc-macos.x64-12.1.0.2.0.zip
     unzip instantclient-odbc-macos.x64-12.1.0.2.0.zip
     #ln -s /opt/oracle/instantclient_12_2 /Users/jenkins/Developer/instantclient_12_2
     #LD_LIBRARY_PATH=/Users/jenkins/Developer/instantclient_12_1:$LD_LIBRARY_PATH
   elif [[ "$(uname -s)" == "Linux" ]]; then
-    #See http://kgrdb01/download/oracle/
+    #See http://albandri.nabla.mobi/download/oracle/
     mkdir -p /opt/oracle
     cd /opt/oracle
     #cd ${HOME}/Developer
-    wget --no-check-certificate http://kgrdb01/download/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip
+    wget --no-check-certificate http://albandri.nabla.mobi/download/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip
     unzip instantclient-basic-linux.x64-12.2.0.1.0.zip
-    wget --no-check-certificate https://kgrdb01/download/oracle/instantclient-jdbc-linux.x64-12.2.0.1.0.zip
+    wget --no-check-certificate https://albandri.nabla.mobi/download/oracle/instantclient-jdbc-linux.x64-12.2.0.1.0.zip
     unzip instantclient-jdbc-linux.x64-12.2.0.1.0.zip
-    wget --no-check-certificate https://kgrdb01/download/oracle/instantclient-odbc-linux.x64-12.2.0.1.0.zip
+    wget --no-check-certificate https://albandri.nabla.mobi/download/oracle/instantclient-odbc-linux.x64-12.2.0.1.0.zip
     unzip instantclient-odbc-linux.x64-12.2.0.1.0.zip
-    wget --no-check-certificate https://kgrdb01/download/oracle/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip
+    wget --no-check-certificate https://albandri.nabla.mobi/download/oracle/instantclient-sqlplus-linux.x64-12.2.0.1.0.zip
     unzip instantclient-sqlplus-linux.x64-12.2.0.1.0.zip
-    ln -s /opt/oracle/instantclient_12_2 /jenkins/Developer/instantclient_12_2
-    ln -s /opt/oracle/instantclient_12_2 /home/jenkins/Developer/instantclient_12_2
+    #ln -s /opt/oracle/instantclient_12_2 /jenkins/Developer/instantclient_12_2
+    #mkdir -p /home/jenkins/Developer
+    #ln -s /opt/oracle/instantclient_12_2 /home/jenkins/Developer/instantclient_12_2
     #LD_LIBRARY_PATH=${HOME}/Developer/instantclient_12_2:$LD_LIBRARY_PATH
   fi
 fi

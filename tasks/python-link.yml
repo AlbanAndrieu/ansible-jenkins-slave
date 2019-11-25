@@ -46,18 +46,20 @@
   - { name: python, link: /usr/bin/python, path: "/usr/bin/{{ python2_version }}", priority: 100 }
   - { name: python, link: /usr/bin/python, path: "{{ python_dir }}/python3.5", priority: 10 }
   - { name: python, link: /usr/bin/python, path: "{{ python_dir }}/python3.6", priority: 20 }
-  when: not( (python_dir is undefined) or (python_dir is none) or (python_dir | trim == '') )
-        and
-        not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
+  when: not( (python_dir is undefined) or (python_dir is none) )
+        and (python_dir | length > 0)
+        and not( (python3_version is undefined) or (python3_version is none) )
+        and (python3_version | length > 0)
         and ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04'])
   become: true
   ignore_errors: true
 
 - name: python3 | Display python link after
   action: command update-alternatives --display python
-  when: not( (python_dir is undefined) or (python_dir is none) or (python_dir | trim == '') )
-        and
-        not( (python3_version is undefined) or (python3_version is none) or (python3_version | trim == '') )
+  when: not( (python_dir is undefined) or (python_dir is none) )
+        and (python_dir | length > 0)
+        and not( (python3_version is undefined) or (python3_version is none) )
+        and (python3_version | length > 0)
         and ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04'])
   changed_when: false
   become: true

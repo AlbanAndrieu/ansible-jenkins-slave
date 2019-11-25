@@ -34,19 +34,25 @@
     executable: "pip{{ python_version }}"
   with_items:
     - paramiko
-    - ansible==2.6.0
+    - ansible==2.8.6
   when: not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
   become: true
   ignore_errors: true
+  tags:
+    - pip
+    - vm # do not install on docker image
 
 - name: jenkins-slave | Install Ansible add ons (Debian based)
   pip:
     name: "{{ item }}"
     executable: "pip{{ python_version }}"
   with_items:
-    - ansible-cmdb==1.27
+    - ansible-cmdb==1.30
   when: not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
   become: true
+  tags:
+    - pip
+    - vm # do not install on docker image
 
 - name: jenkins-slave | Install ansible requirements
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
@@ -62,6 +68,9 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: true
   ignore_errors: true
+  tags:
+    - package
+    - vm # do not install on docker image
 
 - name: jenkins-slave | Install devops tools for ansible windows
   pip:
@@ -94,3 +103,6 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
   become: true
   ignore_errors: true
+  tags:
+    - pip
+    - vm # do not install on docker image

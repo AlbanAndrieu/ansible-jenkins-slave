@@ -4,7 +4,7 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
-    - chromium-chromedriver           # see selenium role
+    - chromium-chromedriver{{ apt_chromedriver_version }}           # see selenium role
   become: true
   changed_when: false
 
@@ -35,11 +35,17 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
   become: true
   changed_when: false
+  tags:
+    - browser
+    - vm # do not install on docker image
 
 - name: jenkins-slave | Add Google Chrome repo (apt)
   apt_repository: repo="deb http://dl.google.com/linux/chrome/deb/ stable main" state={{ google_agent_repository_state|default('yes') }} update_cache=no
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_architecture in ['x86_64'] and ansible_distribution_version in ("12.04", "14.04", "16.04")
   become: true
+  tags:
+    - browser
+    - vm # do not install on docker image
 
 - name: jenkins-slave | Install google-chrome-stable
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
@@ -48,11 +54,14 @@
     - google-chrome-stable
   become: true
   changed_when: false
+  tags:
+    - browser
+    - vm # do not install on docker image
 
 # #below needed for protractor tests
 # #sudo apt-get install google-chrome-stable
 
-- name: jenkins-slave | Install google-chrome-stable
+- name: jenkins-slave | Install google-chrome-stable for zaproxy
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
   with_items:
@@ -61,14 +70,20 @@
     - google-chrome-stable_current_x86_64.rpm
   become: true
   changed_when: false
+  tags:
+    - browser
+    - vm # do not install on docker image
 
 # yum -y localinstall google-chrome-stable_current_x86_64.rpm
 
-# - name: jenkins-slave | Install firefox for zaproxy
-#   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
-#   become: true
-#   with_items:
-#     - firefox # see selenium role
+- name: jenkins-slave | Install firefox for zaproxy
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  become: true
+  with_items:
+    - firefox # see selenium role
+  tags:
+    - browser
+    - vm # do not install on docker image
 
 # TODO install
 # #for zap

@@ -7,22 +7,26 @@
 
 - name: zabbix | Remove srvadmin-storelib-sysfs conflict megacli
   action: "{{ ansible_pkg_mgr }} name={{ item }} state=absent update_cache=yes"
-  tags: package
   with_items:
     - srvadmin-storelib-sysfs
   changed_when: false
   become: true
   ignore_errors: true
+  tags:
+    - package
+    - vm
 
 - name: zabbix | Install sensors package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  tags: package
   with_items:
     - lm_sensors
     - xsensors
   changed_when: false
   become: true
   ignore_errors: true
+  tags:
+    - package
+    - vm
 
 - name: zabbix | Install zabbix python api
   pip:
@@ -38,65 +42,67 @@
     dest: /etc/zabbix/scripts/jenkins/
     recurse: true
     mode: a+x
+  tags: vm
 
 - name: zabbix | Create /opt/zabbix/externalscripts folder
   file: path=/opt/zabbix/externalscripts state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
   become: true
   changed_when: false
+  tags: vm
 
 - name: zabbix | Copy zabbix script (1)
   copy: src=zabbix/array-all-status-dell.sh dest=/opt/zabbix/externalscripts/array-all-status-dell.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
   ignore_errors: true
+  tags: vm
 
 - name: zabbix | Copy zabbix script (2)
   copy: src=zabbix/array-all-status-hp.sh dest=/opt/zabbix/externalscripts/array-all-status-hp.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
   ignore_errors: true
-
-# - name: zabbix | Install open-iscsi package
-#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-#   tags: package
-#   with_items:
-#    - open-iscsi
-#   changed_when: false
-#   become: true
-#   ignore_errors: true
+  tags: vm
 
 - name: zabbix | Copy zabbix script (3)
   copy: src=zabbix/iscsi-status.sh dest=/opt/zabbix/externalscripts/iscsi-status.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
   ignore_errors: true
+  tags: vm
 
 - name: zabbix | Copy zabbix script (4)
   copy: src=zabbix/fs-discovery.sh dest=/opt/zabbix/externalscripts/fs-discovery.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
   ignore_errors: true
+  tags: vm
 
 - name: zabbix | Copy zabbix script (5)
   copy: src=zabbix/zpool-status.sh dest=/opt/zabbix/externalscripts/zpool-status.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
   ignore_errors: true
+  tags: vm
 
 - name: zabbix | Copy zabbix script (6)
   copy: src=zabbix/zpool-discovery.sh dest=/opt/zabbix/externalscripts/zpool-discovery.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
   ignore_errors: true
+  tags: vm
 
 - name: zabbix | Copy zabbix script (7)
   copy: src=zabbix/zfs-vfs-size.sh dest=/opt/zabbix/externalscripts/zfs-vfs-size.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
   ignore_errors: true
+  tags: vm
 
 - name: zabbix | Create /etc/zabbix/ folder
   file: path={{ zabbix_agent_config_director }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
   become: true
   changed_when: false
+  tags: vm
 
 - name: zabbix | Copy zabbix configuration
   template: src=zabbix_agentd.conf.j2 dest={{ zabbix_agent_config_director }}/zabbix_agentd.conf backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
   changed_when: false
+  tags: vm
 
 - name: zabbix | Disable chronyd (to allow ntps service to run for zabbix)
   systemd:
@@ -107,6 +113,7 @@
   changed_when: false
   become: true
   ignore_errors: true
+  tags: vm
 
 - name: zabbix | Disable ufw (to allow access port 10050 for zabbix)
   systemd:
@@ -117,6 +124,7 @@
   changed_when: false
   become: true
   ignore_errors: true
+  tags: vm
 
 - name: zabbix | Disable firewalld (to allow access port 10050 for zabbix)
   systemd:
@@ -126,16 +134,19 @@
   changed_when: false
   become: true
   ignore_errors: true # not working on docker image because : System has not been booted with systemd as init system
+  tags: vm
 
 - name: zabbix | Install locate package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  tags: package
   with_items:
     - mlocate
 #  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   changed_when: false
   become: true
   ignore_errors: true
+  tags:
+    - package
+    - vm
 
 - name: zabbix | updatedb
   command: updatedb
@@ -143,6 +154,7 @@
   changed_when: false
   become: true
   ignore_errors: true
+  tags: vm
 
 # TODO
 # #See https://libstorage.github.io/libstoragemgmt-doc/doc/install.html
