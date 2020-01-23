@@ -6,7 +6,6 @@
   with_items:
     - perl
     - perl-base
-#   - perl-modules-5.22
     - libapache2-reload-perl
     - libapparmor-perl
     - libauthen-pam-perl
@@ -66,7 +65,6 @@
     - libparams-classify-perl
     - libparams-validate-perl
     - libparse-debianchangelog-perl
-#    - libperl5.22:amd64
     - libsocket6-perl
     - libsub-name-perl
     - libtext-charwidth-perl
@@ -78,6 +76,8 @@
     - liburi-perl
     - libwww-perl
     - libwww-robotrules-perl
+    - libxml-handler-yawriter-perl
+    - libxml-dom-perl
   become: true
 
 - name: jenkins-slave | Install tools needed for development (Debian based)
@@ -100,7 +100,6 @@
     - libcrypt-ssleay-perl
     - libxml-handler-yawriter-perl
     - libxml-simple-perl
-#    - build-essential # do we need it?
   become: true
 
 - name: jenkins-slave | Install perl for running
@@ -184,9 +183,7 @@
     - perl-XML-Simple
     - perl-XML-XPath
     - perl-XML-LibXML
-#    - "perl(XML::LibXML)"
     - perl-XML-Parser
-#    - perl-XML-SAX
     - perl-libxml-perl
   environment:
     PERL_MM_USE_DEFAULT: 1

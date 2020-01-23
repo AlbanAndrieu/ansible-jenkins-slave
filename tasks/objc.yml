@@ -14,6 +14,8 @@
     - gnustep
     - gnustep-devel
   become: true
+  tags:
+    - gnustep
 
 - name: jenkins-slave | Install gnustep (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
@@ -24,6 +26,8 @@
     - gnustep-make
     - gnustep-filesystem
   become: true
+  tags:
+    - gnustep
 
 # OBJC
 - name: jenkins-slave | Install gobjc gnustep (Debian based)

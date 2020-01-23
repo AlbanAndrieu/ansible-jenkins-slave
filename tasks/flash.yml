@@ -67,6 +67,14 @@
   when: (ansible_distribution == 'RedHat')
   become: true
 
+# WARNING install of flashplugin-installer on Ubuntu 18.04 is failing
+# apt-get remove flashplugin-installer update-notifier-common
+# apt-get purge flashplugin-installer update-notifier-common
+# rm -Rf /etc/update-notifier
+# pip install chardet
+# then it should works
+# apt-get install flashplugin-installer
+
 - name: jenkins-slave | Install adobe-flashplugin
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')

@@ -12,8 +12,10 @@
 - name: jenkins-slave | Update the apt cache (in case of issue)
   action: apt update-cache=yes
   become: true
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  tags: vm
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and not ansible_check_mode
+  tags:
+    - update
+    - vm
 
 # FYI hdd.yml playbook must be first (before creating slave folders)
 #- import_tasks: hdd.yml
@@ -87,7 +89,8 @@
 
 - import_tasks: brew.yml
   when: brew_enabled
-  tags: [brew]
+  tags:
+    - brew
 
 - import_tasks: security.yml
 
@@ -98,6 +101,10 @@
 - import_tasks: cpp.yml
 
 - import_tasks: objc.yml
+  tags:
+    - objc
+
+- import_tasks: scons.yml
 
 - import_tasks: perl.yml
 
@@ -215,7 +222,7 @@
 
 - import_tasks: sonar.yml
 
-- import_tasks: nodejs.yml
+#- import_tasks: nodejs.yml
 
 - import_tasks: yarn.yml
 
@@ -307,6 +314,7 @@
   tags:
     - browser
     - vm # do not install on docker image
+
 # See also jenkins_slave_directory
 - name: jenkins-slave | Create link to legacy {{ jenkins_slave_home }} directory
   file:

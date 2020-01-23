@@ -22,8 +22,7 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0600
-  register: key
-  when: jenkins_ssh_key_file != ""
+  when: jenkins_ssh_key_file | length > 0
   become: true
   become_user: "{{ jenkins_user }}"
   ignore_errors: true
@@ -35,15 +34,24 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0600
-  register: key
-  when: jenkins_ssh_key_file != ""
+  when: jenkins_ssh_key_file | length > 0
   become: true
   become_user: "{{ jenkins_user }}"
   ignore_errors: true
 
+- name: jenkins-ssh | Check private key for jenkins
+  stat:
+    path: "{{ jenkins_home }}/.ssh/id_rsa"
+  become: true
+  become_user: "{{ jenkins_user }}"
+  register: key
+
+- debug:
+    msg: '{{ key.stat }}'
+
 - name: jenkins-ssh | Create private key for jenkins
   command: no n | /usr/bin/ssh-keygen -f {{ jenkins_home }}/.ssh/id_rsa -t rsa -N ''
-  when: key|failed
+  when: not key.stat.exists
   become: true
   become_user: "{{ jenkins_user }}"
   ignore_errors: true
@@ -55,8 +63,7 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0600
-  register: key
-  when: jenkins_ssh_key_file != ""
+  when: jenkins_ssh_key_file | length > 0
   become: true
   ignore_errors: true
 
@@ -67,14 +74,21 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0600
-  register: key
-  when: jenkins_ssh_key_file != ""
+  when: jenkins_ssh_key_file | length > 0
   become: true
   ignore_errors: true
 
+- name: jenkins-ssh | Check private key for jenkins
+  stat:
+    path: "{{ jenkins_home }}/.ssh/id_rsa"
+  register: key
+
+- debug:
+    msg: '{{ key.stat }}'
+
 - name: jenkins-ssh | Create private key
   command: no n | /usr/bin/ssh-keygen -f $HOME/.ssh/id_rsa -t rsa -N ''
-  when: key|failed
+  when: not key.stat.exists
   become: true
   ignore_errors: true
 

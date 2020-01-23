@@ -19,7 +19,7 @@
 
 # virtualenv py3-ansible -p /usr/local/bin/python3.6
 
-- name: jenkins-slave | Install python (RedHat and CentOS based)
+- name: python3 | Install python (RedHat and CentOS based)
   yum:
     name: "{{ item }}"
     state: "{{ util_pkg_state|default('present') }}"
@@ -31,7 +31,7 @@
     - python36u-pip
   become: true
 
-- name: jenkins-slave | Remove python 34 (RedHat and CentOS based)
+- name: python3 | Remove python 34 (RedHat and CentOS based)
   yum:
     name: "{{ item }}"
     state: "absent"
@@ -41,7 +41,28 @@
     - python34-libs
   become: true
 
-- name: jenkins-slave | Install python (RedHat and CentOS based)
+- name: python3 | Remove python 36 (RedHat and CentOS based)
+  yum:
+    name: "{{ item }}"
+    state: "absent"
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
+  with_items:
+    - python36 # Remove it before install ius pacakge below
+  become: true
+
+- name: python3 | Disable rhel-7-server-rpms (1)
+  command: yum-config-manager --disable rhel-7-server-rpms
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
+  changed_when: false
+  become: true
+
+- name: python3 | Disable @rhel-7-server-rpms (2)
+  command: yum-config-manager --disable @rhel-7-server-rpms
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
+  changed_when: false
+  become: true
+
+- name: python3 | Install python (RedHat and CentOS based)
   yum:
     name: "{{ item }}"
     state: "{{ util_pkg_state|default('present') }}"
@@ -61,10 +82,12 @@
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04', '19.04'])
   become: true
 
+# WARNING from Ubuntu 19.04 python 3.6 is no more maintained
+
 - name: python3 | Install python 3 requirements
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04'])
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04', '19.04'])
   with_items:
     - python3.6
     - python3.6-dev

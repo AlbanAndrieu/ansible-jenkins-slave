@@ -55,10 +55,6 @@ under the License.
    | Default: ~/.m2/repository
   <localRepository>/path/to/local/repo</localRepository>
   -->
-  <!--<localRepository>~/.m2/repository</localRepository>-->
-  <!--<localRepository>C:/repo</localRepository>-->
-  <!--<localRepository>${env.WORKSPACE}/.repository</localRepository>-->
-  <!--<localRepository>[[MAVEN_LOCAL_REPO_PATH]]</localRepository>-->
   <localRepository>{{maven_repository}}</localRepository>
 
   <!-- interactiveMode
@@ -67,8 +63,8 @@ under the License.
    | the parameter in question.
    |
    | Default: true
-  <interactiveMode>true</interactiveMode>
   -->
+  <interactiveMode>false</interactiveMode>
 
   <!-- offline
    | Determines whether maven should attempt to connect to the network when executing a build.

@@ -1,7 +1,7 @@
 ---
 
 # docker_base_opts: "/usr/bin/docker daemon -H fd:// $DOCKER_OPTS"
-docker_base_opts: "/usr/bin/dockerd -H fd://"
+docker_base_opts: "/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock"
 
 # PostgreSQL
 # odbcinst_PostgreSQL_Driver: /usr/lib/psqlodbcw.so

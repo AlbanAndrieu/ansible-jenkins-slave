@@ -5,7 +5,7 @@
   become: true
 
 - name: jenkins-slave | Unpack Maven 3.3.3
-  action: command creates=/opt/maven333 chdir=/opt tar zxvf /opt/maven333.tar.gz
+  action: command creates=/opt/maven333 chdir=/opt tar zmxvf /opt/maven333.tar.gz
   become: true
 
 - name: jenkins-slave | Create Maven 3.3.3 directory link
@@ -21,7 +21,7 @@
   become: true
 
 - name: jenkins-slave | Unpack Maven 3.2.1
-  action: command creates=/opt/maven321 chdir=/opt tar zxvf /opt/maven321.tar.gz
+  action: command creates=/opt/maven321 chdir=/opt tar zmxvf /opt/maven321.tar.gz
   become: true
 
 - name: jenkins-slave | Create Maven 3.2.1 directory link

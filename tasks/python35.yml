@@ -169,12 +169,12 @@
   become: true
   ignore_errors: true
 
-- name: python3 | Install python-owasp-zap-v2.4 via pip
-  pip:
-    name: python-owasp-zap-v2.4
-    executable: pip{{ python3_version }}
-  become: true
-  ignore_errors: true
+#- name: python3 | Install python-owasp-zap-v2.4 via pip
+#  pip:
+#    name: python-owasp-zap-v2.4
+#    executable: pip{{ python3_version }}
+#  become: true
+#  ignore_errors: true
 
 - name: python3 | Gather current pip requirement
   command: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"

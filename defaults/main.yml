@@ -12,7 +12,7 @@ jenkins_gid: "131"
 data_group: "www-data"
 data_gid: "33"
 docker_users: "{{ jenkins_user }}"
-docker_gid: "2000"
+docker_gid: "2000"     # getent group docker
 docker_group: "docker"
 docker_directory: "{{ jenkins_home }}/.docker"
 bower_config_directory: [ "{{ jenkins_home }}/.config/configstore", "{{ jenkins_home }}/.local/share/bower" ]
@@ -98,17 +98,20 @@ npm_global_packages:
 #  - karma@4.0.1
 #  - node-sass@3.11.2
   - nsp@3.2.1
+#  - npm@6.13.6
   - phantomjs-prebuilt@2.1.16              # EACCES: permission denied
   - phantomas@1.20.1
   - slimerjs@0.10.3
   - tap-eater@0.0.3
   - webdriver-manager@12.1.7
   - yarn@1.19.1
-  - yo@3.1.0
+  - yo@3.1.1
+  - shrinkwrap@0.4.0
   - newman@4.5.5
   - xunit-viewer@5.1.11
+  - dockerfile_lint@0.3.3;
 
-npm_chromedriver_version: 2.37
+npm_chromedriver_version: 2.42
 #apt_chromedriver_version: "=77.0.3865.90-0ubuntu0.18.04.1"
 apt_chromedriver_version:
 
@@ -207,6 +210,10 @@ proxy_repo_enabled: false
 proxy_repo_server: "localhost"
 proxy_repo_url: "http://{{ proxy_repo_server }}:3142"
 
+docker_opts_dns_1: 8.8.8.8
+docker_opts_dns_2: 
+docker_opts_dns_search: misys.global.ad
+
 docker_py_version: "1.9.0"
 # docker_opts: >
 #    --insecure-registry localhost:4000
@@ -215,10 +222,14 @@ docker_py_version: "1.9.0"
 #  --log-level=debug
 docker_opts: >
   -H tcp://0.0.0.0:2376
-  -H unix:///var/run/docker.sock
+#  --dns {{ docker_opts_dns_1 }}
+#  --dns {{ docker_opts_dns_2 }}
   --log-level=debug
   --data-root /docker
   --label provider=jenkins
+#  --dns-search={{ docker_opts_dns_search }}
+#  --insecure-registry=nabla
+#  --userns-remap jenkins #TODO on Ubuntu only
 
 # workspace: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
 workspace: "{{ tempdir.stdout }}"
@@ -236,9 +247,6 @@ sonar_scanner_download_file: "{{ sonar_scanner_name }}.zip"
 sonar_scanner_download_url: "https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-{{ sonar_scanner_version }}.zip"
 sonar_scanner_target_dir: "{{ sonar_target_dir }}sonar-runner"
 
-python_yum_enablerepo: epel    # "no"
-python_yum_disablerepo:
-workstation_enabled: false
 jenkins_customtools_target_dir: "/workspace/slave/tools/com.cloudbees.jenkins.plugins.customtools.CustomTool"
 
 # See https://github.com/zaproxy/zaproxy/releases/download/v2.8.0/ZAP_2.8.0_Core.zip
@@ -247,6 +255,10 @@ zap_name: "ZAP_{{ zap_version }}_Core"
 zap_download_file: "{{ zap_name }}.zip"
 zap_download_url: "https://github.com/zaproxy/zaproxy/releases/download/v{{ zap_version }}/{{ zap_download_file }}"
 zap_target_dir: "{{ jenkins_customtools_target_dir }}/ZAPROXY/ZAP_{{ zap_version }}"
+
+python_yum_enablerepo: epel    # "no"
+python_yum_disablerepo:
+workstation_enabled: false
 
 docker_files_generated_directory: "./"
 docker_files_enable: false

@@ -14,6 +14,7 @@
   apt_repository: repo="ppa:webupd8team/java" state={{ util_repository_state|default('present') }} update_cache=yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04'])
   become: true
+  ignore_errors: true
   tags: jdk_setup
 
 - name: jdk | Accept license
@@ -23,6 +24,7 @@
     - echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04'])
   become: true
+  ignore_errors: true
   tags: jdk_setup
 
 - name: jdk8 | Accept Java 8 License
@@ -75,8 +77,6 @@
 #    - oracle-java8-set-default
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
 #  become: true
-
-# - import_tasks: java-legacy.yml
 
 # - name: jenkins-slave | Set jvm link to Java 7
 #   set_fact: jdk_dir={{ jvm_folder }}/{{ jdk7_archive_extracted }}
