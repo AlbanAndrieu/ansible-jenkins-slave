@@ -211,7 +211,7 @@ proxy_repo_server: "localhost"
 proxy_repo_url: "http://{{ proxy_repo_server }}:3142"
 
 docker_opts_dns_1: 8.8.8.8
-docker_opts_dns_2: 
+docker_opts_dns_2:
 docker_opts_dns_search: misys.global.ad
 
 docker_py_version: "1.9.0"
@@ -222,11 +222,11 @@ docker_py_version: "1.9.0"
 #  --log-level=debug
 docker_opts: >
   -H tcp://0.0.0.0:2376
-#  --dns {{ docker_opts_dns_1 }}
-#  --dns {{ docker_opts_dns_2 }}
   --log-level=debug
   --data-root /docker
   --label provider=jenkins
+#  --dns {{ docker_opts_dns_1 }}
+#  --dns {{ docker_opts_dns_2 }}
 #  --dns-search={{ docker_opts_dns_search }}
 #  --insecure-registry=nabla
 #  --userns-remap jenkins #TODO on Ubuntu only
