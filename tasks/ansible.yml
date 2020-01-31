@@ -1,7 +1,7 @@
 ---
 
 - name: jenkins-slave | Set python link to python version
-  set_fact: python_version=3.5
+  set_fact: python_version=3.6
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
 
 - name: jenkins-slave | Fail if using python3 with Ansible<2.3
@@ -28,31 +28,32 @@
 
 # dnf install openssl-devel
 
-- name: jenkins-slave | Install Ansible (Debian based)
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python_version }}"
-  with_items:
-    - paramiko
-    - ansible==2.8.6
-  when: not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
-  become: true
-  ignore_errors: true
-  tags:
-    - pip
-    - vm # do not install on docker image
+#- name: jenkins-slave | Install Ansible (Debian based)
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python_version }}"
+#  with_items:
+#    - paramiko==2.6.0
+#    - ansible==2.8.6
+#  when: not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+#  become: true
+#  ignore_errors: true
+#  tags:
+#    - pip
+#    - vm # do not install on docker image
 
-- name: jenkins-slave | Install Ansible add ons (Debian based)
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python_version }}"
-  with_items:
-    - ansible-cmdb==1.30
-  when: not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
-  become: true
-  tags:
-    - pip
-    - vm # do not install on docker image
+# Using pip with requirements-current-3.5.txt or requirements-current-3.6.txt instead
+#- name: jenkins-slave | Install Ansible add ons (Debian based)
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python_version }}"
+#  with_items:
+#    - ansible-cmdb==1.30
+#  when: not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+#  become: true
+#  tags:
+#    - pip
+#    - vm # do not install on docker image
 
 - name: jenkins-slave | Install ansible requirements
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
@@ -72,14 +73,18 @@
     - package
     - vm # do not install on docker image
 
-- name: jenkins-slave | Install devops tools for ansible windows
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python_version }}"
-  with_items:
-    - "pywinrm>=0.2.2"
-  when: not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
-  become: true
+# Using pip with requirements-current-3.5.txt or requirements-current-3.6.txt instead
+#- name: jenkins-slave | Install devops tools for ansible windows
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python_version }}"
+#  with_items:
+#    - "pywinrm>=0.2.2"
+#  when: not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+#  become: true
+#  tags:
+#    - pip
+#    - vm # do not install on docker image
 
 - name: jenkins-slave | Install devops tools for ansible accelerate mode
   pip:
@@ -89,6 +94,9 @@
     - python-keyczar
   become: true
   ignore_errors: true
+  tags:
+    - pip
+    - vm # do not install on docker image
 
 # sudo apt-get install krb5-kdc krb5-admin-server
 

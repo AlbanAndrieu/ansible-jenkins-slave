@@ -5,11 +5,11 @@
 #    - venv
 #    - python2
 
-- import_tasks: python35.yml
-  when: not ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04', '19.04']) and python_enabled
-  tags:
-    - venv
-    - python35
+#- import_tasks: python35.yml
+#  when: not ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04', '19.04']) and python_enabled
+#  tags:
+#    - venv
+#    - python35
 
 # TODO once fixed https://bugs.launchpad.net/ubuntu/+source/python3.6/+bug/1685596
 - import_tasks: python36.yml

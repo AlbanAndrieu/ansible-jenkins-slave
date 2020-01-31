@@ -4,8 +4,6 @@
 # yum install epel-release
 # yum install -y python-pip
 
-# pip install --upgrade pip
-
 - name: python | Install wget
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   with_items:
@@ -172,6 +170,13 @@
   become: true
   ignore_errors: true
 
+# pip install --upgrade pip
+- name: python | Upgrade pip
+  command: "pip{{ python2_version }} install --upgrade pip"
+  changed_when: false
+  become: true
+  ignore_errors: true
+
 - name: python | Install dependencies for python 2 requirements
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   become: true
@@ -180,122 +185,121 @@
     - cups-devel
   ignore_errors: true
 
-- name: python | Install python check tools
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python2_version }}"
-  with_items:
-    - pylint
-    - flake8
-    - autopep8           # autopep8 py_file --in-place
-    - pre-commit         # See http://pre-commit.com/
-  become: true
-  when: ansible_python_version | version_compare('2.7', '>=')
+#- name: python | Install python check tools
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#  with_items:
+#    - pylint
+#    - flake8
+#    - autopep8           # autopep8 py_file --in-place
+#    - pre-commit         # See http://pre-commit.com/
+#  become: true
+#  when: ansible_python_version | version_compare('2.7', '>=')
 
-- name: python | Install aws tools
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python2_version }}"
-    state: forcereinstall
-  with_items:
-    - awscli
-  ignore_errors: true
-  when: ansible_python_version | version_compare('2.7', '>=')
-  become: true
+#- name: python | Install aws tools
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#    state: forcereinstall
+#  with_items:
+#    - awscli
+#  ignore_errors: true
+#  when: ansible_python_version | version_compare('2.7', '>=')
+#  become: true
 
-- name: python | Install devops tools for jobs-duration-charts-admin
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python2_version }}"
-  with_items:
-    - pygal
-# - urllib3[secure]
-    - urllib3
-    - certifi
-  when: ansible_python_version | version_compare('2.7', '>=')
-  become: true
+#- name: python | Install devops tools for jobs-duration-charts-admin
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#  with_items:
+#    - pygal
+#    - urllib3
+#    - certifi
+#  when: ansible_python_version | version_compare('2.7', '>=')
+#  become: true
 
-- name: python | Install devops tools
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python2_version }}"
-  with_items:
-    - gprof2dot
-    - termcolor
-    - ansicolors
-    - colorama
-  when: ansible_python_version | version_compare('2.7', '>=')
-  become: true
+#- name: python | Install devops tools
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#  with_items:
+#    - gprof2dot
+#    - termcolor
+#    - ansicolors
+#    - colorama
+#  when: ansible_python_version | version_compare('2.7', '>=')
+#  become: true
 
-- name: python | Install devops tools for release notes
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python2_version }}"
-  with_items:
-    - numpy
-    - pandas
-    - stashy
-    - jira                                # See https://pypi.python.org/pypi/jira/
-    - openpyxl
-    - "docopt==0.6.2"
-  when: ansible_python_version | version_compare('2.7', '>=')
-  become: true
-  ignore_errors: true
+#- name: python | Install devops tools for release notes
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#  with_items:
+#    - numpy
+#    - pandas
+#    - stashy
+#    - jira                                # See https://pypi.python.org/pypi/jira/
+#    - openpyxl
+#    - "docopt==0.6.2"
+#  when: ansible_python_version | version_compare('2.7', '>=')
+#  become: true
+#  ignore_errors: true
 
-- name: python | Install devops tools for ansible windows
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python2_version }}"
-  with_items:
-    - "pywinrm>=0.2.2"
-  when: ansible_python_version | version_compare('2.7', '>=') and not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
-  become: true
+#- name: python | Install devops tools for ansible windows
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#  with_items:
+#    - "pywinrm>=0.2.2"
+#  when: ansible_python_version | version_compare('2.7', '>=') and not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+#  become: true
 
-- name: python | Install devops tools for ansible accelerate mode
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python2_version }}"
-  with_items:
-    - python-keyczar
-  when: ansible_python_version | version_compare('2.7', '>=')
-  become: true
-  ignore_errors: true
+#- name: python | Install devops tools for ansible accelerate mode
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#  with_items:
+#    - python-keyczar
+#  when: ansible_python_version | version_compare('2.7', '>=')
+#  become: true
+#  ignore_errors: true
 
 # sudo apt-get install krb5-kdc krb5-admin-server
 
-- name: python | Install devops tools for ansible kerberos
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python2_version }}"
-  with_items:
-    - python-dev
-    - libkrb5-dev
-    - krb5-user
-  when: ansible_python_version | version_compare('2.7', '>=') and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
-  become: true
-  ignore_errors: true
+#- name: python | Install devops tools for ansible kerberos
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#  with_items:
+#    - python-dev
+#    - libkrb5-dev
+#    - krb5-user
+#  when: ansible_python_version | version_compare('2.7', '>=') and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
+#  become: true
+#  ignore_errors: true
 
-- name: python | Install devops tools for ansible
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python2_version }}"
-  with_items:
-    - ansible-cmdb
-    - ansible-lint
-  when: ansible_python_version | version_compare('2.7', '>=')
-  become: true
-  ignore_errors: true
+#- name: python | Install devops tools for ansible
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#  with_items:
+#    - ansible-cmdb
+#    - ansible-lint
+#  when: ansible_python_version | version_compare('2.7', '>=')
+#  become: true
+#  ignore_errors: true
 
-- name: python | Install zabbix tools
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python2_version }}"
-  with_items:
-    - zabbix-api
-    - zabbix-proxy-mysql
-  when: ansible_python_version | version_compare('2.7', '>=')
-  become: true
-  ignore_errors: true
+#- name: python | Install zabbix tools
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#  with_items:
+#    - zabbix-api
+#    - zabbix-proxy-mysql
+#  when: ansible_python_version | version_compare('2.7', '>=')
+#  become: true
+#  ignore_errors: true
 
 - name: python | Install MySQL requirement for sonar
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
@@ -305,26 +309,37 @@
     - libmysqlclient-dev
 
 # WARNING need gcc/cpp, must be done after gcc.yml
-- name: python | Install MySQL for sonar
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python2_version }}"
-  with_items:
-    - MySQL-python
-  when: ansible_python_version | version_compare('2.7', '>=')
-  become: true
-  ignore_errors: true
+#- name: python | Install MySQL for sonar
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#  with_items:
+#    - MySQL-python
+#  when: ansible_python_version | version_compare('2.7', '>=')
+#  become: true
+#  ignore_errors: true
+
+#- name: python | Install dependencies for pycurl
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#  with_items:
+#    - libcurl4-openssl-dev
+#    - libssl-dev
+#  when: ansible_python_version | version_compare('2.7', '>=')
+#  become: true
+#  ignore_errors: true
 
 # WARNING need gcc/cpp, must be done after gcc.yml
-- name: python | Install ODBC for FreeTDS
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python2_version }}"
-  with_items:
-    - pyodbc
-  when: ansible_python_version | version_compare('2.7', '>=')
-  become: true
-  ignore_errors: true
+#- name: python | Install ODBC for FreeTDS
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#  with_items:
+#    - pyodbc
+#  when: ansible_python_version | version_compare('2.7', '>=')
+#  become: true
+#  ignore_errors: true
 
 # Issue wiht out of disk space on Ubuntu 16.04
 # unity7.log X11 error: BadWindow (invalid Window parameter) Error code: 3, request code: f, minor code: 0
@@ -337,21 +352,21 @@
 #
 # rm ~/.cache/upstart/unity7.log
 
-- name: python | Install devops tools for cpp
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python2_version }}"
-  with_items:
-    - "conan==1.5.1"
-  when: ansible_python_version | version_compare('2.7', '>=')
-  become: true
-  ignore_errors: true
-
-- name: python | Install tox for testing python
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python2_version }}"
-  with_items:
-    - tox
-  when: ansible_python_version | version_compare('2.7', '>=') and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04'])
-  become: true
+#- name: python | Install devops tools for cpp
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#  with_items:
+#    - "conan==1.5.1"
+#  when: ansible_python_version | version_compare('2.7', '>=')
+#  become: true
+#  ignore_errors: true
+#
+#- name: python | Install tox for testing python
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python2_version }}"
+#  with_items:
+#    - tox
+#  when: ansible_python_version | version_compare('2.7', '>=') and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04'])
+#  become: true

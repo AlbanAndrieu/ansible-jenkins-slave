@@ -6,12 +6,7 @@
     - curl
     - expat
     - libexpat1-dev
-    - gettext
     - openssl
-    - perl
-    - libperl-dev
-    - asciidoc
-    - docbook2x
     - make
     - autoconf
   become: true

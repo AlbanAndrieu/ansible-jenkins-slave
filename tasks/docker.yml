@@ -49,26 +49,27 @@
   ignore_errors: '{{ ansible_check_mode }}'
   become: true
 
-- name: docker | Install Docker compose tools
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python_version }}"
-    state: forcereinstall
-  with_items:
-    - docker-compose==1.24.1
-  become: true
-  ignore_errors: true      # For Ubuntu 18.04 Cannot uninstall 'PyYAML'
-
-- name: docker | docker-compose check 2
-  command: "docker-compose --version"
-  register: docker_compose_result
-  changed_when: false
-  become: true
-
-- name: docker | Fail the play if the previous command did not succeed
-  fail: msg="The command docker-compose --version failed"
-  when: "'FAILED' in docker_compose_result.stderr"
-  ignore_errors: '{{ ansible_check_mode }}'
+# Using pip with requirements-current-3.5.txt or requirements-current-3.6.txt instead
+#- name: docker | Install Docker compose tools
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python_version }}"
+#    state: forcereinstall
+#  with_items:
+#    - docker-compose==1.25.0
+#  become: true
+#  ignore_errors: true      # For Ubuntu 18.04 Cannot uninstall 'PyYAML'
+#
+#- name: docker | docker-compose check 2
+#  command: "docker-compose --version"
+#  register: docker_compose_result
+#  changed_when: false
+#  become: true
+#
+#- name: docker | Fail the play if the previous command did not succeed
+#  fail: msg="The command docker-compose --version failed"
+#  when: "'FAILED' in docker_compose_result.stderr"
+#  ignore_errors: '{{ ansible_check_mode }}'
 
 - name: docker | Create a docker group
   group:
@@ -179,6 +180,7 @@
   tags:
     - docker
     - vm
+
 # - name: Set docker daemon options (systemd)
 #   copy:
 #     content: |
@@ -195,19 +197,21 @@
 #    - restart
 #    - notify
 #    - docker
-#
-# - name: Ensure docker daemon options used (systemd)
-#   lineinfile:
-#     dest: /lib/systemd/system/docker.service
-#     regexp: "^ExecStart=/usr/bin/dockerd"
-#     line: ExecStart={{ docker_base_opts }} {{ docker_opts.rstrip('\n') }}
-#   notify:
-#     - restart docker
-#   when: docker_opts | length > 0 and ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') or (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>=')))
-#  tags:
-#    - restart
-#    - notify
-#    - docker
+
+- name: Ensure docker daemon options used (systemd)
+  lineinfile:
+    dest: /lib/systemd/system/docker.service
+    regexp: "^ExecStart=/usr/bin/dockerd"
+    line: ExecStart={{ docker_base_opts }} {{ docker_opts.rstrip('\n') }}
+  notify:
+    - restart docker
+  when: docker_opts | length > 0 and
+       (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>='))
+#       ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') or (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>=')))
+  tags:
+    - restart
+    - notify
+    - docker
 
 # grubby --args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
 - name: docker | Enable "user" namespace
@@ -235,6 +239,24 @@
   template: src=config.json.j2 dest={{ docker_directory }}/config.json owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
   become: true
   changed_when: false
+
+- name: docker | Copy the UID for userns-remap
+  template: src=subuid.j2 dest=/etc/subuid owner=root group=root mode=0644
+  become: true
+  changed_when: false
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(19.04, '>=')
+  tags:
+    - restart
+    - docker
+
+- name: docker | Copy the GID for userns-remap
+  template: src=subgid.j2 dest=/etc/subgid owner=root group=root mode=0644
+  become: true
+  changed_when: false
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(19.04, '>=')
+  tags:
+    - restart
+    - docker
 
 - import_tasks: tmp.yml
 
