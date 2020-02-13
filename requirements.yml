@@ -413,16 +413,6 @@
   scm: 'git'
   version: 'master'
 
-- src: 'https://github.com/AlbanAndrieu/ansible-lib'
-  name: 'silpion.lib'
-  scm: 'git'
-  version: 'master'
-
-- src: 'https://github.com/AlbanAndrieu/ansible-util'
-  name: 'silpion.util'
-  scm: 'git'
-  version: 'master'
-
 - src: 'https://github.com/AlbanAndrieu/ansible-sonar'
   name: 'sonar'
   scm: 'git'
