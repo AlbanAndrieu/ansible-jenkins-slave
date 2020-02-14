@@ -118,6 +118,7 @@ apt_chromedriver_version:
 brew_enabled: false
 brew_packages:
   - 'randomize-lines' # for git-radar
+  - 'michaeldfallen/formula/git-radar'
 #  - 'autoconf'
 #  - 'bash-completion'
 #  - 'boot2docker'
@@ -244,7 +245,7 @@ sonar_build_wrapper_target_dir: "{{ sonar_target_dir }}sonar-build-wrapper"
 sonar_scanner_version: "4.2.0.1873"
 sonar_scanner_name: "sonar-scanner-{{ sonar_scanner_version }}"
 sonar_scanner_download_file: "{{ sonar_scanner_name }}.zip"
-sonar_scanner_download_url: "https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-{{ sonar_scanner_version }}.zip"
+sonar_scanner_download_url: "https://github.com/SonarSource/sonar-scanner-cli/archive/{{ sonar_scanner_version }}.zip"
 sonar_scanner_target_dir: "{{ sonar_target_dir }}sonar-runner"
 
 jenkins_customtools_target_dir: "/workspace/slave/tools/com.cloudbees.jenkins.plugins.customtools.CustomTool"
