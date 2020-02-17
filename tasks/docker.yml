@@ -1,7 +1,7 @@
 ---
 
 - name: docker | Set python link to python version
-  set_fact: python_version=3.5
+  set_fact: python_version=3.7
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
 
 - name: docker | Install python-docker

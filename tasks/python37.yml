@@ -61,17 +61,17 @@
     url: https://bootstrap.pypa.io/get-pip.py
     dest: /tmp/get-pip.py
   register: curl_result
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04', '17.04'])
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: true
 
 - name: python3 | Install missing pip{{ python3_version }} (2) # noqa 503
   command: "python{{ python3_version }} /tmp/get-pip.py"
-  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04', '17.04'])
+  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   changed_when: false
   become: true
 
 - debug: msg="curl_result - {{ curl_result.rc }} - {{ curl_result.stdout }}"
-  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04', '17.04']) and not ansible_check_mode
+  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and not ansible_check_mode
   ignore_errors: true
 
 # - debug: msg="{{ curl_result.stdout }}"
@@ -80,14 +80,7 @@
   shell: (pip -V && pip3.7 -V) | uniq
   when: curl_result.changed
   become: true
-  ignore_errors: true
-
-# - name: python3 | Install devops tools requirements
-#   pip: name:{{ item }}
-#        executable:pip{{ python3_version }}
-#   with_items:
-#     - "pywinrm>=0.2.2"
-#   become: true
+#  ignore_errors: true
 
 - name: python3 | Upgrade setuptools
   command: "pip{{ python3_version }} install --upgrade setuptools"
@@ -98,6 +91,13 @@
 # python3 -m pip install --upgrade pip==20.0.2
 # deactivate
 # sudo pip3 install --upgrade pip
+
+- name: python | Upgrade pip3
+  command: "pip3 install --upgrade pip==20.0.2"
+  changed_when: false
+  become: true
+  ignore_errors: true
+
 - name: python | Upgrade pip
   command: "pip{{ python3_version }} install --upgrade pip==20.0.2"
   changed_when: false
@@ -138,26 +138,26 @@
     - libxslt-dev
     - python3-lxml
 
-- name: python3 | Uninstall dependencies for python 3 requirements
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python3_version }}"
-    state: absent
-  when: not ansible_check_mode
-  with_items:
-    - libxml2-python
-  ignore_errors: '{{ ansible_check_mode }}'
-  become: true
-
-- name: python3 | Install missing for python 3 (for dpkg)
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python3_version }}"
-  when: not ansible_check_mode
-  with_items:
-    - chardet
-  ignore_errors: '{{ ansible_check_mode }}'
-  become: true
+#- name: python3 | Uninstall dependencies for python 3 requirements
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python3_version }}"
+#    state: absent
+#  when: not ansible_check_mode
+#  with_items:
+#    - libxml2-python
+#  ignore_errors: '{{ ansible_check_mode }}'
+#  become: true
+#
+#- name: python3 | Install missing for python 3 (for dpkg)
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python3_version }}"
+#  when: not ansible_check_mode
+#  with_items:
+#    - chardet
+#  ignore_errors: '{{ ansible_check_mode }}'
+#  become: true
 
 - name: python3 | Install C++ librairies database (Debian based) for pyodbc
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
