@@ -127,14 +127,14 @@
 
 - name: docker | Remove docker when it is not a symbolic link
   file: path=/var/lib/docker state=absent
-  when: not docker.stat.islnk
+  when: docker.stat.islnk is defined and not docker.stat.islnk
   become: true
   ignore_errors: true
   tags: vm
 
 - name: docker | Create link to docker filesystem
   file: path=/var/lib/docker src=/docker state=link force=yes
-  when: not docker.stat.islnk
+  when: docker.stat.islnk is not defined not docker.stat.islnk
   notify:
     - restart docker
   become: true
@@ -162,7 +162,7 @@
     mode: 0644
   notify:
     - restart docker
-  when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '<'))
+  when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '<'))
   tags:
     - restart
     - notify
@@ -176,7 +176,7 @@
     owner: root
     group: root
     mode: 0755
-  when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>='))
+  when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '>='))
   tags:
     - docker
     - vm
@@ -192,7 +192,7 @@
 #     mode: 0644
 #   notify:
 #     - restart docker
-#   when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>='))
+#   when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '>='))
 #  tags:
 #    - restart
 #    - notify
@@ -206,8 +206,8 @@
   notify:
     - restart docker
   when: docker_opts | length > 0 and
-       (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>='))
-#       ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') or (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(15.04, '>=')))
+       (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '>='))
+#       ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') or (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '>=')))
   tags:
     - restart
     - notify
@@ -244,7 +244,7 @@
   template: src=subuid.j2 dest=/etc/subuid owner=root group=root mode=0644
   become: true
   changed_when: false
-  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(19.04, '>=')
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(19.04, '>=')
   tags:
     - restart
     - docker
@@ -253,7 +253,7 @@
   template: src=subgid.j2 dest=/etc/subgid owner=root group=root mode=0644
   become: true
   changed_when: false
-  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(19.04, '>=')
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(19.04, '>=')
   tags:
     - restart
     - docker
@@ -262,7 +262,7 @@
 
 - name: docker | docker container-structure-test
   shell: "curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64 && chmod +x container-structure-test-linux-amd64 && sudo mv container-structure-test-linux-amd64 /usr/local/bin/container-structure-test" # noqa 303
-  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version|version_compare(16.04, '>=')
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(16.04, '>=')
   become: true
   ignore_errors: true
 
