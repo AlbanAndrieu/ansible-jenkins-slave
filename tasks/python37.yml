@@ -51,36 +51,33 @@
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
   with_items:
-    - python3.7-dev
     - python3.7
+    - python3.7-dev
     - python3.7-dbg
     - python3.7-gdbm
-#    - idle-python3.7
 
 - name: python3 | Install missing pip{{ python3_version }} (1)
   get_url:
     url: https://bootstrap.pypa.io/get-pip.py
     dest: /tmp/get-pip.py
   register: curl_result
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04', '17.04'])
   become: true
 
 - name: python3 | Install missing pip{{ python3_version }} (2) # noqa 503
   command: "python{{ python3_version }} /tmp/get-pip.py"
-  when: curl_result|changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04', '17.04'])
+  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04', '17.04'])
   changed_when: false
   become: true
 
 - debug: msg="curl_result - {{ curl_result.rc }} - {{ curl_result.stdout }}"
-  when: not ansible_check_mode
+  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04', '17.04']) and not ansible_check_mode
   ignore_errors: true
-
-# sudo apt install python3.7-venv
 
 # - debug: msg="{{ curl_result.stdout }}"
 
 - name: python3 | Run pip check # noqa 503
-  shell: (pip - && pip3.7 -V) | uniq
+  shell: (pip -V && pip3.7 -V) | uniq
   when: curl_result.changed
   become: true
   ignore_errors: true
@@ -107,27 +104,23 @@
   become: true
   ignore_errors: true
 
-- name: python3 | Install virtualenv via pip
-  pip:
-    name: virtualenv
-    executable: pip{{ python3_version }}
-
-- name: python3 | Gather current pip requirement
-  command: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
-  when: not( (python3_version is undefined) or (python3_version is none) )
-        and (python3_version | length > 0)
-  changed_when: false
-  become: true
-  ignore_errors: true
-
-- name: python3 | Install virtualenv via pip
-  pip:
-    name: virtualenv
-    executable: pip{{ python3_version }}
-
-- name: python3 | Copy the requirements configuration file for python
-  copy: src=python/requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-current-{{ python3_version }}.txt backup=yes
-  become: true
+#- name: python3 | Install virtualenv via pip
+#  pip:
+#    name: virtualenv
+#    executable: pip{{ python3_version }}
+#  become: true
+#  
+#- name: python3 | Gather current pip requirement
+#  command: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
+#  when: not( (python3_version is undefined) or (python3_version is none) )
+#        and (python3_version | length > 0)
+#  changed_when: false
+#  become: true
+#  ignore_errors: true
+#
+#- name: python3 | Copy the requirements configuration file for python
+#  copy: src=python/requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-current-{{ python3_version }}.txt backup=yes
+#  become: true
 
 - name: python3 | Install dependencies for python 3 requirements
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
@@ -194,3 +187,4 @@
 #   command: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
 #   changed_when: false
 #   become: true
+
