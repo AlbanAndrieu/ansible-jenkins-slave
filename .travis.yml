@@ -22,7 +22,9 @@ env:
 #  - ANSIBLE_VERSION=latest
     - ANSIBLE_VERSION=2.7.14
 sudo: required
-dist: trusty
+#dist: trusty
+dist: bionic
+
 branches:
   only:
   - master
@@ -70,7 +72,7 @@ script:
   # First run
   # Run the role/playbook with ansible-playbook.
 #  - travis_wait 30
-  - ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local -vvvv -e "python_versions=[2.7, 3.5]" -e "docker_gid=${DOCKER_GID}" -e "jenkins_group=docker" -e "jenkins_id=${JENKINS_UID}" -e "python_enabled=false" --skip-tags restart
+  - ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local -vvvv -e "python_versions=[2.7, 3.5]" -e "jenkins_group=docker" -e "docker_gid=${DOCKER_GID}"-e "jenkins_id=${JENKINS_UID}" -e "python_enabled=false" --skip-tags restart
 
   # Run the role/playbook again, checking to make sure it's idempotent.
 #  - >

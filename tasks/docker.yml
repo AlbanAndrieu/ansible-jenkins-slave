@@ -264,7 +264,7 @@
   shell: "curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64 && chmod +x container-structure-test-linux-amd64 && sudo mv container-structure-test-linux-amd64 /usr/local/bin/container-structure-test" # noqa 303
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(16.04, '>=')
   become: true
-  ignore_errors: true
+#  ignore_errors: true
 
 - name: Get docker container-structure-test version # noqa 301
   command: "container-structure-test version"
