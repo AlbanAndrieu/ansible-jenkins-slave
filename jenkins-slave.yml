@@ -19,7 +19,7 @@
     - name: group hosts by distribution
       group_by: key="{{ ansible_distribution }}-{{ ansible_distribution_version }}"
 
-- hosts: RedHat-7*:RedHat-6*:CentOS-7*:CentOS-6*:Ubuntu-18*:Ubuntu-17*:Ubuntu-16*:Ubuntu-15*:Ubuntu-13*:Ubuntu-14*:Ubuntu-12*
+- hosts: RedHat-7*:RedHat-6*:CentOS-7*:CentOS-6*:Ubuntu-19*:Ubuntu-18*:Ubuntu-17*:Ubuntu-16*:Ubuntu-15*:Ubuntu-13*:Ubuntu-14*:Ubuntu-12*
   gather_facts: false
   tasks:
     - name: group hosts for supported distributions
@@ -32,18 +32,11 @@
       fail: msg="{{ ansible_distribution }} {{ ansible_distribution_version }}
                  is not a supported OS for a Tower installation.  Supported
                  OSes include Red Hat Enterprise Linux 6/7, CentOS 6/7, or
-                 Ubuntu 12.04/12.04/14.04/16.04/17.04."
+                 Ubuntu 12.04/12.04/14.04/16.04/17.04/18.04/17.09."
     - debug: msg="Version {{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_architecture }}"
 
-#- hosts: localhost
-#
-#  tasks:
-#    - name: Install Ansible-Galaxy dependencies
-#      shell: ansible-galaxy install -r requirements.yml -p ./roles/
-#      ignore_errors: true
-
 - name: Bootstrap python onto server
-  hosts: Ubuntu-18*:Ubuntu-17*:Ubuntu-16*:Ubuntu-14*:Ubuntu-13*:Ubuntu-12*
+  hosts: Ubuntu-19*:Ubuntu-18*:Ubuntu-17*:Ubuntu-16*:Ubuntu-14*:Ubuntu-13*:Ubuntu-12*
 #  become: true
 
   pre_tasks:
