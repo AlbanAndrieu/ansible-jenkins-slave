@@ -10,10 +10,14 @@
 
 - name: jenkins-slave | Install C++ librairies openssl for building 64bits (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','14.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04', '18.04']
   with_items:
     - libssl1.0.0
   become: true
+
+#For new Ubuntu such as 19 install it by hand if really needed
+#wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu6_amd64.deb
+#sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu6_amd64.deb
 
 - name: jenkins-slave | Install C++ librairies openssl (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
@@ -196,13 +200,21 @@
 
 - name: jenkins-slave | Install C++ librairies curl (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['16.04', '18.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04', '14.04']
   # Do not install libcurl3 on Ubuntu 18.04 it is uninstalling curl libcurl4 libcurl4-openssl-dev
   with_items:
     - libcurl3
     - zlib1g
   become: true
 
+- name: jenkins-slave | Install C++ librairies curl (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
+  with_items:
+    - libcurl4
+    - zlib1g
+  become: true
+  
 - name: jenkins-slave | Install C++ librairies curl (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
@@ -468,7 +480,7 @@
 
 - name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04'] #not in ['12.04']
   with_items:
 # libstdc++6
     - libstdc++-4.8-dev
@@ -480,12 +492,34 @@
 # cross compatibility for i386 i686
 - name: jenkins-slave | Install C++ librairies for building cross compatibility 32bits (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version ['16.04'] # not in ['12.04', '14.04']
   with_items:
 #   - libstdc++5
 # libstdc++6
     - libstdc++-5-dev
     - libstdc++-5-dev:i386
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version ['18.04', '18.10']
+  with_items:
+    - libstdc++-5-dev  
+    - libstdc++-6-dev      
+    - libstdc++-7-dev
+#    - libstdc++-8-dev:i386
+  become: true
+  ignore_errors: true
+  
+- name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version ['19.04', '19.10']
+  with_items:
+    - libstdc++-7-dev  
+    - libstdc++-8-dev    
+    - libstdc++-9-dev
+#    - libstdc++-9-dev:i386
   become: true
   ignore_errors: true
 
@@ -519,7 +553,7 @@
 
 - name: jenkins-slave | Install C++ librairies for building 32bits RMDSExtractor (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04'] # not in ['12.04']
   with_items:
 # needed for 32 bits cross compilation
     - g++-4.8-multilib
@@ -542,7 +576,7 @@
 # TODO export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lib32:/usr/lib32:/usr/lib/i386-linux-gnu
 - name: jenkins-slave | Install C++ librairies for building 32bits for cross compatibility (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04'] # not in ['12.04', '14.04']
   with_items:
 # needed for 32 bits cross compilation
 #   - g++-multilib
@@ -760,10 +794,3 @@
     - libcppunit-dev
   become: true
   ignore_errors: true
-
-- name: jenkins-slave | Install cpp tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
-  tags: package
-  with_items:
-    - cppcheck
-  become: true

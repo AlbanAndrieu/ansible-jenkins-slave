@@ -13,7 +13,7 @@
   with_items:
     - libssl-dev
     - python-configargparse
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['16.04', '18.04'])
   become: true
   ignore_errors: true
 
@@ -104,7 +104,6 @@
     name: "{{ item }}"
     executable: "pip{{ python_version }}"
   with_items:
-    - python-dev
     - libkrb5-dev
     - krb5-user
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
