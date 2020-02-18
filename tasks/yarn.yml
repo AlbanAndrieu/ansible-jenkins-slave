@@ -13,12 +13,12 @@
 #   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 # - name: jenkins-slave | Addkey yarn
-#   apt_key: url=https://dl.yarnpkg.com/debian/pubkey.gpg  state={{ util_pkg_state|default('present') }}
+#   apt_key: url=https://dl.yarnpkg.com/debian/pubkey.gpg  state={{ util_pkg_state | default('present') }}
 #   become: true
 #   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 #
 # - name: jenkins-slave | Install yarn (Debian based)
-#   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
 #   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and nodejs_enabled
 #   with_items:
 #     - yarn

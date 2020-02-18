@@ -1,7 +1,7 @@
 ---
 
 - name: brew | Install dependencies for brew requirement
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
     - curl
     - file
@@ -11,7 +11,7 @@
 - name: brew | Install apt dependencies for brew requirement
   apt:
     pkg: ['build-essential', 'python-setuptools', 'ruby']
-    state: "{{ util_pkg_state|default('present') }}"
+    state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: true
@@ -19,7 +19,7 @@
 - name: brew | Install yum dependencies for brew requirement
   yum:
     pkg: ['irb', 'python-setuptools', 'ruby']
-    state: "{{ util_pkg_state|default('present') }}"
+    state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   become: true

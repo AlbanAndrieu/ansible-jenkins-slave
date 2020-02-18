@@ -5,7 +5,7 @@
 # yum install -y python-pip
 
 - name: python | Install wget
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
     - wget
   become: true
@@ -25,7 +25,7 @@
   ignore_errors: true
 
 - name: python | Install python 2.7 requirement
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }} enablerepo=centos-sclo-rh"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }} enablerepo=centos-sclo-rh"
   with_items:
     - scl-utils
     - python27
@@ -34,7 +34,7 @@
 
 # Below python27 should already be installed by python.yml playbook
 - name: python | Install python 2.7 requirement
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
 #  enablerepo={{python_yum_enablerepo or None}} disablerepo={{python_yum_disablerepo or None}}"
   with_items:
     - scl-utils
@@ -48,7 +48,7 @@
 
 # For python2.7 Python.h: No such file or directory
 - name: python | Install python 2 requirement
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   with_items:
     - python2.7-dev
     - python2.7-dbg
@@ -56,14 +56,14 @@
   become: true
 
 - name: python | Install python 2 requirement
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   with_items:
     - python2.7-devel
   when: ((ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
   become: true
 
 - name: python | Ensure python-apt is installed
-  action: "{{ ansible_pkg_mgr }} name=python-apt update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name=python-apt update_cache=yes state={{ util_pkg_state | default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: true
 
@@ -72,14 +72,14 @@
 
 # python27-pip not available on CentOS 7 but needed for RedHat 6
 - name: python | Install python 2.7 pip requirement
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   with_items:
     - python27-pip
   when: ((ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
   become: true
 
 - name: python | Install python 2.7 pip requirement
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }} enablerepo={{ python_yum_enablerepo or None }} disablerepo={{ python_yum_disablerepo or None }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }} enablerepo={{ python_yum_enablerepo or None }} disablerepo={{ python_yum_disablerepo or None }}"
   with_items:
     - python2-pip
   when: (ansible_distribution == 'CentOS')
@@ -156,7 +156,7 @@
   ignore_errors: true
 
 - name: python | Install virtualenv
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04']) # noqa 204
   with_items:
     - python-virtualenv
@@ -178,7 +178,7 @@
   ignore_errors: true
 
 - name: python | Install dependencies for python 2 requirements
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   become: true
   when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') #and ansible_distribution_major_version == '6')
   with_items:
@@ -302,7 +302,7 @@
 #  ignore_errors: true
 
 - name: python | Install MySQL requirement for sonar
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:

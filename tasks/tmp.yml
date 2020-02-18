@@ -4,13 +4,13 @@
 # http://www.thegeekstuff.com/2013/10/tmpreaper-examples/
 
 - name: jenkins-slave | Install tmpwatch package
-  action: "{{ ansible_pkg_mgr }} name='tmpwatch' state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name='tmpwatch' state={{ util_pkg_state | default('present') }}"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   become: true
   ignore_errors: true
 
 - name: jenkins-slave | Install tmpreaper package
-  action: "{{ ansible_pkg_mgr }} name='tmpreaper' state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name='tmpreaper' state={{ util_pkg_state | default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: true
   ignore_errors: true

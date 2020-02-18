@@ -14,7 +14,7 @@
 - name: cpp | Install C++ compiler (Debian based)
   apt:
     pkg: ['gcc-4.6', 'g++-4.6']
-    state: "{{ util_pkg_state|default('present') }}"
+    state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("12.04")
@@ -22,7 +22,7 @@
 - name: cpp | Install C++ compiler (Debian based)
   apt:
     pkg: ['gcc-4.8', 'g++-4.8']
-    state: "{{ util_pkg_state|default('present') }}"
+    state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04")
@@ -30,7 +30,7 @@
 - name: cpp | Install C++ compiler (Debian based)
   apt:
     pkg: ['gcc-5', 'g++-5']
-    state: "{{ util_pkg_state|default('present') }}"
+    state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04")
@@ -38,7 +38,7 @@
 - name: cpp | Install C++ compiler (Debian based)
   apt:
     name: ['gcc-6', 'g++-6']
-    state: "{{ util_pkg_state|default('present') }}"
+    state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04", "16.04")
@@ -47,7 +47,7 @@
 - name: cpp | Install C++ compiler (CentOS based)
   yum:
     name: ['gcc', 'gcc-c++']
-    state: "{{ util_pkg_state|default('present') }}"
+    state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
   when: (ansible_distribution == 'CentOS')
@@ -61,7 +61,7 @@
 - name: cpp | Install C++ compiler (RedHat based)
   yum:
     name: ['gcc-c++']
-    state: "{{ util_pkg_state|default('present') }}"
+    state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
   when: (ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
@@ -101,7 +101,7 @@
 - name: jenkins-slave | Install clang scan-build (CentOS and RedHat based)
   yum:
     pkg: ['clang', 'clang-analyzer']
-    state: "{{ util_pkg_state|default('present') }}"
+    state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
@@ -110,7 +110,7 @@
 - name: jenkins-slave | Install clang-format (CentOS and RedHat based)
   yum:
     name: ['llvm-toolset-7-git-clang-format']
-    state: "{{ util_pkg_state|default('present') }}"
+    state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
@@ -122,7 +122,7 @@
 - name: cpp | Install C++ clang
   apt:
     pkg: ['clang-format', 'clang-tools', 'clang-tidy']
-    state: "{{ util_pkg_state|default('present') }}"
+    state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   tags: cpp
@@ -132,7 +132,7 @@
 - name: cpp | Install C++ clang llvm dev
   yum:
     pkg: ['libclang-dev', 'llvm', 'llvm-3.8-dev']
-    state: "{{ util_pkg_state|default('present') }}"
+    state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
 # - clang-devel
   tags: cpp
@@ -141,7 +141,7 @@
   ignore_errors: true
 
 - name: cpp | Install C++ quality tool
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=true"
   with_items:
     - colormake
     - valgrind
@@ -154,7 +154,7 @@
   ignore_errors: true
 
 - name: cpp | Install C++ quality tool
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=true"
   with_items:
     - findbugs
     - flawfinder
@@ -165,7 +165,7 @@
   ignore_errors: true
 
 - name: cpp | Install C++ quality tool
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=true"
   with_items:
     - cppcheck
     - gperf
@@ -175,7 +175,7 @@
   ignore_errors: true
 
 - name: cpp | Install C++ quality tool rats
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=true"
   with_items:
     - rats
   tags: cpp
@@ -184,7 +184,7 @@
   ignore_errors: true
 
 # - name: cpp | Install dragonegg for gcc
-#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=true"
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=true"
 #   with_items:
 #    - dragonegg
 #   tags: cpp

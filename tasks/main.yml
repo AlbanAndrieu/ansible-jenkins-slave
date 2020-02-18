@@ -31,11 +31,11 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
 
 - name: Install ant package
-  action: "{{ ansible_pkg_mgr }} name='ant' state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name='ant' state={{ util_pkg_state | default('present') }} update_cache=yes"
   become: true
 
 - name: Install zip package
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
     - zip
     - unzip
@@ -48,7 +48,7 @@
 - import_tasks: quality.yml
 
 - name: jenkins-slave | Install flex
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   tags: package
   with_items:
     - flex
@@ -58,7 +58,7 @@
   become: true
 
 - name: jenkins-slave | Install tools needed by grunt-zaproxy html report
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:
 # Needed for having /usr/bin/xml2-config in the PATH
@@ -67,7 +67,7 @@
   become: true
 
 - name: jenkins-slave | Install tools needed by grunt-zaproxy html report
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
   with_items:
     - libxml2       # Needed for having /usr/bin/xml2-config in the PATH
@@ -100,9 +100,9 @@
 
 - import_tasks: cpp.yml
 
-- import_tasks: objc.yml
-  tags:
-    - objc
+#- import_tasks: objc.yml
+#  tags:
+#    - objc
 
 #- import_tasks: scons.yml
 
@@ -249,7 +249,7 @@
   when: workstation_enabled
 
 - name: jenkins-slave | Install saxon package
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   tags: package
   with_items:
     - libsaxon-java
@@ -260,7 +260,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install log4j package for better display of log for slave
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   tags: package
   with_items:
     - liblog4j1.2-java
@@ -271,7 +271,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install log4j package for better display of log for slave
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   tags: package
   with_items:
     - liblog4j2-java
@@ -282,7 +282,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install log4j package for better display of log for slave
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   tags: package
   with_items:
     - log4j
@@ -292,7 +292,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install rsync package
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   tags: package
   with_items:
     - rsync
@@ -320,8 +320,8 @@
   file:
     src: "{{ jenkins_slave_home }}/{{ item.path }}"
     dest: "{{ jenkins_slave_home }}/{{ item.dest }}"
-    group: "{{ jenkins_user }}"
-    owner: "{{ jenkins_group }}"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group  }}"    
     state: link
   with_items:
     - { path: 'Jenkins-slave', dest: 'slave' }
@@ -335,8 +335,8 @@
 - name: jenkins-slave | Make sure jobs has permission to download sonar-scanner or zap inside {{ jenkins_slave_home }} tools directory
   file:
     dest: "{{ jenkins_slave_home }}/{{ item.dest }}/tools"
-    group: "{{ jenkins_user }}"
-    owner: "{{ jenkins_group }}"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group  }}"  
     state: directory
     mode: 0755
   with_items:

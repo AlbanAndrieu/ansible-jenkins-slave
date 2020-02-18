@@ -1,7 +1,7 @@
 ---
 
 - name: jenkins-slave | Install shell for running
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   tags: package
   with_items:
     - bash
@@ -17,7 +17,7 @@
   become: true
 
 - name: jenkins-slave | Install shell tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   tags: package
   with_items:
     - shellcheck
@@ -26,7 +26,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install shell tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   tags: package
   with_items:
     - ShellCheck
@@ -97,7 +97,7 @@
 # https://coolaj86.com/articles/how-to-get-more-fonts-on-ubuntu.html
 
 - name: jenkins-slave | Install fonts and ttf
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   with_items:
     - libfontconfig
     - libfreetype6

@@ -70,7 +70,7 @@
 # Do not reboot the server if entry in wrong in fstab you will have IS team to get console on booting
 
 - name: hdd | Install hdd tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
   when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')
   with_items:
     - system-storage-manager
@@ -78,7 +78,7 @@
   changed_when: false
 
 - name: hdd | Install hdd tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
     - gnome-disk-utility

@@ -5,7 +5,7 @@
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
 
 - name: docker | Install python-docker
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
   with_items:
     - python-docker
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version not in ['14.04']
@@ -111,7 +111,7 @@
 # See https://github.com/tensorflow/tensorflow/issues/4078
 # For https://github.com/NVIDIA/nvidia-docker
 # - name: docker | Install requirement for nvidia
-#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
 #   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 #   with_items:
 #     - nvidia-361-dev

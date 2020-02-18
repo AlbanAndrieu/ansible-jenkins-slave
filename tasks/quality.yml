@@ -8,14 +8,14 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install lcov coverage and metrics tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
     - lcov
   become: true
   ignore_errors: true
 
 - name: jenkins-slave | Install gperf monitoring and metrics tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
 # when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 # when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
   when: not (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
@@ -25,7 +25,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install documentation tools
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
 # when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 # when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
 # when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
@@ -36,7 +36,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install findbugs
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   tags: package
   with_items:
     - findbugs
@@ -45,7 +45,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install C++ quality tool ggcov
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
     - ggcov
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
@@ -54,7 +54,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install C++ quality tool others
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
     - cppcheck
     - gperf
@@ -68,7 +68,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install C++ quality tool
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
     - colormake
     - valgrind
@@ -81,7 +81,7 @@
   ignore_errors: true
 
 # - name: jenkins-slave | Install dragonegg for gcc
-#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
 #   with_items:
 #    - dragonegg
 #   tags: cpp
@@ -92,7 +92,7 @@
 # TODO install rats and flawfinder on RedHat
 
 - name: jenkins-slave | Install flawfinder
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
   tags: package
   with_items:
     - flawfinder
@@ -107,7 +107,7 @@
 # ./rats
 
 #- name: jenkins-slave | Install rats
-#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
+#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
 #  tags: package
 #  with_items:
 #    - rats
@@ -117,7 +117,7 @@
 #  ignore_errors: true
 
 - name: jenkins-slave | Install cloc
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
   tags: package
   with_items:
     - cloc

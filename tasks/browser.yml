@@ -1,7 +1,7 @@
 ---
 
 - name: jenkins-slave | Install requirement for zaproxy
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - chromium-chromedriver{{ apt_chromedriver_version }}           # see selenium role
@@ -9,7 +9,7 @@
   changed_when: false
 
 - name: jenkins-slave | Install requirement for zaproxy
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
   with_items:
     - chromedriver                   # see selenium role
@@ -48,7 +48,7 @@
     - vm # do not install on docker image
 
 - name: jenkins-slave | Install google-chrome-stable
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("12.04", "14.04", "16.04")
   with_items:
     - google-chrome-stable
@@ -62,7 +62,7 @@
 # #sudo apt-get install google-chrome-stable
 
 - name: jenkins-slave | Install google-chrome-stable for zaproxy
-  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
   with_items:
     - redhat-lsb
@@ -77,7 +77,7 @@
 # yum -y localinstall google-chrome-stable_current_x86_64.rpm
 
 - name: jenkins-slave | Install firefox for zaproxy
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   become: true
   with_items:
     - firefox # see selenium role

@@ -1,7 +1,7 @@
 ---
 
 - name: jenkins-ssh | Install ssh-askpass when doing git clone on custom repo (for pre-commit-hooks)
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state|default('present') }} update_cache=yes"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
     - ssh-askpass
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
