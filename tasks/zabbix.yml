@@ -44,66 +44,6 @@
     mode: a+x
   tags: vm
 
-- name: zabbix | Create /opt/zabbix/externalscripts folder
-  file: path=/opt/zabbix/externalscripts state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
-  become: true
-  changed_when: false
-  tags: vm
-
-- name: zabbix | Copy zabbix script (1)
-  copy: src=zabbix/array-all-status-dell.sh dest=/opt/zabbix/externalscripts/array-all-status-dell.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
-  become: true
-  ignore_errors: true
-  tags: vm
-
-- name: zabbix | Copy zabbix script (2)
-  copy: src=zabbix/array-all-status-hp.sh dest=/opt/zabbix/externalscripts/array-all-status-hp.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
-  become: true
-  ignore_errors: true
-  tags: vm
-
-- name: zabbix | Copy zabbix script (3)
-  copy: src=zabbix/iscsi-status.sh dest=/opt/zabbix/externalscripts/iscsi-status.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
-  become: true
-  ignore_errors: true
-  tags: vm
-
-- name: zabbix | Copy zabbix script (4)
-  copy: src=zabbix/fs-discovery.sh dest=/opt/zabbix/externalscripts/fs-discovery.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
-  become: true
-  ignore_errors: true
-  tags: vm
-
-- name: zabbix | Copy zabbix script (5)
-  copy: src=zabbix/zpool-status.sh dest=/opt/zabbix/externalscripts/zpool-status.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
-  become: true
-  ignore_errors: true
-  tags: vm
-
-- name: zabbix | Copy zabbix script (6)
-  copy: src=zabbix/zpool-discovery.sh dest=/opt/zabbix/externalscripts/zpool-discovery.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
-  become: true
-  ignore_errors: true
-  tags: vm
-
-- name: zabbix | Copy zabbix script (7)
-  copy: src=zabbix/zfs-vfs-size.sh dest=/opt/zabbix/externalscripts/zfs-vfs-size.sh backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
-  become: true
-  ignore_errors: true
-  tags: vm
-
-- name: zabbix | Create /etc/zabbix/ folder
-  file: path={{ zabbix_agent_config_director }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
-  become: true
-  changed_when: false
-  tags: vm
-
-- name: zabbix | Copy zabbix configuration
-  template: src=zabbix_agentd.conf.j2 dest={{ zabbix_agent_config_director }}/zabbix_agentd.conf backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
-  become: true
-  changed_when: false
-  tags: vm
-
 - name: zabbix | Disable chronyd (to allow ntps service to run for zabbix)
   systemd:
     name: chronyd
@@ -170,3 +110,4 @@
   changed_when: false
   become: true
   ignore_errors: true
+  tags: vm

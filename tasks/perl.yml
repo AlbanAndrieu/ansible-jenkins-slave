@@ -156,6 +156,15 @@
   shell: "echo $PERL_MM_USE_DEFAULT"
   changed_when: false
 
+# TODO below is hanging the first time it is run
+# Manually install CPAN if so
+
+# WARNING firs time it might ask for Please enter the URL of your CPAN mirror
+# perl -MCPAN -eshell
+# Enter http://www.cpan.org
+# o conf commit
+# commit: wrote '/usr/share/perl5/CPAN/Config.pm'
+
 - name: jenkins-slave | Check perl
   shell: perl -e 'use FileHandle; print $FileHandle::VERSION'
   changed_when: false
