@@ -106,7 +106,7 @@
   with_items:
     - libkrb5-dev
     - krb5-user
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(18.04, '>='))
   become: true
   ignore_errors: true
   tags:

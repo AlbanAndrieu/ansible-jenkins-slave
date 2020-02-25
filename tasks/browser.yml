@@ -31,7 +31,7 @@
   become: true
 
 - name: jenkins-slave | Get google-chrome-stable repo
-  action: command wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+  command: wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
   become: true
   changed_when: false

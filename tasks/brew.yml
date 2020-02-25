@@ -58,6 +58,10 @@
 #  become_user: "{{ shell_owner }}"
   become: true
 
+#By hand on your workstation
+#sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+#Then ctr D
+
 #BELOW do not work when /home cannot be wrote due to nis user
 #- name: brew | Installing Homebrew
 #  command: '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'

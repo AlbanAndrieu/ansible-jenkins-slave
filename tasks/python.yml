@@ -5,22 +5,21 @@
 #    - venv
 #    - python2
 
-#- import_tasks: python35.yml
-#  when: not ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04', '19.04']) and python_enabled
-#  tags:
-#    - venv
-#    - python35
+- import_tasks: python35.yml
+  when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(16.04, '<=')) and python_enabled
+  tags:
+    - venv
+    - python35
 
 # TODO once fixed https://bugs.launchpad.net/ubuntu/+source/python3.6/+bug/1685596
 - import_tasks: python36.yml
-#  when: not ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04', '14.04']) and python_enabled
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04', '18.04'] and python_enabled  
+  when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(18.04, '<=')) and python_enabled
   tags:
     - venv
     - python36
 
 - import_tasks: python37.yml
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04'] and python_enabled  
+  when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(18.04, '>=')) and python_enabled
   tags:
     - virtualenv
     - python37

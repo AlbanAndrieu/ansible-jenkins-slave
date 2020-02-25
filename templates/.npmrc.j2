@@ -3,6 +3,9 @@
 cache=.node_cache
 tmp=.node_tmp
 chromedriver_version={{ npm_chromedriver_version }}
+{% if npm_nexus_private_npm_ca is defined %}
+ca={{ npm_nexus_private_npm_ca }}
+{% endif %}
 {% if npm_nexus_private_npm_url is defined %}
 registry={{ npm_nexus_private_npm_url }}
 {% endif %}

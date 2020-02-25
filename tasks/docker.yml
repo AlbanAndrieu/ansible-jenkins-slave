@@ -278,13 +278,16 @@
 
 - name: Get docker container-structure-test version # noqa 301
   command: "container-structure-test version"
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(16.04, '>=')
   register: cst_version
 
 # - debug:
 #     msg: "version {{ item.stdout_lines }} for {{ item.item }}"
 #   with_items: '{{ cst_version.results }}'
+#  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(16.04, '>=')
 
 - debug: var=cst_version
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(16.04, '>=')
 
 # TO REVOKE
 # grubby --remove-args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
@@ -292,12 +295,12 @@
 # Check docker
 - name: docker | Install check docker
   shell: "curl https://raw.githubusercontent.com/docker/docker/master/contrib/check-config.sh > check-config.sh"
-  register: cpan_result
+  register: check_config_result
   changed_when: false
   become: true
 
 - name: docker | Run check docker
   shell: bash ./check-config.sh
-  when: cpan_result.changed
+  when: check_config_result.changed
   become: true
   ignore_errors: true

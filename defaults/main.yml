@@ -74,6 +74,7 @@ nexus_url: "{{ home_url }}:8081"
 # npm_nexus_npm_url: "{{ nexus_url }}/nexus/content/npm/registry.npmjs.org/"
 npm_nexus_npm_url:
 npm_nexus_private_npm_url: "http://registry.npmjs.org/"
+npm_nexus_private_npm_ca:
 npm_nexus_private_npm_data: []
 proxy_cdnurl_server: "localhost"
 npm_phantomjs_cdnurl: ""
@@ -229,7 +230,7 @@ docker_opts: >
 #  --dns {{ docker_opts_dns_1 }}
 #  --dns {{ docker_opts_dns_2 }}
 #  --dns-search={{ docker_opts_dns_search }}
-#  --insecure-registry=nabla
+#  --insecure-registry=registry.albandrieu.com
 #  --userns-remap jenkins #TODO on Ubuntu only
 
 # workspace: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
