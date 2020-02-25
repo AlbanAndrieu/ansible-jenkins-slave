@@ -77,11 +77,10 @@
 - name: python3 | Set python link to python version
   set_fact: python3_version=3.6
 
-- name: python3 | Install python 3.6 ppa
-  apt_repository: repo="ppa:deadsnakes/ppa" state={{ util_repository_state|default('present') }} update_cache=yes
-  #when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04', '19.04', '19.10'])
-  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version in ['16.04', '18.04'])
-  become: true
+#- name: python3 | Install python 3.6 ppa
+#  apt_repository: repo="ppa:deadsnakes/ppa" state={{ util_repository_state|default('present') }} update_cache=yes
+#  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version in ['16.04', '18.04'])
+#  become: true
 
 # WARNING from Ubuntu 19.04 python 3.6 is no more maintained
 

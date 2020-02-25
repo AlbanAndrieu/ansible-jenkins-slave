@@ -71,11 +71,10 @@
 
 # sudo apt-get install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
 
-- name: python3 | Install python 3.5 ppa
-  apt_repository: repo="ppa:deadsnakes/ppa" state={{ util_repository_state|default('present') }} update_cache=yes
-  # when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04', '16.04'])
-  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['19.04'])
-  become: true
+#- name: python3 | Install python 3.5 ppa
+#  apt_repository: repo="ppa:deadsnakes/ppa" state={{ util_repository_state|default('present') }} update_cache=yes
+#  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['19.04'])
+#  become: true
 
 # sudo apt-cache show python3
 # sudo apt-get install python3=3.5.1*

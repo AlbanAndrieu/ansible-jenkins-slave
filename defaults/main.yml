@@ -109,7 +109,7 @@ npm_global_packages:
   - shrinkwrap@0.4.0
   - newman@4.5.5
   - xunit-viewer@5.1.11
-  - dockerfile_lint@0.3.3;
+  - dockerfile_lint@0.3.3
 
 npm_chromedriver_version: 2.42
 #apt_chromedriver_version: "=77.0.3865.90-0ubuntu0.18.04.1"

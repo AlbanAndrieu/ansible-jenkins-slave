@@ -316,7 +316,7 @@
     - vm # do not install on docker image
 
 # See also jenkins_slave_directory
-- name: jenkins-slave | Create link to legacy {{ jenkins_slave_home }} directory
+- name: jenkins-slave | Create link to legacy {{ jenkins_slave_home }} directory (if it do not exists)
   file:
     src: "{{ jenkins_slave_home }}/{{ item.path }}"
     dest: "{{ jenkins_slave_home }}/{{ item.dest }}"
@@ -324,7 +324,7 @@
     group: "{{ jenkins_group  }}"    
     state: link
   with_items:
-    - { path: 'Jenkins-slave', dest: 'slave' }
+    - { path: 'jenkins-slave', dest: 'slave' }
   #  - { path: 'Jenkins-slave-todo', dest: 'slavetodo' }
   become: true
   changed_when: false
