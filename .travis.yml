@@ -6,6 +6,7 @@ python:
 #  - 3.4
 #  - 3.5
   - 3.6
+  - 3.7  
 services:
   - docker
 cache:
@@ -20,10 +21,12 @@ env:
     - secure: MD73NCVzctbVmi2QnQtwtH/ISXN2K0alsLbixoaXl7gr3XvTB4sYB0u+KKtPV46jbeAlQqTRObPfQouPrsLsiNDYcpuN0I5bKsn3TTs4ZHIkD0I2Q9Wh3qNM2fYf9mw3ZUhvXVTEod0W7jzkVGb6kitRCJj8rioKKzvE/YdVsG4=
   matrix:
 #  - ANSIBLE_VERSION=latest
-    - ANSIBLE_VERSION=2.7.14
+  - ANSIBLE_VERSION=2.7.14
+  - ANSIBLE_VERSION=2.9.4
 sudo: required
 #dist: trusty
-dist: bionic
+dist: travis_lts
+#dist: bionic
 
 branches:
   only:
