@@ -32,8 +32,8 @@ virtualenv:
   system_site_packages: false
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install curl
   - sudo apt-get install -qq python-apt python-pycurl
+  - sudo apt-get install -qq curl
 install:
   # Install Ansible.
   - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install ansible; else pip install ansible==$ANSIBLE_VERSION; fi
@@ -63,7 +63,9 @@ script:
   # Check ansible version
   - ansible --version
 
-  # Check syntax
+#  - echo "${ANSIBLE_VAULT_PASS}" > vault.passwd
+
+  # Check the role/playbook's syntax.
   - ansible-playbook -i ./hosts --syntax-check ./jenkins-slave.yml -vvvv --connection=local -e "python_versions=[2.7, 3.5]" -e "jenkins_group=docker" -e "docker_gid=${DOCKER_GID}" -e "jenkins_id=${JENKINS_UID}" -e "python_enabled=false" --skip-tags restart
 
   # Molecule test
@@ -72,14 +74,14 @@ script:
   # First run
   # Run the role/playbook with ansible-playbook.
 #  - travis_wait 30
-  - ansible-playbook -i ./hosts ./jenkins-slave.yml --connection=local -vvvv -e "python_versions=[2.7, 3.5]" -e "jenkins_group=docker" -e "docker_gid=${DOCKER_GID}" -e "jenkins_id=${JENKINS_UID}" -e "python_enabled=false" --skip-tags restart
+  - ansible-playbook -i hosts ./jenkins-slave.yml --connection=local -vvvv -e "python_versions=[2.7, 3.5]" -e "jenkins_group=docker" -e "docker_gid=${DOCKER_GID}" -e "jenkins_id=${JENKINS_UID}" -e "python_enabled=false" --skip-tags restart
 
   # Run the role/playbook again, checking to make sure it's idempotent.
 #  - >
 #    ansible-playbook -i hosts jenkins-slave.yml --connection=local -vvvv -e "python_versions=[2.7]"
 #    | grep -q 'changed=0.*failed=0'
 #    && (echo 'Idempotence test: pass' && exit 0)
-#    || (echo 'Idempotence test: fail' && exit 0)
+#    || (echo 'Idempotence test: fail' && exit 1)
 
   - id -u jenkins | grep -q "no" && (echo "user not found" && exit 1) || (echo "user found" && exit 0)
 

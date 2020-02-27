@@ -181,6 +181,12 @@
     - docker
     - vm
 
+# ALSO in playbooks/docker.yml
+- name: docker | Copy the docker.service script
+  template: src=docker.service.j2 dest=/lib/systemd/system/docker.service owner=root group=root mode=0644
+  become: true
+  changed_when: false
+  
 # - name: Set docker daemon options (systemd)
 #   copy:
 #     content: |
