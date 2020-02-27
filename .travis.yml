@@ -24,6 +24,7 @@ env:
 #  - ANSIBLE_VERSION=latest
   - ANSIBLE_VERSION=2.7.14
   - ANSIBLE_VERSION=2.9.4
+  
 sudo: required
 #dist: trusty
 dist: travis_lts
@@ -81,8 +82,11 @@ script:
   - ansible-playbook -i hosts ./jenkins-slave.yml --connection=local -vvvv -e "python_versions=[2.7, 3.5]" -e "jenkins_group=docker" -e "docker_gid=${DOCKER_GID}" -e "jenkins_id=${JENKINS_UID}" -e "python_enabled=false" --skip-tags restart
 
   # Run the role/playbook again, checking to make sure it's idempotent.
+  - idempotence=$(mktemp)  
+#    ansible-playbook -i hosts jenkins-slave.yml --connection=local -vvvv -e "python_versions=[2.7, 3.5]" -e "jenkins_group=docker" -e "docker_gid=${DOCKER_GID}" -e "jenkins_id=${JENKINS_UID}" -e "python_enabled=false" --skip-tags restart | tee -a ${idempotence}
 #  - >
-#    ansible-playbook -i hosts jenkins-slave.yml --connection=local -vvvv -e "python_versions=[2.7]"
+#    tail ${idempotence}
+#    | grep -q 'changed=0.*failed=0'
 #    | grep -q 'changed=0.*failed=0'
 #    && (echo 'Idempotence test: pass' && exit 0)
 #    || (echo 'Idempotence test: fail' && exit 1)
@@ -90,7 +94,13 @@ script:
   - id -u jenkins | grep -q "no" && (echo "user not found" && exit 1) || (echo "user found" && exit 0)
 
 notifications:
-  webhooks: https://galaxy.ansible.com/api/v1/notifications/
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/47b10b81867bd0063cf5
+      - https://galaxy.ansible.com/api/v1/notifications/
+    on_success: change
+    on_failure: always
+    on_start: false
   email:
     recipients:
       - alban.andrieu@nabla.mobi
