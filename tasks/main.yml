@@ -321,7 +321,7 @@
     src: "{{ jenkins_slave_home }}/{{ item.path }}"
     dest: "{{ jenkins_slave_home }}/{{ item.dest }}"
     owner: "{{ jenkins_user }}"
-    group: "{{ jenkins_group  }}"    
+    group: "{{ jenkins_group  }}"
     state: link
   with_items:
     - { path: 'jenkins-slave', dest: 'slave' }
@@ -336,7 +336,7 @@
   file:
     dest: "{{ jenkins_slave_home }}/{{ item.dest }}/tools"
     owner: "{{ jenkins_user }}"
-    group: "{{ jenkins_group  }}"  
+    group: "{{ jenkins_group  }}"
     state: directory
     mode: 0755
   with_items:

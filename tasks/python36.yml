@@ -147,7 +147,7 @@
 #    name: virtualenv
 #    executable: pip{{ python3_version }}
 #  become: true
-#  
+#
 #- name: python3 | Gather current pip requirement
 #  command: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
 #  when: not( (python3_version is undefined) or (python3_version is none) )
@@ -226,4 +226,3 @@
 #   command: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
 #   changed_when: false
 #   become: true
-

@@ -6,8 +6,6 @@ dependency:
     ignore-errors: true
 driver:
   name: docker
-lint:
-  name: yamllint
 platforms:
   - name: jenkins-slave-centos
     image: milcom/centos7-systemd:latest
@@ -28,16 +26,23 @@ platforms:
     image: solita/ubuntu-systemd:xenial
     groups:
       - group1
+#    volumes:
+#      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     privileged: true
   - name: jenkins-slave-ubuntu-bionic
     image: solita/ubuntu-systemd:bionic
     groups:
       - group1
+#    volumes:
+#      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     privileged: true
+#    pre_build_image: true
 provisioner:
   name: ansible
   lint:
     name: ansible-lint
+#  playbooks:
+#    converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
 scenario:
   name: default
   test_sequence:

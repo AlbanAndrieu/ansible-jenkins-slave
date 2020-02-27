@@ -6,7 +6,8 @@ python:
 #  - 3.4
 #  - 3.5
   - 3.6
-  - 3.7  
+  - 3.7
+  
 services:
   - docker
 cache:
@@ -54,7 +55,7 @@ install:
   # Set password for the jenkins user (you may want to alter this).
 #  - sudo echo "jenkins:jenkins1234" | sudo chpasswd
 
-  - pip install molecule
+  - pip3 install molecule==3.0.2  
 
   # Update Ansible submodule.
   - git pull && git submodule init && git submodule update && git submodule status

@@ -214,7 +214,7 @@
     - libcurl4
     - zlib1g
   become: true
-  
+
 - name: jenkins-slave | Install C++ librairies curl (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(16.04, '>=')
@@ -505,19 +505,19 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version ['18.04', '18.10']
   with_items:
-    - libstdc++-5-dev  
-    - libstdc++-6-dev      
+    - libstdc++-5-dev
+    - libstdc++-6-dev
     - libstdc++-7-dev
 #    - libstdc++-8-dev:i386
   become: true
   ignore_errors: true
-  
+
 - name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version ['19.04', '19.10']
   with_items:
-    - libstdc++-7-dev  
-    - libstdc++-8-dev    
+    - libstdc++-7-dev
+    - libstdc++-8-dev
     - libstdc++-9-dev
 #    - libstdc++-9-dev:i386
   become: true
