@@ -113,12 +113,12 @@ npm_global_packages:
   - dockerfile_lint@0.3.3
 
 npm_chromedriver_version: 2.42
-#apt_chromedriver_version: "=77.0.3865.90-0ubuntu0.18.04.1"
+#  apt_chromedriver_version: "=77.0.3865.90-0ubuntu0.18.04.1"
 apt_chromedriver_version:
 
 brew_enabled: false
 brew_packages:
-  - 'randomize-lines' # for git-radar
+  - 'randomize-lines'   # for git-radar
   - 'michaeldfallen/formula/git-radar'
 #  - 'autoconf'
 #  - 'bash-completion'

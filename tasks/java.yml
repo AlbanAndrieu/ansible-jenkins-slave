@@ -33,21 +33,21 @@
   become: true
   tags: jdk_setup
 
-#- name: jdk7 | Install default oracle
-#  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
-#  tags: jdk_setup
-#  with_items:
-#    - oracle-java7-set-default
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk7_enable
-#  become: true
+# - name: jdk7 | Install default oracle
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+#   tags: jdk_setup
+#   with_items:
+#     - oracle-java7-set-default
+#   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk7_enable
+#   become: true
 
 - name: jdk8 | Install default openjdk
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   tags: jdk_setup
   with_items:
-    - openjdk-8-jdk # to execute java applications
+    - openjdk-8-jdk   # to execute java applications
 #    - openjdk-8-jre-headless # no audio/video. Just SE. E.g for embedded systems
-    - openjdk-8-source # Java sources, to review api implementation.
+    - openjdk-8-source   # Java sources, to review api implementation.
     - openjfx
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
   become: true
@@ -64,19 +64,19 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' and (ansible_distribution_version not in ['5'])) and jenkins_jdk8_enable
   become: true
 
-#- name: jdk8 | Install default oracle
-#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ default_pkg_state|default('present') }} update_cache=yes"
-#  with_items:
-#    - oracle-java8-installer
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
-#
-#- name: jdk8 | Install default oracle
-#  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
-#  tags: jdk_setup
-#  with_items:
-#    - oracle-java8-set-default
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
-#  become: true
+# - name: jdk8 | Install default oracle
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ default_pkg_state|default('present') }} update_cache=yes"
+#   with_items:
+#     - oracle-java8-installer
+#   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
+# 
+# - name: jdk8 | Install default oracle
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+#   tags: jdk_setup
+#   with_items:
+#     - oracle-java8-set-default
+#   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
+#   become: true
 
 # - name: jenkins-slave | Set jvm link to Java 7
 #   set_fact: jdk_dir={{ jvm_folder }}/{{ jdk7_archive_extracted }}
@@ -187,9 +187,9 @@
   become: true
   ignore_errors: true
 
-#cd /workspace/slave/tools/hudson.model.JDK/jdk-18-latest/jre/lib/security
-#ln -sf /etc/ssl/certs/java/cacerts cacerts
-#chown -h jenkins:docker cacerts
+# cd /workspace/slave/tools/hudson.model.JDK/jdk-18-latest/jre/lib/security
+# ln -sf /etc/ssl/certs/java/cacerts cacerts
+# chown -h jenkins:docker cacerts
 
 - name: jenkins-slave | Create java cacerts link (jenkins 2)
   file:
@@ -217,26 +217,26 @@
 # Belowe need to be done especially because we set JAVA_HOME=/usr/java/default inside .bashrc (see jdk_home)
 
 - name: jenkins-slave | Normalize JAVA_HOME across architectures for oracle jdk
-  file: path=/usr/lib/jvm/java-oraclejdk src={{ oracle_jdk_home }} state=link #force=yes
+  file: path=/usr/lib/jvm/java-oraclejdk src={{ oracle_jdk_home }} state=link   # force=yes
   become: true
   ignore_errors: true
 
 - name: jenkins-slave | Normalize JAVA_HOME across architectures for oracle jre
-  file: path=/usr/lib/jvm/java-oraclejre src={{ oracle_jre_home }} state=link #force=yes
+  file: path=/usr/lib/jvm/java-oraclejre src={{ oracle_jre_home }} state=link   # force=yes
   become: true
   ignore_errors: true
 
 - name: jenkins-slave | Normalize JAVA_HOME across architectures for open jdk
-  file: path=/usr/lib/jvm/java-openjdk src={{ open_jdk_home }} state=link #force=yes
+  file: path=/usr/lib/jvm/java-openjdk src={{ open_jdk_home }} state=link   # force=yes
   become: true
   ignore_errors: true
 
 - name: jenkins-slave | Normalize JAVA_HOME across architectures for open jre
-  file: path=/usr/lib/jvm/jre-openjdk src={{ open_jre_home }} state=link #force=yes
+  file: path=/usr/lib/jvm/jre-openjdk src={{ open_jre_home }} state=link   # force=yes
   become: true
   ignore_errors: true
 
 - name: jenkins-slave | Normalize JAVA_HOME across architectures for global jdk
-  file: path=/usr/java/default src={{ jdk_home }} state=link #force=yes
+  file: path=/usr/java/default src={{ jdk_home }} state=link   # force=yes
   become: true
   ignore_errors: true

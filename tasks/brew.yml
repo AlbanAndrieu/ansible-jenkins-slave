@@ -49,8 +49,8 @@
   git:
     repo: "{{ homebrew_repository }}"
     dest: "{{ home }}/.linuxbrew"
-    accept_hostkey: yes
-    update: no
+    accept_hostkey: true
+    update: false
     version: master
   when: >
         not homebrew_check.stat.exists and
@@ -58,24 +58,24 @@
 #  become_user: "{{ shell_owner }}"
   become: true
 
-#By hand on your workstation
-#sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
-#Then ctr D
-
-#BELOW do not work when /home cannot be wrote due to nis user
-#- name: brew | Installing Homebrew
-#  command: '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
-#  when: >
-#        not homebrew_check.stat.exists and
-#        install_homebrew_if_missing
+# By hand on your workstation
+# sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+# Then ctr D
+  
+# BELOW do not work when /home cannot be wrote due to nis user
+# - name: brew | Installing Homebrew
+#   command: '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+#   when: >
+#         not homebrew_check.stat.exists and
+#         install_homebrew_if_missing
 
 - name: brew | Ensuring Homebrew bin is installed
   stat:
     path: "{{ homebrew_check_path }}"
   register: "homebrew_check_path"
 
-#test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
-#test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+# test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+# test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
 - name: brew | Fail if Homebrew bin does not exist
   fail:
@@ -83,14 +83,14 @@
   when: >
         not homebrew_check_path.stat.exists
 
-#- name: brew | Check Homebrew
-#  shell: "{{ homebrew_check_path }} list"
-#  when: >
-#        homebrew_check_path.stat.exists
-##  become_user: "{{ shell_owner }}"
-#  become: true
+# - name: brew | Check Homebrew
+#   shell: "{{ homebrew_check_path }} list"
+#   when: >
+#         homebrew_check_path.stat.exists
+# #  become_user: "{{ shell_owner }}"
+#   become: true
 
-#export PATH=$HOME/homebrew/bin:$PATH
+# export PATH=$HOME/homebrew/bin:$PATH
 
 - name: brew | Install brew requirements
   homebrew:
@@ -149,7 +149,7 @@
   become: true
   become_user: "{{ jenkins_user }}"
 
-#brew update && brew upgrade; brew cleanup
+# brew update && brew upgrade; brew cleanup
 - name: brew | Homebrew Cleaning
   command: "{{ homebrew_check_path }} cleanup"
   with_items: "{{ brew_packages }}"
@@ -157,7 +157,7 @@
   become: true
   ignore_errors: true
 
-#- name: brew | Updating Homebrew
-#  homebrew:
-#    update_homebrew: true
-#  when: homebrew_check.stat.exists
+# - name: brew | Updating Homebrew
+#   homebrew:
+#     update_homebrew: true
+#   when: homebrew_check.stat.exists
