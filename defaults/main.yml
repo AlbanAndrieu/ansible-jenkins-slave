@@ -111,6 +111,7 @@ npm_global_packages:
   - newman@4.5.5
   - xunit-viewer@5.1.11
   - dockerfile_lint@0.3.3
+  - grunt-retire@1.0.8  # security tool
 
 npm_chromedriver_version: 2.42
 #  apt_chromedriver_version: "=77.0.3865.90-0ubuntu0.18.04.1"
