@@ -188,3 +188,23 @@
 #   changed_when: false
 #   become: true
 
+- name: python | Check if /usr/bin/pip3 is present
+  stat:
+    path: /usr/bin/pip3
+  register: pip3
+
+#- name: python | Remove pip3 when it is not a symbolic link
+#  file: path=/usr/bin/pip3 state=absent
+#  when: pip3.stat.islnk is defined and not pip3.stat.islnk
+#  become: true
+#  ignore_errors: true
+#  tags: vm
+
+- name: python | Create link to pip3 
+  file: path=/usr/local/bin/pip3.7 src=/usr/bin/pip3 state=link # force=yes
+  when: pip3.stat.islnk is not defined not pip3.stat.islnk
+  become: true
+  ignore_errors: true  # Ignore failure on Travis
+  tags:
+    - pip3
+    - vm
