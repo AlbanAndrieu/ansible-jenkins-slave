@@ -38,7 +38,7 @@
   become: true
   ignore_errors: true
 
-- name: jenkins-slave | Disable yarn ssl check # noqa 503
+- name: jenkins-slave | Disable yarn ssl check   # noqa 503
 #  command: yarn config set cafile ~/NABLA.crt
   command: yarn config set "strict-ssl" false -g
   when: yarn_result.changed

@@ -220,4 +220,3 @@
   with_items:
     - unixODBC-devel   # ODBC
   become: true
-
