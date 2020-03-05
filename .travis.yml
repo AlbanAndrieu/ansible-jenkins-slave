@@ -86,7 +86,7 @@ script:
   # Second run Idempotence test
   # Run the role/playbook again, checking to make sure it's idempotent.
   - idempotence=$(mktemp)  
-#    ansible-playbook -i hosts jenkins-slave.yml --connection=local -vvvv -e "python_versions=[2.7, 3.5]" -e "jenkins_group=docker" -e "docker_gid=${DOCKER_GID}" -e "jenkins_id=${JENKINS_UID}" -e "python_enabled=false" --skip-tags restart | tee -a ${idempotence}
+# - ansible-playbook -i hosts jenkins-slave.yml --connection=local -vvvv -e "python_versions=[2.7, 3.5]" -e "jenkins_group=docker" -e "docker_gid=${DOCKER_GID}" -e "jenkins_id=${JENKINS_UID}" -e "python_enabled=false" --skip-tags restart | tee -a ${idempotence}
 #  - >
 #    tail ${idempotence}
 #    | grep -q 'changed=0.*failed=0'
