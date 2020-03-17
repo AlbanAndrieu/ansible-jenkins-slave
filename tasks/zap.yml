@@ -14,7 +14,7 @@
   become: true
 
 - name: zap | Create zap target dir
-  file: path="{{ zap_target_dir }}" state=directory recurse=yes mode=0777
+  file: path="{{ zap_target_dir }}" state=directory recurse=yes # mode=0777
   become: true
 
 #mkdir -p /workspace/slave/tools/com.cloudbees.jenkins.plugins.customtools.CustomTool/ZAPROXY/ZAP_2.8.0

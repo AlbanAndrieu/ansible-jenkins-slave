@@ -2,6 +2,7 @@
 Description=Docker Application Container Engine
 Documentation=https://docs.docker.com
 BindsTo=containerd.service iscsid.service
+Before=openvpn.service
 After=network-online.target iscsid.service firewalld.service containerd.service
 Wants=network-online.target iscsid.service
 Requires=docker.socket
