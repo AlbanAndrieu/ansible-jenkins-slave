@@ -90,6 +90,7 @@ npm_global_packages:
   - casperjs@1.1.4
   - coffee-script@1.10.0
   - connect@1.9.2
+  - eslint@6.8.0
 #  - grunt@1.0.4
   - grunt-cli@1.3.2
 #  - grunt-version-check@0.3.8
@@ -102,6 +103,7 @@ npm_global_packages:
 #  - npm@6.13.6
   - phantomjs-prebuilt@2.1.16              # EACCES: permission denied
   - phantomas@1.20.1
+  - prettier@2.0.4
   - slimerjs@0.10.3
   - tap-eater@0.0.3
   - webdriver-manager@12.1.7

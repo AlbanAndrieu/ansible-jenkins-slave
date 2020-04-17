@@ -100,9 +100,7 @@
 # sudo apt-get install krb5-kdc krb5-admin-server
 
 - name: jenkins-slave | Install devops tools for ansible kerberos
-  pip:
-    name: "{{ item }}"
-    executable: "pip{{ python_version }}"
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
     - libkrb5-dev
     - krb5-user
@@ -110,5 +108,5 @@
   become: true
   ignore_errors: true
   tags:
-    - pip
+    - krb5
     - vm # do not install on docker image
