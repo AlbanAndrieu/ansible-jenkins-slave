@@ -36,6 +36,7 @@
     - zabbix-api
   # when: ansible_python_version | version_compare('2.7', '>=')
   become: true
+  tags: vm
 
 - name: zabbix | Add +x to zabbix script files
   file:
