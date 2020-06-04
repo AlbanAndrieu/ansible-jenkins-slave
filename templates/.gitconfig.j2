@@ -34,9 +34,11 @@
 #	rebase = true
 #[branch]
 #	autosetuprebase = always
+{% if shell_git_maildomain is defined %}
 [maven-scm]
-    maildomain = free.fr
-    forceUsername = true
+  maildomain = "{{ shell_git_maildomain }}"
+  forceUsername = true
+{% endif %}
 [http]
     sslverify = false
 {% endfor %}

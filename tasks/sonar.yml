@@ -25,8 +25,6 @@
 # export WORKSPACE="/root/"
 # ON OSX cd /var/root
 # cd ${WORKSPACE}
-# wget http://sonar.nabla.mobi/static/cpp/build-wrapper-linux-x86.zip --no-check-certificate
-# wget http://sonar.nabla.mobi/static/cpp/build-wrapper-macosx-x86.zip --no-check-certificate
 # unzip build-wrapper-*-x86.zip
 # mkdir -p /usr/local/sonar-build-wrapper/bin/
 # cp ${WORKSPACE}/build-wrapper-*-x86/* /usr/local/sonar-build-wrapper/bin/
@@ -35,17 +33,18 @@
   unarchive:
     src: "{{ sonar_build_wrapper_download_url }}"
     dest: "{{ sonar_target_dir }}"
-    remote_src: true
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0777
+    remote_src: true    
+    validate_certs: false
   become: true
 #  ignore_errors: "{{ ansible_check_mode }}"
 #  ignore_errors: true
 
 # cd /usr/local
 # sudo wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip
-# sudo wget http://nabla.mobi/download/sonar/sonar-scanner-cli-3.2.0.1227.zip
+# sudo wget http://albandrieu.com/download/sonar/sonar-scanner-cli-3.2.0.1227.zip
 # sudo unzip sonar-scanner-cli-3.2.0.1227.zip
 
 - name: sonar | Download and expand sonar scanner
@@ -56,6 +55,7 @@
     group: "{{ jenkins_group }}"
     mode: 0777
     remote_src: true
+    validate_certs: false
   become: true
 #  ignore_errors: "{{ ansible_check_mode }}"
 #  ignore_errors: true # 401: Unauthorized

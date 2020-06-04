@@ -49,8 +49,8 @@
   git:
     repo: "{{ homebrew_repository }}"
     dest: "{{ home }}/.linuxbrew"
-    accept_hostkey: true
-    update: false
+    accept_hostkey: yes
+    update: no
     version: master
   when: >
         not homebrew_check.stat.exists and
@@ -135,8 +135,8 @@
 
 # sudo yum groupinstall 'Development Tools' && sudo yum install
 
-- name: brew | Install kitchen package
-  homebrew:
+- name: gem | Install kitchen package
+  gem:
     name: ['test-kitchen', 'kitchen-vagrant', 'kitchen-ansible', 'kitchen-docker']
   changed_when: false
   become: true
@@ -149,10 +149,18 @@
   become: true
   become_user: "{{ jenkins_user }}"
 
+- name: brew | Install brew package
+  homebrew:
+    name: "{{ item }}"
+  with_items: "{{ brew_packages }}"
+  changed_when: false
+  become: true
+  become_user: "{{ jenkins_user }}"
+
 # brew update && brew upgrade; brew cleanup
 - name: brew | Homebrew Cleaning
   command: "{{ homebrew_check_path }} cleanup"
-  with_items: "{{ brew_packages }}"
+#  with_items: "{{ brew_packages }}"
   when: homebrew_check_path.stat.exists
   become: true
   ignore_errors: true

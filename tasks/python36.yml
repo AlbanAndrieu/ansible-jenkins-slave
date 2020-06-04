@@ -226,3 +226,13 @@
 #   command: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
 #   changed_when: false
 #   become: true
+- name: python3 | Uninstall dependencies for python 3 requirements
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python3_version }}"
+    state: absent
+  when: not ansible_check_mode
+  with_items:
+    - argparse
+  ignore_errors: '{{ ansible_check_mode }}'
+  become: true

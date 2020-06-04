@@ -795,3 +795,11 @@
     - libcppunit-dev
   become: true
   ignore_errors: true
+
+- name: jenkins-slave | Install asan (Address sanitizer) (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7'
+  with_items:
+    - libasan
+  become: true
+

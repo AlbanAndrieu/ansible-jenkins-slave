@@ -208,11 +208,16 @@
 
 # See certificate.yml playbook to get the CA certificate
 
-- name: jenkins-slave | Import certificate
-  command: '{{ java_keytool_executable }} -import -trustcacerts -keystore {{ java_certificate_ca_path }} -keypass {{ java_certificate_key_pass }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias }} -file ~/pki/ca.pem'
+- name: jenkins-slave | Import old certificate
+  command: '{{ java_keytool_executable }} -import -trustcacerts -keystore {{ java_certificate_ca_path }} -keypass {{ java_certificate_key_pass }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias }} -file {{ java_certificate_ca_name }}'
   when: java_cert_imported is failed
   become: true
-  ignore_errors: true
+#  ignore_errors: true
+
+- name: jenkins-slave | Import new certificate
+  command: '{{ java_keytool_executable }} -import -trustcacerts -keystore {{ java_certificate_ca_path }} -keypass {{ java_certificate_key_pass }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias_new }} -file {{ java_certificate_ca_name_new }}'
+  when: java_cert_imported is failed
+  become: true
 
 # Belowe need to be done especially because we set JAVA_HOME=/usr/java/default inside .bashrc (see jdk_home)
 
@@ -237,6 +242,6 @@
   ignore_errors: true
 
 - name: jenkins-slave | Normalize JAVA_HOME across architectures for global jdk
-  file: path=/usr/java/default src={{ jdk_home }} state=link   # force=yes
+  file: path=/usr/java/default src={{ jdk_home }} state=link #force=yes
   become: true
   ignore_errors: true

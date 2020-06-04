@@ -18,12 +18,12 @@
 # sudo pip2.7 uninstall docker
 # sudo pip2.7 uninstall docker-py
 # sudo pip2.7 uninstall docker-compose
-# sudo pip2.7 install docker-compose==1.23.1
+# sudo pip2.7 install docker-compose==1.25.3
 
-# sudo pip3.5 uninstall docker
-# sudo pip3.5 uninstall docker-py
-# sudo pip3.5 uninstall docker-compose
-# sudo pip3.5 install docker-compose==1.23.1
+# sudo pip3.7 uninstall docker
+# sudo pip3.7 uninstall docker-py
+# sudo pip3.7 uninstall docker-compose
+# sudo pip3.7 install docker-compose==1.25.3
 
 - name: docker | docker-compose check 1
   command: "docker-compose --version"
@@ -237,12 +237,12 @@
   tags: vm
 
 - name: docker | Create docker directory for .docker/config.json
-  file: path={{ docker_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
+  file: path={{ docker_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
   changed_when: false
 
 - name: docker | Copy the .docker/config.json script
-  template: src=config.json.j2 dest={{ docker_directory }}/config.json owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
+  template: src=config.json.j2 dest={{ docker_directory }}/config.json owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
   changed_when: false
 
@@ -272,7 +272,7 @@
   become: true
 #  ignore_errors: true
 
-- name: Get docker container-structure-test version # noqa 301
+- name: docker | docker container-structure-test version # noqa 301
   command: "container-structure-test version"
   register: cst_version
 
@@ -294,6 +294,26 @@
 
 - debug: var=cst_version
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(16.04, '>=')
+
+# See https://stackoverflow.com/questions/51222996/docker-login-fails-on-a-server-with-no-x11-installed
+
+- name: docker | Install keyring for docker login to store credentials
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  with_items:
+    - gnome-keyring
+    - gnupg2
+    - pass
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(18.04, '>=')
+  tags: package
+  become: true
+  
+- name: docker | Install keyring for docker login to store credentials
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=absent"
+  with_items:
+    - golang-docker-credential-helpers
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(18.04, '>=')
+  tags: package
+  become: true
 
 # TO REVOKE
 # grubby --remove-args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"

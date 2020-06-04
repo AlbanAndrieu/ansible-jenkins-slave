@@ -29,6 +29,7 @@ jenkins_sudo: false
 
 jenkins_jdk7_enable: false
 jenkins_jdk8_enable: false
+jenkins_jdk14_enable: true
 # jdk_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
 jdk_dir_tmp: "{{ tempdir.stdout }}"
 jdk_owner: "root"
@@ -43,8 +44,11 @@ jdk_group: "{{ jdk_owner }}"
 java_keytool_executable: "{{ jdk_home }}/bin/keytool"
 java_certificate_ca_path: "{{ jdk_home }}/jre/lib/security/cacerts"
 java_certificate_alias: test
+java_certificate_alias_new: prod
 java_certificate_key_pass: changeit
 java_certificate_store_pass: changeit
+java_certificate_ca_name: "~/pki/ca-old.pem"
+java_certificate_ca_name_new: "~/pki/ca-new.pem"
 
 jenkins_http_host: 127.0.0.1                # Set HTTP host
 jenkins_http_port: 8000                     # Set HTTP port
@@ -186,6 +190,7 @@ shell_git: []
 #   shell_git_ssl: false,
 #   shell_git_meld_enabled: true,
 #   shell_git_editor: "gedit",
+#   shell_git_maildomain = "free.fr"
 
 shell_sa_password: "microsoft"
 svn_user: "jenkins"
@@ -247,7 +252,7 @@ sonar_build_wrapper_target_dir: "{{ sonar_target_dir }}sonar-build-wrapper"
 
 # See http://mirror.serverion.com/jenkins/updates/updates/hudson.plugins.sonar.SonarRunnerInstaller.json
 sonar_scanner_version: "4.2.0.1873"
-sonar_scanner_name: "ssonar-scanner-cli-{{ sonar_scanner_version }}"
+sonar_scanner_name: "sonar-scanner-{{ sonar_scanner_version }}"
 sonar_scanner_download_file: "{{ sonar_scanner_name }}.zip"
 sonar_scanner_download_url: "https://github.com/SonarSource/sonar-scanner-cli/archive/{{ sonar_scanner_version }}.zip"
 sonar_scanner_target_dir: "{{ sonar_target_dir }}sonar-runner"

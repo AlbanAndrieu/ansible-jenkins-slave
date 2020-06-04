@@ -31,7 +31,9 @@
   become: true
 
 - name: jenkins-slave | Get google-chrome-stable repo
-  command: wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+  get_url:
+    url: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+    dest: /tmp/google-chrome-stable_current_x86_64.rpm
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
   become: true
   changed_when: false
@@ -67,7 +69,7 @@
   with_items:
     - redhat-lsb
     - libXScrnSaver
-    - google-chrome-stable_current_x86_64.rpm
+    - /tmp/google-chrome-stable_current_x86_64.rpm
   become: true
   changed_when: false
   tags:

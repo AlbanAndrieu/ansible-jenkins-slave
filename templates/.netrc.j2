@@ -2,7 +2,9 @@
 
 {# Set up machine #}
 {% for machine in shell_git %}
+{% if machine.shell_git_machine is defined %}
 machine {{ machine.shell_git_machine }}
+{% endif %}
 {% if machine.shell_git_login is defined %}
     login {{ machine.shell_git_login }}
 {% endif %}

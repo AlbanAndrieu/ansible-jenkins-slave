@@ -11,7 +11,7 @@
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04")
 
-- name: cpp | Install C++ compiler (Debian based)
+- name: cpp | Install C++ compiler 4.6 (Debian based)
   apt:
     pkg: ['gcc-4.6', 'g++-4.6']
     state: "{{ util_pkg_state | default('present') }}"
@@ -19,29 +19,53 @@
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("12.04")
 
-- name: cpp | Install C++ compiler (Debian based)
+- name: cpp | Install C++ compiler 4.8 (Debian based)
   apt:
     pkg: ['gcc-4.8', 'g++-4.8']
     state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04")
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("14.04", "16.04", "18.04")
 
-- name: cpp | Install C++ compiler (Debian based)
+- name: cpp | Install C++ compiler 5 (Debian based)
   apt:
     pkg: ['gcc-5', 'g++-5']
     state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04")
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("14.04", "16.04", "18.04")
 
-- name: cpp | Install C++ compiler (Debian based)
+- name: cpp | Install C++ compiler 6 (Debian based)
   apt:
     name: ['gcc-6', 'g++-6']
     state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04", "16.04")
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04", "18.04")
+
+- name: cpp | Install C++ compiler 7 (Debian based)
+  apt:
+    name: ['gcc-7', 'g++-7']
+    state: "{{ util_pkg_state | default('present') }}"
+    update_cache: true
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(18.04, '>=')
+
+- name: cpp | Install C++ compiler 8 (Debian based)
+  apt:
+    name: ['gcc-8', 'g++-8']
+    state: "{{ util_pkg_state | default('present') }}"
+    update_cache: true
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(19.04, '>=')
+
+- name: cpp | Install C++ compiler 9 (Debian based)
+  apt:
+    name: ['gcc-9', 'g++-9']
+    state: "{{ util_pkg_state | default('present') }}"
+    update_cache: true
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(19.04, '>=')
 
 # SEE https://www.vultr.com/docs/how-to-install-gcc-on-centos-6
 - name: cpp | Install C++ compiler (CentOS based)
@@ -86,7 +110,15 @@
 
 - name: cpp | Set cpp link to gcc version 6
   set_fact: cpp_version=6
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04", "16.04")
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04", "18.04")
+
+- name: cpp | Set cpp link to gcc version 7
+  set_fact: cpp_version=7
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("18.04", "19.04")
+
+#- name: cpp | Set cpp link to gcc version 8
+#  set_fact: cpp_version=8
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04", "14.04", "16.04", "16.04", "18.04")
 
 # - name: cpp | Set cpp link to gcc version
 #   set_fact: cpp_version=4.4.7
