@@ -69,29 +69,3 @@
   changed_when: false
   become: true
   ignore_errors: true
-
-# - name: python3 | Upgrade pip3
-#   command: "pip3 install --upgrade pip==20.1.1"
-#   changed_when: false
-#   become: true
-#   ignore_errors: true
-#
-# - name: python3 | Upgrade pip
-#   command: "pip{{ python3_version }} install --upgrade pip==20.1.1"
-#   changed_when: false
-#   become: true
-#   ignore_errors: true
-
-# - name: python3 | Check if /usr/bin/pip3 is present
-#   stat:
-#     path: /usr/bin/pip3
-#   register: pip3
-
-# - name: python3 | Create link to pip3
-#   file: path=/usr/local/bin/pip3.8 src=/usr/bin/pip3 state=link # force=yes
-#   when: pip3.stat.islnk is not defined not pip3.stat.islnk
-#   become: true
-#   ignore_errors: true  # Ignore failure on Travis
-#   tags:
-#     - pip3
-#     - vm
