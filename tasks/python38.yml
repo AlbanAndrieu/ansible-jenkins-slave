@@ -6,7 +6,8 @@
     state: "{{ util_pkg_state | default('present') }}"
   when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
   with_items:
-    - "https://centos6.iuscommunity.org/ius-release.rpm"
+    #- "https://centos6.iuscommunity.org/ius-release.rpm"
+    - "https://repo.ius.io/ius-release-el6.rpm"
     - python38u
     - python38u-devel
     - python38u-pip
@@ -18,7 +19,8 @@
     state: "{{ util_pkg_state | default('present') }}"
   when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
   with_items:
-    - "https://centos7.iuscommunity.org/ius-release.rpm"
+    #- "https://centos7.iuscommunity.org/ius-release.rpm"
+    - "https://repo.ius.io/ius-release-el7.rpm"
     - python38u
     - python38u-devel
     - python38u-pip

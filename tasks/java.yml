@@ -69,7 +69,7 @@
 #   with_items:
 #     - oracle-java8-installer
 #   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
-# 
+#
 # - name: jdk8 | Install default oracle
 #   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
 #   tags: jdk_setup
@@ -212,12 +212,13 @@
   command: '{{ java_keytool_executable }} -import -trustcacerts -keystore {{ java_certificate_ca_path }} -keypass {{ java_certificate_key_pass }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias }} -file {{ java_certificate_ca_name }}'
   when: java_cert_imported is failed
   become: true
-#  ignore_errors: true
+  ignore_errors: true
 
 - name: jenkins-slave | Import new certificate
   command: '{{ java_keytool_executable }} -import -trustcacerts -keystore {{ java_certificate_ca_path }} -keypass {{ java_certificate_key_pass }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias_new }} -file {{ java_certificate_ca_name_new }}'
   when: java_cert_imported is failed
   become: true
+  ignore_errors: true
 
 # Belowe need to be done especially because we set JAVA_HOME=/usr/java/default inside .bashrc (see jdk_home)
 

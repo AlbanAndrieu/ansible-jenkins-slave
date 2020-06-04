@@ -25,7 +25,8 @@
     state: "{{ util_pkg_state | default('present') }}"
   when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
   with_items:
-    - "https://centos6.iuscommunity.org/ius-release.rpm"
+    #- "https://centos6.iuscommunity.org/ius-release.rpm"
+    - "https://repo.ius.io/ius-release-el6.rpm"
     - python36u
     - python36u-devel
     - python36u-pip
@@ -68,7 +69,8 @@
     state: "{{ util_pkg_state | default('present') }}"
   when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
   with_items:
-    - "https://centos7.iuscommunity.org/ius-release.rpm"
+    #- "https://centos7.iuscommunity.org/ius-release.rpm"
+    - "https://repo.ius.io/ius-release-el7.rpm"
     - python36u
     - python36u-devel
     - python36u-pip
@@ -147,7 +149,7 @@
 #     name: virtualenv
 #     executable: pip{{ python3_version }}
 #   become: true
-# 
+#
 # - name: python3 | Gather current pip requirement
 #   command: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
 #   when: not( (python3_version is undefined) or (python3_version is none) )
@@ -155,7 +157,7 @@
 #   changed_when: false
 #   become: true
 #   ignore_errors: true
-# 
+#
 # - name: python3 | Copy the requirements configuration file for python
 #   copy: src=python/requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-current-{{ python3_version }}.txt backup=yes
 #   become: true
