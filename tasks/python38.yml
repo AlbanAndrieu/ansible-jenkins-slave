@@ -74,22 +74,22 @@
 # deactivate
 # sudo pip3 install --upgrade pip
 
-- name: python | Upgrade pip3
-  command: "pip3 install --upgrade pip==20.1.1"
-  changed_when: false
-  become: true
-  ignore_errors: true
+#- name: python3 | Upgrade pip3
+#  command: "pip3 install --upgrade pip==20.1.1"
+#  changed_when: false
+#  become: true
+#  ignore_errors: true
+#
+#- name: python3 | Upgrade pip
+#  command: "pip{{ python3_version }} install --upgrade pip==20.1.1"
+#  changed_when: false
+#  become: true
+#  ignore_errors: true
 
-- name: python | Upgrade pip
-  command: "pip{{ python3_version }} install --upgrade pip==20.1.1"
-  changed_when: false
-  become: true
-  ignore_errors: true
-
-- name: python | Check if /usr/bin/pip3 is present
-  stat:
-    path: /usr/bin/pip3
-  register: pip3
+#- name: python | Check if /usr/bin/pip3 is present
+#  stat:
+#    path: /usr/bin/pip3
+#  register: pip3
 
 #- name: python | Create link to pip3
 #  file: path=/usr/local/bin/pip3.8 src=/usr/bin/pip3 state=link # force=yes
