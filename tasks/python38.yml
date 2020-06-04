@@ -25,7 +25,7 @@
   become: true
 
 - name: python3 | Set python link to python version
-  set_fact: python3_version=
+  set_fact: python3_version=3.8
 
 - name: python3 | Install python 3 requirement
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
@@ -37,25 +37,25 @@
     - python-dbg
     - python-gdbm
 
-#- name: python3 | Install missing pip{{ python3_version }} (1)
-#  get_url:
-#    url: https://bootstrap.pypa.io/get-pip.py
-#    dest: /tmp/get-pip.py
-#  register: curl_result
-#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
-#  become: true
+# - name: python3 | Install missing pip{{ python3_version }} (1)
+#   get_url:
+#     url: https://bootstrap.pypa.io/get-pip.py
+#     dest: /tmp/get-pip.py
+#   register: curl_result
+#   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
+#   become: true
 #
-#- name: python3 | Install missing pip{{ python3_version }} (2)   # noqa 503
-#  command: "python{{ python3_version }} /tmp/get-pip.py"
-#  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
-#  changed_when: false
-#  become: true
+# - name: python3 | Install missing pip{{ python3_version }} (2)   # noqa 503
+#   command: "python{{ python3_version }} /tmp/get-pip.py"
+#   when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
+#   changed_when: false
+#   become: true
 #
-#- debug: msg="curl_result - {{ curl_result.rc }} - {{ curl_result.stdout }}"
-#  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>=')) and not ansible_check_mode
-#  ignore_errors: true
+# - debug: msg="curl_result - {{ curl_result.rc }} - {{ curl_result.stdout }}"
+#   when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>=')) and not ansible_check_mode
+#   ignore_errors: true
 
-# - debug: msg="{{ curl_result.stdout }}"
+#  - debug: msg="{{ curl_result.stdout }}"
 
 - name: python3 | Run pip check   # noqa 503
   shell: (pip -V && pip -V) | uniq
@@ -70,32 +70,28 @@
   become: true
   ignore_errors: true
 
-# python3 -m pip install --upgrade pip==20.0.2
-# deactivate
-# sudo pip3 install --upgrade pip
-
-#- name: python3 | Upgrade pip3
-#  command: "pip3 install --upgrade pip==20.1.1"
-#  changed_when: false
-#  become: true
-#  ignore_errors: true
+# - name: python3 | Upgrade pip3
+#   command: "pip3 install --upgrade pip==20.1.1"
+#   changed_when: false
+#   become: true
+#   ignore_errors: true
 #
-#- name: python3 | Upgrade pip
-#  command: "pip{{ python3_version }} install --upgrade pip==20.1.1"
-#  changed_when: false
-#  become: true
-#  ignore_errors: true
+# - name: python3 | Upgrade pip
+#   command: "pip{{ python3_version }} install --upgrade pip==20.1.1"
+#   changed_when: false
+#   become: true
+#   ignore_errors: true
 
-#- name: python | Check if /usr/bin/pip3 is present
-#  stat:
-#    path: /usr/bin/pip3
-#  register: pip3
+# - name: python3 | Check if /usr/bin/pip3 is present
+#   stat:
+#     path: /usr/bin/pip3
+#   register: pip3
 
-#- name: python | Create link to pip3
-#  file: path=/usr/local/bin/pip3.8 src=/usr/bin/pip3 state=link # force=yes
-#  when: pip3.stat.islnk is not defined not pip3.stat.islnk
-#  become: true
-#  ignore_errors: true  # Ignore failure on Travis
-#  tags:
-#    - pip3
-#    - vm
+# - name: python3 | Create link to pip3
+#   file: path=/usr/local/bin/pip3.8 src=/usr/bin/pip3 state=link # force=yes
+#   when: pip3.stat.islnk is not defined not pip3.stat.islnk
+#   become: true
+#   ignore_errors: true  # Ignore failure on Travis
+#   tags:
+#     - pip3
+#     - vm
