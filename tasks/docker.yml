@@ -230,7 +230,7 @@
 # Fix is apt remove golang-docker-credential-helpers
 
 - name: docker | docker login fix
-  shell: "apt remove -y golang-docker-credential-helpers && apt-get purge docker-credential-pass"
+  shell: "apt remove -y golang-docker-credential-helpers"
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version in ['18.04']
   become: true
   ignore_errors: true
@@ -303,10 +303,11 @@
     - gnome-keyring
     - gnupg2
     - pass
+    - docker-credential-pass
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(18.04, '>=')
   tags: package
   become: true
-  
+
 - name: docker | Install keyring for docker login to store credentials
   action: "{{ ansible_pkg_mgr }} name={{ item }} state=absent"
   with_items:
