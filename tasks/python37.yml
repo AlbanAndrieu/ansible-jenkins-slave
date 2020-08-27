@@ -78,7 +78,7 @@
 
 # - debug: msg="{{ curl_result.stdout }}"
 
-- name: python3 | Run pip check   # noqa 503
+- name: python3 | Run pip check   # noqa 503 306
   shell: (pip -V && pip3.7 -V) | uniq
   when: curl_result.changed
   become: true
@@ -189,6 +189,17 @@
 #   command: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
 #   changed_when: false
 #   become: true
+
+- name: python3 | Uninstall dependencies for python 3 requirements
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python3_version }}"
+    state: absent
+  when: not ansible_check_mode
+  with_items:
+    - argparse
+  ignore_errors: '{{ ansible_check_mode }}'
+  become: true
 
 - name: python3 | Check if /usr/bin/pip3 is present
   stat:

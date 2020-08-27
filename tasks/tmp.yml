@@ -24,11 +24,20 @@
   ignore_errors: true
   changed_when: false
 
-- name: jenkins-slave | Add sanitary job in cron
-  cron: name="tmp cleanup" hour="1" minute="0" job="find /tmp -user {{ jenkins_user }} -atime +7 -exec rm -rf {} +" user={{ jenkins_user }}
+- name: jenkins-slave | Add sanitary job in cron for tmp
+  cron:
+    name: "tmp cleanup"
+    hour: "1"
+    minute: "0"
+    job: "find /tmp -user {{ jenkins_user }} -atime +7 -exec rm -rf {} +"
+    user: "{{ jenkins_user }}"
+    cron_file: "clean_tmp"
   become: true
-  ignore_errors: true
-  tags: cron
+#  ignore_errors: true
+  tags:
+    - cron
+    - vm
+
 # sudo service cron restart
 
 # Fix jetty filling tmp
@@ -37,3 +46,25 @@
 ## or ~.bash_profile
 #  become: true
 #  changed_when: false
+# If not already created by jenkins_slave_directory in main.yml
+- name: jenkins-slave | Assert that workspace tmp directory has proper right
+  file:
+    dest: "{{ jenkins_slave_home }}/tmp"
+    state: directory
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0775
+
+- name: jenkins-slave | Add sanitary job in cron for workspace tmp
+  cron:
+    name: "workspace tmp cleanup"
+    hour: "1"
+    minute: "0"
+    job: "find {{ jenkins_slave_home }}/tmp -user {{ jenkins_user }} -atime +7 -exec rm -rf {} +"
+    user: "{{ jenkins_user }}"
+    cron_file: "clean_workspace_tmp"
+  become: true
+#  ignore_errors: true
+  tags:
+    - cron
+    - vm

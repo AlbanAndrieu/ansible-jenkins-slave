@@ -95,16 +95,11 @@ npm_global_packages:
   - coffee-script@1.10.0
   - connect@1.9.2
   - eslint@6.8.0
-#  - grunt@1.0.4
   - grunt-cli@1.3.2
-#  - grunt-version-check@0.3.8
   - jshint@2.9.5
   - jsonlint@1.6.2
   - json2csv@4.3.3
-#  - karma@4.0.1
-#  - node-sass@3.11.2
   - nsp@3.2.1
-#  - npm@6.13.6
   - phantomjs-prebuilt@2.1.16              # EACCES: permission denied
   - phantomas@1.20.1
   - prettier@2.0.4
@@ -118,6 +113,11 @@ npm_global_packages:
   - xunit-viewer@5.1.11
   - dockerfile_lint@0.3.3
   - grunt-retire@1.0.8  # security tool
+#  - grunt@1.0.4
+#  - grunt-version-check@0.3.8
+#  - karma@4.0.1
+#  - node-sass@3.11.2
+#  - npm@6.13.6 # To be aligned with code, See Dockerfile
 
 npm_chromedriver_version: 2.42
 #  apt_chromedriver_version: "=77.0.3865.90-0ubuntu0.18.04.1"
@@ -239,7 +239,7 @@ docker_opts: >
 #  --dns {{ docker_opts_dns_2 }}
 #  --dns-search={{ docker_opts_dns_search }}
 #  --insecure-registry=registry.albandrieu.com
-#  --userns-remap jenkins #TODO on Ubuntu only
+#  --userns-remap jenkins #TODO on Ubuntu only, but it is conflicting with kubernete or running docker run --net=host
 
 # workspace: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
 workspace: "{{ tempdir.stdout }}"

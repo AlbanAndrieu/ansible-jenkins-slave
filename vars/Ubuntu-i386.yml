@@ -24,6 +24,6 @@ odbcinst_Oracle_Driver: /opt/oracle/instantclient_12_2/libsqora.so.12.1
 oracle_jdk_home: "/usr/lib/jvm/java-8-oracle"
 oracle_jre_home: "{{ oracle_jdk_home }}/jre/"
 open_jdk_home: "/usr/lib/jvm/java-8-openjdk-amd64"
-open_jre_home: "{{ open_jre_home }}/jre/"
+open_jre_home: "{{ open_jdk_home }}/jre/"
 jdk_home: "{{ open_jdk_home }}"
 jre_home: "{{ open_jre_home }}"

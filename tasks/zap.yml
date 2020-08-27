@@ -19,7 +19,7 @@
 
 #mkdir -p /workspace/slave/tools/com.cloudbees.jenkins.plugins.customtools.CustomTool/ZAPROXY/ZAP_2.8.0
 #cd /workspace/slave/tools/com.cloudbees.jenkins.plugins.customtools.CustomTool/ZAPROXY/ZAP_2.8.0
-#wget http://fr1cslfrbm0059/download/zap/ZAP_2.8.0_Core.zip
+#wget http://albandrieu.com/download/zap/ZAP_2.8.0_Core.zip
 #unzip ZAP_2.8.0_Core.zip
 #chown -R jenkins:docker /workspace/slave/tools/
 

@@ -4,7 +4,7 @@
 
 - name: jenkins-slave | Install security basic tools for Ansible check
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}  update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version('16.04', '>=')
   with_items:
     - chkrootkit
   become: true
@@ -39,7 +39,7 @@
 
 - name: jenkins-slave | Install security basic tools for openscap check
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}  update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version('16.04', '>=')
   with_items:
     - libopenscap8
     - python-openscap
@@ -48,7 +48,7 @@
 
 - name: jenkins-slave | Install security basic tools for openscap check
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}  update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
   with_items:
     - openscap
   become: true

@@ -248,7 +248,6 @@
     - libzip-devel
   become: true
 
-# TODO ???
 # cross compatibility for i386 i686
 # - name: jenkins-slave | Install C++ librairies curl (CentOS and RedHat based)
 #   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"

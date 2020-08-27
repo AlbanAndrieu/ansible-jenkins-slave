@@ -160,7 +160,6 @@
 # brew update && brew upgrade; brew cleanup
 - name: brew | Homebrew Cleaning
   command: "{{ homebrew_check_path }} cleanup"
-#  with_items: "{{ brew_packages }}"
   when: homebrew_check_path.stat.exists
   become: true
   ignore_errors: true

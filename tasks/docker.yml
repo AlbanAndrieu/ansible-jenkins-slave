@@ -138,7 +138,7 @@
   notify:
     - restart docker
   become: true
-  ignore_errors: true  # Ignore failure on Travis
+  ignore_errors: true   # Ignore failure on Travis
   tags:
     - restart
     - notify
@@ -236,6 +236,15 @@
   ignore_errors: true
   tags: vm
 
+- name: docker | Uninstall keyring for docker login to store credentials
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=absent"
+  with_items:
+    - golang-docker-credential-helpers
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version in ['18.04'] # is version_compare(18.04, '>=')
+  tags: package
+  become: true
+
+# TODO remove config.json, jenkins is putting it inside ~/.dockercfg
 - name: docker | Create docker directory for .docker/config.json
   file: path={{ docker_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
   become: true
@@ -265,6 +274,7 @@
     - docker
 
 - import_tasks: tmp.yml
+  tags: vm
 
 - name: docker | docker container-structure-test
   shell: "curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64 && chmod +x container-structure-test-linux-amd64 && sudo mv container-structure-test-linux-amd64 /usr/local/bin/container-structure-test" # noqa 303
@@ -303,15 +313,7 @@
     - gnome-keyring
     - gnupg2
     - pass
-    - docker-credential-pass
-  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(18.04, '>=')
-  tags: package
-  become: true
-
-- name: docker | Install keyring for docker login to store credentials
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state=absent"
-  with_items:
-    - golang-docker-credential-helpers
+#   - docker-credential-pass
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(18.04, '>=')
   tags: package
   become: true

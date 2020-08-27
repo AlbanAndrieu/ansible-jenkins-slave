@@ -100,9 +100,9 @@
 
 - import_tasks: cpp.yml
 
-#- import_tasks: objc.yml
-#  tags:
-#    - objc
+- import_tasks: objc.yml
+  tags:
+    - objc
 
 #- import_tasks: scons.yml
 
@@ -347,6 +347,8 @@
   ignore_errors: true
   tags:
     - vm # do not install on docker image
+
+- import_tasks: molecule.yml
 
 # - name: jenkins-slave | Copy Dockerfile
 #   template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0777

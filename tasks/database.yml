@@ -43,6 +43,29 @@
     - libaio1               # ODBC oracle install client
   become: true
 
+- name: database | Install microsoft key for mssql librairies (Debian based) (1)
+  shell: 'curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -'
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(18.04, '>=')
+  become: true
+
+- name: database | Install microsoft key for mssql librairies (Debian based) (2)
+  shell: 'curl https://packages.microsoft.com/config/ubuntu/{{ ansible_distribution_version }}/prod.list > /etc/apt/sources.list.d/mssql-release.list'
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(18.04, '>=')
+  become: true
+
+#rm /etc/apt/sources.list.d/mssql-release.list
+
+- name: Update repositories cache
+  apt:
+    update_cache: yes
+
+- name: database | Install msodbcsql17 librairies (Debian based)
+  shell: "ACCEPT_EULA=Y apt-get install msodbcsql17 mssql-tools"    # mssql-tools is optional: for bcp and sqlcmd
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(18.04, '>=')
+  become: true
+  changed_when: false
+  ignore_errors: true
+
 - name: database | Install C++ librairies for running (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
