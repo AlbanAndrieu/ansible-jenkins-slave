@@ -196,7 +196,7 @@
 #     - pre-commit         # See http://pre-commit.com/
 #   become: true
 #   when: ansible_python_version | version_compare('2.7', '>=')
-  
+
 # - name: python | Install aws tools
 #   pip:
 #     name: "{{ item }}"
@@ -207,7 +207,7 @@
 #   ignore_errors: true
 #   when: ansible_python_version | version_compare('2.7', '>=')
 #   become: true
-  
+
 # - name: python | Install devops tools for jobs-duration-charts-admin
 #   pip:
 #     name: "{{ item }}"
@@ -218,7 +218,7 @@
 #     - certifi
 #   when: ansible_python_version | version_compare('2.7', '>=')
 #   become: true
-  
+
 # - name: python | Install devops tools
 #   pip:
 #     name: "{{ item }}"
@@ -230,7 +230,7 @@
 #     - colorama
 #   when: ansible_python_version | version_compare('2.7', '>=')
 #   become: true
-  
+
 # - name: python | Install devops tools for release notes
 #   pip:
 #     name: "{{ item }}"
@@ -245,7 +245,7 @@
 #   when: ansible_python_version | version_compare('2.7', '>=')
 #   become: true
 #   ignore_errors: true
-  
+
 # - name: python | Install devops tools for ansible windows
 #   pip:
 #     name: "{{ item }}"
@@ -254,7 +254,7 @@
 #     - "pywinrm>=0.2.2"
 #   when: ansible_python_version | version_compare('2.7', '>=') and not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
 #   become: true
-  
+
 # - name: python | Install devops tools for ansible accelerate mode
 #   pip:
 #     name: "{{ item }}"
@@ -264,9 +264,9 @@
 #   when: ansible_python_version | version_compare('2.7', '>=')
 #   become: true
 #   ignore_errors: true
-  
+
 #  sudo apt-get install krb5-kdc krb5-admin-server
-  
+
 # - name: python | Install devops tools for ansible kerberos
 #   pip:
 #     name: "{{ item }}"
@@ -278,7 +278,7 @@
 #   when: ansible_python_version | version_compare('2.7', '>=') and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
 #   become: true
 #   ignore_errors: true
-  
+
 # - name: python | Install devops tools for ansible
 #   pip:
 #     name: "{{ item }}"
@@ -289,7 +289,7 @@
 #   when: ansible_python_version | version_compare('2.7', '>=')
 #   become: true
 #   ignore_errors: true
-  
+
 # - name: python | Install zabbix tools
 #   pip:
 #     name: "{{ item }}"
@@ -318,7 +318,7 @@
 #   when: ansible_python_version | version_compare('2.7', '>=')
 #   become: true
 #   ignore_errors: true
-  
+
 # - name: python | Install dependencies for pycurl
 #   pip:
 #     name: "{{ item }}"
@@ -329,7 +329,7 @@
 #   when: ansible_python_version | version_compare('2.7', '>=')
 #   become: true
 #   ignore_errors: true
-  
+
 #  WARNING need gcc/cpp, must be done after gcc.yml
 # - name: python | Install ODBC for FreeTDS
 #   pip:
@@ -361,7 +361,7 @@
 #   when: ansible_python_version | version_compare('2.7', '>=')
 #   become: true
 #   ignore_errors: true
-# 
+#
 # - name: python | Install tox for testing python
 #   pip:
 #     name: "{{ item }}"

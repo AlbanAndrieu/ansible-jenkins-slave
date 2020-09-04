@@ -36,7 +36,7 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0777
-    remote_src: true    
+    remote_src: true
     validate_certs: false
   become: true
 #  ignore_errors: "{{ ansible_check_mode }}"

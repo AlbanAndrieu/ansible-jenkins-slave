@@ -7,7 +7,7 @@ python:
 #  - 3.5
   - 3.6
   - 3.7
-  
+
 services:
   - docker
 cache:
@@ -24,7 +24,7 @@ env:
 #  - ANSIBLE_VERSION=latest
   - ANSIBLE_VERSION=2.7.14
   - ANSIBLE_VERSION=2.9.4
-  
+
 sudo: required
 #dist: trusty
 dist: travis_lts
@@ -58,7 +58,7 @@ install:
   # Set password for the jenkins user (you may want to alter this).
 #  - sudo echo "jenkins:jenkins1234" | sudo chpasswd
 
-  - pip3 install molecule==3.0.2  
+  - pip3 install molecule==3.0.2
 
   # Update Ansible submodule.
   - git pull && git submodule init && git submodule update && git submodule status
@@ -85,7 +85,7 @@ script:
 
   # Second run Idempotence test
   # Run the role/playbook again, checking to make sure it's idempotent.
-  - idempotence=$(mktemp)  
+  - idempotence=$(mktemp)
 # - ansible-playbook -i hosts jenkins-slave.yml --connection=local -vvvv -e "python_versions=[2.7, 3.5]" -e "jenkins_group=docker" -e "docker_gid=${DOCKER_GID}" -e "jenkins_id=${JENKINS_UID}" -e "python_enabled=false" --skip-tags restart | tee -a ${idempotence}
 #  - >
 #    tail ${idempotence}

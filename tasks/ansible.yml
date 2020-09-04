@@ -40,7 +40,7 @@
 #   tags:
 #     - pip
 #     - vm # do not install on docker image
-  
+
 #  Using pip with requirements-current-3.5.txt or requirements-current-3.6.txt instead
 # - name: jenkins-slave | Install Ansible add ons (Debian based)
 #   pip:
