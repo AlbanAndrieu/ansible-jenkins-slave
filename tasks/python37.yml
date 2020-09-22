@@ -19,7 +19,7 @@
 
 # virtualenv py3-ansible -p /usr/local/bin/python3.7
 
-- name: python3 | Install python (RedHat and CentOS based)
+- name: python37 | Install python (RedHat and CentOS based)
   yum:
     name: "{{ item }}"
     state: "{{ util_pkg_state | default('present') }}"
@@ -32,7 +32,7 @@
     - python37u-pip
   become: true
 
-- name: python3 | Install python (RedHat and CentOS based)
+- name: python37 | Install python (RedHat and CentOS based)
   yum:
     name: "{{ item }}"
     state: "{{ util_pkg_state | default('present') }}"
@@ -45,10 +45,10 @@
     - python37u-pip
   become: true
 
-- name: python3 | Set python link to python version
+- name: python37 | Set python link to python version
   set_fact: python3_version=3.7
 
-- name: python3 | Install python 3 requirement
+- name: python37 | Install python 3 requirement
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
@@ -58,7 +58,7 @@
     - python3.7-dbg
     - python3.7-gdbm
 
-- name: python3 | Install missing pip{{ python3_version }} (1)
+- name: python37 | Install missing pip{{ python3_version }} (1)
   get_url:
     url: https://bootstrap.pypa.io/get-pip.py
     dest: /tmp/get-pip.py
@@ -66,7 +66,7 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
   become: true
 
-- name: python3 | Install missing pip{{ python3_version }} (2)   # noqa 503
+- name: python37 | Install missing pip{{ python3_version }} (2)   # noqa 503
   command: "python{{ python3_version }} /tmp/get-pip.py"
   when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
   changed_when: false
@@ -78,13 +78,13 @@
 
 # - debug: msg="{{ curl_result.stdout }}"
 
-- name: python3 | Run pip check   # noqa 503 306
+- name: python37 | Run pip check   # noqa 503 306
   shell: (pip -V && pip3.7 -V) | uniq
   when: curl_result.changed
   become: true
 #  ignore_errors: true
 
-- name: python3 | Upgrade setuptools
+- name: python37 | Upgrade setuptools
   command: "pip{{ python3_version }} install --upgrade setuptools"
   changed_when: false
   become: true
@@ -106,13 +106,13 @@
   become: true
   ignore_errors: true
 
-# - name: python3 | Install virtualenv via pip
+# - name: python37 | Install virtualenv via pip
 #   pip:
 #     name: virtualenv
 #     executable: pip{{ python3_version }}
 #   become: true
 #
-# - name: python3 | Gather current pip requirement
+# - name: python37 | Gather current pip requirement
 #   command: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
 #   when: not( (python3_version is undefined) or (python3_version is none) )
 #         and (python3_version | length > 0)
@@ -120,18 +120,18 @@
 #   become: true
 #   ignore_errors: true
 #
-# - name: python3 | Copy the requirements configuration file for python
+# - name: python37 | Copy the requirements configuration file for python
 #   copy: src=python/requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-current-{{ python3_version }}.txt backup=yes
 #   become: true
 
-- name: python3 | Install dependencies for python 3 requirements
+- name: python37 | Install dependencies for python 3 requirements
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - libcups2-dev
   become: true
 
-- name: python3 | Install dependencies for python 3 lxml requirements
+- name: python37 | Install dependencies for python 3 lxml requirements
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
@@ -140,7 +140,7 @@
     - libxslt-dev
     - python3-lxml
 
-# - name: python3 | Uninstall dependencies for python 3 requirements
+# - name: python37 | Uninstall dependencies for python 3 requirements
 #   pip:
 #     name: "{{ item }}"
 #     executable: "pip{{ python3_version }}"
@@ -151,7 +151,7 @@
 #   ignore_errors: '{{ ansible_check_mode }}'
 #   become: true
 #
-# - name: python3 | Install missing for python 3 (for dpkg)
+# - name: python37 | Install missing for python 3 (for dpkg)
 #   pip:
 #     name: "{{ item }}"
 #     executable: "pip{{ python3_version }}"
@@ -161,14 +161,14 @@
 #   ignore_errors: '{{ ansible_check_mode }}'
 #   become: true
 
-- name: python3 | Install C++ librairies database (Debian based) for pyodbc
+- name: python37 | Install C++ librairies database (Debian based) for pyodbc
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
     - unixodbc-dev    # ODBC
   become: true
 
-- name: python3 | Install C++ librairies for database (CentOS and RedHat based) for pyodbc
+- name: python37 | Install C++ librairies for database (CentOS and RedHat based) for pyodbc
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
@@ -176,7 +176,7 @@
     - unixODBC-devel   # ODBC
   become: true
 
-# - name: python3 | Ensure jenkins ownership
+# - name: python37 | Ensure jenkins ownership
 #   file:
 #     path: "/opt/ansible/env37"
 #     state: directory
@@ -185,12 +185,12 @@
 #     owner: "{{ jenkins_group }}"
 #   become: true
 
-# - name: python3 | Install missing pip requirement
+# - name: python37 | Install missing pip requirement
 #   command: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
 #   changed_when: false
 #   become: true
 
-- name: python3 | Uninstall dependencies for python 3 requirements
+- name: python37 | Uninstall dependencies for python 3 requirements
   pip:
     name: "{{ item }}"
     executable: "pip{{ python3_version }}"
@@ -201,19 +201,19 @@
   ignore_errors: '{{ ansible_check_mode }}'
   become: true
 
-- name: python3 | Check if /usr/bin/pip3 is present
+- name: python37 | Check if /usr/bin/pip3 is present
   stat:
     path: /usr/bin/pip3
   register: pip3
 
-#- name: python3 | Remove pip3 when it is not a symbolic link
+#- name: python37 | Remove pip3 when it is not a symbolic link
 #  file: path=/usr/bin/pip3 state=absent
 #  when: pip3.stat.islnk is defined and not pip3.stat.islnk
 #  become: true
 #  ignore_errors: true
 #  tags: vm
 
-- name: python3 | Create link to pip3
+- name: python37 | Create link to pip3
   file: path=/usr/local/bin/pip3.7 src=/usr/bin/pip3 state=link # force=yes
   when: pip3.stat.islnk is not defined not pip3.stat.islnk
   become: true
