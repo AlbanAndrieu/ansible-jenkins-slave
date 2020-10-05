@@ -253,6 +253,7 @@ sonar_build_wrapper_target_dir: "{{ sonar_target_dir }}sonar-build-wrapper"
 # See http://mirror.serverion.com/jenkins/updates/updates/hudson.plugins.sonar.SonarRunnerInstaller.json
 sonar_scanner_version: "4.2.0.1873"
 sonar_scanner_name: "sonar-scanner-{{ sonar_scanner_version }}"
+sonar_scanner_cli_name: "sonar-scanner-cli-{{ sonar_scanner_version }}"
 sonar_scanner_download_file: "{{ sonar_scanner_name }}.zip"
 sonar_scanner_download_url: "https://github.com/SonarSource/sonar-scanner-cli/archive/{{ sonar_scanner_version }}.zip"
 sonar_scanner_target_dir: "{{ sonar_target_dir }}sonar-runner"

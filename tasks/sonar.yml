@@ -74,7 +74,7 @@
     state: link
     force: true
   with_items:
-    - { from: '{{ sonar_target_dir }}{{ sonar_scanner_name }}', dest: '{{ sonar_scanner_target_dir }}' }
+    - { from: '{{ sonar_target_dir }}{{ sonar_scanner_cli_name }}', dest: '{{ sonar_scanner_target_dir }}' }
     - { from: '{{ sonar_target_dir }}{{ sonar_build_wrapper_name }}', dest: '{{ sonar_build_wrapper_target_dir }}' }
   become: true
   changed_when: false
