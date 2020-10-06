@@ -43,7 +43,7 @@
 #  ignore_errors: true
 
 # cd /usr/local
-# sudo wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip
+# sudo wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.5.0.2216-linux.zip
 # sudo wget http://albandrieu.com/download/sonar/sonar-scanner-cli-3.2.0.1227.zip
 # sudo unzip sonar-scanner-cli-3.2.0.1227.zip
 
@@ -74,7 +74,7 @@
     state: link
     force: true
   with_items:
-    - { from: '{{ sonar_target_dir }}{{ sonar_scanner_cli_name }}', dest: '{{ sonar_scanner_target_dir }}' }
+    - { from: '{{ sonar_target_dir }}{{ sonar_scanner_name }}', dest: '{{ sonar_scanner_target_dir }}' }
     - { from: '{{ sonar_target_dir }}{{ sonar_build_wrapper_name }}', dest: '{{ sonar_build_wrapper_target_dir }}' }
   become: true
   changed_when: false
