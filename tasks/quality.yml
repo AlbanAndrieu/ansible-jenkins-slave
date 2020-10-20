@@ -123,3 +123,11 @@
     - cloc
   become: true
   ignore_errors: true
+
+- name: jenkins-slave | Install checkinstall
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  tags: package
+  with_items:
+    - checkinstall
+  become: true
+  ignore_errors: true
