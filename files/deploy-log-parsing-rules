@@ -327,6 +327,15 @@ error /Internal Error: no cycle found for node/
 
 warning /ld: skipping incompatible/
 
+#conan
+warning /ERROR: Remote 'nabla' already exists in remotes \(use update to modify\)/
+warning /ERROR: Profile already exists/
+warning /error: When enabling GENERATE_HTMLHELP the tree view \(GENERATE_TREEVIEW\) should be disabled. I'll do it for you./
+warning /error: When enabling GENERATE_HTMLHELP the search engine \(SEARCHENGINE\) should be disabled. I'll do it for you./
+warning /Error while trying to load a compilation database:/
+warning /fixed-compilation-database: Error while opening fixed database: No such file or directory/
+warning /json-compilation-database: Error while opening JSON database: No such file or directory/
+
 # list of warnings here...
 warning /[Ww]arning/
 warning /WARNING/
