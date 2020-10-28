@@ -155,12 +155,12 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=true"
   with_items:
     - clang-format
-    - clang-tools
+    - clang-tools  # clang-tools-10
     - clang-tidy
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   tags: cpp
   become: true
-  ignore_errors: true
+  #ignore_errors: true
 
 - name: cpp | Install C++ clang llvm dev
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=true"

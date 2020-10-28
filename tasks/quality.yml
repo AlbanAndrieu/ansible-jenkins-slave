@@ -24,6 +24,16 @@
   become: true
   ignore_errors: true
 
+- name: jenkins-slave | Install perf monitoring and metrics tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - linux-tools-common
+    - linux-tools-generic
+    - linux-cloud-tools-generic
+  become: true
+  ignore_errors: true
+
 - name: jenkins-slave | Install documentation tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
 # when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
