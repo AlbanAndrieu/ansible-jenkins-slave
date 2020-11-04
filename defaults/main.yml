@@ -191,6 +191,9 @@ shell_git: []
 #   shell_git_meld_enabled: true,
 #   shell_git_editor: "gedit",
 #   shell_git_maildomain = "free.fr"
+#   shell_git_autocrlf: "input"   # For unix, use true for mingw on windows
+#   shell_git_longpaths: "true"   # For windows
+#   shell_git_ssl: "false"
 
 shell_sa_password: "microsoft"
 svn_user: "jenkins"

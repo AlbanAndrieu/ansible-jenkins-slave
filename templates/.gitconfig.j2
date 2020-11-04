@@ -4,41 +4,48 @@
 {% for machine in shell_git %}
 [user]
 {% if machine.shell_git_email is defined %}
-	email = {{ machine.shell_git_email }}
+    email = {{ machine.shell_git_email }}
 {% endif %}
 {% if machine.shell_git_name is defined %}
-	name = {{ machine.shell_git_name }}
+    name = {{ machine.shell_git_name }}
 {% endif %}
 [core]
-	autocrlf = input
+{% if shell_git_autocrlf is defined %}
+    autocrlf = "{{ shell_git_autocrlf }}"
+{% endif %}
+{% if shell_git_longpaths is defined %}
+    longpaths = "{{ shell_git_longpaths }}"
+{% endif %}
 {% if machine.shell_git_editor is defined %}
-	editor = {{ machine.shell_git_editor }}
+    editor = {{ machine.shell_git_editor }}
 {% endif %}
 #[credential]
-#	helper = cache --timeout=86400
+#   helper = cache --timeout=86400
 #[alias]
-#	co = checkout
-#	br = branch
-#	ci = commit
-#	st = status
-#	pl = pull —rebase
-#	di = diff --ignore-space-at-eol -b -w
-#	lo = log --graph
-#	unstage = reset HEAD --
-#	last = log -1 HEAD
+#   co = checkout
+#   br = branch
+#   ci = commit
+#   st = status
+#   pl = pull —rebase
+#   di = diff --ignore-space-at-eol -b -w
+#   lo = log --graph
+#   unstage = reset HEAD --
+#   last = log -1 HEAD
 #[help]
-#	autocorrect = 1
+#   autocorrect = 1
 #[color]
-#	ui = auto
+#   ui = auto
 #[branch "master"]
-#	rebase = true
+#   rebase = true
 #[branch]
-#	autosetuprebase = always
+#   autosetuprebase = always
 {% if shell_git_maildomain is defined %}
 [maven-scm]
   maildomain = "{{ shell_git_maildomain }}"
   forceUsername = true
 {% endif %}
 [http]
-    sslverify = false
+{% if shell_git_ssl is defined %}
+    sslverify = "{{ shell_git_ssl }}"
+{% endif %}
 {% endfor %}

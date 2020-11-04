@@ -14,12 +14,13 @@
   become: true
   ignore_errors: true
 
-- name: jenkins-slave | Install gperf monitoring and metrics tools
+- name: jenkins-slave | Install perf and gperf monitoring and metrics tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
 # when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 # when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
   when: not (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
+    - perf
     - gperf
   become: true
   ignore_errors: true
