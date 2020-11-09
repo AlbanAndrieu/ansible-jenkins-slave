@@ -75,6 +75,13 @@ jenkins_remote_thinbackup: "/backup/thinBackup"
 
 home_url: "http://localhost"
 nexus_url: "{{ home_url }}:8081"
+nexus_non_proxy: "albandrieu.com|nabla.mobi"
+http_proxy_host: "192.168.1.57"
+http_proxy_port: "3128"
+http_proxy_protocol: "http"
+http_proxy: "{{ http_proxy_protocol }}://{{ http_proxy_host }}:{{ http_proxy_port }}"
+https_proxy: "{{ http_proxy }}"
+
 # npm_nexus_npm_url: "{{ nexus_url }}/nexus/content/npm/registry.npmjs.org/"
 npm_nexus_npm_url:
 npm_nexus_private_npm_url: "http://registry.npmjs.org/"
@@ -86,6 +93,7 @@ npm_slimerjs_cdnurl: ""
 npm_strict_ssl: "false"
 
 npm_prefix: ""           # "/usr/local/bin" or "/usr/bin"
+npm_proxy:    # "{{ http_proxy }}"
 # Define a list of global packages to be installed with NPM.
 npm_global_packages:
 #  - analyze-css@0.10.2
@@ -127,6 +135,7 @@ brew_enabled: false
 brew_packages:
   - 'randomize-lines'   # for git-radar
   - 'michaeldfallen/formula/git-radar'
+  - 'hadolint'
 #  - 'autoconf'
 #  - 'bash-completion'
 #  - 'boot2docker'
@@ -134,6 +143,7 @@ brew_packages:
 #  - 'docker-compose'
 #  - 'docker-machine'
 #  - 'doxygen'
+  - 'dive'
 #  - 'git'
 #  - 'git-lfs'
 #  - 'go'
@@ -160,8 +170,9 @@ brew_packages:
 install_homebrew_if_missing: true
 
 upgrade_homebrew_packages: false
+homebrew_repository: "https://github.com/Homebrew/brew"
 homebrew_home_check_path: "{{ lookup('env','HOME') }}/.linuxbrew"
-homebrew_check_path: "{{ homebrew_home_check_path }}/homebrew/bin/brew"
+homebrew_check_path: "{{ homebrew_home_check_path }}/bin/brew"
 
 # maven_
 # maven_repository: "{{ jenkins_slave_home }}/repository"
@@ -176,6 +187,7 @@ bower_url: "{{ home_url }}:5678"
 bower_registry_url: "{{ bower_url }}"
 bower_register_url: "{{ bower_url }}"
 bower_publish_url: "{{ bower_url }}"
+bower_proxy:    # "{{ http_proxy }}"
 
 shell_git_configure_enabled: true         # Enable git configuration
 shell_git: []

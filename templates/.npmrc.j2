@@ -24,3 +24,9 @@ slimerjs_cdnurl={{ npm_slimerjs_cdnurl }}
 {% for npmrc_entry in npm_nexus_private_npm_data %}
 {{ npmrc_entry }}
 {% endfor %}
+{% if npm_proxy is defined %}
+proxy={{ npm_proxy }}
+https-proxy={{ npm_proxy }}
+noproxy[]=nabla.mobi
+noproxy[]=albandrieu.com
+{% endif %}

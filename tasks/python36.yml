@@ -79,10 +79,14 @@
 - name: python36 | Set python link to python version
   set_fact: python3_version=3.6
 
-#- name: python36 | Install python 3.6 ppa
-#  apt_repository: repo="ppa:deadsnakes/ppa" state={{ util_repository_state|default('present') }} update_cache=yes
-#  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version in ['16.04', '18.04'])
-#  become: true
+- name: python36 | Install python 3.6 ppa
+  apt_repository: repo="ppa:deadsnakes/ppa" state={{ util_repository_state|default('present') }}
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version in ['16.04', '18.04'])
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ https_proxy }}"
+  become: true
+  ignore_errors: true
 
 # WARNING from Ubuntu 19.04 python 3.6 is no more maintained
 
@@ -101,12 +105,15 @@
     url: https://bootstrap.pypa.io/get-pip.py
     dest: /tmp/get-pip.py
   register: curl_result
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))    # so for '16.04', '17.04', '18.04'
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ https_proxy }}"
   become: true
 
 - name: python36 | Install missing pip{{ python3_version }} (2)   # noqa 503
   command: "python{{ python3_version }} /tmp/get-pip.py"
-  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
+  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))    # so for '16.04', '17.04', '18.04'
   changed_when: false
   become: true
 

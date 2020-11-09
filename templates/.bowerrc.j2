@@ -1,5 +1,10 @@
 {
   "_comment": "{{ ansible_managed }}",
+{% if bower_proxy is defined %}
+  "proxy": "{{ bower_proxy }}",
+  "https-proxy":"{{ bower_proxy }}",
+  "no-proxy":".albandrieu.com",
+{% endif %}
 {% if bower_directory is defined %}
   "directory": "{{ bower_directory }}",
 {% endif %}

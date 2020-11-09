@@ -107,6 +107,14 @@ under the License.
       <port>80</port>
       <nonProxyHosts>local.net|some.host.com</nonProxyHosts>
     </proxy>
+    <proxy>
+      <id>squid-proxy</id>
+      <active>true</active>
+      <protocol>{{ http_proxy_protocol }}</protocol>
+      <host>{{ http_proxy_host }}</host>
+      <port>{{ http_proxy_port }}</port>
+      <nonProxyHosts>{{ nexus_non_proxy }}</nonProxyHosts>
+    </proxy>
     -->
 
   </proxies>

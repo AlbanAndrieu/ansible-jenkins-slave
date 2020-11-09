@@ -26,12 +26,20 @@
 # TODO fix on CentOS 7
   ignore_errors: true
 
-- name: brew | Uninstall homebrew on Ubuntu
-  apt: pkg={{ item }} state=absent
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '13.04', '14.04']
+#- name: brew | Uninstall homebrew on Ubuntu
+#  apt: pkg={{ item }} state=absent
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '13.04', '14.04']
+#  with_items:
+#    - linuxbrew-wrapper
+#  become: true
+
+- name: brew | Install homebrew on Ubuntu
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') # and ansible_distribution_version not in ['12.04', '13.04', '14.04']
   with_items:
     - linuxbrew-wrapper
   become: true
+  become_user: "{{ jenkins_user }}"
 
 - name: brew | Check Homebrew is installed
   stat:
@@ -48,7 +56,7 @@
 - name: brew | Installing homebrew to custom directory
   git:
     repo: "{{ homebrew_repository }}"
-    dest: "{{ home }}/.linuxbrew"
+    dest: "{{ jenkins_home }}/.linuxbrew"
     accept_hostkey: yes
     update: no
     version: master
@@ -95,6 +103,7 @@
 - name: brew | Install brew requirements
   homebrew:
     name: ['cairo', 'libxml2', 'libffi']
+    path: "{{ homebrew_home_check_path }}/bin"
     state: present
     update_homebrew: yes
   ignore_errors: true
@@ -116,6 +125,7 @@
 - name: brew | Uninstall messing brew python 2 package
   homebrew:
     name: ['mercurial', 'python2']
+    path: "{{ homebrew_home_check_path }}/bin"
     state: absent
   changed_when: false
   become: true
@@ -142,16 +152,11 @@
   become: true
   become_user: "{{ jenkins_user }}"
 
-- name: brew | Install docker utility package
-  homebrew:
-    name: ['hadolint', 'dive']
-  changed_when: false
-  become: true
-  become_user: "{{ jenkins_user }}"
-
 - name: brew | Install brew package
   homebrew:
     name: "{{ item }}"
+    path: "{{ homebrew_home_check_path }}/bin"
+    state: present
   with_items: "{{ brew_packages }}"
   changed_when: false
   become: true

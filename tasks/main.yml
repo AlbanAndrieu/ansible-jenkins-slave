@@ -348,12 +348,7 @@
   tags:
     - vm # do not install on docker image
 
+- import_tasks: k8s.yml
+
 - import_tasks: molecule.yml
 
-# - name: jenkins-slave | Copy Dockerfile
-#   template: src=Dockerfile.j2 dest={{ docker_files_generated_directory }}/Dockerfile mode=0777
-#   when: docker_files_enable
-
-# - name: jenkins-slave | Copy build.sh
-#   template: src=build.sh.j2 dest={{ docker_files_generated_directory }}/build.sh mode=0777
-#   when: docker_files_enable

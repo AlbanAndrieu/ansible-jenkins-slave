@@ -137,6 +137,12 @@
 - name: Print nodejs_enabled
   debug: msg="Nodejs are {{ nodejs_enabled }}"
 
+- name: javascript | Ensure npm proxy settings
+  command: "{{ npm_prefix }}npm config set proxy {{ http_proxy }}"
+  when: not( (http_proxy is undefined) or (http_proxy is none) )
+        and (http_proxy | length > 0) and proxy_enabled
+  become: true
+
 - name: javascript | Ensure npm registry settings
   command: "{{ npm_prefix }}npm config set registry {{ npm_nexus_private_npm_url }}"
   when: not( (npm_nexus_private_npm_url is undefined) or (npm_nexus_private_npm_url is none) )
