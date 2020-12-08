@@ -10,7 +10,7 @@ repos:
 # pre-commit-hooks.git from v2.1.0 to v2.4.0
 #    rev: v2.1.0 # ok python3.6  # 18.04.3
 #    rev: v2.2.3 # ok python3.6  # 19.04 but failing on 18.04.3
-    rev: v3.2.0 # ok python3.6 on Ubuntu 18.04 AND python3.7 on Ubuntu 19.04
+    rev: v3.3.0 # ok python3.6 on Ubuntu 18.04 AND python3.7 on Ubuntu 19.04
     hooks:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
@@ -57,16 +57,16 @@ repos:
     hooks:
     -   id: autopep8
 -   repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.3  # Use the sha / tag you want to point at
+    rev: 3.8.4  # Use the sha / tag you want to point at
     hooks:
     -   id: flake8
         args: [--max-line-length=120]
 -   repo: https://github.com/pre-commit/pre-commit.git
-    rev: v2.7.1
+    rev: v2.8.2
     hooks:
     -   id: validate_manifest
 -   repo: https://github.com/asottile/reorder_python_imports.git
-    rev: v2.3.5
+    rev: v2.3.6
     hooks:
     -   id: reorder-python-imports
 -   repo: https://github.com/asottile/add-trailing-comma
@@ -74,7 +74,7 @@ repos:
     hooks:
     -   id: add-trailing-comma
 -   repo: https://github.com/willthames/ansible-lint.git
-    rev: v4.3.4
+    rev: v4.3.7
     hooks:
     -   id: ansible-lint
         files: \.(yaml|yml)$
@@ -95,7 +95,7 @@ repos:
                       hooks|
                   )$
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v2.7.2
+    rev: v2.7.4
     hooks:
     -   id: pyupgrade
 -   repo: https://github.com/pre-commit/mirrors-autopep8
@@ -113,16 +113,18 @@ repos:
 -   repo: https://github.com/Lucas-C/pre-commit-hooks-nodejs
     rev: v1.1.1
     hooks:
-    -   id: htmlhint
-        # optional custom config:
-        args: [--config, .htmlhintrc]
+#    -   id: htmlhint
+#        # optional custom config:
+#        args: [--config, .htmlhintrc]
+    -   id: htmllint
     -   id: markdown-toc
         # optional custom config:
-        args: [--indent, "  "]
+        #args: [--indent, "  "]
     -   id: dockerfile_lint
+        # optional custom config:
         args: [--json, --verbose, --dockerfile]
 -   repo: https://github.com/AlbanAndrieu/nabla-hooks.git
-    rev: master
+    rev: v1.0.1
     hooks:
     -   id: git-branches-check
         always_run: true

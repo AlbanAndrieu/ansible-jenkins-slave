@@ -16,6 +16,27 @@ Ensures that the basic requirements are properly installed (using `apt`) and con
 This playbook is be used by [Docker Hub](https://hub.docker.com) to create a [Docker](http://docker.io) image.
 
 See role [ansible-jenkins-slave-docker](https://github.com/AlbanAndrieu/ansible-jenkins-slave-docker) and image [ansible-jenkins-slave-docker](https://hub.docker.com/r/nabla/ansible-jenkins-slave-docker/)
+
+# Table of contents
+
+<!-- toc -->
+
+  * [Requirements](#requirements)
+- [Quality tools](#quality-tools)
+  * [Installation](#installation)
+  * [Role dependencies](#role-dependencies)
+  * [Documentation](#documentation)
+  * [Role variables](#role-variables)
+  * [Detailed usage guide](#detailed-usage-guide)
+  * [Testing](#testing)
+- [Update README.md Table of Contents](#update-readmemd-table-of-contents)
+  * [Contributing](#contributing)
+  * [Authors and license](#authors-and-license)
+- [License](#license)
+  * [Feedback, bug-reports, requests, ...](#feedback-bug-reports-requests-)
+
+<!-- tocstop -->
+
 ### Requirements
 
 Tools which might be needed by [Eclipse](https://www.eclipse.org), like jdk, maven...
@@ -181,6 +202,17 @@ Describe how to use in more detail...
 $ ansible-galaxy install alban.andrieu.jenkins-slave
 $ vagrant up
 ```
+
+Update README.md Table of Contents
+----------------------------------------------
+
+
+  * [github-markdown-toc](https://github.com/jonschlinkert/markdown-toc)
+  * With [github-markdown-toc](https://github.com/Lucas-C/pre-commit-hooks-nodejs)
+
+`
+npm install --save markdown-toc
+`
 
 ### Contributing
 
