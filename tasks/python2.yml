@@ -91,9 +91,9 @@
     dest: /tmp/get-pip.py
   register: curl_result
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
   become: true
 
 - name: python | Install missing pip2.7 (2)   # noqa 503

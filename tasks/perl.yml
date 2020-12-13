@@ -167,9 +167,9 @@
 
 - name: jenkins-slave | Check perl
   shell: perl -e 'use FileHandle; print $FileHandle::VERSION'
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
   changed_when: false
   become: true
 
@@ -227,9 +227,9 @@
     - Date::Format
     - Crypt::SSLeay
   register: cpan_result
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
   changed_when: false
   become: true
   ignore_errors: true
@@ -242,9 +242,9 @@
     - LWP::Protocol::https      # Force install on Ubuntu 16.04, tests are failing!
     - Date::Manip               # Force install on Ubuntu 16.04, tests are failing!
     - Test::Pod::Coverage       # Force install on Ubuntu 16.04, tests are failing!
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
   register: cpan_result
   changed_when: false
   become: true
@@ -255,9 +255,9 @@
   with_items:
     - Text::SimpleTable
   register: cpan_result
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
   changed_when: false
   become: true
   ignore_errors: true
@@ -299,9 +299,9 @@
 
 - name: jenkins-slave | Run perl cpan check # noqa 503
   command: perl -MLWP::Simple -e 1
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
   when: cpan_result.changed
 
 - name: jenkins-slave | Install tools needed by sample at runtime (Debian based)

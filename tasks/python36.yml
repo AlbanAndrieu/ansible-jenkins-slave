@@ -82,9 +82,9 @@
 - name: python36 | Install python 3.6 ppa
   apt_repository: repo="ppa:deadsnakes/ppa" state={{ util_repository_state|default('present') }}
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version in ['16.04', '18.04'])
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
   become: true
   ignore_errors: true
 
@@ -106,9 +106,9 @@
     dest: /tmp/get-pip.py
   register: curl_result
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))    # so for '16.04', '17.04', '18.04'
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
   become: true
 
 - name: python36 | Install missing pip{{ python3_version }} (2)   # noqa 503

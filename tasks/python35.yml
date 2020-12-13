@@ -76,9 +76,9 @@
 - name: python3 | Install python 3.5 ppa
   apt_repository: repo="ppa:deadsnakes/ppa" state={{ util_repository_state|default('present') }}
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['19.04'])
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
   become: true
   ignore_errors: true
 
@@ -118,9 +118,9 @@
     dest: /tmp/get-pip.py
   register: curl_result
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
   become: true
 
 - name: python35 | Install missing pip{{ python3_version }} (2) # noqa 503
