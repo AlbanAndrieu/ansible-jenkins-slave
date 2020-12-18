@@ -45,9 +45,6 @@
     - python37u-pip
   become: true
 
-- name: python37 | Set python link to python version
-  set_fact: python3_version=3.7
-
 - name: python37 | Install python 3 requirement
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   become: true
@@ -57,6 +54,9 @@
     - python3.7-dev
     - python3.7-dbg
     - python3.7-gdbm
+
+- name: python37 | Set python link to python version
+  set_fact: python3_version=3.7
 
 - name: python37 | Install missing pip{{ python3_version }} (1)
   get_url:
@@ -71,7 +71,8 @@
 
 - name: python37 | Install missing pip{{ python3_version }} (2)   # noqa 503
   command: "python{{ python3_version }} /tmp/get-pip.py"
-  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
+  #when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
   changed_when: false
   become: true
 
@@ -97,14 +98,14 @@
 # deactivate
 # sudo pip3 install --upgrade pip
 
-- name: python | Upgrade pip3
-  command: "pip3 install --upgrade pip==20.0.2"
+- name: python37 | Upgrade pip3
+  command: "pip3 install --upgrade pip=={{ python3_pip_version }}"
   changed_when: false
   become: true
   ignore_errors: true
 
-- name: python | Upgrade pip
-  command: "pip{{ python3_version }} install --upgrade pip==20.0.2"
+- name: python37 | Upgrade pip
+  command: "pip{{ python3_version }} install --upgrade pip=={{ python3_pip_version }}"
   changed_when: false
   become: true
   ignore_errors: true

@@ -98,7 +98,7 @@
 
 - name: python | Install missing pip2.7 (2)   # noqa 503
   command: "python2.7 /tmp/get-pip.py"
-  when: curl_result|changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
   changed_when: false
   become: true
 
@@ -183,7 +183,7 @@
 - name: python | Install dependencies for python 2 requirements
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   become: true
-  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')   #  and ansible_distribution_major_version == '6')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')   #  and ansible_distribution_major_version == '6')
   with_items:
     - cups-devel
   ignore_errors: true

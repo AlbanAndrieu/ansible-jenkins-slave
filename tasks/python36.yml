@@ -146,7 +146,7 @@
 # deactivate
 # sudo pip3 install --upgrade pip
 - name: python | Upgrade pip
-  command: "pip{{ python3_version }} install --upgrade pip==20.0.2"
+  command: "pip{{ python3_version }} install --upgrade pip=={{ python3_pip_version }}"
   changed_when: false
   become: true
   ignore_errors: true

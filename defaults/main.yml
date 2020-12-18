@@ -134,8 +134,9 @@ apt_chromedriver_version:
 brew_enabled: false
 brew_packages:
   - 'randomize-lines'   # for git-radar
-  - 'michaeldfallen/formula/git-radar'
+#  - 'michaeldfallen/formula/git-radar'
   - 'hadolint'
+  - 'github-markdown-toc'
 #  - 'autoconf'
 #  - 'bash-completion'
 #  - 'boot2docker'
@@ -143,7 +144,7 @@ brew_packages:
 #  - 'docker-compose'
 #  - 'docker-machine'
 #  - 'doxygen'
-  - 'dive'
+#  - 'dive'  # issue with libiconv: is not needed on Linux, where iconv.h is provided by glibc
 #  - 'git'
 #  - 'git-lfs'
 #  - 'go'
@@ -215,8 +216,8 @@ nodejs_version: "11.15.0"
 nodejs_enabled: true
 epel_repo_enabled: false
 python_enabled: true
-python2_version: "2.7"
-python3_version: "3.5"
+python3_default_version: "3.7"
+python3_pip_version: "20.2.4"
 
 database_docker_oradata: "/opt/oracle/oradata"
 database_docker_oradata_orcl: "/u02/app/oracle/oradata/ORCL"
