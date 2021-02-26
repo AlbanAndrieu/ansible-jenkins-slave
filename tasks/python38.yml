@@ -31,9 +31,9 @@
 - name: python38 | Install python 3.8 ppa
   apt_repository: repo="ppa:deadsnakes/ppa" state={{ util_repository_state|default('present') }}
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
+#  environment:
+#    http_proxy: "{{ http_proxy }}"
+#    https_proxy: "{{ https_proxy }}"
   become: true
   ignore_errors: true
 
