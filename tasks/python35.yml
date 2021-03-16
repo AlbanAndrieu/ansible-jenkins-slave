@@ -116,6 +116,7 @@
   get_url:
     url: https://bootstrap.pypa.io/get-pip.py
     dest: /tmp/get-pip.py
+    force: yes
   register: curl_result
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
   #environment:
@@ -125,7 +126,7 @@
 
 - name: python35 | Install missing pip{{ python3_version }} (2) # noqa 503
   command: "python{{ python3_version }} /tmp/get-pip.py"
-  when: curl_result|changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
+  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
   changed_when: false
   become: true
 

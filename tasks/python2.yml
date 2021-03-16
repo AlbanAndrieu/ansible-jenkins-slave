@@ -87,8 +87,10 @@
 
 - name: python | Install missing pip2.7 (1)
   get_url:
-    url: https://bootstrap.pypa.io/get-pip.py
+    url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
     dest: /tmp/get-pip.py
+    force: true
+    sha256sum: 40ee07eac6674b8d60fce2bbabc148cf0e2f1408c167683f110fd608b8d6f416
   register: curl_result
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
   #environment:
@@ -107,7 +109,7 @@
   ignore_errors: true
 
 # - name: python | Install missing pip2.7 (2)
-#   shell: "curl https://bootstrap.pypa.io/get-pip.py -o - | python2.7"
+#   shell: "curl https://bootstrap.pypa.io/2.7/get-pip.py -o - | python2.7"
 #   register: curl_result
 #   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
 #   changed_when: false
@@ -173,9 +175,9 @@
   become: true
   ignore_errors: true
 
-# pip install --upgrade pip
+# pip install --upgrade "pip < 21.0"
 - name: python | Upgrade pip
-  command: "pip{{ python2_version }} install --upgrade pip"
+  command: "pip{{ python2_version }} install --upgrade \"pip {{ python2_pip_version }}\""
   changed_when: false
   become: true
   ignore_errors: true

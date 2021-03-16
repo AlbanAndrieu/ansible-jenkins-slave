@@ -216,6 +216,8 @@ nodejs_version: "11.15.0"
 nodejs_enabled: true
 epel_repo_enabled: false
 python_enabled: true
+#The last command is to upgrade to the latest supported version. For Python 2.7 the latest supported is currently pip 20.3.4.
+python2_pip_version: "20.2.4" # "pip < 21.0"
 python3_default_version: "3.7"
 python3_pip_version: "20.2.4"
 
