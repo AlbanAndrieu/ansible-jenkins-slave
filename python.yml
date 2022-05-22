@@ -1,0 +1,217 @@
+---
+
+- hosts: all
+  gather_facts: true
+  tasks:
+    - name: group hosts by distribution
+      group_by: key="{{ ansible_distribution }}-{{ ansible_distribution_version }}"
+
+- hosts: RedHat-7*:RedHat-6*:RedHat-5*:CentOS-7*:CentOS-6*:Ubuntu-18*:Ubuntu-17*:Ubuntu-16*:Ubuntu-14*:Ubuntu-13*:Ubuntu-12*
+  gather_facts: false
+  tasks:
+    - name: group hosts for supported distributions
+      group_by: key="supported"
+
+- hosts: "!supported"
+  gather_facts: false
+  tasks:
+    - name: fail for unsupported distribution
+      fail: msg="{{ ansible_distribution }} {{ ansible_distribution_version }}
+                 is not a supported OS for a Tower installation.  Supported
+                 OSes include Red Hat Enterprise Linux 6/7, CentOS 6/7, or
+                 Ubuntu 12.04/13.04/14.04/16.04/17.04/18.04."
+    - debug: msg="Version {{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_architecture }}"
+
+- hosts: RedHat-7*:RedHat-6*:RedHat-5*:CentOS-7*:CentOS-6*
+  become: true
+
+  tasks:
+    - name: Install python repo (RedHat and CentOS based)
+      yum:
+        name: "{{ item }}"
+        state: "{{ jenkins_pkg_state|default('present') }}"
+      when: ((ansible_distribution == 'CentOS') and ansible_distribution_major_version == '6')
+      with_items:
+        - "https://centos6.iuscommunity.org/ius-release.rpm"
+      become: true
+
+    - name: Install python repo (RedHat and CentOS based)
+      yum:
+        name: "{{ item }}"
+        state: "{{ jenkins_pkg_state|default('present') }}"
+      when: ((ansible_distribution == 'CentOS') and ansible_distribution_major_version == '7')
+      with_items:
+        - "https://centos7.iuscommunity.org/ius-release.rpm"
+      become: true
+
+#TODO at first run there is no jenkins user, so it will not work properly
+- hosts: RedHat-7*:RedHat-6*:RedHat-5*:CentOS-7*:CentOS-6*:Ubuntu-12*:Ubuntu-13*:Ubuntu-14*:Ubuntu-16*:Ubuntu-18*
+  become: true
+
+  tasks:
+    - name: Create virtualenv directory
+      file:
+       path: "/opt/{{item.path}}"
+       state: directory
+       mode: 0775
+       recurse: yes
+       group: "docker"
+       owner: "jenkins"
+      #when: item.stat.exists == false
+      with_items:
+        - { path: 'ansible' }
+        - { path: 'scons' }
+      become: true
+      changed_when: false
+
+- name: Install python 2 and 3.5
+  hosts: Ubuntu-12*:Ubuntu-13*:Ubuntu-14*:Ubuntu-16*:Ubuntu-18*
+  become: true
+  ignore_errors: true
+
+  roles:
+    - python
+
+  vars:
+      python_versions: [2.7, 3.5]
+      python_install: [numpy, pylint, pandas]
+      python_virtualenv_user: jenkins
+      python_virtualenvs:
+        - path: /opt/ansible/env
+          python: python2.7
+        - path: /opt/ansible/env35
+          python: python3.5
+        - path: /opt/scons/env
+          python: python2.7
+
+- name: Install python 3 and 3.6
+  hosts: Ubuntu-16*:Ubuntu-18*
+  become: true
+  ignore_errors: true
+
+  roles:
+    - python
+
+  vars:
+      python_versions: [3, 3.6]
+      python_install: [numpy, pylint, pandas]
+      python_virtualenv_user: jenkins
+      python_virtualenvs:
+#        - path: /opt/ansible/env
+#          python: python2.7
+        - path: /opt/ansible/env36
+          python: python3.6
+        - path: /opt/ansible/env35
+          python: python3.5
+#        - path: /opt/scons/env
+#          python: python2.7
+
+#TODO https://www.softwarecollections.org/en/scls/rhscl/rh-python35/
+
+#TODO below role do not work with CentOS
+- name: Install python 2
+  hosts: RedHat-7*:RedHat-6*:RedHat-5*
+  become: true
+
+  roles:
+    - python
+
+  vars:
+      python_versions: [2]
+      python_yum_enablerepo: epel
+      python_pkg_bin: /bin
+      python_bin: /bin/python
+      python_virtualenv_user: jenkins
+      python_virtualenvs:
+        - path: /opt/ansible/env
+          python: python2.7
+        - path: /opt/scons/env
+          python: python2.7
+
+- name: Install python 2
+  hosts: CentOS-7*:CentOS-6*
+  become: true
+
+  roles:
+    - python
+
+  vars:
+      python_versions: [2]
+      python_yum_enablerepo: epel
+      python_pkg_bin: /bin
+      python_bin: /bin/python
+      python_virtualenv_user: jenkins
+      python_virtualenvs:
+        - path: /opt/ansible/env
+          python: python2.7
+        - path: /opt/scons/env
+          python: python2.7
+
+- name: Install python 3.5
+  hosts: RedHat-6*:RedHat-5*
+  become: true
+
+  roles:
+    - python
+
+  vars:
+      python_versions: [3.5]
+      python_yum_enablerepo: epel
+      python_pkg_bin: /bin
+      #python_bin: /opt/rh/rh-python35/root/usr/bin/python
+      python_bin: /bin/python
+      python_virtualenv_user: jenkins
+      python_virtualenvs:
+        - path: /opt/ansible/env35
+          python: python3.5
+
+- name: Install python 3.5
+  hosts: CentOS-7*:CentOS-6*:CentOS-5*
+  become: true
+
+  roles:
+    - python
+
+  vars:
+      python_versions: [3.5u]
+      python_yum_enablerepo: ius
+      python_pkg_bin: /bin
+      python_bin: /bin/python
+      python_virtualenv_user: jenkins
+      python_virtualenvs:
+        - path: /opt/ansible/env35
+          python: python3.5
+
+- name: Install python 3.6
+  hosts: RedHat-7*
+  become: true
+
+  roles:
+    - python
+
+  vars:
+      python_versions: [3.6]
+      python_yum_enablerepo: epel
+      python_pkg_bin: /usr/local/bin
+      python_bin: /bin/python
+      python_virtualenv_user: jenkins
+      python_virtualenvs:
+        - path: /opt/ansible/env36
+          python: python3.6
+
+- name: Install python 3.6
+  hosts: CentOS-7*:CentOS-6*:CentOS-5*
+  become: true
+
+  roles:
+    - python
+
+  vars:
+      python_versions: [3.6u]
+      python_yum_enablerepo: ius
+      python_pkg_bin: /bin
+      python_bin: /bin/python
+      python_virtualenv_user: jenkins
+      python_virtualenvs:
+        - path: /opt/ansible/env36
+          python: python3.6

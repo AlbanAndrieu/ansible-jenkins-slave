@@ -1,0 +1,107 @@
+---
+
+- name: sonar | Ensure unzip is installed.
+  package: name=unzip state=present
+
+- name: sonar | Create temporary directory
+  tempfile:
+    state: directory
+    suffix: staging
+#    path: "{{ lookup('env', 'HOME') }}"
+  register: tempdir
+  changed_when: false
+  become: true
+
+- name: sonar | Remove sonar cache (upgrade mode)
+  file: path="{{ jenkins_home }}/.sonar" state=absent
+  become: true
+  ignore_errors: true
+  tags: vm
+
+- name: sonar | Create sonar cache (upgrade mode)
+  file: path="{{ jenkins_home }}/.sonar/cache" state=directory recurse=yes mode=0777
+  become: true
+
+# export WORKSPACE="/root/"
+# ON OSX cd /var/root
+# cd ${WORKSPACE}
+# unzip build-wrapper-*-x86.zip
+# mkdir -p /usr/local/sonar-build-wrapper/bin/
+# cp ${WORKSPACE}/build-wrapper-*-x86/* /usr/local/sonar-build-wrapper/bin/
+
+- name: sonar | Download and expand C++ sonar build-wrapper
+  unarchive:
+    src: "{{ sonar_build_wrapper_download_url }}"
+    dest: "{{ sonar_target_dir }}"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0777
+    remote_src: true
+    validate_certs: false
+  become: true
+#  ignore_errors: "{{ ansible_check_mode }}"
+#  ignore_errors: true
+
+# cd /usr/local
+# sudo wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.5.0.2216-linux.zip
+# sudo wget http://albandrieu.com/download/sonar/sonar-scanner-cli-3.2.0.1227.zip
+# sudo unzip sonar-scanner-cli-3.2.0.1227.zip
+
+- name: sonar | Download and expand sonar scanner
+  unarchive:
+    src: "{{ sonar_scanner_download_url }}"
+    dest: "{{ sonar_target_dir }}"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0777
+    remote_src: true
+    validate_certs: false
+  become: true
+#  ignore_errors: "{{ ansible_check_mode }}"
+#  ignore_errors: true # 401: Unauthorized
+
+# TODO
+# sudo ln -s /usr/local/sonar-scanner-3.2.0.1227/bin/sonar-scanner /usr/bin/sonar-runner
+# sudo ln -s /usr/local/sonar-scanner-3.2.0.1227 /usr/local/sonar-runner
+
+- name: sonar | Create link to {{ sonar_scanner_target_dir }} directory
+  file:
+    dest: "{{ item.dest }}"
+    src: "{{ item.from }}/"
+    path: "{{ item.from }}/"
+    group: "{{ jenkins_user }}"
+    owner: "{{ jenkins_group }}"
+    state: link
+    force: true
+  with_items:
+    - { from: '{{ sonar_target_dir }}{{ sonar_scanner_package_name }}', dest: '{{ sonar_scanner_target_dir }}' }
+    - { from: '{{ sonar_target_dir }}{{ sonar_build_wrapper_name }}', dest: '{{ sonar_build_wrapper_target_dir }}' }
+  become: true
+  changed_when: false
+  ignore_errors: true
+
+- name: sonar | Copy sonar runner configuration
+  copy: src=sonar-runner-nabla-cpp.properties dest={{ jenkins_slave_home }}/sonar-runner.properties backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: sonar | Make sure jobs has permission to download sonar-scanner inside {{ jenkins_slave_home }} tools directory
+  file:
+    dest: "{{ jenkins_slave_home }}/{{ item.dest }}/tools"
+    group: "{{ jenkins_user }}"
+    owner: "{{ jenkins_group }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - { dest: 'slave' }
+  become: true
+  changed_when: false
+  ignore_errors: true
+  tags: vm
+
+- name: sonar | Cleanup temporary directory
+  file: name={{ tempdir.stdout }} state=absent
+  changed_when: false
+  ignore_errors: "{{ ansible_check_mode }}"
+  become: true

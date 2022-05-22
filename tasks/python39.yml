@@ -1,0 +1,112 @@
+---
+
+- name: python39 | Install python (RedHat and CentOS based)
+  yum:
+    name: "{{ item }}"
+    state: "{{ util_pkg_state | default('present') }}"
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
+  with_items:
+    #- "https://centos6.iuscommunity.org/ius-release.rpm"
+    - "https://repo.ius.io/ius-release-el6.rpm"
+    - python39u
+    - python39u-devel
+    - python39u-pip
+  become: true
+
+- name: python39 | Install python (RedHat and CentOS based)
+  yum:
+    name: "{{ item }}"
+    state: "{{ util_pkg_state | default('present') }}"
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
+  with_items:
+    #- "https://centos7.iuscommunity.org/ius-release.rpm"
+    - "https://repo.ius.io/ius-release-el7.rpm"
+    - python39u
+    - python39u-devel
+    - python39u-pip
+  become: true
+
+#Before
+#After ppa:fkrull/deadsnakes
+- name: python39 | Install python 3.8 ppa
+  apt_repository: repo="ppa:deadsnakes/ppa" state={{ util_repository_state|default('present') }}
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ https_proxy }}"
+  become: true
+  ignore_errors: true
+
+- name: python39 | Install python 3 requirement
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  with_items:
+    - python3.8
+    - python3.8-dev
+    - python3.8-dbg
+    - python3-gdbm
+
+- name: python39 | Set python link to python version
+  set_fact: python3_version=3.8
+
+#curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+#python3.8 get-pip.py
+- name: python39 | Install missing pip{{ python3_version }} (1)
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/get-pip.py
+    force: yes
+  register: curl_result
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ https_proxy }}"
+  become: true
+
+- name: python39 | Install missing pip{{ python3_version }} (2)   # noqa 503
+  command: "python{{ python3_version }} /tmp/get-pip.py"
+  #when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
+  changed_when: false
+  become: true
+
+- debug: msg="curl_result - {{ curl_result.rc }} - {{ curl_result.stdout }}"
+  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>=')) and not ansible_check_mode
+  ignore_errors: true
+
+- name: python39 | Run pip check   # noqa 503
+  shell: (pip -V && pip -V) | uniq
+  when: curl_result.changed
+  become: true
+#  ignore_errors: true
+
+- name: python39 | Upgrade setuptools
+  command: "pip{{ python3_version }} uninstall setuptools{{ python3_version }}"
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+# python3 -m pip install --upgrade pip==20.3
+# deactivate
+# sudo pip3 install --upgrade pip
+
+- name: python39 | Upgrade pip3
+  command: "pip3 install --upgrade pip=={{ python3_pip_version }}"
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: python39 | Upgrade pip
+  command: "pip{{ python3_version }} install --upgrade pip=={{ python3_pip_version }}"
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: python39 | Install dependencies for python lxml requirements
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - python-lxml
+    - python3-lxml

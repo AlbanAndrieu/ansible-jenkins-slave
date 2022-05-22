@@ -1,0 +1,59 @@
+---
+
+- name: jenkins-slave | Create /opt directory
+  file: path=/opt state=directory
+  become: true
+
+# - import_tasks: maven-legacy.yml
+
+- name: jenkins-slave | Set mvn link to Maven
+  set_fact: mvn_dir={{ mvn_home }}
+
+- name: jenkins-slave | Display mvn link before
+  action: command update-alternatives --display mvn
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+# TODO
+# sudo update-alternatives --remove-all mvn
+
+- name: jenkins-slave | Configure Maven alternatives
+  alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }}
+  with_items:
+    - { name: mvn, link: /usr/bin/mvn, path: "{{ mvn_dir }}/bin/mvn" }
+  when: not( (mvn_dir is undefined) or (mvn_dir is none) )
+        and (mvn_dir | length > 0)   # noqa 602
+  become: true
+  ignore_errors: true
+
+# TODO Verify the symlinks all point to the new mvn location:
+
+# ls -la /etc/alternatives/mvn*
+- name: jenkins-slave | Display mvn link after
+  action: command update-alternatives --display mvn
+  when: not( (mvn_dir is undefined) or (mvn_dir is none) )
+        and (mvn_dir | length > 0)   # noqa 602
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Create .m2 folder
+  file: path={{ jenkins_home }}/.m2 state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
+  become: true
+  changed_when: false
+
+- name: jenkins-slave | Copy maven toolchains configuration
+  copy: src=toolchains.xml dest={{ jenkins_home }}/.m2/toolchains.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
+  changed_when: false
+  become: true
+
+- name: jenkins-slave | Copy maven configuration
+  template: src=settings.xml.j2 dest={{ jenkins_home }}/.m2/settings.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
+  become: true
+  changed_when: false
+
+- name: jenkins-slave | Copy maven security configuration
+  template: src=settings-security.xml.j2 dest={{ jenkins_home }}/.m2/settings-security.xml backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
+  become: true
+  changed_when: false

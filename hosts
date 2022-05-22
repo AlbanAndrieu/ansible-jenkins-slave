@@ -1,0 +1,8 @@
+[local]
+localhost
+
+[all]
+localhost
+
+[jenkins-slaves]
+localhost

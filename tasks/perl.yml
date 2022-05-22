@@ -1,0 +1,319 @@
+---
+
+- name: jenkins-slave | Install tools needed for development (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - perl
+    - perl-base
+    - libapache2-reload-perl
+    - libapparmor-perl
+    - libauthen-pam-perl
+    - libauthen-sasl-perl
+    - libauthen-simple-ldap-perl
+    - libauthen-simple-perl
+    - libbsd-resource-perl
+    - libcgi-fast-perl
+    - libcgi-pm-perl
+    - libclass-accessor-perl
+    - libclass-data-inheritable-perl
+    - libcommon-sense-perl
+    - libconvert-asn1-perl
+    - libcrypt-passwdmd5-perl
+    - libdata-dumper-concise-perl
+    - libdevel-argnames-perl
+    - libdevel-symdump-perl
+    - libdigest-hmac-perl
+    - libencode-locale-perl
+    - liberror-perl
+    - libfcgi-perl
+    - libfile-copy-recursive-perl
+    - libfile-listing-perl
+    - libfont-afm-perl
+    - libgssapi-perl
+    - libhtml-form-perl
+    - libhtml-format-perl
+    - libhtml-parser-perl
+    - libhtml-tagset-perl
+    - libhtml-template-perl
+    - libhtml-tree-perl
+    - libhttp-cookies-perl
+    - libhttp-daemon-perl
+    - libhttp-date-perl
+    - libhttp-message-perl
+    - libhttp-negotiate-perl
+    - libio-html-perl
+    - libio-socket-inet6-perl
+    - libio-socket-ssl-perl
+    - libio-string-perl
+    - libjson-perl
+    - libjson-xs-perl
+    - liblocale-gettext-perl
+    - liblwp-mediatypes-perl
+    - liblwp-protocol-https-perl
+    - libmailtools-perl
+    - libmodule-implementation-perl
+    - libmodule-runtime-perl
+    - libnet-dns-perl
+    - libnet-http-perl
+    - libnet-ip-perl
+    - libnet-ldap-perl
+    - libnet-openssh-perl
+    - libnet-smtp-ssl-perl
+    - libnet-ssleay-perl
+    - libpadwalker-perl
+    - libparams-classify-perl
+    - libparams-validate-perl
+    - libparse-debianchangelog-perl
+    - libsocket6-perl
+    - libsub-name-perl
+    - libtext-charwidth-perl
+    - libtext-iconv-perl
+    - libtext-wrapi18n-perl
+    - libtimedate-perl
+    - libtry-tiny-perl
+    - libtypes-serialiser-perl
+    - liburi-perl
+    - libwww-perl
+    - libwww-robotrules-perl
+    - libxml-handler-yawriter-perl
+    - libxml-dom-perl
+  become: true
+
+- name: jenkins-slave | Install tools needed for development (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04', '14.04', '16.04']
+  with_items:
+    - libnet-ping-external-perl
+  become: true
+
+- name: jenkins-slave | Install tools needed by cpp generator (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - libwww-perl
+    - libxml-dom-perl
+    - libfile-find-rule-perl
+    - libjson-perl
+    - libdate-calc-perl
+    - libdate-manip-perl
+    - libcrypt-ssleay-perl
+    - libxml-handler-yawriter-perl
+    - libxml-simple-perl
+  become: true
+
+- name: jenkins-slave | Install perl for running
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')) # noqa 204
+  tags: package
+  with_items:
+    - perl-Env
+  become: true
+
+- name: jenkins-slave | Install tools needed by cpp generator (CentOS based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  become: true
+  when: (ansible_distribution == 'CentOS')
+  with_items:
+    - perl-libwww-perl
+    - perl-File-Copy-Recursive
+    - perl-File-Find-Rule
+
+- name: jenkins-slave | Install tools needed by cpp generator (CentOS based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  become: true
+  when: (ansible_distribution == 'CentOS' and ansible_distribution_major_version in ('5', '6'))
+  with_items:
+    - perl-XML-DOM-XPath
+
+- name: jenkins-slave | Install cpanminus (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')) # noqa 204
+  tags: package
+  with_items:
+    - perl-App-cpanminus
+  become: true
+
+- name: jenkins-slave | Install CPAN tools needed by cpp generator (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  become: true
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  with_items:
+    - perl-CPAN
+
+# export PERL_MM_USE_DEFAULT=1
+# export PERL_EXTUTILS_AUTOINSTALL="--defaultdeps"
+# sudo PERL_MM_USE_DEFAULT=1 perl -MCPAN -e 'install Test::More'
+
+# It makes perl automatically answer "yes" when CPAN asks "Would you like to configure as much as possible automatically? [yes]"
+- name: jenkins-slave | Install automatically perl module PERL_MM_USE_DEFAULT
+  shell: "echo $PERL_MM_USE_DEFAULT"
+  environment:
+    PERL_MM_USE_DEFAULT: 1
+  changed_when: false
+
+- name: jenkins-slave | Echo PERL_MM_USE_DEFAULT again
+  shell: "echo $PERL_MM_USE_DEFAULT"
+  changed_when: false
+
+# TODO below is hanging the first time it is run
+# Manually install CPAN if so
+
+# WARNING firs time it might ask for Please enter the URL of your CPAN mirror
+# perl -MCPAN -eshell
+# Enter http://www.cpan.org
+# o conf commit
+# commit: wrote '/usr/share/perl5/CPAN/Config.pm'
+
+- name: jenkins-slave | Check perl
+  shell: perl -e 'use FileHandle; print $FileHandle::VERSION'
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
+  changed_when: false
+  become: true
+
+- name: jenkins-slave | Install tools needed by cpp generator (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  become: true
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+  with_items:
+    - perl-libwww-perl
+    - perl-XML-XPath
+    - perl-XML-LibXML
+    - perl-XML-Parser
+    - perl-libxml-perl
+  environment:
+    PERL_MM_USE_DEFAULT: 1
+
+- name: jenkins-slave | Install tools needed by cpp generator (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  become: true
+  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')
+  with_items:
+    - perl-libwww-perl
+    - perl-XML-Simple
+    - perl-XML-XPath
+    - perl-XML-LibXML
+    - perl-XML-Parser
+    - perl-libxml-perl
+  environment:
+    PERL_MM_USE_DEFAULT: 1
+
+# TODO
+# See http://almtools/confluence/display/ENG/The+MGR+developer+server+changelog
+# AND
+# See http://almtools/confluence/display/ENG/MGR+CMR+Windows+environment+setup
+# TODO For windows
+# - cpanm:
+#     name: XML::DOM
+
+# TODO on Ubuntu configure cpan by hand
+# sudo perl -MCPAN -e 'install Bundle::CPAN'
+
+# Below is same has above but with CPAN
+- name: jenkins-slave | Install cpan perl modules needed by cpp generator
+  command: "cpan {{ item }}"
+  with_items:
+    - XML::DOM
+    - XML::Handler::YAWriter
+    - Pod::Coverage
+    - Test::Harness
+    - Test::Pod
+    - JSON
+    - IO::Prompt
+    - HTTP::Date
+    - Date::Calc
+    - Date::Format
+    - Crypt::SSLeay
+  register: cpan_result
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install cpan perl modules needed by cpp generator
+  shell: "yes y | cpan -f {{ item }}"
+  with_items:
+    - XML::Simple               # Force install on CentOS 7, tests are failing!
+    - File::Copy::Recursive     # Force install on Ubuntu 16.04, tests are failing!
+    - LWP::Protocol::https      # Force install on Ubuntu 16.04, tests are failing!
+    - Date::Manip               # Force install on Ubuntu 16.04, tests are failing!
+    - Test::Pod::Coverage       # Force install on Ubuntu 16.04, tests are failing!
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
+  register: cpan_result
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install cpan perl modules needed by cpp generator
+  command: "cpan {{ item }}"
+  with_items:
+    - Text::SimpleTable
+  register: cpan_result
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+# Solaris 10
+# Check make is installed
+# ls -lrta /usr/sfw/bin/make
+# ls -lrta /usr/local/bin/make
+# ls -lrta /usr/ccs/bin/make
+# PATH=/usr/sbin:/usr/bin:/usr/ccs/bin:/usr/sfw/bin
+# Fix permission issue
+# sudo chown -R root:root /.cpan
+
+# sudo /usr/perl5/bin/perlgcc -MCPAN -e shell
+# o conf prerequisites_policy follow
+# o conf make /usr/ccs/bin/make
+# o conf commit
+# #You should exit and re-start the CPAN shell, and attempt to install a module. All dependencies should be automatically confirmed.
+# quit
+
+# install XML::DOM
+# install XML::Handler::YAWriter
+# install XML::Simple
+# install Test::Harness
+# install Test::Pod::Coverage
+# install Test::Pod
+# install JSON
+# install IO::Prompt
+# install Text::SimpleTable
+# install HTTP::Date
+# install Date::Calc
+# install Date::Format
+# install Date::Manip
+# #install Bundle::LWP
+# install LWP::Protocol::https
+# install LWP::Simple
+# install Crypt::SSLeay
+# install File::Copy::Recursive
+
+- name: jenkins-slave | Run perl cpan check # noqa 503
+  command: perl -MLWP::Simple -e 1
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
+  when: cpan_result.changed
+
+- name: jenkins-slave | Install tools needed by sample at runtime (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - libtime-y2038-perl
+
+- name: jenkins-slave | Install tools needed by sample a runtime (RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  become: true
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')) # noqa 204
+  with_items:
+    - perl-Time-y2038

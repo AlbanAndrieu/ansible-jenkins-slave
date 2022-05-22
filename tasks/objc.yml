@@ -1,0 +1,108 @@
+---
+
+# TO fix error: use of undeclared identifier 'NS_DURING'
+# See https://github.com/gnustep/libobjc2
+# #'-fobjc-runtime=gcc', # For RedHat 7 and Ubuntu
+# '-fobjc-runtime=gnustep-1.9', # For RedHat 7 and Ubuntu
+# #'-fobjc-runtime=gnustep-2.0', # For RedHat 7 and Ubuntu
+
+# GNUSTEP
+- name: jenkins-slave | Install gobjc gnustep (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - gnustep
+    - gnustep-devel
+  become: true
+  tags:
+    - gnustep
+
+- name: jenkins-slave | Install gnustep (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
+  with_items:
+    - gnustep-base-devel
+    - gnustep-make
+    - gnustep-filesystem
+  become: true
+  tags:
+    - gnustep
+
+# OBJC
+- name: jenkins-slave | Install gobjc gnustep (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - gobjc
+    - gobjc++
+#    - libobjc2            # GNUstep runtime
+  become: true
+
+- name: jenkins-slave | Install gobjc X compile 64 bits (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - gobjc-mingw-w64-x86-64
+    - gobjc++-mingw-w64-x86-64
+  become: true
+
+- name: jenkins-slave | Install gobjc X compile 32 bits (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - gcc-mingw-w64-i686
+    - g++-mingw-w64-i686
+    - gobjc-mingw-w64-i686
+    - gobjc++-mingw-w64-i686
+    - gcc-multilib-i686-linux-gnu
+    - g++-multilib-i686-linux-gnu
+  become: true
+
+- name: jenkins-slave | Install gobjc gnustep (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04','14.04']
+  with_items:
+    - libobjc-4.8-dev     # GCC runtime libobjc
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install gobjc gnustep (Debian based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','14.04']
+  with_items:
+    - libobjc-5-dev       # GCC runtime libobjc
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install objc (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+    - gcc-objc
+    - gcc-objc++
+    - libobjc              # GCC runtime libobjc
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install mingw objc (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+# Add cross compil
+#   - mingw32-gcc-objc
+#   - mingw32-gcc-objc++
+    - mingw64-gcc-objc
+    - mingw64-gcc-objc++
+  become: true
+  ignore_errors: true # mingw32/64 Not available on CentOS 7 and objc not available on RedHat 8 inside mingw32 (mingw32-gcc-objc++)
+
+# yum install make libpng libpng-devel libtiff libtiff-devel libobjc libxml2 libxml2-devel libX11-devel libXt-devel libjpeg libjpeg-devel
+#- name: jenkins-slave | Install wine (Debian based)
+#  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','14.04']
+#  with_items:
+#    - playonlinux
+#  become: true
+#  ignore_errors: true

@@ -1,0 +1,334 @@
+---
+
+jenkins_name: jenkins
+jenkins_user: jenkins
+# python -c "from passlib.hash import sha512_crypt; import getpass; print sha512_crypt.encrypt(getpass.getpass())"
+# jenkins1234
+# http://docs.ansible.com/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
+jenkins_password: "$6$rounds=656000$ITswjqU77/RgGDEv$Vbv6Pw5UJEQQGXwZ4JiR0WXsZVSNAHY7NuWgid.yGLIxro27nZt7CIMwQrh4encLm9Db1RDscEjC1T9ldCgx61"
+jenkins_group: jenkins
+jenkins_id: "2000"
+jenkins_gid: "131"
+data_group: "www-data"
+data_gid: "33"
+docker_users: "{{ jenkins_user }}"
+docker_gid: "2000"     # getent group docker
+docker_group: "docker"
+docker_directory: "{{ jenkins_home }}/.docker"
+bower_config_directory: [ "{{ jenkins_home }}/.config/configstore", "{{ jenkins_home }}/.local/share/bower" ]
+jenkins_primary_group: jenkins
+jenkins_groups: [ "{{ docker_group }}", "{{ data_group }}", "{{ jenkins_group }}" ]
+# jenkins_shell: "/bin/false"
+jenkins_shell: "/bin/bash"
+jenkins_home: /var/lib/jenkins              # Jenkins home location
+# NIS issue jenkins_home: /home/jenkins
+# jenkins_home: "/home/jenkins"
+jenkins_slave_home: "{{ jenkins_home }}"
+jenkins_slave_directory: ["{{ jenkins_slave_home }}/slave", "{{ jenkins_slave_home }}/slave-test", "{{ jenkins_slave_home }}/tmp"]            # needed {{ jenkins_slave_home }}/tmp for -Djava.io.tmpdir=/workspace/tmp
+jenkins_sudo: false
+
+jenkins_jdk7_enable: false
+jenkins_jdk8_enable: false
+jenkins_jdk14_enable: true
+# jdk_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
+jdk_dir_tmp: "{{ tempdir.stdout }}"
+jdk_owner: "root"
+jdk_group: "{{ jdk_owner }}"
+# jdk_home is normalize to /usr/java/default/, so for instance for Ubuntu /usr/java/default/ is pointing to /usr/lib/jvm/java-8-oracle
+# For CentOS/RedHat
+# jdk_home: "/usr/java/jdk1.8.0_182"
+# For ubuntu
+# jdk_home: "/usr/lib/jvm/java-8-oracle"
+# jdk_home: "/usr/java/default"
+
+java_keytool_executable: "{{ jdk_home }}/bin/keytool"
+java_certificate_ca_path: "{{ jdk_home }}/jre/lib/security/cacerts"
+java_certificate_alias: test
+java_certificate_alias_new: prod
+java_certificate_key_pass: changeit
+java_certificate_store_pass: changeit
+java_certificate_ca_name: "~/pki/ca-old.pem"
+java_certificate_ca_name_new: "~/pki/ca-new.pem"
+
+jenkins_http_host: 127.0.0.1                # Set HTTP host
+jenkins_http_port: 8080                     # Set HTTP port
+jenkins_prefix: "/"
+jenkins_url: "http://{{ jenkins_http_host }}:{{ jenkins_http_port }}{{ jenkins_prefix }}"
+jenkins_slave_name: swarm-{{ ansible_hostname }}
+
+# Package states: present or installed or latest
+util_pkg_state: present
+# Repository states: present or absent
+jenkins_repository_state: present
+
+jenkins_ssh_key_file: "~/.ssh/id_rsa"            # Set private ssh key for Jenkins user (path to local file)
+jenkins_ssh_authorized_keys_fingerprints: []     # Set known authorized keys for ssh
+# Alban Andrieu
+#  - "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIEAio3SOQ9yeK6QfKqSFNKyTasuzjStxWevG1Vz1wgJIxPF+KB0XoMAPD081J+Bzj2LCDRSWisNv2L4xv2jbFxW/Pl7NEakoX47eNx3U+Dxaf+szeWBTryYcDUGkduLV7G8Qncm0luIFd+HDIe/Qir1E2f56Qu2uuBNE6Tz5TFt1vc= Alban"
+# ssh-keygen -F $IP
+# ssh-keyscan -H $IP
+jenkins_ssh_fingerprints:                   # Set known hosts for ssh
+  - "bitbucket.org,131.103.20.167 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw=="
+  - "github.com,204.232.175.90 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=="
+
+jenkins_remote_thinbackup: "/backup/thinBackup"
+
+home_url: "http://localhost"
+nexus_url: "{{ home_url }}:8081"
+nexus_mirror_url: "{{ nexus_url }}/repository/maven-public/"
+nexus_deploy_url: "{{ nexus_url }}"
+nexus_deploy_releases: "{{ nexus_url }}/repository/maven-releases/"
+nexus_deploy_snapshots: "{{ nexus_url }}/repository/maven-snapshots/"
+nexus_settings_signing_enable: false
+nexus_settings_signing_active: false
+nexus_settings_signing_storepass: ""
+nexus_settings_signing_keystore: ""
+nexus_settings_signing_alias: "test"
+nexus_settings_sonar_enable: false
+nexus_settings_sonar_active: false
+nexus_settings_sonar_url: ""
+nexus_settings_sonar_login: ""
+nexus_settings_sonar_pdf_password: "admin"
+nexus_proxy_active: false
+nexus_non_proxy: "albandrieu.com|nabla.mobi"
+http_proxy_host: "192.168.1.57"
+http_proxy_port: "3128"
+http_proxy_protocol: "http"
+http_proxy: "{{ http_proxy_protocol }}://{{ http_proxy_host }}:{{ http_proxy_port }}"
+https_proxy: "{{ http_proxy }}"
+
+# npm_nexus_npm_url: "{{ nexus_url }}/nexus/content/npm/registry.npmjs.org/"
+npm_nexus_npm_url:
+npm_config_enabled: true
+npm_nexus_private_npm_url: "http://registry.npmjs.org/"
+npm_nexus_private_npm_ca:
+npm_nexus_private_npm_data: []
+proxy_cdnurl_server: "localhost"
+npm_phantomjs_cdnurl: ""
+npm_slimerjs_cdnurl: ""
+npm_strict_ssl: "false"
+
+npm_prefix: ""           # "/usr/local/bin" or "/usr/bin"
+npm_noproxy: "albandrieu.com,nabla.mobi"
+npm_proxy:    # "{{ http_proxy }}"
+npm_email:
+# Define a list of global packages to be installed with NPM.
+npm_global_packages:
+#  - analyze-css@0.10.2
+  - angular@1.3.15
+  - bower@1.8.13
+  - casperjs@1.1.4
+  - coffee-script@1.10.0
+  - connect@1.9.2
+  - eslint@6.8.0
+#  - gifsicle@4.0.1 # NOK 5.2.0 node v12.16.1 Warning: Couldn't load default plugin "gifsicle"
+  - grunt@1.4.1
+  - grunt-cli@1.4.3
+  - jscpd@3.4.5
+  - jshint@2.9.5
+  - jsonlint@1.6.2
+  - json2csv@4.3.3
+#  - nsp@3.2.1
+#  - phantomjs-prebuilt@2.1.16              # EACCES: permission denied
+  - phantomas@1.20.1
+  - prettier@2.0.4
+  - slimerjs@0.10.3
+  - tap-eater@0.0.3
+  - webdriver-manager@12.1.8
+  - yarn@1.19.1
+  - yo@latest
+  - shrinkwrap@0.4.0
+  - newman@5.3.1
+  - xunit-viewer@5.1.11
+  - dockerfile_lint@0.3.4
+  - grunt-retire@1.0.8  # security tool
+  - bower-nexus3-resolver@1.0.2   # 1.0.4 buggy with directory bower_components
+  - pre-commit@1.2.2
+  - node-gyp@8.4.1
+  - npm-license@0.3.3
+#  - grunt@1.0.4
+#  - grunt-version-check@0.3.8
+#  - karma@4.0.1
+#  - node-sass@3.11.2
+#  - npm@6.13.6 # To be aligned with code, See Dockerfile
+
+npm_chromedriver_version: 70.0.3538.102
+#  apt_chromedriver_version: "=77.0.3865.90-0ubuntu0.18.04.1"
+apt_chromedriver_version:
+
+brew_enabled: false
+brew_packages:
+  - 'randomize-lines'   # for git-radar
+#  - 'michaeldfallen/formula/git-radar'
+  - 'hadolint'
+  - 'github-markdown-toc'
+#  - 'autoconf'
+#  - 'bash-completion'
+#  - 'boot2docker'
+#  - 'consul'
+#  - 'docker-compose'
+#  - 'docker-machine'
+#  - 'doxygen'
+#  - 'dive'  # issue with libiconv: is not needed on Linux, where iconv.h is provided by glibc
+#  - 'git'
+#  - 'git-lfs'
+#  - 'go'
+#  - 'jq'
+#  - 'nmap'
+#  - 'nomad'
+#  - 'openssl'
+#  - 'packer'
+#  - 'pyenv'
+#  - 'python'
+#  - 'rancher-compose'
+#  - 'rbenv'
+#  - 'ruby-build'
+#  - 'ssh-copy-id'
+#  - 'terraform'
+#  - 'terraform-inventory'
+#  - 'terraform-provisioner-ansible'
+#  - 'tmux'
+#  - 'tree'
+#  - 'vault'
+#  - 'wget'
+#  - 'zsh'
+#  - 'zsh-syntax-highlighting'
+install_homebrew_if_missing: true
+
+upgrade_homebrew_packages: false
+homebrew_repository: "https://github.com/Homebrew/brew"
+homebrew_home_check_path: "{{ lookup('env','HOME') }}/.linuxbrew"
+homebrew_check_path: "{{ homebrew_home_check_path }}/bin/brew"
+
+# maven_
+maven_config_enabled: true
+# maven_repository: "{{ jenkins_slave_home }}/repository"
+maven_repository: "/usr/share/maven-repo"
+# TODO sudo chmod 755 -R /usr/share/maven-repo
+mvn_home: "/opt/apache-maven-3.2.1/"
+
+bower_directory: "bower_components"
+bower_analytics: "false"
+bower_timeout: 120000
+bower_url: "{{ home_url }}:5678"
+bower_registry_url: "{{ bower_url }}"
+bower_register_url: "{{ bower_url }}"
+bower_publish_url: "{{ bower_url }}"
+bower_proxy:    # "{{ http_proxy }}"
+bower_noproxy: "localhost,127.0.0.1,{{ home_url }}"
+
+shell_git_configure_enabled: true         # Enable git configuration
+shell_git: []
+# Additional properties: 'shell_git_machine, shell_git_login, shell_git_email, shell_git_password, shell_git_name, shell_git_path, shell_git_ssl, shell_git_meld_enabled, shell_git_editor'
+# - shell_git_machine: 'localhost',
+#   shell_git_login: 'jenkins',
+#   shell_git_email: 'jenkins@localhost.com',
+#   shell_git_password: 'todo',
+#   # Optional.
+#   shell_git_name: '{{ shell_git_login }}',
+#   shell_git_path: '/usr/bin',
+#   shell_git_ssl: false,
+#   shell_git_meld_enabled: true,
+#   shell_git_editor: "gedit",
+#   shell_git_maildomain = "free.fr"
+#   shell_git_autocrlf: "input"   # For unix, use true for mingw on windows
+#   shell_git_longpaths: "true"   # For windows
+#   shell_git_ssl: "false"
+
+shell_sa_password: "microsoft"
+svn_user: "jenkins"
+svn_password: "microsoft"
+
+nodejs_version: "11.15.0"
+nodejs_enabled: true
+epel_repo_enabled: false
+python_enabled: true
+#The last command is to upgrade to the latest supported version. For Python 2.7 the latest supported is currently pip 20.3.4.
+python2_pip_version: "20.2.4" # "pip < 21.0"
+python3_default_version: "3.8"
+python3_pip_version: "20.2.4"
+
+database_docker_oradata: "/opt/oracle/oradata"
+database_docker_oradata_orcl: "/u02/app/oracle/oradata/ORCL"
+database_docker_scripts: "/opt/oracle/scripts"
+database_docker_instantclient: "/opt/oracle/instantclient_12_2"
+
+zabbix_agent_config_server: "127.0.0.1"
+zabbix_agent_config_listen_ip: "0.0.0.0"
+zabbix_agent_config_start_agents: "3"
+zabbix_agent_config_server_active: "{{ zabbix_agent_config_server }}"
+# zabbix_agent_config_hostname: "{{ ansible_fqdn }}"
+zabbix_agent_config_hostname: "{{ ansible_hostname }}"
+zabbix_agent_config_director: "/etc/zabbix/"
+
+proxy_repo_enabled: false
+proxy_repo_server: "localhost"
+proxy_repo_url: "http://{{ proxy_repo_server }}:3142"
+
+docker_opts_dns_1: 192.168.132.133  # home adguard
+docker_opts_dns_2: 8.8.8.8
+docker_opts_dns_3: 4.4.4.4
+docker_opts_dns_search:
+docker_opts_icc: true
+docker_opts_userland_proxy: true
+docker_opts_no_new_privileges: true
+docker_opts_live_restore: false
+docker_opts_experimental: true
+#docker_opts_debug: true
+
+docker_py_version: "1.9.0"
+# docker_opts: >
+#    --insecure-registry localhost:4000
+#  -H unix://
+#  -H tcp://0.0.0.0:2375
+#  --log-level=debug
+docker_opts: >
+  -H tcp://0.0.0.0:2376
+  --log-level=debug
+  --data-root /docker
+  --label provider=jenkins
+#  --dns {{ docker_opts_dns_1 }}
+#  --dns {{ docker_opts_dns_2 }}
+#  --dns-search={{ docker_opts_dns_search }}
+#  --insecure-registry=registry.albandrieu.com
+#  --userns-remap jenkins #TODO on Ubuntu only, but it is conflicting with kubernete or running docker run --net=host
+
+# workspace: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
+workspace: "{{ tempdir.stdout }}"
+sonar_target_dir: "/usr/local/"
+sonar_build_wrapper_name: "build-wrapper-linux-x86"
+sonar_build_wrapper_download_file: "{{ sonar_build_wrapper_name }}.zip"
+# sonar_build_wrapper_download_url: "http://localhost:9000/static/cpp/{{ sonar_build_wrapper_download_file }}"
+sonar_build_wrapper_download_url: "https://sonarcloud.io/static/cpp/{{ sonar_build_wrapper_download_file }}"
+sonar_build_wrapper_target_dir: "{{ sonar_target_dir }}sonar-build-wrapper"
+
+# See http://mirror.serverion.com/jenkins/updates/updates/hudson.plugins.sonar.SonarRunnerInstaller.json
+sonar_scanner_version: "4.5.0.2216" # SonarScanner will require Java 11 to run starting in SonarQube 8.x https://community.sonarsource.com/t/unable-to-load-component-class-org-sonar-scanner-bootstrap-scannerplugininstaller/18185/5
+#sonar_scanner_version: "4.2.0.1873"
+sonar_scanner_name: "sonar-scanner-{{ sonar_scanner_version }}"
+sonar_scanner_package_name: "{{ sonar_scanner_name }}-linux"
+sonar_scanner_cli_name: "sonar-scanner-cli"
+sonar_scanner_download_file: "{{ sonar_scanner_name }}.zip"
+#sonar_scanner_download_url: "https://github.com/SonarSource/{{ sonar_scanner_cli_name }}/archive/{{ sonar_scanner_version }}.zip"
+sonar_scanner_download_url: "https://binaries.sonarsource.com/Distribution/{{ sonar_scanner_cli_name }}/{{ sonar_scanner_cli_name }}-{{ sonar_scanner_version }}-linux.zip"
+sonar_scanner_target_dir: "{{ sonar_target_dir }}sonar-runner"
+
+jenkins_customtools_target_dir: "/workspace/slave/tools/com.cloudbees.jenkins.plugins.customtools.CustomTool"
+
+# See https://github.com/zaproxy/zaproxy/releases/download/v2.8.0/ZAP_2.8.0_Core.zip
+zap_version: "2.10.0"
+zap_name: "ZAP_{{ zap_version }}_Core"
+zap_download_file: "{{ zap_name }}.zip"
+zap_download_url: "https://github.com/zaproxy/zaproxy/releases/download/v{{ zap_version }}/{{ zap_download_file }}"
+zap_target_dir: "{{ jenkins_customtools_target_dir }}/ZAPROXY/ZAP_{{ zap_version }}"
+
+python_yum_enablerepo: epel    # "no"
+python_yum_disablerepo:
+workstation_enabled: false
+
+docker_files_generated_directory: "./"
+docker_files_enable: false
+docker_volume_directory: "{{ jenkins_home }}"
+docker_working_directory: "/tmp/ansible"
+# docker_working_directory: "{{ docker_volume_directory }}"
+docker_image_name: "nabla/ansible-jenkins-slave"

@@ -1,0 +1,62 @@
+---
+
+- name: jenkins-slave | Install X debug tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+  with_items:
+    - xclock
+    - xauth
+    - x11-apps
+  become: true
+  ignore_errors: true
+  changed_when: false
+
+- name: jenkins-slave | Install X debug tools (CentOS and RedHat based)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  with_items:
+    - libXext
+    - libXrender
+    - libXtst
+  become: true
+  ignore_errors: true
+  changed_when: false
+
+- name: jenkins-slave | Coredump handling
+  pam_limits: domain={{ item }} limit_type=soft limit_item=core value=unlimited backup=yes
+  with_items:
+    - test
+    - postgres
+  become: true
+  when: ansible_os_family != "Windows"
+
+- name: jenkins-slave |  Make a directory for coredumps
+  file: path="{{ jenkins_home }}/coredumps" state=directory owner={{ jenkins_user }} group={{ jenkins_group }}
+  when: ansible_os_family != "Windows"
+
+- name: jenkins-slave | Install utility tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' or ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - lsof
+  become: true
+  ignore_errors: true
+  changed_when: false
+
+- name: jenkins-slave | Install CPP gdb tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' or ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - gdb
+  become: true
+  ignore_errors: true
+  changed_when: false
+
+- name: jenkins-slave | Install CPP debug tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - pstack
+    - valgrind
+  become: true
+  ignore_errors: true
+  changed_when: false

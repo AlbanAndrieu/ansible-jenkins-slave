@@ -1,0 +1,11 @@
+---
+
+- name: jenkins-slave | Create ~/.kube folder
+  file: path={{ jenkins_home }}/.kube state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
+  become: true
+  changed_when: false
+
+- name: jenkins-slave | Copy kube configuration (1)
+  template: src=config-test.j2 dest={{ jenkins_home }}/.kube/config backup=yes owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
+  changed_when: false
+  become: true

@@ -1,0 +1,15 @@
+---
+
+- name: Converge
+  hosts: jenkins-slave-centos
+
+  roles:
+    - role: geerlingguy.repo-epel
+
+- name: Converge
+  hosts: all
+
+  roles:
+    - role: ../  # role: albanandrieu.jenkins_slave
+      verbose: true
+  no_log: false

@@ -1,0 +1,114 @@
+---
+# WARNING below order is important
+
+# TODO use ansible modules
+# http://docs.ansible.com/ansible/latest/modules/lvol_module.html
+# http://docs.ansible.com/ansible/latest/modules/lvg_module.html
+
+- name: hdd | Create sdb
+  command: pvcreate /dev/sdb
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+# - name: hdd | Extend sdb
+#   command: vgextend rhel_fr1cslvcacrhel71 /dev/sdb
+#   changed_when: false
+#   become: true
+#   ignore_errors: true
+
+# lvcreate -l 12805 -n workspace rhel_fr1cslvcacrhel71
+# lvcreate -l 12805 -n docker rhel_fr1cslvcacrhel71
+#
+# lvdisplay
+#
+# sudo mkfs -t ext4 /dev/rhel_fr1cslvcacrhel71/workspace
+# sudo mkfs -t xfs /dev/rhel_fr1cslvcacrhel71/workspace
+# sudo mkfs -t ext4 /dev/rhel_fr1cslvcacrhel71/docker
+# mkfs.xfs -n ftype=1 /dev/rhel_fr1cslvcacrhel71/docker
+#
+# sudo mkdir /workspace
+# sudo mkdir /docker
+#
+# - name: hdd | Mount up device by label
+#   mount:
+#     path: /workspace
+#     src: /dev/rhel_fr1cslvcacrhel71/workspace
+#     fstype: ext4
+#     opts: auto
+#     passno: 2
+#     state: present
+#
+# - name: hdd | Mount up device by label
+#   mount:
+#     path: /docker
+#     src: /dev/rhel_fr1cslvcacrhel71/docker
+#     fstype: ext4
+#     opts: auto
+#     passno: 2
+#     state: present
+
+# /etc/fstab
+# /dev/rhel_fr1cslvcacrhel71/workspace /workspace ext4 auto 0 2
+# /dev/rhel_fr1cslvcacrhel71/docker /docker ext4 auto 0 2
+# /dev/rhel_fr1cslvcacrhel71/workspace /workspace xfs auto 0 2
+# /dev/rhel_fr1cslvcacrhel71/docker /docker xfs defaults,usrquota,prjquota  0   0
+
+# Check entry in /etc/fstab
+# sudo mount /workspace
+# sudo mount /docker
+
+# extend size of logical volume
+# lvextend --resizefs -L +6G /dev/rhel_fr1cslvcacrhel71/swap
+# lvextend --resizefs -L +6G /dev/VolGroup00/usrvol
+# lvextend --resizefs -L +17G /dev/rhel_fr1cslvcacrhel71/root
+# #lvextend -l +100%FREE /dev/rhel_fr1cslvcacrhel71/root
+# RedHat 6
+# lvextend --resizefs -L +6G /dev/VolGroup00/usrvol
+
+# IMPORTANT
+# Do not reboot the server if entry in wrong in fstab you will have IS team to get console on booting
+
+- name: hdd | Install hdd tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')
+  with_items:
+    - system-storage-manager
+  become: true
+  changed_when: false
+
+- name: hdd | Install hdd tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  with_items:
+    - gnome-disk-utility
+    - baobab
+  become: true
+
+# TODO
+# - name: hdd | Mount containers storage
+#   mount:
+#   path: "{{ containers_mount }}"
+#     src: "storage:/tank/containers"
+#     fstype: nfs
+#     state: mounted
+
+# - name: hdd | Mount containers storage
+#   mount:
+#     path: /media/iscsi/extent1
+#     src: /dev/sdc1
+#     fstype: ext4
+#     state: mounted
+
+# Change quota on xfs for oracle database
+# See https://help.directadmin.com/item.php?id=557
+
+# nano /etc/default/grub
+# GRUB_CMDLINE_LINUX="rd.lvm.lv=rhel_fr1cslvcacrhel71/swap rd.lvm.lv=rhel_fr1cslvcacrhel71/root rhgb quiet rootflags=uquota,pquota"
+
+# cp /boot/grub2/grub.cfg /boot/grub2/grub.cfg.orig
+# grub2-mkconfig -o /boot/grub2/grub.cfg
+
+# lvextend -l +100%FREE /dev/rhel_fr1cslvcacrhel71/root
+# xfs_info /dev/mapper/rhel_fr1cslvcacrhel71-root
+# xfs_growfs -d /dev/rhel_fr1cslvcacrhel71/root

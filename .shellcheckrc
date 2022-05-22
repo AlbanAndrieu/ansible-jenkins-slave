@@ -1,0 +1,8 @@
+
+# Don't suggest [ -n "$VAR" ] over [ ! -z "$VAR" ]
+disable=SC2236
+
+# Suggest ${VAR} in place of $VAR
+enable=require-variable-braces
+
+external-sources=true

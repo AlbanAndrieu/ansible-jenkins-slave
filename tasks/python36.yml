@@ -1,0 +1,248 @@
+---
+# TODO on RedHat add python3.6 by hand
+
+# TODO RedHat https://www.tecmint.com/install-python-in-linux/ install python 3.6 for ansible
+# yum -y groupinstall development
+# yum -y install zlib-devel
+
+# wget https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tar.xz
+# tar xJf Python-3.6.3.tar.xz
+# cd Python-3.6.3
+# ./configure
+# make
+# make install
+# rm Python-3.6.3.tgz
+
+# which python3
+# python3 -V
+# python3.6.3 -V
+
+# virtualenv py3-ansible -p /usr/local/bin/python3.6
+
+- name: python36 | Install python (RedHat and CentOS based)
+  yum:
+    name: "{{ item }}"
+    state: "{{ util_pkg_state | default('present') }}"
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
+  with_items:
+    #- "https://centos6.iuscommunity.org/ius-release.rpm"
+    - "https://repo.ius.io/ius-release-el6.rpm"
+    - python36u
+    - python36u-devel
+    - python36u-pip
+  become: true
+
+- name: python36 | Remove python 34 (RedHat and CentOS based)
+  yum:
+    name: "{{ item }}"
+    state: "absent"
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
+  with_items:
+    - python34
+    - python34-libs
+  become: true
+
+- name: python36 | Remove python 36 (RedHat and CentOS based)
+  yum:
+    name: "{{ item }}"
+    state: "absent"
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
+  with_items:
+    - python36 # Remove it before install ius pacakge below
+  become: true
+
+- name: python36 | Disable rhel-7-server-rpms (1)
+  command: yum-config-manager --disable rhel-7-server-rpms
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
+  changed_when: false
+  become: true
+
+- name: python36 | Disable @rhel-7-server-rpms (2)
+  command: yum-config-manager --disable @rhel-7-server-rpms
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
+  changed_when: false
+  become: true
+
+- name: python36 | Install python (RedHat and CentOS based)
+  yum:
+    name: "{{ item }}"
+    state: "{{ util_pkg_state | default('present') }}"
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
+  with_items:
+    #- "https://centos7.iuscommunity.org/ius-release.rpm"
+    - "https://repo.ius.io/ius-release-el7.rpm"
+    - python36u
+    - python36u-devel
+    - python36u-pip
+  become: true
+
+- name: python36 | Set python link to python version
+  set_fact: python3_version=3.6
+
+- name: python36 | Install python 3.6 ppa
+  apt_repository: repo="ppa:deadsnakes/ppa" state={{ util_repository_state|default('present') }}
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and (ansible_distribution_version in ['16.04', '18.04'])
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
+  become: true
+  ignore_errors: true
+
+# WARNING from Ubuntu 19.04 python 3.6 is no more maintained
+
+- name: python36 | Install python 3 requirements
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04', '19.04'])
+  with_items:
+    - python3.6
+    - python3.6-dev
+    - python3.6-dbg
+    - python3.6-gdbm
+
+- name: python36 | Install missing pip{{ python3_version }} (1)
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/get-pip.py
+    force: yes
+  register: curl_result
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))    # so for '16.04', '17.04', '18.04'
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
+  become: true
+
+- name: python36 | Install missing pip{{ python3_version }} (2)   # noqa 503
+  command: "python{{ python3_version }} /tmp/get-pip.py"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))    # so for '16.04', '17.04', '18.04'
+  changed_when: false
+  become: true
+
+- debug: msg="curl_result - {{ curl_result.rc }} - {{ curl_result.stdout }}"
+  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>=')) and not ansible_check_mode
+  ignore_errors: true
+
+# - debug: msg="{{ curl_result.stdout }}"
+
+- name: python36 | Run pip check   # noqa 503
+  shell: (pip -V && pip3.6 -V) | uniq
+  when: curl_result.changed
+  become: true
+  ignore_errors: true
+
+# - name: python36 | Install devops tools requirements
+#   pip: name:{{ item }}
+#        executable:pip{{ python3_version }}
+#   with_items:
+#     - "pywinrm>=0.2.2"
+#   become: true
+
+- name: python36 | Upgrade setuptools
+  command: "pip{{ python3_version }} install --upgrade setuptools"
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+# python3 -m pip install --upgrade pip==20.3.4
+# deactivate
+# sudo pip3 install --upgrade pip
+- name: python | Upgrade pip
+  command: "pip{{ python3_version }} install --upgrade pip=={{ python3_pip_version }}"
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+# - name: python36 | Install virtualenv via pip
+#   pip:
+#     name: virtualenv
+#     executable: pip{{ python3_version }}
+#   become: true
+#
+# - name: python36 | Gather current pip requirement
+#   command: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
+#   when: not( (python3_version is undefined) or (python3_version is none) )
+#         and (python3_version | length > 0)
+#   changed_when: false
+#   become: true
+#   ignore_errors: true
+#
+# - name: python36 | Copy the requirements configuration file for python
+#   copy: src=python/requirements-current-{{ python3_version }}.txt dest={{ ansible_user_dir }}/requirements-current-{{ python3_version }}.txt backup=yes
+#   become: true
+
+- name: python36 | Install dependencies for python 3 requirements
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - libcups2-dev
+    - python3-apt
+  become: true
+
+- name: python36 | Install dependencies for python 3 lxml requirements
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - libxml2-dev
+    - libxslt-dev
+    - python3-lxml
+
+- name: python36 | Uninstall dependencies for python 3 requirements
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python3_version }}"
+    state: absent
+  when: not ansible_check_mode
+  with_items:
+    - libxml2-python
+  ignore_errors: '{{ ansible_check_mode }}'
+  become: true
+
+- name: python36 | Install missing for python 3 (for dpkg)
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python3_version }}"
+  when: not ansible_check_mode
+  with_items:
+    - chardet
+  ignore_errors: '{{ ansible_check_mode }}'
+  become: true
+
+- name: python36 | Install C++ librairies database (Debian based) for pyodbc
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - unixodbc-dev    # ODBC
+  become: true
+
+- name: python36 | Install C++ librairies for database (CentOS and RedHat based) for pyodbc
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  tags: cpp
+  with_items:
+    - unixODBC-devel   # ODBC
+  become: true
+
+# - name: python36 | Ensure jenkins ownership
+#   file:
+#     path: "/opt/ansible/env36"
+#     state: directory
+#     recurse: yes
+#     group: "{{ jenkins_user }}"
+#     owner: "{{ jenkins_group }}"
+#   become: true
+
+# - name: python36 | Install missing pip requirements
+#   command: "pip{{ python3_version }} install -r requirements-current-{{ python3_version }}.txt"
+#   changed_when: false
+#   become: true
+- name: python36 | Uninstall dependencies for python 3 requirements
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python3_version }}"
+    state: absent
+  when: not ansible_check_mode
+  with_items:
+    - argparse
+  ignore_errors: '{{ ansible_check_mode }}'
+  become: true

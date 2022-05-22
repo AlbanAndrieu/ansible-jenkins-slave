@@ -1,0 +1,69 @@
+# {{ ansible_managed }}
+
+# On MacoSX
+#/usr/local/etc/odbcinst.ini
+#/opt/local/etc/odbcinst.ini
+
+#Run odbcinst -j to get the location of the odbcinst.ini and odbc.ini
+#odbcinst -j
+
+[PostgreSQL]
+Description = ODBC for PostgreSQL
+{% if odbcinst_PostgreSQL_Driver is defined %}
+Driver =  {{ odbcinst_PostgreSQL_Driver }}
+{% endif %}
+{% if odbcinst_PostgreSQL_Setup is defined %}
+Setup =  {{ odbcinst_PostgreSQL_Setup }}
+{% endif %}
+{% if odbcinst_PostgreSQL_Driver64 is defined %}
+Driver64 =  {{ odbcinst_PostgreSQL_Driver64 }}
+{% endif %}
+{% if odbcinst_PostgreSQL_Setup64 is defined %}
+Setup64 =  {{ odbcinst_PostgreSQL_Setup64 }}
+{% endif %}
+FileUsage=1
+
+#/usr/local/Cellar/unixodbc/2.3.4/
+
+[MySQL]
+Description = ODBC for MySQL
+{% if odbcinst_MySQL_Driver is defined %}
+Driver =  {{ odbcinst_MySQL_Driver }}
+{% endif %}
+{% if odbcinst_MySQL_Setup is defined %}
+Setup =  {{ odbcinst_MySQL_Setup }}
+{% endif %}
+{% if odbcinst_MySQL_Driver64 is defined %}
+Driver64 =  {{ odbcinst_MySQL_Driver64 }}
+{% endif %}
+{% if odbcinst_MySQL_Setup64 is defined %}
+Setup64 =  {{ odbcinst_MySQL_Setup64 }}
+{% endif %}
+
+FileUsage=1
+
+[FreeTDS]
+Description = FreeTDS Driver v0.91
+{% if odbcinst_FreeTDS_Driver is defined %}
+Driver =  {{ odbcinst_FreeTDS_Driver }}
+{% endif %}
+{% if odbcinst_FreeTDS_Setup is defined %}
+Setup =  {{ odbcinst_FreeTDS_Setup }}
+{% endif %}
+fileusage=1
+dontdlclose=1
+UsageCount=1
+
+[Oracle]
+Description = Oracle ODBC driver for Oracle 12c
+{% if odbcinst_Oracle_Driver is defined %}
+Driver =  {{ odbcinst_Oracle_Driver }}
+{% endif %}
+{% if odbcinst_Oracle_Driver is defined %}
+Driver64 =  {{ odbcinst_Oracle_Driver64 }}
+{% endif %}
+FileCount=1
+UsageCount=1
+
+#odbcinst -q -d
+#odbcinst -q -s

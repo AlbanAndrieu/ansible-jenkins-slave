@@ -1,0 +1,38 @@
+# {{ ansible_managed }}
+; loglevel=verbose
+cache=.node_cache
+tmp=.node_tmp
+{% if npm_chromedriver_version is defined %}
+chromedriver_version={{ npm_chromedriver_version }}
+{% endif %}
+{% if npm_email is defined %}
+email={{ npm_email }}
+{% endif %}
+{% for npmca_entry in npm_nexus_private_npm_ca %}
+ca={{ npmca_entry }}
+{% endfor %}
+{% if npm_nexus_private_npm_url is defined %}
+registry={{ npm_nexus_private_npm_url }}
+{% endif %}
+{% if npm_prefix is defined %}
+prefix={{ npm_prefix }}
+{% endif %}
+{% if npm_strict_ssl is defined %}
+strict-ssl={{ npm_strict_ssl }}
+{% endif %}
+{% if npm_phantomjs_cdnurl is defined %}
+phantomjs_cdnurl={{ npm_phantomjs_cdnurl }}
+{% endif %}
+{% if npm_slimerjs_cdnurl is defined %}
+slimerjs_cdnurl={{ npm_slimerjs_cdnurl }}
+{% endif %}
+{% for npmrc_entry in npm_nexus_private_npm_data %}
+{{ npmrc_entry }}
+{% endfor %}
+{% if npm_proxy is defined %}
+proxy={{ npm_proxy }}
+https-proxy={{ npm_proxy }}
+{% endif %}
+{% if npm_noproxy is defined %}
+noproxy={{ npm_noproxy }}
+{% endif %}

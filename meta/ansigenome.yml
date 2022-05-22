@@ -1,0 +1,34 @@
+---
+
+ansigenome_info: # noqa 701
+  galaxy_id: '1998'
+  galaxy_url: 'https://galaxy.ansible.com/alban.andrieu/jenkins-slave/'
+  galaxy_user: 'alban.andrieu'
+  galaxy_name: 'ansible_jenkins_slave'
+  galaxy_docker_name: 'ansible-jenkins-slave'
+
+  travis: true
+
+  authors:
+    - name: 'Alban Andrieu'
+      url: 'fr.linkedin.com/in/nabla/'
+      email: 'alban.andrieu@free.fr'
+      twitter: 'AlbanAndrieu'
+      github: 'AlbanAndrieu'
+
+  synopsis: |
+    Ensures that the basic requirements are properly installed (using `apt`) and configured for a jenkins slave to build, test package and deploy your project
+
+    This playbook is be used by [Docker Hub](https://hub.docker.com) to create a [Docker](http://docker.io) image.
+
+    See role [ansible-jenkins-slave-docker](https://github.com/AlbanAndrieu/ansible-jenkins-slave-docker) and image [ansible-jenkins-slave-docker](https://hub.docker.com/r/nabla/ansible-jenkins-slave-docker/)
+    ### Requirements
+
+    Tools which might be needed by [Eclipse](https://www.eclipse.org), like jdk, maven...
+    See available playbook on [GitHub](https://github.com/search?p=3&q=user%3AAlbanAndrieu+ansible%2A&type=Repositories)
+
+  usage: |
+    Describe how to use in more detail...
+
+  # custom: |
+  #   Any custom output you want after the usage section..

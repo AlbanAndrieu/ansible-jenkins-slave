@@ -1,0 +1,19 @@
+---
+
+- name: Install qa package
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  with_items:
+    - curl
+    - expat
+    - libexpat1-dev
+    - openssl
+    - make
+    - autoconf
+  become: true
+  ignore_errors: true
+
+- name: Install qa package
+  action: "{{ ansible_pkg_mgr }} name=libcurl4-openssl-dev state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: not (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  become: true
+  ignore_errors: true

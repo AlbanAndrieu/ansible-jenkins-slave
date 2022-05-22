@@ -1,0 +1,144 @@
+---
+
+- name: jenkins-slave | Install shell for running
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+    - bash
+    - ksh
+  become: true
+
+- name: jenkins-slave | Install shell for running
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ jenkins_pkg_state|default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+    - bash-completion
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  become: true
+
+- name: jenkins-slave | Install shell tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+    - shellcheck
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install shell tools
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+    - ShellCheck
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  become: true
+  ignore_errors: true
+
+# For Solaris 10 update PATH
+# env
+# crle
+# echo $PATH
+# #/usr/bin
+# PATH=/usr/sbin:/usr/bin:/usr/ccs/bin:/usr/sfw/bin
+# echo $SHELL
+# #PS1='\w $ '
+# PS1='${HOST}:${PWD} # ';  export PS1
+# Switch to bash
+# exec bash --noprofile --rcfile /dev/null
+# export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
+
+# TODO add JAVA_HOME
+
+- name: jenkins-slave | Add options in "{{ jenkins_home }}/.bashrc"
+  lineinfile:
+    dest: "{{ jenkins_home }}/.bashrc"
+    line: "{{ item.line }}"
+    insertafter: EOF
+    create: true
+  with_items:
+    - { regexp: '', line: 'export SCONS="/usr/bin/python2.7 /usr/bin/scons"' }
+#    - { regexp: '', line: 'export TERM="dumb"' }
+#    - { regexp: '', line: 'export TERM="xterm-256color"' }
+    - { regexp: '', line: 'export JAVA_HOME="{{ jdk_home }}"' }
+    - { regexp: '', line: 'export MAVEN_HOME="{{ mvn_home }}"' }
+#    - { regexp: '', line: 'export WORKSPACE="{{ jenkins_home }}"' }
+    - { regexp: '', line: 'export TAR="/bin/gtar"' }
+    - { regexp: '', line: 'export GIT_DISCOVERY_ACROSS_FILESYSTEM=1' }          # For Solaris
+    - { regexp: '', line: 'export TNS_ADMIN=/opt/oracle/instantclient_12_2/' }  # For Oracle
+    - { regexp: '', line: 'export ACCEPT_EULA=Y' }                              # For MsSQL
+    - { regexp: '', line: 'export PATH=${JAVA_HOME}/bin:${PATH}' }
+  become: true
+  become_user: "{{ jenkins_user }}"
+  changed_when: false
+#  ignore_errors: true
+  tags:
+    - bashrc
+    - env
+    #- vm
+    - mssql
+    - database
+
+- name: jenkins-slave | Add secrets in "{{ jenkins_home }}/.bashrc"
+  lineinfile:
+    dest: "{{ jenkins_home }}/.bashrc"
+    line: "{{ item.line }}"
+    insertafter: EOF
+    create: true
+  with_items:
+    - { regexp: '', line: 'export PATH=${JAVA_HOME}/bin:${PATH}' }
+    - { regexp: '', line: 'export SA_PASSWORD="{{ shell_sa_password }}"' }      # For MsSQL
+#    - { regexp: '', line: 'export STOREPASS="{{ nexus_settings_signing_storepass }}"' }      # For JAR signing
+  become: true
+  become_user: "{{ jenkins_user }}"
+  changed_when: false
+#  ignore_errors: true
+  tags:
+    - secret
+    - bashrc
+    - env
+    - vm
+    - mssql
+
+- name: jenkins-slave | Add custom options in "{{ jenkins_home }}/.bashrc"
+  lineinfile:
+    dest: "{{ jenkins_home }}/.bashrc"
+    line: "{{ item.line }}"
+    insertafter: EOF
+    create: true
+  with_items:
+    - { regexp: '', line: 'export PATH=/opt/local/bin:/usr/local/opt/gnu-getopt/bin:/usr/local/opt/llvm/bin:$PATH' }          # NEEDED clang specific for for OSX
+  when: (ansible_distribution == 'MacOSX')
+  become: true
+  become_user: "{{ jenkins_user }}"
+  changed_when: false
+  ignore_errors: true
+  tags:
+    - secret
+    - bashrc
+    - env
+    - vm
+
+- name: jenkins-slave | Switch to bash
+  command: usermod -s {{ jenkins_shell }} {{ jenkins_user }}
+# become_user: "{{ jenkins_user }}"
+  changed_when: false
+  ignore_errors: "{{ ansible_check_mode }}"
+
+# Add more fonts
+# https://coolaj86.com/articles/how-to-get-more-fonts-on-ubuntu.html
+
+- name: jenkins-slave | Install fonts and ttf
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+  with_items:
+    - libfontconfig
+    - libfreetype6
+    - xfonts-cyrillic
+    - xfonts-scalable
+    - fonts-liberation
+    - fonts-ipafont-gothic
+    - fonts-wqy-zenhei
+    - ttf-ubuntu-font-family
+    - ttf-xfree86-nonfree
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04'])
+  become: true
+  ignore_errors: true

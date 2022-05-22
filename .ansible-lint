@@ -1,0 +1,80 @@
+---
+exclude_paths:
+  - ./requirements.yml
+  - ./.travis.yml
+  - ./playbooks/group_vars/all/vault.yml
+  - ./docker/
+  - ./roles/albanandrieu.virtualbox/
+  - ./roles/albanandrieu.webmin/
+  - ./roles/Stouts.python/
+  - ./roles/Stouts.collectd/
+  - ./roles/andrewrothstein.terraform/
+  - ./roles/andrewrothstein.unarchive-deps/
+  - ./roles/andrewrothstein.kubernetes-helm/
+  - ./roles/angstwad.docker-ubuntu/
+  - ./roles/elliotweiser.osx-command-line-tools/
+  - ./roles/geerlingguy.ansible-role-nodejs/
+  - ./roles/geerlingguy.homebrew/
+  - ./roles/geerlingguy.php/
+  - ./roles/geerlingguy.security/
+  - ./roles/geerlingguy.apache/
+  - ./roles/geerlingguy.kubernetes/
+  - ./roles/geerlingguy.phpmyadmin/
+  - ./roles/geerlingguy.sonar-runner/
+  - ./roles/geerlingguy.clamav/
+  - ./roles/geerlingguy.mas/
+  - ./roles/geerlingguy.php-mysql/
+  - ./roles/geerlingguy.varnish/
+  - ./roles/geerlingguy.collectd-signalfx/
+  - ./roles/geerlingguy.mysql/
+  - ./roles/geerlingguy.pip/
+  - ./roles/geerlingguy.varnish-SAV/
+  - ./roles/geerlingguy.docker/
+  - ./roles/geerlingguy.nfs/
+  - ./roles/geerlingguy.repo-epel/
+  - ./roles/geerlingguy.dotfiles/
+  - ./roles/geerlingguy.nodejs/
+  - ./roles/geerlingguy.repo-remi/
+  - ./roles/geerlingguy.filebeat/
+  - ./roles/geerlingguy.packer/
+  - ./roles/geerlingguy.samba/
+  - ./roles/ansible-role-nodejs/
+  - ./roles/ansible-swapfile/
+  - ./roles/ansiblebit.oracle-java/
+  - ./roles/common/
+  - ./roles/devbox.chrome/
+  - ./roles/docker/
+  - ./roles/idealista-java/
+  - ./roles/locale/
+  - ./roles/mac-dev-playbook/
+  - ./roles/maven/
+  - ./roles/nexus/
+  - ./roles/nodejs/
+  - ./roles/opencl/
+  - ./roles/repo-epel/
+  - ./roles/repo-remi/
+  - ./roles/security/
+  - ./roles/ssl-ca-certificate/
+  - ./roles/ssl-certificate/
+  - ./roles/vagrant/
+  - ./roles/yarn/
+  - ./roles/zabbix/
+  - ./roles/jermon.ansible-role-cpan/
+  - ./roles/anxs.perl/
+# parseable: true
+# quiet: true
+# rulesdir:
+#   - ./rule/directory/
+skip_list:
+  - '602' # See https://github.com/ansible/ansible-lint/issues/457
+  - '204'
+  - '503'
+  - filenotfounderror
+#   - skip_this_tag
+#   - and_this_one_too
+#   - skip_this_id
+# tags:
+#   - run_this_tag
+use_default_rules: true
+# verbosity: 1
+offline: true

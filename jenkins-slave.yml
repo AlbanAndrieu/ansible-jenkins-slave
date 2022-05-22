@@ -1,0 +1,79 @@
+---
+# sudo ansible-playbook -i hosts -c local -v jenkins-slave.yml -vvvv | tee setup.log
+
+- name: Assert platform is supported
+  hosts: all
+  remote_user: root
+  gather_facts: true
+
+  tasks:
+    - name: Assert platform is supported
+      assert:
+        that:
+          - ansible_os_family in ['Debian', 'RedHat', 'CentOS', 'Windows', 'Solaris']
+          - ansible_architecture in ['x86_64']
+
+- hosts: all
+  gather_facts: true
+  tasks:
+    - name: group hosts by distribution
+      group_by: key="{{ ansible_distribution }}-{{ ansible_distribution_version }}"
+
+- hosts: RedHat-7*:RedHat-6*:CentOS-7*:CentOS-6*:Ubuntu-19*:Ubuntu-18*:Ubuntu-17*:Ubuntu-16*:Ubuntu-15*:Ubuntu-13*:Ubuntu-14*:Ubuntu-12*
+  gather_facts: false
+  tasks:
+    - name: group hosts for supported distributions
+      group_by: key="supported"
+
+- hosts: "!supported"
+  gather_facts: false
+  tasks:
+    - name: fail for unsupported distribution
+      fail: msg="{{ ansible_distribution }} {{ ansible_distribution_version }}
+                 is not a supported OS for a Tower installation.  Supported
+                 OSes include Red Hat Enterprise Linux 6/7, CentOS 6/7, or
+                 Ubuntu 12.04/12.04/14.04/16.04/17.04/18.04/17.09."
+    - debug: msg="Version {{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_architecture }}"
+
+- name: Bootstrap python onto server
+  hosts: Ubuntu-19*:Ubuntu-18*:Ubuntu-17*:Ubuntu-16*:Ubuntu-14*:Ubuntu-13*:Ubuntu-12*
+#  become: true
+
+  pre_tasks:
+    - name: Install python 2 if not there
+      raw: |
+        test -e /usr/bin/python || \
+        (apt -y update && apt install -y python-simplejson)
+      register: output
+      changed_when: output.stdout|trim() != ""
+
+    - name: Install sudo if not there
+      become: true
+      raw: |
+        test -e /usr/bin/sudo || apt install -y sudo
+      register: output
+      changed_when: output.stdout|trim() != ""
+
+- import_playbook: python.yml
+
+- hosts: all
+  become: true
+
+  roles:
+    - role: ansible-jenkins-slave
+
+  vars:
+    docker_files_enable: false
+    # jenkins_jdk7_enable: yes
+    user: root
+    home: /root
+#    subversion_owner_home: "/root/.subversion"
+#    subversion_previous_enabled: true
+#    subversion_previous_codename: precise
+#    subversion_rabbitvcs_enabled: false
+#    subversion_diff_enabled: false
+#    subversion_major: '1'
+#    subversion_minor: '6'
+#    subversion_revision: '17'
+#    subversion_version: "{{subversion_major}}.{{subversion_minor}}.{{subversion_revision}}"
+#    subversion_ubuntu: '{{ subversion_version }}dfsg-3ubuntu3'

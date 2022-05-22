@@ -1,0 +1,377 @@
+---
+
+# TODO RedHat 6
+# yum install epel-release
+# yum install -y python-pip
+
+- name: python | Install wget
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  with_items:
+    - wget
+  become: true
+
+- name: python | Install centos-release-scl
+  yum: name=centos-release-scl state=present
+  when: (ansible_distribution == 'CentOS')
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: python | Install rhel-server-rhscl-7-rpms
+  command: "yum-config-manager --enable rhel-server-rhscl-7-rpms"
+  when: (ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: python | Install python 2.7 requirement
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }} enablerepo=centos-sclo-rh"
+  with_items:
+    - scl-utils
+    - python27
+  when: (ansible_distribution == 'CentOS')
+  become: true
+
+# Below python27 should already be installed by python.yml playbook
+- name: python | Install python 2.7 requirement
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+#  enablerepo={{python_yum_enablerepo or None}} disablerepo={{python_yum_disablerepo or None}}"
+  with_items:
+    - scl-utils
+    - python27
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+  become: true
+
+# update-alternatives --install /usr/bin/python python /usr/bin/python2.6  5
+# update-alternatives --install /usr/bin/python python /usr/bin/python2.7 10
+# update-alternatives --install /usr/bin/python python /usr/bin/python3.5 20
+
+# For python2.7 Python.h: No such file or directory
+- name: python | Install python 2 requirement
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+  with_items:
+    - python2.7-dev
+    - python2.7-dbg
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  become: true
+
+- name: python | Install python 2 requirement
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+  with_items:
+    - python2.7-devel
+  when: ((ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
+  become: true
+
+- name: python | Ensure python-apt is installed
+  action: "{{ ansible_pkg_mgr }} name=python-apt update_cache=yes state={{ util_pkg_state | default('present') }}"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  become: true
+
+- name: python | Set python link to python version
+  set_fact: python2_version=2.7
+
+# python27-pip not available on CentOS 7 but needed for RedHat 6
+- name: python | Install python 2.7 pip requirement
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+  with_items:
+    - python27-pip
+  when: ((ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
+  become: true
+
+- name: python | Install python 2.7 pip requirement
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }} enablerepo={{ python_yum_enablerepo or None }} disablerepo={{ python_yum_disablerepo or None }}"
+  with_items:
+    - python2-pip
+  when: (ansible_distribution == 'CentOS')
+  become: true
+
+- name: python | Install missing pip2.7 (1)
+  get_url:
+    url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
+    dest: /tmp/get-pip.py
+    force: true
+    sha256sum: 40ee07eac6674b8d60fce2bbabc148cf0e2f1408c167683f110fd608b8d6f416
+  register: curl_result
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  #environment:
+  #  http_proxy: "{{ http_proxy }}"
+  #  https_proxy: "{{ https_proxy }}"
+  become: true
+
+- name: python | Install missing pip2.7 (2)   # noqa 503
+  command: "python2.7 /tmp/get-pip.py"
+  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  changed_when: false
+  become: true
+
+- debug: msg="curl_result - {{ curl_result.rc }} - {{ curl_result.stdout }}"
+  when: not ansible_check_mode and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  ignore_errors: true
+
+# - name: python | Install missing pip2.7 (2)
+#   shell: "curl https://bootstrap.pypa.io/2.7/get-pip.py -o - | python2.7"
+#   register: curl_result
+#   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+#   changed_when: false
+#   become: true
+#
+# - debug: msg="curl_result - {{ curl_result.rc }} - {{ curl_result.stdout }}"
+#   when: not ansible_check_mode
+#   ignore_errors: true
+
+# - name: python | Install missing pip2.7 (3)
+#   shell: "python2.7 -m ensurepip"
+#   register: ensurepip_result
+#   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+#   changed_when: false
+#   become: true
+#   ignore_errors: true
+
+- name: python | Install which pip{{ python2_version }}
+  command: "which pip{{ python2_version }}"
+  register: pip_result
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  changed_when: false
+  become: true
+
+- debug: msg="pip_result - {{ pip_result.rc }} - {{ pip_result.stdout }}"
+  when: not ansible_check_mode and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  ignore_errors: true
+
+- name: python | Create pip2.7 link
+  file: path=/usr/bin/pip2.7 src=/usr/local/bin/pip2.7 state=link
+#  force=yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ( pip_result.rc != 0 )
+  # or pip_result.stdout != '/usr/local/bin/pip2.7'
+  become: true
+  ignore_errors: true
+
+- name: python | Install missing pip2.7 (fix 'module' object has no attribute 'SSL_ST_INIT') part 1
+  command: "pip{{ python2_version }} uninstall pyOpenSSL"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: python | Install missing pip2.7 (fix 'module' object has no attribute 'SSL_ST_INIT') part 2
+  command: "pip{{ python2_version }} install pyOpenSSL"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04'])
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: python | Install virtualenv
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04'])   # noqa 204
+  with_items:
+    - python-virtualenv
+    - virtualenv
+#    - virtualenvwrapper
+  become: true
+
+- name: python | Upgrade setuptools
+  command: "pip{{ python2_version }} install --upgrade setuptools"
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+# pip install --upgrade "pip < 21.0"
+- name: python | Upgrade pip
+  command: "pip{{ python2_version }} install --upgrade \"pip {{ python2_pip_version }}\""
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: python | Install dependencies for python 2 requirements
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  become: true
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')   #  and ansible_distribution_major_version == '6')
+  with_items:
+    - cups-devel
+  ignore_errors: true
+
+# - name: python | Install python check tools
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#   with_items:
+#     - pylint
+#     - flake8
+#     - autopep8           # autopep8 py_file --in-place
+#     - pre-commit         # See http://pre-commit.com/
+#   become: true
+#   when: ansible_python_version | version_compare('2.7', '>=')
+
+# - name: python | Install aws tools
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#     state: forcereinstall
+#   with_items:
+#     - awscli
+#   ignore_errors: true
+#   when: ansible_python_version | version_compare('2.7', '>=')
+#   become: true
+
+# - name: python | Install devops tools for jobs-duration-charts-admin
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#   with_items:
+#     - pygal
+#     - urllib3
+#     - certifi
+#   when: ansible_python_version | version_compare('2.7', '>=')
+#   become: true
+
+# - name: python | Install devops tools
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#   with_items:
+#     - gprof2dot
+#     - termcolor
+#     - ansicolors
+#     - colorama
+#   when: ansible_python_version | version_compare('2.7', '>=')
+#   become: true
+
+# - name: python | Install devops tools for release notes
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#   with_items:
+#     - numpy
+#     - pandas
+#     - stashy
+#     - jira                                # See https://pypi.python.org/pypi/jira/
+#     - openpyxl
+#     - "docopt==0.6.2"
+#   when: ansible_python_version | version_compare('2.7', '>=')
+#   become: true
+#   ignore_errors: true
+
+# - name: python | Install devops tools for ansible windows
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#   with_items:
+#     - "pywinrm>=0.2.2"
+#   when: ansible_python_version | version_compare('2.7', '>=') and not (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+#   become: true
+
+# - name: python | Install devops tools for ansible accelerate mode
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#   with_items:
+#     - python-keyczar
+#   when: ansible_python_version | version_compare('2.7', '>=')
+#   become: true
+#   ignore_errors: true
+
+#  sudo apt-get install krb5-kdc krb5-admin-server
+
+# - name: python | Install devops tools for ansible kerberos
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#   with_items:
+#     - python-dev
+#     - libkrb5-dev
+#     - krb5-user
+#   when: ansible_python_version | version_compare('2.7', '>=') and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04'])
+#   become: true
+#   ignore_errors: true
+
+# - name: python | Install devops tools for ansible
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#   with_items:
+#     - ansible-cmdb
+#     - ansible-lint
+#   when: ansible_python_version | version_compare('2.7', '>=')
+#   become: true
+#   ignore_errors: true
+
+# - name: python | Install zabbix tools
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#   with_items:
+#     - zabbix-api
+#     - zabbix-proxy-mysql
+#   when: ansible_python_version | version_compare('2.7', '>=')
+#   become: true
+#   ignore_errors: true
+
+- name: python | Install MySQL requirement for sonar
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - libmysqlclient-dev
+
+#  WARNING need gcc/cpp, must be done after gcc.yml
+# - name: python | Install MySQL for sonar
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#   with_items:
+#     - MySQL-python
+#   when: ansible_python_version | version_compare('2.7', '>=')
+#   become: true
+#   ignore_errors: true
+
+# - name: python | Install dependencies for pycurl
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#   with_items:
+#     - libcurl4-openssl-dev
+#     - libssl-dev
+#   when: ansible_python_version | version_compare('2.7', '>=')
+#   become: true
+#   ignore_errors: true
+
+#  WARNING need gcc/cpp, must be done after gcc.yml
+# - name: python | Install ODBC for FreeTDS
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#   with_items:
+#     - pyodbc
+#   when: ansible_python_version | version_compare('2.7', '>=')
+#   become: true
+#   ignore_errors: true
+
+# Issue wiht out of disk space on Ubuntu 16.04
+# unity7.log X11 error: BadWindow (invalid Window parameter) Error code: 3, request code: f, minor code: 0
+# See disk space issue : http://askubuntu.com/questions/434581/problem-with-cache-upstart
+# sudo apt-get purge logrotate
+# sudo apt-get install logrotate
+# wget https://launchpad.net/ubuntu/+archive/primary/+files/python-cryptography_1.7.1-2_amd64.deb &&
+# wget https://launchpad.net/ubuntu/+archive/primary/+files/python-openssl_16.2.0-1_all.deb &&
+# sudo dpkg -i --auto-deconfigure python-cryptography_1.7.1-2_amd64.deb && sudo dpkg -i  python-openssl_16.2.0-1_all.deb
+#
+# rm ~/.cache/upstart/unity7.log
+
+# - name: python | Install devops tools for cpp
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#   with_items:
+#     - "conan==1.5.1"
+#   when: ansible_python_version | version_compare('2.7', '>=')
+#   become: true
+#   ignore_errors: true
+#
+# - name: python | Install tox for testing python
+#   pip:
+#     name: "{{ item }}"
+#     executable: "pip{{ python2_version }}"
+#   with_items:
+#     - tox
+#   when: ansible_python_version | version_compare('2.7', '>=') and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04', '14.04', '15.04'])
+#   become: true

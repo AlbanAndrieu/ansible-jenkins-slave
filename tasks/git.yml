@@ -1,0 +1,78 @@
+---
+# Moved to his own role
+- name: git | Install git
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  with_items:
+   - git-core
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+
+- name: git | Install git
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  with_items:
+   - git
+  when: not (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+  become: true
+
+- name: git | Install git
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  with_items:
+   - git2u
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+  become: true
+
+- name: git | Install git-lfs (1)
+  shell: >
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | sudo bash
+  become: true
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+
+- name: git | Install git-lfs (1)
+  shell: >
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+
+- name: git | Install git-lfs (2)
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  with_items:
+   - git-lfs
+  become: true
+  ignore_errors: "{{ ansible_check_mode }}"
+
+# git lfs install
+
+- name: git | Copy the .netrc script for git credentials
+  template: src=.netrc.j2 dest={{ jenkins_home }}/.netrc mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
+  when: shell_git_configure_enabled
+  become: true
+  changed_when: false
+  tags: git
+
+- name: git | Configure git
+  template:
+   src: .gitconfig.j2
+   dest: '{{ jenkins_home }}/.gitconfig'
+   owner: '{{ jenkins_user }}'
+   group: '{{ jenkins_group }}'
+   mode: 0600
+  when: shell_git_configure_enabled
+  become: true
+  changed_when: false
+  tags: git
+
+# - git_config: name=user.email scope=global value="{{ shell_git_email }}"
+# - git_config: name=user.name scope=global value="{{ shell_git_name }}"
+# - git_config: name=http.sslVerify scope=global value="{{ shell_git_ssl }}"
+# - git_config: name=maven-scm.maildomain scope=global value="misys.com"
+# - git_config: name=maven-scm.forceUsername scope=global value="true"
+# - git_config: name=push.default scope=global value="simple"
+# - git_config: name=http.postBuffer scope=global value="157286400"
+#
+# - git_config: name=alias.ci scope=global value=commit
+# - git_config: name=alias.st scope=global value=status
+# - git_config: name=color.ui scope=global value=auto
+#
+# #See https://docs.ansible.com/ansible/git_config_module.html
+# - name: git | Read all values from git config
+#   git_config: list_all=yes scope=global

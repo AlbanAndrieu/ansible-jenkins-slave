@@ -1,0 +1,42 @@
+[DEFAULT]
+Driver = FreeTDS
+
+[TEST01_2017]
+Description           = "Oracle12c"
+Driver                = Oracle
+#ServerName           = TEST01
+Server                = 10.21.186.16
+Port                  = 1521
+#Database              = JEN_TRUNK_QA_BM
+
+[TEST02_2016]
+Description           = "SQLServer2016"
+Driver 				  = FreeTDS
+Trace 				  = No
+#TraceFile = /tmp/sql.log
+#ServerName            = TEST02
+Server                = 10.21.185.152
+Port                  = 1433
+#Database              = JEN_TRUNK_QA_BM
+TDS_Version 		  = 7.2
+
+[TEST03_2017]
+Description           = "SQLServer2017"
+Driver 				  = FreeTDS
+Trace 				  = No
+#TraceFile = /tmp/sql.log
+#ServerName            = TEST03
+Server                = 10.21.187.79
+Port                  = 1433
+#Database              = JEN_TRUNK_QA_BM
+TDS_Version 		  = 7.2
+
+[my-connector]
+Description           = MySQL connection to  database
+Driver                = MySQL
+Database              = mydb
+Server                = localhost
+User                  = dbuser
+Password              = dbpass
+Port                  = 3306
+Socket                = /var/run/mysqld/mysqld.sock

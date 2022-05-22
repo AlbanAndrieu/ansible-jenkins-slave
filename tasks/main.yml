@@ -1,0 +1,395 @@
+---
+
+- name: Assert platform is supported
+  assert:
+    that:
+      - ansible_os_family in ['Debian', 'RedHat', 'Windows', 'Solaris', 'MacOSX', 'FreeBSD']
+      - ansible_architecture in ['x86_64']
+
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_distribution }}-{{ ansible_architecture }}.yml"
+
+- name: jenkins-slave | Update the apt cache (in case of issue)
+  action: apt update-cache=yes
+  become: true
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and not ansible_check_mode
+  tags:
+    - update
+    - vm
+
+# FYI hdd.yml playbook must be first (before creating slave folders)
+#- import_tasks: hdd.yml
+
+- import_tasks: java.yml
+  tags:
+    - package
+    - java
+
+- import_tasks: maven.yml
+  tags:
+    - package
+    - maven
+
+- import_tasks: python.yml
+  tags:
+    - package
+    - python
+
+# FYI ansible.yml need python.yml
+- import_tasks: ansible.yml
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
+  tags:
+    - vm
+
+- name: Install ant package
+  action: "{{ ansible_pkg_mgr }} name='ant' state={{ util_pkg_state | default('present') }} update_cache=yes"
+  become: true
+  #ignore_errors: true
+  tags:
+    - package
+    - ant
+    - vm
+
+- name: Install zip package
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  with_items:
+    - zip
+    - unzip
+    - bzip2
+  become: true
+  ignore_errors: true
+
+- import_tasks: qa.yml
+
+- import_tasks: quality.yml
+
+- name: jenkins-slave | Install flex
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  with_items:
+    - flex
+# when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+# when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+# when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  become: true
+  ignore_errors: true
+  tags:
+    - package
+    - flex
+    - vm
+
+- name: jenkins-slave | Install tools needed by grunt-zaproxy html report
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+# Needed for having /usr/bin/xml2-config in the PATH
+    - libxml2-dev
+    - libxslt-dev
+  become: true
+
+- name: jenkins-slave | Install tools needed by grunt-zaproxy html report
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  with_items:
+    - libxml2       # Needed for having /usr/bin/xml2-config in the PATH
+    - libxslt
+    - libexslt
+  become: true
+
+# TODO first install pip on RedHat and Ubuntu
+# - name: jenkins-slave | Install Ansible syntax check (Debian based)
+#   pip: name={{ item }}
+#   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+#   with_items:
+#     - ansible-lint
+#   become: true
+
+- import_tasks: docker.yml
+  tags:
+    - docker
+    - vm
+
+- import_tasks: user.yml
+  tags:
+    - user
+
+- import_tasks: brew.yml
+  when: brew_enabled
+  tags:
+    - brew
+
+- import_tasks: security.yml
+  tags:
+    - security
+
+- import_tasks: zap.yml
+  tags:
+    - zap
+
+# - import_tasks: gcc.yml
+
+- import_tasks: cpp.yml
+  tags:
+    - cpp
+
+- import_tasks: objc.yml
+  tags:
+    - objc
+
+- import_tasks: perl.yml
+  tags:
+    - perl
+
+- import_tasks: shell.yml
+
+- import_tasks: git.yml
+  tags:
+    - git
+
+- name: jenkins-slave | Copy the deploy-log-parsing-rules for jenkins log parsing configuration
+  copy: src=deploy-log-parsing-rules dest={{ jenkins_home }}/deploy-log-parsing-rules backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
+  become: true
+
+- name: jenkins-slave | Copy the email template for jenkins email ext configuration
+  copy: src=groovy-html-main.template dest={{ jenkins_home }}/email-templates/groovy-html-cut.template backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Set limits
+  lineinfile: dest=/etc/security/limits.conf line="{{ item.key }}" regexp="{{ item.value }}"
+  with_dict:
+    "*               soft    nofile          65536": '\*\s+soft\s+nofile'
+    "*               hard    nofile          65536": '\*\s+hard\s+nofile'
+    "root            soft    nofile          16384": 'root\s+soft\s+nofile'
+    "root            hard    nofile          65536": 'root\s+hard\s+nofile'
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  become: true
+  changed_when: false
+
+- name: jenkins-slave | Set limits
+  lineinfile: dest=/etc/security/limits.conf line="{{ item.key }}" regexp="{{ item.value }}"
+  with_dict:
+    "*               soft    nofile          65536": '\*\s+soft\s+nofile'
+    "*               hard    nofile          65536": '\*\s+hard\s+nofile'
+    "root            soft    nofile          65536": 'root\s+soft\s+nofile'
+    "root            hard    nofile          65536": 'root\s+hard\s+nofile'
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  become: true
+  changed_when: false
+
+- name: jenkins-slave | Set nproc limits for Jenkins
+  lineinfile: dest="/etc/security/limits.d/90-nproc.conf" line='jenkins    soft    nproc     unlimited'
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version in ('5','6'))
+  become: true
+  changed_when: false
+
+- name: jenkins-slave | Set nproc limits for Jenkins
+  lineinfile: dest="/etc/security/limits.d/20-nproc.conf" line='jenkins    soft    nproc     unlimited'
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version not in ('5','6'))
+  become: true
+  changed_when: false
+
+- name: jenkins-slave | Set core limits for Jenkins
+  lineinfile: dest="/etc/security/limits.conf" line='jenkins    soft    core     unlimited'
+  become: true
+  changed_when: false
+
+- name: jenkins-slave | Create {{ jenkins_slave_home }} directory
+  file: path={{ jenkins_slave_home }} state=directory
+  become: true
+  changed_when: false
+  ignore_errors: true
+
+- name: jenkins-slave | Create maven repository directory
+  file: path={{ maven_repository }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0777
+  become: true
+  changed_when: false
+
+- name: jenkins-slave | Checking slave folders
+  stat:
+    path: "{{ item }}"
+  register: folder_stats
+  with_items: "{{ jenkins_slave_directory }}"
+  when: jenkins_slave_directory | length > 0
+  become: true
+  changed_when: false
+
+- name: jenkins-slave | Creating multiple folders without disturbing previous permissions
+  file:
+    path: "{{ item.item }}"
+    state: directory
+    mode: 0755
+    group: "{{ jenkins_user }}"
+    owner: "{{ jenkins_group }}"
+  when: not item.stat.exists
+  with_items:
+    - "{{ folder_stats.results }}"
+  become: true
+  changed_when: false
+  ignore_errors: true
+
+- name: jenkins-slave | Create Jenkins thin backup directory
+  file: path={{ jenkins_remote_thinbackup }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- import_tasks: sonar.yml
+
+#- import_tasks: nodejs.yml
+
+- import_tasks: yarn.yml
+
+- name: jenkins-slave | Copy the .npmrc script
+  template: src=.npmrc.j2 dest={{ jenkins_home }}/.npmrc owner={{ jenkins_user }} group={{ jenkins_group }} mode=0644
+  when: npm_config_enabled
+  become: true
+  changed_when: false
+  tags:
+    - npm
+    - config
+    - npmrc
+    - vm # do not install on docker image
+
+- import_tasks: bower.yml
+  tags:
+    - bower
+    - npm
+
+- import_tasks: tmp.yml
+  tags:
+    - tmp
+    - vm
+
+# TODO Add source /etc/profile for RedHat to find lsof command
+
+# - import_tasks: browser.yml
+
+- import_tasks: selenium.yml
+  tags:
+    - test
+    - selenium
+
+- import_tasks: flash.yml
+  tags:
+    - flash
+    - vm
+
+- import_tasks: zabbix.yml
+  tags:
+    - monitoring
+    - zabbix
+
+- import_tasks: debug.yml
+  when: workstation_enabled
+
+- name: jenkins-slave | Install saxon package
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+    - libsaxon-java
+    - libsaxonb-java
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install log4j package for better display of log for slave
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+    - liblog4j1.2-java
+    - libslf4j-java
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['12.04'])
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install log4j package for better display of log for slave
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+    - liblog4j2-java
+    - libslf4j-java
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install log4j package for better display of log for slave
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+    - log4j
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install rsync package
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  tags: package
+  with_items:
+    - rsync
+    - pv
+  changed_when: false
+  become: true
+
+# - name: jenkins-slave | Clone the application
+#   action: git repo=https://github.com/AlbanAndrieu/nabla.git dest=/jenkins/nabla
+
+# - import_tasks: subversion.yml
+
+- import_tasks: database.yml
+
+- import_tasks: dev.yml
+  when: workstation_enabled
+
+- import_tasks: tuning.yml
+  tags:
+    - browser
+    - vm # do not install on docker image
+
+# See also jenkins_slave_directory
+- name: jenkins-slave | Create link to legacy {{ jenkins_slave_home }} directory (if it do not exists)
+  file:
+    src: "{{ jenkins_slave_home }}/{{ item.path }}"
+    dest: "{{ jenkins_slave_home }}/{{ item.dest }}"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group  }}"
+    state: link
+  with_items:
+    - { path: 'jenkins-slave', dest: 'slave' }
+  #  - { path: 'Jenkins-slave-todo', dest: 'slavetodo' }
+  become: true
+  changed_when: false
+  ignore_errors: true
+  tags:
+    - vm # do not install on docker image
+
+- name: jenkins-slave | Make sure jobs has permission to download sonar-scanner or zap inside {{ jenkins_slave_home }} tools directory
+  file:
+    dest: "{{ jenkins_slave_home }}/{{ item.dest }}/tools"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group  }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - { dest: 'slave' }
+  #  - { dest: 'slavetodo' }
+  become: true
+  changed_when: false
+  ignore_errors: true
+  tags:
+    - vm # do not install on docker image
+
+- import_tasks: k8s.yml
+  tags:
+    - cloud
+    - kubernetes
+    - k8s
+
+- import_tasks: molecule.yml
+  tags:
+    - test
+    - ansible
+    - molecule

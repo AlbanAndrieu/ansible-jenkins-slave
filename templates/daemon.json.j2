@@ -1,0 +1,33 @@
+{
+  "dns": [
+    "{{ docker_opts_dns_1 }}",
+    "{{ docker_opts_dns_2 }}",
+    "{{ docker_opts_dns_3 }}",
+  ],
+{% if docker_opts_dns_search is defined %}
+  "dns-search" : ["{{ docker_opts_dns_search }}"],
+{% endif %}
+  "log-driver": "json-file",
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-opts": {
+    "max-size": "1000m"
+  },
+  "storage-driver": "overlay2",
+  "insecure-registries" : ["localhost:32000"],
+{% if docker_opts_icc is defined %}
+  "icc": true,
+{% endif %}
+{% if docker_opts_userland_proxy is defined %}
+  "userland-proxy": true,
+{% endif %}
+{% if docker_opts_no_new_privileges is defined %}
+  "no-new-privileges": true,
+{% endif %}
+{% if docker_opts_live_restore is defined %}
+  "live-restore": false,
+{% endif %}
+{% if docker_opts_experimental is defined %}
+  "experimental": false,
+{% endif %}
+  "debug": true
+}

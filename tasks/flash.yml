@@ -1,0 +1,88 @@
+---
+
+- name: jenkins-slave | Download flashplayer archive
+  get_url: url={{ flashplayer_standalone_download_url }}/{{ flashplayer_standalone_filename }} dest=/tmp/{{ flashplayer_standalone_filename }}
+  when: (ansible_distribution == 'CentOS' and ansible_distribution_version == 5)
+  become: true
+
+- name: jenkins-slave | Install flashplayer
+  unarchive: src=/tmp/{{ flashplayer_standalone_filename }} dest=/usr/local/bin creates=/usr/local/bin/flashplayerdebugger copy=no
+  when: (ansible_distribution == 'CentOS' and ansible_distribution_version == 5)
+  become: true
+
+- name: jenkins-slave | Create symbolic link for flashplayer
+  file: src=/usr/local/bin/flashplayerdebugger dest=/usr/local/bin/flashplayer owner=root group=root state=link
+  when: (ansible_distribution == 'CentOS' and ansible_distribution_version == 5)
+  become: true
+
+- name: jenkins-slave | Install flashplayer dependencies
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"
+  with_items:
+    - xvfb
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install flashplayer dependencies
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"
+  with_items:
+    - libX11
+    - libXext
+    - libXt
+    - gtk2
+    - glibc
+    - nss
+    - curl
+    - Xvfb
+    - xorg-x11-server-Xvfb
+    - ipa-gothic-fonts
+    - ipa-pgothic-fonts
+    - xorg-x11-fonts-base
+    - xorg-x11-drv-v4l
+    - xorg-x11-xauth
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat' or ansible_distribution == 'Red Hat Enterprise Linux')
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install the adobe repo installed
+  yum:
+    name: "adobe-release-{{ ansible_machine }}"
+    state: present
+  register: adobe_release_installed
+  when: (ansible_distribution == 'RedHat')
+  become: true
+  ignore_errors: true
+
+- name: jenkins-slave | Install adobe yum repo
+  yum:
+    name: http://linuxdownload.adobe.com/adobe-release/adobe-release-{{ ansible_machine }}-1.0-1.noarch.rpm
+    state: present
+  when: (ansible_distribution == 'RedHat') and adobe_release_installed.failed
+  become: true
+
+- name: jenkins-slave | Install flash-plugin
+  yum: name=flash-plugin state=present
+  when: (ansible_distribution == 'RedHat')
+  become: true
+
+# WARNING install of flashplugin-installer on Ubuntu 18.04 is failing
+# apt-get remove flashplugin-installer update-notifier-common
+# apt-get purge flashplugin-installer update-notifier-common
+# rm -Rf /etc/update-notifier
+# pip install chardet
+# then it should works
+# apt-get install flashplugin-installer
+
+- name: jenkins-slave | Install adobe-flashplugin
+  action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  with_items:
+    - flashplugin-installer
+  become: true
+  ignore_errors: true
+  changed_when: false
+
+- name: jenkins-slave | Create folder for flashplayer
+  file: path={{ jenkins_home }}/.macromedia state=directory mode=0700 owner={{ jenkins_user }} group={{ jenkins_group }}
+  become: true
+  ignore_errors: true

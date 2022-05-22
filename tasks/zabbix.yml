@@ -1,0 +1,114 @@
+---
+
+# wget -q -O - http://linux.dell.com/repo/hardware/latest/bootstrap.cgi > bootstrap.cgi
+# bash bootstrap.cgi
+# yum install srvadmin-base
+# yum install srvadmin-storageservices
+
+- name: zabbix | Remove srvadmin-storelib-sysfs conflict megacli
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=absent update_cache=yes"
+  with_items:
+    - srvadmin-storelib-sysfs
+  changed_when: false
+  become: true
+  ignore_errors: true
+  tags:
+    - package
+    - vm
+
+- name: zabbix | Install sensors package
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  with_items:
+    - lm_sensors
+    - xsensors
+  changed_when: false
+  become: true
+  ignore_errors: true
+  tags:
+    - package
+    - vm
+
+- name: zabbix | Install zabbix python api
+  pip:
+    name: "{{ item }}"
+    # executable: "pip{{ python2_version }}"
+  with_items:
+    - zabbix-api
+  # when: ansible_python_version | version_compare('2.7', '>=')
+  become: true
+  tags: vm
+
+- name: zabbix | Add +x to zabbix script files
+  file:
+    dest: /etc/zabbix/scripts/jenkins/
+    recurse: true
+    mode: a+x
+  tags: vm
+
+- name: zabbix | Disable chronyd (to allow ntps service to run for zabbix)
+  systemd:
+    name: chronyd
+    state: stopped
+    enabled: no
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6') )
+  changed_when: false
+  become: true
+  ignore_errors: true
+  tags: vm
+
+- name: zabbix | Disable ufw (to allow access port 10050 for zabbix)
+  systemd:
+    name: ufw
+    state: stopped
+    enabled: no
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  changed_when: false
+  become: true
+  ignore_errors: true
+  tags: vm
+
+- name: zabbix | Disable firewalld (to allow access port 10050 for zabbix)
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
+  changed_when: false
+  become: true
+  ignore_errors: true # not working on docker image because : System has not been booted with systemd as init system
+  tags: vm
+
+- name: zabbix | Install locate package
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+  with_items:
+    - mlocate
+#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  changed_when: false
+  become: true
+  ignore_errors: true
+  tags:
+    - package
+    - vm
+
+- name: zabbix | updatedb
+  command: updatedb
+#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  changed_when: false
+  become: true
+  ignore_errors: true
+  tags: vm
+
+# TODO
+# #See https://libstorage.github.io/libstoragemgmt-doc/doc/install.html
+# sudo yum install libstoragemgmt
+# sudo yum install libstoragemgmt-\*-plugin
+# sudo systemctl start libstoragemgmt.service
+# lsmcli -u 'sim://' list --type systems
+
+# FYI perccli64 is installed on administrations role dell.yml
+- name: zabbix | Check perccli64 properly installed
+  command: /opt/MegaRAID/perccli/perccli64 --version
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and (ansible_system_vendor == 'Dell Inc.' or ansible_system_vendor == 'VMware, Inc.')
+  changed_when: false
+  become: true
+  ignore_errors: true
+  tags: vm

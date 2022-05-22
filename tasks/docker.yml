@@ -1,0 +1,335 @@
+---
+
+- name: docker | Set python link to python version
+  set_fact: python_version=3.7
+#  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
+
+- name: docker | Install python-docker
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  with_items:
+    - python-docker
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version not in ['14.04']
+  tags: package
+  become: true
+
+# #TODO fix docker-compose
+# FUI by default docker-compose==1.12.0 is not installed for python 2.7 (it is on purpose)
+# it is installed on python 3.5 (without virtualenv)
+# sudo pip2.7 uninstall docker
+# sudo pip2.7 uninstall docker-py
+# sudo pip2.7 uninstall docker-compose
+# sudo pip2.7 install docker-compose==1.25.3
+
+# sudo pip3.7 uninstall docker
+# sudo pip3.7 uninstall docker-py
+# sudo pip3.7 uninstall docker-compose
+# sudo pip3.7 install docker-compose==1.25.3
+
+- name: docker | docker-compose check 1
+  command: "docker-compose --version"
+  register: docker_compose_result
+  ignore_errors: true
+  become: true
+  check_mode: false
+  changed_when: false
+
+# - debug: msg="{{ docker_compose_result.rc }} - {{ docker_compose_result.stdout }}"
+#   when: not ansible_check_mode
+
+- name: docker | Uninstall docker-py
+  pip:
+    name: "{{ item }}"
+    executable: "pip{{ python_version }}"
+    state: absent
+  when: not ansible_check_mode and (docker_compose_result.rc != 0 and docker_compose_result.rc != 127)
+  with_items:
+    - docker
+    - docker-py
+    - docker-compose
+  ignore_errors: '{{ ansible_check_mode }}'
+  become: true
+
+# Using pip with requirements-current-3.5.txt or requirements-current-3.6.txt instead
+#- name: docker | Install Docker compose tools
+#  pip:
+#    name: "{{ item }}"
+#    executable: "pip{{ python_version }}"
+#    state: forcereinstall
+#  with_items:
+#    - docker-compose==1.25.0
+#  become: true
+#  ignore_errors: true      # For Ubuntu 18.04 Cannot uninstall 'PyYAML'
+#
+#- name: docker | docker-compose check 2
+#  command: "docker-compose --version"
+#  register: docker_compose_result
+#  changed_when: false
+#  become: true
+#
+#- name: docker | Fail the play if the previous command did not succeed
+#  fail: msg="The command docker-compose --version failed"
+#  when: "'FAILED' in docker_compose_result.stderr"
+#  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: docker | Create a docker group
+  group:
+    name={{ docker_group }}
+    state=present
+    gid="{{ docker_gid }}"
+  become: true
+
+- name: docker | Create jenkins user and group
+  user:
+    name: "{{ jenkins_user }}"
+    password: "{{ jenkins_password }}"
+    update_password: always
+    comment: "Jenkins"
+    home: "{{ jenkins_home }}"
+    shell: "{{ jenkins_shell }}"
+    uid: "{{ jenkins_id }}"
+    group: "{{ jenkins_primary_group }}"
+    groups: "{{ jenkins_groups }}"
+    # Important to not remove user from existing groups, such as docker
+    append: true
+  changed_when: false
+  become: true
+  ignore_errors: true  # when user already exist and used by process it is failing
+
+- name: docker | Add user(s) to docker group
+  user:
+    name={{ item }}
+    group={{ docker_group }}
+    state=present
+  with_items: "{{ docker_users }}"
+  when: docker_users is defined
+  become: true
+  ignore_errors: true  # when user jenkins already exist and home is not standard
+
+# sudo gpasswd -a ${USER} docker
+# sudo gpasswd -a jenkins docker
+
+# See https://github.com/tensorflow/tensorflow/issues/4078
+# For https://github.com/NVIDIA/nvidia-docker
+# - name: docker | Install requirement for nvidia
+#   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
+#   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+#   with_items:
+#     - nvidia-361-dev
+#   become: true
+#   changed_when: false
+
+# nvidia-smi
+
+- name: docker | Check if /var/lib/docker is present
+  stat:
+    path: /var/lib/docker
+  register: docker
+
+- name: docker | Remove docker when it is not a symbolic link
+  file: path=/var/lib/docker state=absent
+  when: docker.stat.islnk is defined and not docker.stat.islnk
+  become: true
+  ignore_errors: true
+  tags: vm
+
+- name: docker | Create link to docker filesystem
+  file: path=/var/lib/docker src=/docker state=link force=yes
+  when: docker.stat.islnk is not defined not docker.stat.islnk
+  notify:
+    - restart docker
+  become: true
+  ignore_errors: true   # Ignore failure on Travis
+  tags:
+    - restart
+    - notify
+    - docker
+    - vm
+
+# See issue https://github.com/geerlingguy/ansible-role-docker/issues/56
+- name: docker | Set notify_only to 0
+  lineinfile: dest=/etc/yum/pluginconf.d/search-disabled-repos.conf line='notify_only=0' regexp='^notify_only=1'
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  become: true
+  ignore_errors: true
+  changed_when: false
+
+- name: docker | Set docker daemon options
+  copy:
+    content: "DOCKER_OPTS=\"{{ docker_opts.rstrip('\n') }}\""
+    dest: /etc/default/docker
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart docker
+  when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '<'))
+  tags:
+    - restart
+    - notify
+    - docker
+    - vm
+
+- name: docker | Create systemd configuration directory for Docker service (systemd)
+  file:
+    dest: /etc/systemd/system/docker.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '>='))
+  tags:
+    - docker
+    - vm
+
+# ALSO in playbooks/docker.yml
+- name: docker | Copy the docker.service script
+  template: src=docker.service.j2 dest=/lib/systemd/system/docker.service owner=root group=root mode=0644
+  become: true
+  changed_when: false
+
+# - name: Set docker daemon options (systemd)
+#   copy:
+#     content: |
+#       [Service]
+#       Environment="DOCKER_OPTS={{ docker_opts.rstrip('\n') }}"
+#     dest: /etc/systemd/system/docker.service.d/env.conf
+#     owner: root
+#     group: root
+#     mode: 0644
+#   notify:
+#     - restart docker
+#   when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '>='))
+#  tags:
+#    - restart
+#    - notify
+#    - docker
+
+- name: Ensure docker daemon options used (systemd)
+  lineinfile:
+    dest: /lib/systemd/system/docker.service
+    regexp: "^ExecStart=/usr/bin/dockerd"
+    line: ExecStart={{ docker_base_opts }} {{ docker_opts.rstrip('\n') }}
+  notify:
+    - restart docker
+  when: docker_opts | length > 0 and
+       (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '>='))
+#       ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') or (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '>=')))
+  tags:
+    - restart
+    - notify
+    - docker
+
+# grubby --args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
+- name: docker | Enable "user" namespace
+  shell: "grubby --args=\"user_namespace.enable=1\" --update-kernel=\"$(grubby --default-kernel)\""
+  when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
+  become: true
+  ignore_errors: true
+
+# On Ubuntu 18.04 docker login is failing with jenkins user
+# Fix is apt remove golang-docker-credential-helpers
+
+- name: docker | docker login fix
+  shell: "apt remove -y golang-docker-credential-helpers"
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version in ['18.04']
+  become: true
+  ignore_errors: true
+  tags: vm
+
+- name: docker | Uninstall keyring for docker login to store credentials
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=absent"
+  with_items:
+    - golang-docker-credential-helpers
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version in ['18.04'] # is version_compare(18.04, '>=')
+  tags: package
+  become: true
+
+# TODO remove config.json, jenkins is putting it inside ~/.dockercfg
+- name: docker | Create docker directory for .docker/config.json
+  file: path={{ docker_directory }} state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
+  become: true
+  changed_when: false
+
+- name: docker | Copy the .docker/config.json script
+  template: src=config.json.j2 dest={{ docker_directory }}/config.json owner={{ jenkins_user }} group={{ jenkins_group }} mode=0755
+  become: true
+  changed_when: false
+
+- name: docker | Copy the UID for userns-remap
+  template: src=subuid.j2 dest=/etc/subuid owner=root group=root mode=0644
+  become: true
+  changed_when: false
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(19.04, '>=')
+  tags:
+    - restart
+    - docker
+
+- name: docker | Copy the GID for userns-remap
+  template: src=subgid.j2 dest=/etc/subgid owner=root group=root mode=0644
+  become: true
+  changed_when: false
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(19.04, '>=')
+  tags:
+    - restart
+    - docker
+
+- import_tasks: tmp.yml
+  tags: vm
+
+- name: docker | docker container-structure-test
+  shell: "curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64 && chmod +x container-structure-test-linux-amd64 && sudo mv container-structure-test-linux-amd64 /usr/local/bin/container-structure-test" # noqa 303
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(16.04, '>=')
+  become: true
+#  ignore_errors: true
+
+- name: docker | docker container-structure-test version # noqa 301
+  command: "container-structure-test version"
+  register: cst_version
+
+# - debug:
+#     msg: "version {{ item.stdout_lines }} for {{ item.item }}"
+#   with_items: '{{ cst_version.results }}'
+
+- debug: var=cst_version
+
+- name: Get docker container-structure-test version # noqa 301
+  command: "container-structure-test version"
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(16.04, '>=')
+  register: cst_version
+
+# - debug:
+#     msg: "version {{ item.stdout_lines }} for {{ item.item }}"
+#   with_items: '{{ cst_version.results }}'
+#  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(16.04, '>=')
+
+- debug: var=cst_version
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(16.04, '>=')
+
+# See https://stackoverflow.com/questions/51222996/docker-login-fails-on-a-server-with-no-x11-installed
+
+- name: docker | Install keyring for docker login to store credentials
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
+  with_items:
+    - gnome-keyring
+    - gnupg2
+    - pass
+#   - docker-credential-pass
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(18.04, '>=')
+  tags: package
+  become: true
+
+# TO REVOKE
+# grubby --remove-args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
+
+# Check docker
+- name: docker | Install check docker
+  shell: "curl https://raw.githubusercontent.com/docker/docker/master/contrib/check-config.sh > check-config.sh"
+  register: check_config_result
+  changed_when: false
+  become: true
+
+- name: docker | Run check docker
+  shell: bash ./check-config.sh
+  when: check_config_result.changed
+  become: true
+  ignore_errors: true
