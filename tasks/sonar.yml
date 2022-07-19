@@ -1,5 +1,4 @@
 ---
-
 - name: sonar | Ensure unzip is installed.
   package: name=unzip state=present
 
@@ -7,7 +6,7 @@
   tempfile:
     state: directory
     suffix: staging
-#    path: "{{ lookup('env', 'HOME') }}"
+  #    path: "{{ lookup('env', 'HOME') }}"
   register: tempdir
   changed_when: false
   become: true
@@ -74,8 +73,8 @@
     state: link
     force: true
   with_items:
-    - { from: '{{ sonar_target_dir }}{{ sonar_scanner_package_name }}', dest: '{{ sonar_scanner_target_dir }}' }
-    - { from: '{{ sonar_target_dir }}{{ sonar_build_wrapper_name }}', dest: '{{ sonar_build_wrapper_target_dir }}' }
+    - { from: "{{ sonar_target_dir }}{{ sonar_scanner_package_name }}", dest: "{{ sonar_scanner_target_dir }}" }
+    - { from: "{{ sonar_target_dir }}{{ sonar_build_wrapper_name }}", dest: "{{ sonar_build_wrapper_target_dir }}" }
   become: true
   changed_when: false
   ignore_errors: true
@@ -94,7 +93,7 @@
     state: directory
     mode: 0755
   with_items:
-    - { dest: 'slave' }
+    - { dest: slave }
   become: true
   changed_when: false
   ignore_errors: true

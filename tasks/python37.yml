@@ -23,10 +23,11 @@
   yum:
     name: "{{ item }}"
     state: "{{ util_pkg_state | default('present') }}"
-  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version
+    == '6')
   with_items:
     #- "https://centos6.iuscommunity.org/ius-release.rpm"
-    - "https://repo.ius.io/ius-release-el6.rpm"
+    - https://repo.ius.io/ius-release-el6.rpm
     - python37u
     - python37u-devel
     - python37u-pip
@@ -36,10 +37,11 @@
   yum:
     name: "{{ item }}"
     state: "{{ util_pkg_state | default('present') }}"
-  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version
+    == '7')
   with_items:
     #- "https://centos7.iuscommunity.org/ius-release.rpm"
-    - "https://repo.ius.io/ius-release-el7.rpm"
+    - https://repo.ius.io/ius-release-el7.rpm
     - python37u
     - python37u-devel
     - python37u-pip
@@ -62,7 +64,7 @@
   get_url:
     url: https://bootstrap.pypa.io/get-pip.py
     dest: /tmp/get-pip.py
-    force: yes
+    force: true
   register: curl_result
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
   #environment:
@@ -70,27 +72,28 @@
   #  https_proxy: "{{ https_proxy }}"
   become: true
 
-- name: python37 | Install missing pip{{ python3_version }} (2)   # noqa 503
-  command: "python{{ python3_version }} /tmp/get-pip.py"
+- name: python37 | Install missing pip{{ python3_version }} (2) # noqa 503
+  command: python{{ python3_version }} /tmp/get-pip.py
   #when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>='))
   changed_when: false
   become: true
 
 - debug: msg="curl_result - {{ curl_result.rc }} - {{ curl_result.stdout }}"
-  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04, '>=')) and not ansible_check_mode
+  when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version is version_compare(16.04,
+    '>=')) and not ansible_check_mode
   ignore_errors: true
 
 # - debug: msg="{{ curl_result.stdout }}"
 
-- name: python37 | Run pip check   # noqa 503 306
+- name: python37 | Run pip check # noqa 503 306
   shell: (pip -V && pip3.7 -V) | uniq
   when: curl_result.changed
   become: true
 #  ignore_errors: true
 
 - name: python37 | Upgrade setuptools
-  command: "pip{{ python3_version }} install --upgrade setuptools"
+  command: pip{{ python3_version }} install --upgrade setuptools
   changed_when: false
   become: true
   ignore_errors: true
@@ -100,13 +103,13 @@
 # sudo pip3 install --upgrade pip
 
 - name: python37 | Upgrade pip3
-  command: "pip3 install --upgrade pip=={{ python3_pip_version }}"
+  command: pip3 install --upgrade pip=={{ python3_pip_version }}
   changed_when: false
   become: true
   ignore_errors: true
 
 - name: python37 | Upgrade pip
-  command: "pip{{ python3_version }} install --upgrade pip=={{ python3_pip_version }}"
+  command: pip{{ python3_version }} install --upgrade pip=={{ python3_pip_version }}
   changed_when: false
   become: true
   ignore_errors: true
@@ -170,7 +173,7 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
-    - unixodbc-dev    # ODBC
+    - unixodbc-dev # ODBC
   become: true
 
 - name: python37 | Install C++ librairies for database (CentOS and RedHat based) for pyodbc
@@ -178,7 +181,7 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-    - unixODBC-devel   # ODBC
+    - unixODBC-devel # ODBC
   become: true
 
 # - name: python37 | Ensure jenkins ownership
@@ -198,12 +201,12 @@
 - name: python37 | Uninstall dependencies for python 3 requirements
   pip:
     name: "{{ item }}"
-    executable: "pip{{ python3_version }}"
+    executable: pip{{ python3_version }}
     state: absent
   when: not ansible_check_mode
   with_items:
     - argparse
-  ignore_errors: '{{ ansible_check_mode }}'
+  ignore_errors: "{{ ansible_check_mode }}"
   become: true
 
 - name: python37 | Check if /usr/bin/pip3 is present
@@ -222,7 +225,7 @@
   file: path=/usr/local/bin/pip3.7 src=/usr/bin/pip3 state=link # force=yes
   when: pip3.stat.islnk is not defined not pip3.stat.islnk
   become: true
-  ignore_errors: true  # Ignore failure on Travis
+  ignore_errors: true # Ignore failure on Travis
   tags:
     - pip3
     - vm

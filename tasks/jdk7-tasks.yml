@@ -1,5 +1,4 @@
 ---
-
 - name: Remove JDK7 archive
   file: path={{ jvm_folder }}/{{ jdk7_archive }} state=absent
   become: true

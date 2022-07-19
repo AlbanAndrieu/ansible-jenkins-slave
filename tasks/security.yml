@@ -28,7 +28,8 @@
 
 - name: jenkins-slave | Install security basic tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}  update_cache=yes"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') or (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise
+    Linux')
   with_items:
     - unhide
   become: true

@@ -1,5 +1,4 @@
 ---
-
 # TODO instead use role https://github.com/marcusianlevine/ansible-role-odbc-container
 # See Connecting to MSSQL from Linux with unixODBC + FreeTDS http://help.interfaceware.com/kb/904
 - name: database | Install C++ librairies database (Solaris based)
@@ -14,8 +13,8 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
-    - unixodbc-dev    # ODBC
-    - freetds-dev     # freetds
+    - unixodbc-dev # ODBC
+    - freetds-dev # freetds
   become: true
 
 - name: database | Install C++ librairies for database (CentOS and RedHat based)
@@ -23,9 +22,9 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-    - unixODBC-devel        # ODBC
-    - libtool-ltdl-devel    # ODBC
-    - freetds-devel         # freetds
+    - unixODBC-devel # ODBC
+    - libtool-ltdl-devel # ODBC
+    - freetds-devel # freetds
   become: true
 
 # Install unixodbc (ODBC connections), freetds (SQL Server connections) and tdsodbc (bridge between the former)
@@ -33,30 +32,30 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
-    - unixodbc              # ODBC
-    - freetds-common        # freetds
-    - freetds-bin           # freetds
-    - tdsodbc               # freetds
-# - libmyodbc               # ODBC mysql
-    - odbc-postgresql       # ODBC postgreSQL
-    - libaio1               # ODBC oracle install client
+    - unixodbc # ODBC
+    - freetds-common # freetds
+    - freetds-bin # freetds
+    - tdsodbc # freetds
+    # - libmyodbc               # ODBC mysql
+    - odbc-postgresql # ODBC postgreSQL
+    - libaio1 # ODBC oracle install client
   become: true
 
 - name: database | Install C++ librairies for running (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(18.04, '<=')
   with_items:
-    - unixodbc-bin          # ODBC
+    - unixodbc-bin # ODBC
   become: true
   #ignore_errors: true
 
 - name: database | Install microsoft key for mssql librairies (Debian based) (1)
-  shell: 'curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -'
+  shell: curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(18.04, '>=')
   become: true
 
 - name: database | Install microsoft key for mssql librairies (Debian based) (2)
-  shell: 'curl https://packages.microsoft.com/config/ubuntu/{{ ansible_distribution_version }}/prod.list > /etc/apt/sources.list.d/mssql-release.list'
+  shell: curl https://packages.microsoft.com/config/ubuntu/{{ ansible_distribution_version }}/prod.list > /etc/apt/sources.list.d/mssql-release.list
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(18.04, '>=')
   become: true
 
@@ -64,10 +63,10 @@
 
 - name: Update repositories cache
   apt:
-    update_cache: yes
+    update_cache: true
 
 - name: database | Install msodbcsql17 librairies (Debian based)
-  shell: "ACCEPT_EULA=Y apt-get install msodbcsql17 mssql-tools"    # mssql-tools is optional: for bcp and sqlcmd
+  shell: ACCEPT_EULA=Y apt-get install msodbcsql17 mssql-tools # mssql-tools is optional: for bcp and sqlcmd
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(18.04, '>=')
   become: true
   changed_when: false
@@ -78,12 +77,12 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-    - unixODBC                 # ODBC
-    - libtool-ltdl             # ODBC
-    - freetds                  # freetds
-    - mysql-connector-odbc     # ODBC mysql
-    - postgresql-odbc          # ODBC postgreSQL
-    - libaio                   # ODBC oraacle install client
+    - unixODBC # ODBC
+    - libtool-ltdl # ODBC
+    - freetds # freetds
+    - mysql-connector-odbc # ODBC mysql
+    - postgresql-odbc # ODBC postgreSQL
+    - libaio # ODBC oraacle install client
   become: true
 
 # TODO automate install oracle open client in /opt/oracle/
@@ -160,22 +159,22 @@
 - name: database | Configure oracle tablespaces
   template:
     src: database/oracle/01-tablespaces.0.sql.j2
-    dest: '{{ database_docker_scripts }}/startup/01-tablespaces.0.sql'
-    owner: '{{ jenkins_user }}'
-    group: '{{ jenkins_group }}'
+    dest: "{{ database_docker_scripts }}/startup/01-tablespaces.0.sql"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
     mode: 0600
-#  when: shell_git_configure_enabled
+  #  when: shell_git_configure_enabled
   become: true
   changed_when: false
 
 - name: database | Configure oracle users
   template:
     src: database/oracle/03-user.0.sql.j2
-    dest: '{{ database_docker_scripts }}/startup/03-user.0.sql'
-    owner: '{{ jenkins_user }}'
-    group: '{{ jenkins_group }}'
+    dest: "{{ database_docker_scripts }}/startup/03-user.0.sql"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
     mode: 0600
-#  when: shell_git_configure_enabled
+  #  when: shell_git_configure_enabled
   become: true
   changed_when: false
 

@@ -1,5 +1,4 @@
 ---
-
 - name: jenkins-slave | Install shell for running
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   tags: package
@@ -56,21 +55,21 @@
     insertafter: EOF
     create: true
   with_items:
-    - { regexp: '', line: 'export SCONS="/usr/bin/python2.7 /usr/bin/scons"' }
-#    - { regexp: '', line: 'export TERM="dumb"' }
-#    - { regexp: '', line: 'export TERM="xterm-256color"' }
-    - { regexp: '', line: 'export JAVA_HOME="{{ jdk_home }}"' }
-    - { regexp: '', line: 'export MAVEN_HOME="{{ mvn_home }}"' }
-#    - { regexp: '', line: 'export WORKSPACE="{{ jenkins_home }}"' }
-    - { regexp: '', line: 'export TAR="/bin/gtar"' }
-    - { regexp: '', line: 'export GIT_DISCOVERY_ACROSS_FILESYSTEM=1' }          # For Solaris
-    - { regexp: '', line: 'export TNS_ADMIN=/opt/oracle/instantclient_12_2/' }  # For Oracle
-    - { regexp: '', line: 'export ACCEPT_EULA=Y' }                              # For MsSQL
-    - { regexp: '', line: 'export PATH=${JAVA_HOME}/bin:${PATH}' }
+    - { regexp: "", line: export SCONS="/usr/bin/python2.7 /usr/bin/scons" }
+    #    - { regexp: '', line: 'export TERM="dumb"' }
+    #    - { regexp: '', line: 'export TERM="xterm-256color"' }
+    - { regexp: "", line: 'export JAVA_HOME="{{ jdk_home }}"' }
+    - { regexp: "", line: 'export MAVEN_HOME="{{ mvn_home }}"' }
+    #    - { regexp: '', line: 'export WORKSPACE="{{ jenkins_home }}"' }
+    - { regexp: "", line: export TAR="/bin/gtar" }
+    - { regexp: "", line: export GIT_DISCOVERY_ACROSS_FILESYSTEM=1 } # For Solaris
+    - { regexp: "", line: export TNS_ADMIN=/opt/oracle/instantclient_12_2/ } # For Oracle
+    - { regexp: "", line: export ACCEPT_EULA=Y } # For MsSQL
+    - { regexp: "", line: "export PATH=${JAVA_HOME}/bin:${PATH}" }
   become: true
   become_user: "{{ jenkins_user }}"
   changed_when: false
-#  ignore_errors: true
+  #  ignore_errors: true
   tags:
     - bashrc
     - env
@@ -85,13 +84,13 @@
     insertafter: EOF
     create: true
   with_items:
-    - { regexp: '', line: 'export PATH=${JAVA_HOME}/bin:${PATH}' }
-    - { regexp: '', line: 'export SA_PASSWORD="{{ shell_sa_password }}"' }      # For MsSQL
-#    - { regexp: '', line: 'export STOREPASS="{{ nexus_settings_signing_storepass }}"' }      # For JAR signing
+    - { regexp: "", line: "export PATH=${JAVA_HOME}/bin:${PATH}" }
+    - { regexp: "", line: 'export SA_PASSWORD="{{ shell_sa_password }}"' } # For MsSQL
+  #    - { regexp: '', line: 'export STOREPASS="{{ nexus_settings_signing_storepass }}"' }      # For JAR signing
   become: true
   become_user: "{{ jenkins_user }}"
   changed_when: false
-#  ignore_errors: true
+  #  ignore_errors: true
   tags:
     - secret
     - bashrc
@@ -106,7 +105,7 @@
     insertafter: EOF
     create: true
   with_items:
-    - { regexp: '', line: 'export PATH=/opt/local/bin:/usr/local/opt/gnu-getopt/bin:/usr/local/opt/llvm/bin:$PATH' }          # NEEDED clang specific for for OSX
+    - { regexp: "", line: export PATH=/opt/local/bin:/usr/local/opt/gnu-getopt/bin:/usr/local/opt/llvm/bin:$PATH }  # NEEDED clang specific for for OSX
   when: (ansible_distribution == 'MacOSX')
   become: true
   become_user: "{{ jenkins_user }}"
@@ -120,7 +119,7 @@
 
 - name: jenkins-slave | Switch to bash
   command: usermod -s {{ jenkins_shell }} {{ jenkins_user }}
-# become_user: "{{ jenkins_user }}"
+  # become_user: "{{ jenkins_user }}"
   changed_when: false
   ignore_errors: "{{ ansible_check_mode }}"
 

@@ -1,5 +1,4 @@
 ---
-
 # wget -q -O - http://linux.dell.com/repo/hardware/latest/bootstrap.cgi > bootstrap.cgi
 # bash bootstrap.cgi
 # yum install srvadmin-base
@@ -49,8 +48,9 @@
   systemd:
     name: chronyd
     state: stopped
-    enabled: no
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6') )
+    enabled: false
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version
+    == '6') )
   changed_when: false
   become: true
   ignore_errors: true
@@ -60,7 +60,7 @@
   systemd:
     name: ufw
     state: stopped
-    enabled: no
+    enabled: false
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   changed_when: false
   become: true
@@ -71,17 +71,17 @@
   systemd:
     name: firewalld
     state: stopped
-    enabled: no
+    enabled: false
   changed_when: false
   become: true
-  ignore_errors: true # not working on docker image because : System has not been booted with systemd as init system
+  ignore_errors: true  # not working on docker image because : System has not been booted with systemd as init system
   tags: vm
 
 - name: zabbix | Install locate package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
     - mlocate
-#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  #  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   changed_when: false
   become: true
   ignore_errors: true
@@ -91,7 +91,7 @@
 
 - name: zabbix | updatedb
   command: updatedb
-#  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  #  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   changed_when: false
   become: true
   ignore_errors: true
@@ -107,7 +107,8 @@
 # FYI perccli64 is installed on administrations role dell.yml
 - name: zabbix | Check perccli64 properly installed
   command: /opt/MegaRAID/perccli/perccli64 --version
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and (ansible_system_vendor == 'Dell Inc.' or ansible_system_vendor == 'VMware, Inc.')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and (ansible_system_vendor ==
+    'Dell Inc.' or ansible_system_vendor == 'VMware, Inc.')
   changed_when: false
   become: true
   ignore_errors: true

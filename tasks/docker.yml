@@ -1,5 +1,4 @@
 ---
-
 - name: docker | Set python link to python version
   set_fact: python_version=3.7
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
@@ -26,7 +25,7 @@
 # sudo pip3.7 install docker-compose==1.25.3
 
 - name: docker | docker-compose check 1
-  command: "docker-compose --version"
+  command: docker-compose --version
   register: docker_compose_result
   ignore_errors: true
   become: true
@@ -39,14 +38,14 @@
 - name: docker | Uninstall docker-py
   pip:
     name: "{{ item }}"
-    executable: "pip{{ python_version }}"
+    executable: pip{{ python_version }}
     state: absent
   when: not ansible_check_mode and (docker_compose_result.rc != 0 and docker_compose_result.rc != 127)
   with_items:
     - docker
     - docker-py
     - docker-compose
-  ignore_errors: '{{ ansible_check_mode }}'
+  ignore_errors: "{{ ansible_check_mode }}"
   become: true
 
 # Using pip with requirements-current-3.5.txt or requirements-current-3.6.txt instead
@@ -72,10 +71,7 @@
 #  ignore_errors: '{{ ansible_check_mode }}'
 
 - name: docker | Create a docker group
-  group:
-    name={{ docker_group }}
-    state=present
-    gid="{{ docker_gid }}"
+  group: name={{ docker_group }} state=present gid="{{ docker_gid }}"
   become: true
 
 - name: docker | Create jenkins user and group
@@ -83,7 +79,7 @@
     name: "{{ jenkins_user }}"
     password: "{{ jenkins_password }}"
     update_password: always
-    comment: "Jenkins"
+    comment: Jenkins
     home: "{{ jenkins_home }}"
     shell: "{{ jenkins_shell }}"
     uid: "{{ jenkins_id }}"
@@ -93,17 +89,14 @@
     append: true
   changed_when: false
   become: true
-  ignore_errors: true  # when user already exist and used by process it is failing
+  ignore_errors: true # when user already exist and used by process it is failing
 
 - name: docker | Add user(s) to docker group
-  user:
-    name={{ item }}
-    group={{ docker_group }}
-    state=present
+  user: name={{ item }} group={{ docker_group }} state=present
   with_items: "{{ docker_users }}"
   when: docker_users is defined
   become: true
-  ignore_errors: true  # when user jenkins already exist and home is not standard
+  ignore_errors: true # when user jenkins already exist and home is not standard
 
 # sudo gpasswd -a ${USER} docker
 # sudo gpasswd -a jenkins docker
@@ -138,7 +131,7 @@
   notify:
     - restart docker
   become: true
-  ignore_errors: true   # Ignore failure on Travis
+  ignore_errors: true # Ignore failure on Travis
   tags:
     - restart
     - notify
@@ -162,7 +155,8 @@
     mode: 0644
   notify:
     - restart docker
-  when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '<'))
+  when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04,
+    '<'))
   tags:
     - restart
     - notify
@@ -176,7 +170,8 @@
     owner: root
     group: root
     mode: 0755
-  when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '>='))
+  when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04,
+    '>='))
   tags:
     - docker
     - vm
@@ -207,13 +202,13 @@
 - name: Ensure docker daemon options used (systemd)
   lineinfile:
     dest: /lib/systemd/system/docker.service
-    regexp: "^ExecStart=/usr/bin/dockerd"
+    regexp: ^ExecStart=/usr/bin/dockerd
     line: ExecStart={{ docker_base_opts }} {{ docker_opts.rstrip('\n') }}
   notify:
     - restart docker
-  when: docker_opts | length > 0 and
-       (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '>='))
-#       ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') or (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '>=')))
+  when: docker_opts | length > 0 and (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04,
+    '>='))
+  #       ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') or (( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(15.04, '>=')))
   tags:
     - restart
     - notify
@@ -221,7 +216,7 @@
 
 # grubby --args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
 - name: docker | Enable "user" namespace
-  shell: "grubby --args=\"user_namespace.enable=1\" --update-kernel=\"$(grubby --default-kernel)\""
+  shell: grubby --args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   become: true
   ignore_errors: true
@@ -230,7 +225,7 @@
 # Fix is apt remove golang-docker-credential-helpers
 
 - name: docker | docker login fix
-  shell: "apt remove -y golang-docker-credential-helpers"
+  shell: apt remove -y golang-docker-credential-helpers
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version in ['18.04']
   become: true
   ignore_errors: true
@@ -277,13 +272,14 @@
   tags: vm
 
 - name: docker | docker container-structure-test
-  shell: "curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64 && chmod +x container-structure-test-linux-amd64 && sudo mv container-structure-test-linux-amd64 /usr/local/bin/container-structure-test" # noqa 303
+  shell: curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64 && chmod +x container-structure-test-linux-amd64
+    && sudo mv container-structure-test-linux-amd64 /usr/local/bin/container-structure-test # noqa 303
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(16.04, '>=')
   become: true
 #  ignore_errors: true
 
 - name: docker | docker container-structure-test version # noqa 301
-  command: "container-structure-test version"
+  command: container-structure-test version
   register: cst_version
 
 # - debug:
@@ -293,7 +289,7 @@
 - debug: var=cst_version
 
 - name: Get docker container-structure-test version # noqa 301
-  command: "container-structure-test version"
+  command: container-structure-test version
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(16.04, '>=')
   register: cst_version
 
@@ -313,7 +309,7 @@
     - gnome-keyring
     - gnupg2
     - pass
-#   - docker-credential-pass
+  #   - docker-credential-pass
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(18.04, '>=')
   tags: package
   become: true
@@ -323,7 +319,7 @@
 
 # Check docker
 - name: docker | Install check docker
-  shell: "curl https://raw.githubusercontent.com/docker/docker/master/contrib/check-config.sh > check-config.sh"
+  shell: curl https://raw.githubusercontent.com/docker/docker/master/contrib/check-config.sh > check-config.sh
   register: check_config_result
   changed_when: false
   become: true

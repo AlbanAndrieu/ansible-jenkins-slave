@@ -1,5 +1,4 @@
 ---
-
 #- import_tasks: python2.yml
 #  when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version is version_compare(18.04, '<=')) and python_enabled
 #  tags:

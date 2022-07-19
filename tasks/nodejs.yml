@@ -1,5 +1,4 @@
 ---
-
 - name: javascript | Install requirement for phantomas/phantomjs (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
@@ -14,7 +13,7 @@
   with_items:
     - fontconfig
     - freetype
-#    - libfreetype.so.6
+    #    - libfreetype.so.6
     - libfontconfig.so.1
   become: true
 
@@ -36,21 +35,21 @@
 # npm 3.10.10
 
 - name: javascript | Clean cache before upgrade
-  command: 'npm cache clean -f'
+  command: npm cache clean -f
   when: nodejs_enabled
   become: true
   changed_when: false
   ignore_errors: true
 
 - name: javascript | Get node repo # noqa 303
-  shell: 'curl -sL https://rpm.nodesource.com/setup_6.x | sudo -E bash -'
+  shell: curl -sL https://rpm.nodesource.com/setup_6.x | sudo -E bash -
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
   become: true
   changed_when: false
   ignore_errors: true
 
 - name: javascript | Get node repo # noqa 303
-  shell: 'curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -'
+  shell: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['15.04', '16.04']) and nodejs_enabled
   become: true
   changed_when: false
@@ -77,7 +76,7 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['12.04', '14.04']) and nodejs_enabled
   with_items:
     - nodejs
-#    - nodejs=8.10.0~dfsg-2ubuntu0.4 # ubuntu 18
+  #    - nodejs=8.10.0~dfsg-2ubuntu0.4 # ubuntu 18
   become: true
 
 - name: javascript | Install nodejs npm official (Debian based)
@@ -85,7 +84,7 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '14.04', '16.04']) and nodejs_enabled
   with_items:
     - npm
-#    - npm=3.5.2-0ubuntu4 # ubuntu 18
+  #    - npm=3.5.2-0ubuntu4 # ubuntu 18
   become: true
 
 - name: javascript | Ensure the n (node updater) is installed
@@ -94,9 +93,9 @@
     state=present
     global=yes
   with_items:
-    - n
+    - false
   become: true
-#  ignore_errors: true
+  #  ignore_errors: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ("12.04") and nodejs_enabled
 
 # Node updater
@@ -139,20 +138,17 @@
 
 - name: javascript | Ensure npm proxy settings
   command: "{{ npm_prefix }}npm config set proxy {{ http_proxy }}"
-  when: not( (http_proxy is undefined) or (http_proxy is none) )
-        and (http_proxy | length > 0) and proxy_enabled
+  when: not( (http_proxy is undefined) or (http_proxy is none) ) and (http_proxy | length > 0) and proxy_enabled
   become: true
 
 - name: javascript | Ensure npm registry settings
   command: "{{ npm_prefix }}npm config set registry {{ npm_nexus_private_npm_url }}"
-  when: not( (npm_nexus_private_npm_url is undefined) or (npm_nexus_private_npm_url is none) )
-        and (npm_nexus_private_npm_url | length > 0) and nodejs_enabled
+  when: not( (npm_nexus_private_npm_url is undefined) or (npm_nexus_private_npm_url is none) ) and (npm_nexus_private_npm_url | length > 0) and nodejs_enabled
   become: true
 
 - name: javascript | Ensure npm ssl settings
   command: "{{ npm_prefix }}npm config set strict-ssl {{ npm_strict_ssl }}"
-  when: not( (npm_strict_ssl is undefined) or (npm_strict_ssl is none) )
-        and (npm_strict_ssl | length > 0) and nodejs_enabled
+  when: not( (npm_strict_ssl is undefined) or (npm_strict_ssl is none) ) and (npm_strict_ssl | length > 0) and nodejs_enabled
   become: true
 
 - name: npm | Print npm global packages enabled
@@ -165,13 +161,12 @@
     state=present
     global=yes
   with_items: "{{ npm_global_packages }}"
-  when: not( (npm_global_packages is undefined) or (npm_global_packages is none) )
-        and (npm_global_packages | length > 0)
-        and ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','13.04','14.04'])
-        or (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
+  when: not( (npm_global_packages is undefined) or (npm_global_packages is none) ) and (npm_global_packages | length > 0) and ((ansible_distribution == 'Debian' or
+    ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','13.04','14.04']) or (ansible_distribution == 'CentOS' or ansible_distribution
+    == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
   become: true
   changed_when: false
-#  become_user: "{{ jenkins_user }}"
+  #  become_user: "{{ jenkins_user }}"
   tags:
     - npm
     - data
@@ -183,14 +178,14 @@
   with_items:
     - ruby-compass
   become: true
-#  ignore_errors: true
+  #  ignore_errors: true
   tags:
     - ruby
     - compass
 #    - vm
 
 - name: javascript | Ensure webdriver is installed
-  command: "webdriver-manager update --versions.chrome {{ npm_chromedriver_version }}"
-  when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','13.04','14.04']) or
-        (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
+  command: webdriver-manager update --versions.chrome {{ npm_chromedriver_version }}
+  when: ((ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04','13.04','14.04']) or (ansible_distribution
+    == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and nodejs_enabled
   become: true

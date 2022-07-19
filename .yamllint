@@ -1,4 +1,6 @@
-extends: default
+---
+# extends: default
+extends: relaxed
 
 rules:
   braces:
@@ -7,8 +9,24 @@ rules:
   brackets:
     max-spaces-inside: 1
     level: error
+  comments:
+    min-spaces-from-content: 2
   line-length: disable
-  comments-indentation: disable
+  # document-start: disable
+  # truthy: disable
   # NOTE(retr0h): Templates no longer fail this lint rule.
   #               Uncomment if running old Molecule templates.
-  # truthy: disable
+  truthy:
+    allowed-values: ['true', 'false', 'on']
+  # https://github.com/adrienverge/yamllint/issues/141
+  # comments-indentation: disable
+ignore: |
+  .direnv/
+  .venv/
+  .git/
+  .tox
+  .cache
+  roles/
+  .ansible-lint
+  .github/
+  .pre-commit-config.yaml

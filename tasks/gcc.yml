@@ -13,7 +13,7 @@
 
 - name: cpp | Install C++ compiler 4.6 (Debian based)
   apt:
-    pkg: ['gcc-4.6', 'g++-4.6']
+    pkg: [gcc-4.6, g++-4.6]
     state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
@@ -21,7 +21,7 @@
 
 - name: cpp | Install C++ compiler 4.8 (Debian based)
   apt:
-    pkg: ['gcc-4.8', 'g++-4.8']
+    pkg: [gcc-4.8, g++-4.8]
     state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
@@ -29,7 +29,7 @@
 
 - name: cpp | Install C++ compiler 5 (Debian based)
   apt:
-    pkg: ['gcc-5', 'g++-5']
+    pkg: [gcc-5, g++-5]
     state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
@@ -37,7 +37,7 @@
 
 - name: cpp | Install C++ compiler 6 (Debian based)
   apt:
-    name: ['gcc-6', 'g++-6']
+    name: [gcc-6, g++-6]
     state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
@@ -45,7 +45,7 @@
 
 - name: cpp | Install C++ compiler 7 (Debian based)
   apt:
-    name: ['gcc-7', 'g++-7']
+    name: [gcc-7, g++-7]
     state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
@@ -53,7 +53,7 @@
 
 - name: cpp | Install C++ compiler 8 (Debian based)
   apt:
-    name: ['gcc-8', 'g++-8']
+    name: [gcc-8, g++-8]
     state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
@@ -61,7 +61,7 @@
 
 - name: cpp | Install C++ compiler 9 (Debian based)
   apt:
-    name: ['gcc-9', 'g++-9']
+    name: [gcc-9, g++-9]
     state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
@@ -70,7 +70,7 @@
 # SEE https://www.vultr.com/docs/how-to-install-gcc-on-centos-6
 - name: cpp | Install C++ compiler (CentOS based)
   yum:
-    name: ['gcc', 'gcc-c++']
+    name: [gcc, gcc-c++]
     state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
@@ -84,7 +84,7 @@
 
 - name: cpp | Install C++ compiler (RedHat based)
   yum:
-    name: ['gcc-c++']
+    name: [gcc-c++]
     state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   become: true
@@ -132,7 +132,7 @@
 
 - name: jenkins-slave | Install clang scan-build (CentOS and RedHat based)
   yum:
-    pkg: ['clang', 'clang-analyzer']
+    pkg: [clang, clang-analyzer]
     state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
@@ -141,7 +141,7 @@
 
 - name: jenkins-slave | Install clang-format (CentOS and RedHat based)
   yum:
-    name: ['llvm-toolset-7-git-clang-format']
+    name: [llvm-toolset-7-git-clang-format]
     state: "{{ util_pkg_state | default('present') }}"
     update_cache: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
@@ -155,31 +155,31 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=true"
   with_items:
     - clang-format
-    - clang-tools  # clang-tools-10
+    - clang-tools # clang-tools-10
     - clang-tidy
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: true
   #ignore_errors: true
   tags:
-   - package
-   - cpp
-   - clang
+    - package
+    - cpp
+    - clang
 
 - name: cpp | Install C++ clang llvm dev
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=true"
   with_items:
     - libclang-dev
     - llvm
-#    - llvm-3.8-dev
+    #    - llvm-3.8-dev
     - llvm-dev
-# - clang-devel
+  # - clang-devel
   #when: not ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
   become: true
   ignore_errors: true
   tags:
-   - package
-   - cpp
-   - clang
+    - package
+    - cpp
+    - clang
 
 - name: cpp | Install C++ quality tool
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=true"
@@ -192,8 +192,8 @@
   become: true
   ignore_errors: true
   tags:
-   - package
-   - cpp
+    - package
+    - cpp
 
 - name: cpp | Install C++ quality tool
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=true"
@@ -203,8 +203,8 @@
   become: true
   ignore_errors: true
   tags:
-   - package
-   - cpp
+    - package
+    - cpp
 
 - name: cpp | Install C++ quality tool
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=true"
@@ -216,9 +216,9 @@
   become: true
   ignore_errors: true
   tags:
-   - package
-   - cpp
-   - debug
+    - package
+    - cpp
+    - debug
 
 - name: cpp | Install C++ quality tool
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=true"
@@ -266,10 +266,8 @@
     - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-{{ cpp_version }}", priority: 5 }
     - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-{{ cpp_version }}", priority: 5 }
     - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-{{ cpp_version }}", priority: 5 }
-  when: not( (cpp_dir is undefined) or (cpp_dir is none) )
-        and (cpp_dir | length > 0)
-        and not( (cpp_version is undefined) or (cpp_version is none) )
-        and (cpp_version | length > 0)
+  when: not( (cpp_dir is undefined) or (cpp_dir is none) ) and (cpp_dir | length > 0) and not( (cpp_version is undefined) or (cpp_version is none) ) and (cpp_version
+    | length > 0)
   become: true
   ignore_errors: true
 
@@ -305,10 +303,7 @@
 
 - name: cpp | Display cpp link after
   action: command update-alternatives --display cpp
-  when: not( (cpp_dir is undefined) or (cpp_dir is none) )
-        and (cpp_dir | length > 0)
-        and not( (cpp_version is undefined) or (cpp_version is none) )
-        and (cpp_version | length > 0)
-        and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: not( (cpp_dir is undefined) or (cpp_dir is none) ) and (cpp_dir | length > 0) and not( (cpp_version is undefined) or (cpp_version is none) ) and (cpp_version
+    | length > 0) and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   changed_when: false
   become: true

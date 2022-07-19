@@ -1,5 +1,4 @@
 ---
-
 - name: Install qa package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:

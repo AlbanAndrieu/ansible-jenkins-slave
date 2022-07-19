@@ -3,22 +3,24 @@
 - name: git | Install git
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
-   - git-core
+    - git-core
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 
 - name: git | Install git
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
-   - git
-  when: not (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+    - git
+  when: not (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' and ansible_distribution_major_version
+    == '6')
   become: true
 
 - name: git | Install git
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
-   - git2u
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
+    - git2u
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' and ansible_distribution_major_version
+    == '6')
   become: true
 
 - name: git | Install git-lfs (1)
@@ -36,7 +38,7 @@
 - name: git | Install git-lfs (2)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
-   - git-lfs
+    - git-lfs
   become: true
   ignore_errors: "{{ ansible_check_mode }}"
 
@@ -51,11 +53,11 @@
 
 - name: git | Configure git
   template:
-   src: .gitconfig.j2
-   dest: '{{ jenkins_home }}/.gitconfig'
-   owner: '{{ jenkins_user }}'
-   group: '{{ jenkins_group }}'
-   mode: 0600
+    src: .gitconfig.j2
+    dest: "{{ jenkins_home }}/.gitconfig"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0600
   when: shell_git_configure_enabled
   become: true
   changed_when: false

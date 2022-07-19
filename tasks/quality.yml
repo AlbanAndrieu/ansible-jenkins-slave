@@ -1,5 +1,4 @@
 ---
-
 - name: jenkins-slave | Install gcovr coverage and metrics tools
   pip: name={{ item }}
   with_items:
@@ -16,8 +15,8 @@
 
 - name: jenkins-slave | Install perf and gperf monitoring and metrics tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
-# when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-# when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  # when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  # when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
   when: not (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
     - perf
@@ -37,9 +36,9 @@
 
 - name: jenkins-slave | Install documentation tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
-# when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-# when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
-# when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  # when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  # when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  # when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
     - graphviz
     - doxygen
@@ -85,7 +84,7 @@
     - valgrind
     - gawk
     - kcachegrind
-#    - valkyrie
+  #    - valkyrie
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   tags: cpp
   become: true

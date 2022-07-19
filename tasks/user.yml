@@ -1,5 +1,4 @@
 ---
-
 # - name: jenkins-slave | Kill connection used by user jenkins
 #   action: shell killall -u {{ jenkins_user }} || true
 #   changed_when: false
@@ -8,19 +7,13 @@
 
 # TODO https://stackoverflow.com/questions/26677064/create-and-use-group-without-restart
 - name: jenkins-slave | Create a docker group
-  group:
-    name={{ docker_group }}
-    state=present
-    gid="{{ docker_gid }}"
+  group: name={{ docker_group }} state=present gid="{{ docker_gid }}"
   become: true
 
 - name: jenkins-slave | Create a jenkins group
-  group:
-    name={{ jenkins_group }}
-    state=present
-    gid={{ jenkins_gid }}
+  group: name={{ jenkins_group }} state=present gid={{ jenkins_gid }}
   become: true
-  ignore_errors: true  # when user already exist and used by process it is failing
+  ignore_errors: true # when user already exist and used by process it is failing
 
 - name: jenkins-slave | Create all groups tentatively needed by jenkins user
   group:
@@ -30,10 +23,7 @@
   with_items: "{{ jenkins_groups }}"
 
 - name: jenkins-slave | Create a www-data group
-  group:
-    name={{ data_group }}
-    state=present
-    gid={{ data_gid }}
+  group: name={{ data_group }} state=present gid={{ data_gid }}
   become: true
   ignore_errors: true
 
@@ -42,7 +32,7 @@
     name: "{{ jenkins_user }}"
     password: "{{ jenkins_password }}"
     update_password: always
-    comment: "Jenkins"
+    comment: Jenkins
     home: "{{ jenkins_home }}"
     shell: "{{ jenkins_shell }}"
     uid: "{{ jenkins_id }}"
@@ -52,18 +42,15 @@
     append: true
   changed_when: false
   become: true
-  ignore_errors: true  # when user already exist and used by process it is failing
+  ignore_errors: true # when user already exist and used by process it is failing
 
 - name: jenkins-slave | Add user(s) to docker group
-  user:
-    name={{ item }}
-    group={{ docker_group }}
-    state=present
+  user: name={{ item }} group={{ docker_group }} state=present
   with_items: "{{ docker_users }}"
   when: docker_users is defined
   changed_when: false
   become: true
-  ignore_errors: true  # for molecule (Group docker does not exist)
+  ignore_errors: true # for molecule (Group docker does not exist)
 
 - name: jenkins-slave | Ubuntu - Create all groups tentatively needed by jenkins user
   group:
@@ -90,7 +77,6 @@
 - import_tasks: ssh.yml
   when: jenkins_ssh_key_file != ""
   tags: [jenkins, jenkins-ssh]
-
 - name: jenkins-slave | Update authorized_keys rights
   file: path={{ jenkins_home }}/.ssh/authorized_keys state=file mode=0600 owner={{ jenkins_user }} group={{ jenkins_group }}
   ignore_errors: true
@@ -98,19 +84,16 @@
 - name: jenkins-slave | Jenkins can run any command with no password
   lineinfile: dest=/etc/sudoers line="{{ item }}" validate='visudo -cf %s'
   with_items:
-    - "Defaults:jenkins    !requiretty"
+    - Defaults:jenkins    !requiretty
     - "jenkins ALL=NOPASSWD: ALL"
-    - "Defaults:jenkins    secure_path=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\""
+    - Defaults:jenkins    secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
   when: jenkins_sudo
   become: true
   ignore_errors: true
   changed_when: false
 
 - name: jenkins-slave | Disable env_reset
-  lineinfile: dest=/etc/sudoers regexp="^Defaults    env_reset.*"
-    line="Defaults    !env_reset"
-    backrefs=yes
-    validate='visudo -cf %s'
+  lineinfile: dest=/etc/sudoers regexp="^Defaults    env_reset.*" line="Defaults    !env_reset" backrefs=yes validate='visudo -cf %s'
   when: jenkins_sudo
   become: true
   ignore_errors: true

@@ -1,7 +1,6 @@
 ---
-
 # docker_base_opts: "/usr/bin/docker daemon -H fd:// $DOCKER_OPTS"
-docker_base_opts: "/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock"
+docker_base_opts: /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
 
 # PostgreSQL
 # odbcinst_PostgreSQL_Driver: /usr/lib/psqlodbcw.so
@@ -24,9 +23,9 @@ odbcinst_FreeTDS_Setup: /usr/lib/x86_64-linux-gnu/odbc/libtdsS.so
 odbcinst_Oracle_Driver: /opt/oracle/instantclient_12_2/libsqora.so.12.1
 odbcinst_Oracle_Driver64: /opt/oracle/instantclient_12_2/libsqora.so.12.1
 
-oracle_jdk_home: "/usr/lib/jvm/java-8-oracle"
+oracle_jdk_home: /usr/lib/jvm/java-8-oracle
 oracle_jre_home: "{{ oracle_jdk_home }}/jre/"
-open_jdk_home: "/usr/lib/jvm/java-8-openjdk-amd64"
+open_jdk_home: /usr/lib/jvm/java-8-openjdk-amd64
 open_jre_home: "{{ open_jdk_home }}/jre/"
 jdk_home: "{{ open_jdk_home }}"
 jre_home: "{{ open_jre_home }}"

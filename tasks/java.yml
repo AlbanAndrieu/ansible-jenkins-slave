@@ -52,9 +52,9 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   tags: jdk_setup
   with_items:
-    - openjdk-8-jdk   # to execute java applications
-#    - openjdk-8-jre-headless # no audio/video. Just SE. E.g for embedded systems
-    - openjdk-8-source   # Java sources, to review api implementation.
+    - openjdk-8-jdk # to execute java applications
+    #    - openjdk-8-jre-headless # no audio/video. Just SE. E.g for embedded systems
+    - openjdk-8-source # Java sources, to review api implementation.
     - openjfx
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04','13.04','14.04']) and jenkins_jdk8_enable
   become: true
@@ -63,12 +63,13 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   tags: jdk_setup
   with_items:
-    - java-1.8.0-openjdk                 # to execute java applications
-    - java-1.8.0-openjdk-devel           # for compilation of Java. javac etc..
-    - java-1.8.0-openjdk-headless        # no audio/video. Just SE. E.g for embedded systems
-    - java-1.8.0-openjdk-javadoc.noarch  # Javadoc that can be included in your IDE.
-    - java-1.8.0-openjdk-src             # Java sources, to review api implementation.
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' and (ansible_distribution_version not in ['5'])) and jenkins_jdk8_enable
+    - java-1.8.0-openjdk # to execute java applications
+    - java-1.8.0-openjdk-devel # for compilation of Java. javac etc..
+    - java-1.8.0-openjdk-headless # no audio/video. Just SE. E.g for embedded systems
+    - java-1.8.0-openjdk-javadoc.noarch # Javadoc that can be included in your IDE.
+    - java-1.8.0-openjdk-src # Java sources, to review api implementation.
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' and (ansible_distribution_version
+    not in ['5'])) and jenkins_jdk8_enable
   become: true
 
 # - name: jdk8 | Install default oracle
@@ -138,12 +139,11 @@
     - { name: javah, link: /usr/bin/javah, path: "{{ jdk_dir }}bin/javah", priority: 5 }
     - { name: javap, link: /usr/bin/javap, path: "{{ jdk_dir }}bin/javap", priority: 5 }
     - { name: jarsigner, link: /usr/bin/jarsigner, path: "{{ jdk_dir }}bin/jarsigner", priority: 5 }
-#    - { name: java_vm, link: /usr/bin/java_vm, path: "{{ jdk_dir }}/bin/java_vm", priority: 5 }
+    #    - { name: java_vm, link: /usr/bin/java_vm, path: "{{ jdk_dir }}/bin/java_vm", priority: 5 }
     - { name: jvisualvm, link: /usr/bin/jvisualvm, path: "{{ jdk_dir }}bin/jvisualvm", priority: 5 }
     - { name: keytool, link: /usr/bin/keytool, path: "{{ jdk_dir }}bin/keytool", priority: 5 }
-  when: not( (jdk_dir is undefined) or (jdk_dir is none) )
-        and (jdk_dir | length > 0)
-        and (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  when: not( (jdk_dir is undefined) or (jdk_dir is none) ) and (jdk_dir | length > 0) and (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise
+    Linux' or ansible_distribution == 'RedHat')
   become: true
   ignore_errors: true
 
@@ -168,8 +168,7 @@
 # ls -la /etc/alternatives/java*
 - name: jenkins-slave | Display java link after
   action: command update-alternatives --display java
-  when: not( (jdk_dir is undefined) or (jdk_dir is none) )
-        and (jdk_dir | length > 0)
+  when: not( (jdk_dir is undefined) or (jdk_dir is none) ) and (jdk_dir | length > 0)
   changed_when: false
   become: true
   ignore_errors: true
@@ -190,7 +189,8 @@
 # ln -s /etc/ssl/certs/java/cacerts /usr/lib/jvm/java-8-oracle/jre/lib/security/
 
 - name: jenkins-slave | Check if certificate is already imported
-  command: '{{ java_keytool_executable }} -list -keystore {{ java_certificate_ca_path }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias }}'
+  command: "{{ java_keytool_executable }} -list -keystore {{ java_certificate_ca_path }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias\
+    \ }}"
   become: true
   ignore_errors: true
   changed_when: false
@@ -198,16 +198,16 @@
 
 - name: jenkins-slave | Create java cacerts link (jenkins 1)
   file:
-    path: "/workspace/{{ item.dest }}/tools/hudson.model.JDK/java-latest/lib/security/cacerts"
+    path: /workspace/{{ item.dest }}/tools/hudson.model.JDK/java-latest/lib/security/cacerts
     src: /etc/pki/java/cacerts
     state: link
     group: "{{ jenkins_user }}"
     owner: "{{ jenkins_group }}"
     mode: 0755
-    force: yes
+    force: true
   with_items:
-    - { dest: 'slave' }
-    - { dest: 'slavearc' }
+    - { dest: slave }
+    - { dest: slavearc }
   become: true
   ignore_errors: true
   tags:
@@ -220,16 +220,16 @@
 
 - name: jenkins-slave | Create java cacerts link (jenkins 2)
   file:
-    path: "/workspace/{{ item.dest }}/tools/hudson.model.JDK/jdk-18-latest/jre/lib/security/cacerts"
+    path: /workspace/{{ item.dest }}/tools/hudson.model.JDK/jdk-18-latest/jre/lib/security/cacerts
     src: /etc/pki/java/cacerts
     state: link
     group: "{{ jenkins_user }}"
     owner: "{{ jenkins_group }}"
     mode: 0755
-    force: yes
+    force: true
   with_items:
-    - { dest: 'slave' }
-    - { dest: 'slavearc' }
+    - { dest: slave }
+    - { dest: slavearc }
   become: true
   ignore_errors: true
   tags:
@@ -239,13 +239,15 @@
 # See certificate.yml playbook to get the CA certificate
 
 - name: jenkins-slave | Import old certificate
-  command: '{{ java_keytool_executable }} -import -trustcacerts -keystore {{ java_certificate_ca_path }} -keypass {{ java_certificate_key_pass }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias }} -file {{ java_certificate_ca_name }}'
+  command: "{{ java_keytool_executable }} -import -trustcacerts -keystore {{ java_certificate_ca_path }} -keypass {{ java_certificate_key_pass }} -storepass {{ java_certificate_store_pass\
+    \ }} -noprompt -alias {{ java_certificate_alias }} -file {{ java_certificate_ca_name }}"
   when: java_cert_imported is failed
   become: true
   ignore_errors: true
 
 - name: jenkins-slave | Import new certificate
-  command: '{{ java_keytool_executable }} -import -trustcacerts -keystore {{ java_certificate_ca_path }} -keypass {{ java_certificate_key_pass }} -storepass {{ java_certificate_store_pass }} -noprompt -alias {{ java_certificate_alias_new }} -file {{ java_certificate_ca_name_new }}'
+  command: "{{ java_keytool_executable }} -import -trustcacerts -keystore {{ java_certificate_ca_path }} -keypass {{ java_certificate_key_pass }} -storepass {{ java_certificate_store_pass\
+    \ }} -noprompt -alias {{ java_certificate_alias_new }} -file {{ java_certificate_ca_name_new }}"
   when: java_cert_imported is failed
   become: true
   ignore_errors: true
@@ -253,22 +255,22 @@
 # Belowe need to be done especially because we set JAVA_HOME=/usr/java/default inside .bashrc (see jdk_home)
 
 - name: jenkins-slave | Normalize JAVA_HOME across architectures for oracle jdk
-  file: path=/usr/lib/jvm/java-oraclejdk src={{ oracle_jdk_home }} state=link   # force=yes
+  file: path=/usr/lib/jvm/java-oraclejdk src={{ oracle_jdk_home }} state=link # force=yes
   become: true
   ignore_errors: true
 
 - name: jenkins-slave | Normalize JAVA_HOME across architectures for oracle jre
-  file: path=/usr/lib/jvm/java-oraclejre src={{ oracle_jre_home }} state=link   # force=yes
+  file: path=/usr/lib/jvm/java-oraclejre src={{ oracle_jre_home }} state=link # force=yes
   become: true
   ignore_errors: true
 
 - name: jenkins-slave | Normalize JAVA_HOME across architectures for open jdk
-  file: path=/usr/lib/jvm/java-openjdk src={{ open_jdk_home }} state=link   # force=yes
+  file: path=/usr/lib/jvm/java-openjdk src={{ open_jdk_home }} state=link # force=yes
   become: true
   ignore_errors: true
 
 - name: jenkins-slave | Normalize JAVA_HOME across architectures for open jre
-  file: path=/usr/lib/jvm/jre-openjdk src={{ open_jre_home }} state=link   # force=yes
+  file: path=/usr/lib/jvm/jre-openjdk src={{ open_jre_home }} state=link # force=yes
   become: true
   ignore_errors: true
 

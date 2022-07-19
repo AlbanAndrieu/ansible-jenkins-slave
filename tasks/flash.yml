@@ -1,5 +1,4 @@
 ---
-
 - name: jenkins-slave | Download flashplayer archive
   get_url: url={{ flashplayer_standalone_download_url }}/{{ flashplayer_standalone_filename }} dest=/tmp/{{ flashplayer_standalone_filename }}
   when: (ansible_distribution == 'CentOS' and ansible_distribution_version == 5)
@@ -46,7 +45,7 @@
 
 - name: jenkins-slave | Install the adobe repo installed
   yum:
-    name: "adobe-release-{{ ansible_machine }}"
+    name: adobe-release-{{ ansible_machine }}
     state: present
   register: adobe_release_installed
   when: (ansible_distribution == 'RedHat')

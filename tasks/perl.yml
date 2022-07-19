@@ -1,5 +1,4 @@
 ---
-
 - name: jenkins-slave | Install tools needed for development (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
@@ -104,7 +103,8 @@
 
 - name: jenkins-slave | Install perl for running
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')) # noqa 204
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version
+    == '6')) # noqa 204
   tags: package
   with_items:
     - perl-Env
@@ -128,7 +128,8 @@
 
 - name: jenkins-slave | Install cpanminus (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')) # noqa 204
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version
+    == '6')) # noqa 204
   tags: package
   with_items:
     - perl-App-cpanminus
@@ -147,13 +148,13 @@
 
 # It makes perl automatically answer "yes" when CPAN asks "Would you like to configure as much as possible automatically? [yes]"
 - name: jenkins-slave | Install automatically perl module PERL_MM_USE_DEFAULT
-  shell: "echo $PERL_MM_USE_DEFAULT"
+  shell: echo $PERL_MM_USE_DEFAULT
   environment:
     PERL_MM_USE_DEFAULT: 1
   changed_when: false
 
 - name: jenkins-slave | Echo PERL_MM_USE_DEFAULT again
-  shell: "echo $PERL_MM_USE_DEFAULT"
+  shell: echo $PERL_MM_USE_DEFAULT
   changed_when: false
 
 # TODO below is hanging the first time it is run
@@ -213,7 +214,7 @@
 
 # Below is same has above but with CPAN
 - name: jenkins-slave | Install cpan perl modules needed by cpp generator
-  command: "cpan {{ item }}"
+  command: cpan {{ item }}
   with_items:
     - XML::DOM
     - XML::Handler::YAWriter
@@ -235,13 +236,13 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install cpan perl modules needed by cpp generator
-  shell: "yes y | cpan -f {{ item }}"
+  shell: yes y | cpan -f {{ item }}
   with_items:
-    - XML::Simple               # Force install on CentOS 7, tests are failing!
-    - File::Copy::Recursive     # Force install on Ubuntu 16.04, tests are failing!
-    - LWP::Protocol::https      # Force install on Ubuntu 16.04, tests are failing!
-    - Date::Manip               # Force install on Ubuntu 16.04, tests are failing!
-    - Test::Pod::Coverage       # Force install on Ubuntu 16.04, tests are failing!
+    - XML::Simple # Force install on CentOS 7, tests are failing!
+    - File::Copy::Recursive # Force install on Ubuntu 16.04, tests are failing!
+    - LWP::Protocol::https # Force install on Ubuntu 16.04, tests are failing!
+    - Date::Manip # Force install on Ubuntu 16.04, tests are failing!
+    - Test::Pod::Coverage # Force install on Ubuntu 16.04, tests are failing!
   #environment:
   #  http_proxy: "{{ http_proxy }}"
   #  https_proxy: "{{ https_proxy }}"
@@ -251,7 +252,7 @@
   ignore_errors: true
 
 - name: jenkins-slave | Install cpan perl modules needed by cpp generator
-  command: "cpan {{ item }}"
+  command: cpan {{ item }}
   with_items:
     - Text::SimpleTable
   register: cpan_result
@@ -314,6 +315,7 @@
 - name: jenkins-slave | Install tools needed by sample a runtime (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
   become: true
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6')) # noqa 204
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version
+    == '6')) # noqa 204
   with_items:
     - perl-Time-y2038

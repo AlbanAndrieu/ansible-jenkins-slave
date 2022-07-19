@@ -1,5 +1,4 @@
 ---
-
 - name: jenkins-slave | Install X debug tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
   with_items:
@@ -35,7 +34,8 @@
 
 - name: jenkins-slave | Install utility tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' or ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' or ansible_distribution == 'Debian'
+    or ansible_distribution == 'Ubuntu')
   with_items:
     - lsof
   become: true
@@ -44,7 +44,8 @@
 
 - name: jenkins-slave | Install CPP gdb tools
   action: "{{ ansible_pkg_mgr }} name={{ item }} update_cache=yes state={{ util_pkg_state | default('present') }}"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' or ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat' or ansible_distribution == 'Debian'
+    or ansible_distribution == 'Ubuntu')
   with_items:
     - gdb
   become: true

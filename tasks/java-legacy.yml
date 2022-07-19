@@ -1,5 +1,4 @@
 ---
-
 - name: jdk7 | Create {{ jvm_folder }} directory
   file: path={{ jvm_folder }} state=directory
   tags: jdk_setup
@@ -73,7 +72,7 @@
 - name: jdk8 | Unpack JDK8
   action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} tar zxvf {{ jvm_folder }}/{{ jdk8_archive }} --owner=root
   register: jdk8_installed
-#  ignore_errors: true
+  #  ignore_errors: true
   become: true
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and jdk8_download.changed and jenkins_jdk8_enable
   tags: jdk_setup
@@ -81,7 +80,7 @@
 - name: jdk8 | Install JDK8 RPM package
   action: command creates={{ jvm_folder }}/{{ jdk8_archive_extracted }} chdir={{ jvm_folder }} rpm --force -Uvh {{ jvm_folder }}/{{ jdk8_archive }}
   register: jdk8_installed
-#  ignore_errors: true
+  #  ignore_errors: true
   become: true
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and jdk8_download.changed and jenkins_jdk8_enable
   tags: jdk_setup

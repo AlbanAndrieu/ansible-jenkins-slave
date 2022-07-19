@@ -1,5 +1,4 @@
 ---
-
 - name: jenkins-slave | Create ~/.kube folder
   file: path={{ jenkins_home }}/.kube state=directory owner={{ jenkins_user }} group={{ jenkins_group }} mode=0775
   become: true

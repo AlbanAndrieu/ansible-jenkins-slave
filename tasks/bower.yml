@@ -1,5 +1,4 @@
 ---
-
 - name: jenkins-slave | Checking bower folders
   stat:
     path: "{{ item }}"
@@ -14,7 +13,7 @@
     path: "{{ item.item }}"
     state: directory
     mode: 0777
-    recurse: yes
+    recurse: true
     group: "{{ jenkins_user }}"
     owner: "{{ jenkins_group }}"
   when: not item.stat.exists

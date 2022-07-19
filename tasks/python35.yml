@@ -1,5 +1,4 @@
 ---
-
 # TODO on RedHat add python3.5 by hand
 
 # See there is 3 ways to install pyton
@@ -44,10 +43,11 @@
   yum:
     name: "{{ item }}"
     state: "{{ util_pkg_state | default('present') }}"
-  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '6')
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version
+    == '6')
   with_items:
     #- "https://centos6.iuscommunity.org/ius-release.rpm"
-    - "https://repo.ius.io/ius-release-el6.rpm"
+    - https://repo.ius.io/ius-release-el6.rpm
     - python35u
     - python35u-devel
     - python35u-pip
@@ -57,10 +57,11 @@
   yum:
     name: "{{ item }}"
     state: "{{ util_pkg_state | default('present') }}"
-  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7')
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version
+    == '7')
   with_items:
     #- "https://centos7.iuscommunity.org/ius-release.rpm"
-    - "https://repo.ius.io/ius-release-el7.rpm"
+    - https://repo.ius.io/ius-release-el7.rpm
     - python35u
     - python35u-devel
     - python35u-pip
@@ -116,7 +117,7 @@
   get_url:
     url: https://bootstrap.pypa.io/get-pip.py
     dest: /tmp/get-pip.py
-    force: yes
+    force: true
   register: curl_result
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
   #environment:
@@ -125,7 +126,7 @@
   become: true
 
 - name: python35 | Install missing pip{{ python3_version }} (2) # noqa 503
-  command: "python{{ python3_version }} /tmp/get-pip.py"
+  command: python{{ python3_version }} /tmp/get-pip.py
   when: curl_result.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
   changed_when: false
   become: true
@@ -151,7 +152,7 @@
 #   ignore_errors: true
 
 - name: python | Install which pip{{ python3_version }}
-  command: "which pip{{ python3_version }}"
+  command: which pip{{ python3_version }}
   register: pip_result
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04'])
   changed_when: false
@@ -162,7 +163,7 @@
   ignore_errors: true
 
 - name: python35 | Upgrade setuptools
-  command: "pip{{ python3_version }} install --upgrade setuptools"
+  command: pip{{ python3_version }} install --upgrade setuptools
   changed_when: false
   become: true
   ignore_errors: true
@@ -171,17 +172,16 @@
 - name: python35 | Install MySQL for sonar
   pip:
     name: "{{ item }}"
-    executable: "pip{{ python3_version }}"
+    executable: pip{{ python3_version }}
   with_items:
-# - MySQL-python
+    # - MySQL-python
     - mysqlclient
   become: true
   ignore_errors: true
 
 - name: python35 | Gather current pip requirement
-  command: "pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt"
-  when: not( (python3_version is undefined) or (python3_version is none) )
-        and (python3_version | length > 0)
+  command: pip{{ python3_version }} freeze > requirements-{{ python3_version }}.txt
+  when: not( (python3_version is undefined) or (python3_version is none) ) and (python3_version | length > 0)
   changed_when: false
   become: true
   ignore_errors: true
@@ -189,7 +189,7 @@
 - name: python35 | Install virtualenv via pip
   pip:
     name: virtualenv
-    executable: "pip{{ python3_version }}"
+    executable: pip{{ python3_version }}
   become: true
 
 - name: python35 | Copy the requirements configuration file for python
@@ -208,19 +208,19 @@
 - name: python35 | Uninstall dependencies for python 3 requirements
   pip:
     name: "{{ item }}"
-    executable: "pip{{ python3_version }}"
+    executable: pip{{ python3_version }}
     state: absent
   when: not ansible_check_mode
   with_items:
     - libxml2-python
-  ignore_errors: '{{ ansible_check_mode }}'
+  ignore_errors: "{{ ansible_check_mode }}"
   become: true
 
 - name: python35 | Install C++ librairies database (Debian based) for pyodbc
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
-    - unixodbc-dev    # ODBC
+    - unixodbc-dev # ODBC
   become: true
 
 - name: python35 | Install C++ librairies for database (CentOS and RedHat based) for pyodbc
@@ -228,5 +228,5 @@
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   tags: cpp
   with_items:
-    - unixODBC-devel   # ODBC
+    - unixODBC-devel # ODBC
   become: true

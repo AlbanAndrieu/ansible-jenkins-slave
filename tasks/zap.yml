@@ -1,5 +1,4 @@
 ---
-
 - name: zap | Ensure unzip is installed.
   package: name=unzip state=present
 

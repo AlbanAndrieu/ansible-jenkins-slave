@@ -55,7 +55,8 @@
 # TODO must be the same as openssl-devel
 - name: jenkins-slave | Install C++ librairies openssl for building 64bits (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6') )
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version
+    == '6') )
   tags: cpp
   with_items:
     - openssl-libs.x86_64
@@ -102,11 +103,11 @@
   tags: cpp
   with_items:
     - libssl.so.0.9.8
-# See https://access.redhat.com/solutions/2043553
-# ln -s /usr/lib64/libssl.so.0.9.8e /usr/lib64/libssl.so.0.9.8
-# ln -s /usr/lib64/libssl.so.1.0.1e /usr/lib64/libssl.so.1.0.1
-# ln -s /usr/lib64/libcrypto.so.0.9.8e /usr/lib64/libcrypto.so.0.9.8
-# ln -s /usr/lib64/libcrypto.so.1.0.1e /usr/lib64/libcrypto.so.1.0.1
+  # See https://access.redhat.com/solutions/2043553
+  # ln -s /usr/lib64/libssl.so.0.9.8e /usr/lib64/libssl.so.0.9.8
+  # ln -s /usr/lib64/libssl.so.1.0.1e /usr/lib64/libssl.so.1.0.1
+  # ln -s /usr/lib64/libcrypto.so.0.9.8e /usr/lib64/libcrypto.so.0.9.8
+  # ln -s /usr/lib64/libcrypto.so.1.0.1e /usr/lib64/libcrypto.so.1.0.1
   become: true
 
 - name: jenkins-slave | Install C++ librairies openssl for building 64bits (RedHat based)
@@ -133,16 +134,16 @@
   pkgutil: name={{ item }} state=present
   when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
   with_items:
-    - CSWopenldap                   # Dependencies CSWlibldap-r2-4- CSWlibsasl2-2 CSWliblber2-4-2
+    - CSWopenldap # Dependencies CSWlibldap-r2-4- CSWlibsasl2-2 CSWliblber2-4-2
 # - CSWlibldap2-4-2
 
 - name: jenkins-slave | Install C++ librairies ldap (RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '5')
   with_items:
-# ldap-2.4 is the default on RedHat 7.1, but we still use ldap-2.3 in the code
+    # ldap-2.4 is the default on RedHat 7.1, but we still use ldap-2.3 in the code
     - openldap-devel
-# bolow cyrus-sasl-devel is added by openldap-devel
+    # bolow cyrus-sasl-devel is added by openldap-devel
     - cyrus-sasl-devel
   become: true
 
@@ -177,7 +178,7 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'RedHat' and ansible_distribution_version == '6.8')
   with_items:
-# ldap-2.3 is still needed by tibco adapter
+    # ldap-2.3 is still needed by tibco adapter
     - compat-openldap
   become: true
 
@@ -193,9 +194,9 @@
   pkgutil: name={{ item }} state=present
   when: ((ansible_distribution == 'Solaris') and (ansible_distribution_version not in ['11.1']))
   with_items:
-    - CSWlibcurl4        # Dependencies CSWlibz1
-#  - CSWlibz1
-    - CSWlibreadline6    # Dependencies CSWlibncurses6
+    - CSWlibcurl4 # Dependencies CSWlibz1
+    #  - CSWlibz1
+    - CSWlibreadline6 # Dependencies CSWlibncurses6
 #  - CSWlibncurses6
 
 - name: jenkins-slave | Install C++ librairies curl (Debian based)
@@ -273,8 +274,8 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04', '14.04']
   with_items:
     - liblog4cxx10-dev
-#   - libcrypto++9
-#   - libxerces-c28
+  #   - libcrypto++9
+  #   - libxerces-c28
   become: true
 
 - name: jenkins-slave | Install C++ librairies log4cxx (Debian based)
@@ -283,8 +284,8 @@
   tags: cpp
   with_items:
     - liblog4cxx-dev
-#   - libcrypto++9
-#   - libxerces-c28
+  #   - libcrypto++9
+  #   - libxerces-c28
   become: true
 
 - name: jenkins-slave | Install C++ librairies log4cxx (CentOS based)
@@ -293,8 +294,8 @@
   tags: cpp
   with_items:
     - log4cxx-devel
-#   - libcrypto++9
-#   - libxerces-c28
+  #   - libcrypto++9
+  #   - libxerces-c28
   become: true
 
 - name: jenkins-slave | Install C++ librairies log4cxx (RedHat based)
@@ -303,8 +304,8 @@
   tags: cpp
   with_items:
     - log4cxx-devel
-#   - libcrypto++9
-#   - libxerces-c28
+  #   - libcrypto++9
+  #   - libxerces-c28
   become: true
 
 # XERCES (XERCES 2.8 still nedded by OLD LDAP)
@@ -470,22 +471,22 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04']
   with_items:
-# libstdc++6
+    # libstdc++6
     - libstdc++-4.6-dev
-# do not install log4cxx it because provided by 3rparties for RedHat
-#   - liblog4cxx10
-#   - libcrypto++9
+  # do not install log4cxx it because provided by 3rparties for RedHat
+  #   - liblog4cxx10
+  #   - libcrypto++9
   become: true
 
 - name: jenkins-slave | Install C++ librairies for building 64bits (Debian based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04'] #not in ['12.04']
   with_items:
-# libstdc++6
+    # libstdc++6
     - libstdc++-4.8-dev
-# do not install log4cxx it because provided by 3rparties for RedHat
-#   - liblog4cxx10
-#   - libcrypto++9
+  # do not install log4cxx it because provided by 3rparties for RedHat
+  #   - liblog4cxx10
+  #   - libcrypto++9
   become: true
 
 # cross compatibility for i386 i686
@@ -493,8 +494,8 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version ['16.04'] # not in ['12.04', '14.04']
   with_items:
-#   - libstdc++5
-# libstdc++6
+    #   - libstdc++5
+    # libstdc++6
     - libstdc++-5-dev
     - libstdc++-5-dev:i386
   become: true
@@ -507,7 +508,7 @@
     - libstdc++-5-dev
     - libstdc++-6-dev
     - libstdc++-7-dev
-#    - libstdc++-8-dev:i386
+  #    - libstdc++-8-dev:i386
   become: true
   ignore_errors: true
 
@@ -518,7 +519,7 @@
     - libstdc++-7-dev
     - libstdc++-8-dev
     - libstdc++-9-dev
-#    - libstdc++-9-dev:i386
+  #    - libstdc++-9-dev:i386
   become: true
   ignore_errors: true
 
@@ -528,11 +529,11 @@
   tags: cpp
   with_items:
     - libstdc++
-# Below libstdc++-devel already installed
-#   - libstdc++-devel
+    # Below libstdc++-devel already installed
+    #   - libstdc++-devel
     - glibc
-#   - log4cxx
-#   - libcrypto++9
+  #   - log4cxx
+  #   - libcrypto++9
   become: true
 
 # cross compatibility for i386 i686
@@ -540,7 +541,7 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['12.04']
   with_items:
-# needed for 32 bits cross compilation
+    # needed for 32 bits cross compilation
     - g++-4.6-multilib
     - gcc-4.6-multilib
     - ia32-libs
@@ -554,13 +555,13 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['14.04'] # not in ['12.04']
   with_items:
-# needed for 32 bits cross compilation
+    # needed for 32 bits cross compilation
     - g++-4.8-multilib
     - gcc-4.8-multilib
-#   - ia32-libs
-# sudo ln -s /usr/lib32/libstdc++.so.6 /usr/lib32/libstdc++.so fixed by lib32gcc-4.8-dev
-# sudo ln -s /usr/lib32/libgcc_s.so.1 /usr/lib32/libgcc_s.so    fixed by lib32gcc-4.8-dev
-#   - lib32stdc++4.8-dev
+    #   - ia32-libs
+    # sudo ln -s /usr/lib32/libstdc++.so.6 /usr/lib32/libstdc++.so fixed by lib32gcc-4.8-dev
+    # sudo ln -s /usr/lib32/libgcc_s.so.1 /usr/lib32/libgcc_s.so    fixed by lib32gcc-4.8-dev
+    #   - lib32stdc++4.8-dev
     - lib32gcc-4.8-dev
     - libstdc++-4.8-dev
   become: true
@@ -577,9 +578,9 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ['16.04'] # not in ['12.04', '14.04']
   with_items:
-# needed for 32 bits cross compilation
-#   - g++-multilib
-#   - gcc-multilib
+    # needed for 32 bits cross compilation
+    #   - g++-multilib
+    #   - gcc-multilib
     - gcc-5-multilib
     - g++-5-multilib
     - lib32gcc-5-dev
@@ -592,7 +593,7 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   with_items:
-# needed for 32 bits cross compilation
+    # needed for 32 bits cross compilation
     - glibc-devel.i686
     - libstdc++-devel.i686
   become: true
@@ -602,8 +603,8 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
   with_items:
-# needed for linking old libraries
-# ldconfig -v | grep libstdc++
+    # needed for linking old libraries
+    # ldconfig -v | grep libstdc++
     - libstdc++5
   become: true
   ignore_errors: true
@@ -615,10 +616,10 @@
     state: "{{ util_pkg_state | default('present') }}"
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '6')
   with_items:
-# compat-libstdc++-33 contains libstdc++.so.5
+    # compat-libstdc++-33 contains libstdc++.so.5
     - compat-libstdc++-33
-#   - compat-readline5-5.2-17.1.el6.i686
-#   - compat-readline5-5.2-17.1.el6.x86_64
+  #   - compat-readline5-5.2-17.1.el6.i686
+  #   - compat-readline5-5.2-17.1.el6.x86_64
   become: true
 
 - name: jenkins-slave | Install C++ librairies for building old gcc (RedHat based)
@@ -628,10 +629,10 @@
     state: "{{ util_pkg_state | default('present') }}"
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   with_items:
-# compat-libstdc++-33 contains libstdc++.so.5
+    # compat-libstdc++-33 contains libstdc++.so.5
     - compat-libstdc++-33
-#   - compat-readline5-5.2-17.1.el6.i686
-#   - compat-readline5-5.2-17.1.el6.x86_64
+  #   - compat-readline5-5.2-17.1.el6.i686
+  #   - compat-readline5-5.2-17.1.el6.x86_64
   become: true
 
 - name: jenkins-slave | Install tools (RedHat based)
@@ -648,9 +649,9 @@
   tags: package
   with_items:
     - bison
-# when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-# when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
-# when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  # when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  # when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  # when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   become: true
   ignore_errors: true
 
@@ -676,10 +677,10 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version not in ['12.04', '14.04']
   with_items:
-# unicode libicuuc.so
+    # unicode libicuuc.so
     - libicu55
-#   - libicu55:i386
-# Note that there is 32bits lib/libicuuc.so cross compilation in 3rdparties/x86Linux/adapter
+    #   - libicu55:i386
+    # Note that there is 32bits lib/libicuuc.so cross compilation in 3rdparties/x86Linux/adapter
     - libicu-dev:i386
   become: true
   ignore_errors: true
@@ -704,7 +705,8 @@
 
 - name: jenkins-slave | Install C++ librairies for unicode for database (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version == '6'))
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or (ansible_distribution == 'RedHat' and not ansible_distribution_major_version
+    == '6'))
   tags: cpp
   with_items:
     - libicu-devel
@@ -797,7 +799,8 @@
 
 - name: jenkins-slave | Install asan (Address sanitizer) (CentOS and RedHat based)
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
-  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version == '7'
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version
+    == '7'
   with_items:
     - libasan
   become: true

@@ -1,5 +1,4 @@
 ---
-
 # PostgreSQL
 # odbcinst_PostgreSQL_Driver: /usr/lib/psqlodbcw.so
 odbcinst_PostgreSQL_Setup: /usr/lib/x86_64-linux-gnu/odbc/libodbcpsqlS.so
@@ -21,4 +20,4 @@ odbcinst_FreeTDS_Setup: /usr/local/Cellar/freetds/1.00.63/lib/libtdsodbc.so
 odbcinst_Oracle_Driver: /opt/oracle/instantclient_12_2/libsqora.so.12.1
 odbcinst_Oracle_Driver64: /opt/oracle/instantclient_12_2/libsqora.so.12.1
 
-jdk_home: "/usr/java/default/"
+jdk_home: /usr/java/default/

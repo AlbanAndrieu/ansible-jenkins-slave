@@ -1,5 +1,4 @@
 ---
-
 - name: Assert platform is supported
   assert:
     that:
@@ -67,9 +66,9 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
     - flex
-# when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-# when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
-# when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
+  # when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  # when: (ansible_distribution == 'MacOSX' or ansible_distribution == 'FreeBSD')
+  # when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   become: true
   ignore_errors: true
   tags:
@@ -81,7 +80,7 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:
-# Needed for having /usr/bin/xml2-config in the PATH
+    # Needed for having /usr/bin/xml2-config in the PATH
     - libxml2-dev
     - libxslt-dev
   become: true
@@ -90,7 +89,7 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
   with_items:
-    - libxml2       # Needed for having /usr/bin/xml2-config in the PATH
+    - libxml2 # Needed for having /usr/bin/xml2-config in the PATH
     - libxslt
     - libexslt
   become: true
@@ -150,17 +149,18 @@
   become: true
 
 - name: jenkins-slave | Copy the email template for jenkins email ext configuration
-  copy: src=groovy-html-main.template dest={{ jenkins_home }}/email-templates/groovy-html-cut.template backup=yes owner={{ jenkins_user }} group={{ jenkins_group }}
+  copy: src=groovy-html-main.template dest={{ jenkins_home }}/email-templates/groovy-html-cut.template backup=yes owner={{ jenkins_user }} group={{ jenkins_group
+    }}
   become: true
   ignore_errors: true
 
 - name: jenkins-slave | Set limits
   lineinfile: dest=/etc/security/limits.conf line="{{ item.key }}" regexp="{{ item.value }}"
   with_dict:
-    "*               soft    nofile          65536": '\*\s+soft\s+nofile'
-    "*               hard    nofile          65536": '\*\s+hard\s+nofile'
-    "root            soft    nofile          16384": 'root\s+soft\s+nofile'
-    "root            hard    nofile          65536": 'root\s+hard\s+nofile'
+    "*               soft    nofile          65536": \*\s+soft\s+nofile
+    "*               hard    nofile          65536": \*\s+hard\s+nofile
+    root            soft    nofile          16384: root\s+soft\s+nofile
+    root            hard    nofile          65536: root\s+hard\s+nofile
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
   become: true
   changed_when: false
@@ -168,23 +168,25 @@
 - name: jenkins-slave | Set limits
   lineinfile: dest=/etc/security/limits.conf line="{{ item.key }}" regexp="{{ item.value }}"
   with_dict:
-    "*               soft    nofile          65536": '\*\s+soft\s+nofile'
-    "*               hard    nofile          65536": '\*\s+hard\s+nofile'
-    "root            soft    nofile          65536": 'root\s+soft\s+nofile'
-    "root            hard    nofile          65536": 'root\s+hard\s+nofile'
+    "*               soft    nofile          65536": \*\s+soft\s+nofile
+    "*               hard    nofile          65536": \*\s+hard\s+nofile
+    root            soft    nofile          65536: root\s+soft\s+nofile
+    root            hard    nofile          65536: root\s+hard\s+nofile
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   become: true
   changed_when: false
 
 - name: jenkins-slave | Set nproc limits for Jenkins
   lineinfile: dest="/etc/security/limits.d/90-nproc.conf" line='jenkins    soft    nproc     unlimited'
-  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version in ('5','6'))
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version
+    in ('5','6'))
   become: true
   changed_when: false
 
 - name: jenkins-slave | Set nproc limits for Jenkins
   lineinfile: dest="/etc/security/limits.d/20-nproc.conf" line='jenkins    soft    nproc     unlimited'
-  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version not in ('5','6'))
+  when: ((ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat') and ansible_distribution_major_version
+    not in ('5','6'))
   become: true
   changed_when: false
 
@@ -358,7 +360,7 @@
     group: "{{ jenkins_group  }}"
     state: link
   with_items:
-    - { path: 'jenkins-slave', dest: 'slave' }
+    - { path: jenkins-slave, dest: slave }
   #  - { path: 'Jenkins-slave-todo', dest: 'slavetodo' }
   become: true
   changed_when: false
@@ -374,7 +376,7 @@
     state: directory
     mode: 0755
   with_items:
-    - { dest: 'slave' }
+    - { dest: slave }
   #  - { dest: 'slavetodo' }
   become: true
   changed_when: false

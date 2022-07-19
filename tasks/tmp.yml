@@ -1,5 +1,4 @@
 ---
-
 # TODO
 # http://www.thegeekstuff.com/2013/10/tmpreaper-examples/
 
@@ -26,14 +25,14 @@
 
 - name: jenkins-slave | Add sanitary job in cron for tmp
   cron:
-    name: "tmp cleanup"
+    name: tmp cleanup
     hour: "1"
     minute: "0"
-    job: "find /tmp -user {{ jenkins_user }} -atime +7 -exec rm -rf {} +"
+    job: find /tmp -user {{ jenkins_user }} -atime +7 -exec rm -rf {} +
     user: "{{ jenkins_user }}"
-    cron_file: "clean_tmp"
+    cron_file: clean_tmp
   become: true
-#  ignore_errors: true
+  #  ignore_errors: true
   tags:
     - cron
     - vm
@@ -57,14 +56,14 @@
 
 - name: jenkins-slave | Add sanitary job in cron for workspace tmp
   cron:
-    name: "workspace tmp cleanup"
+    name: workspace tmp cleanup
     hour: "1"
     minute: "0"
-    job: "find {{ jenkins_slave_home }}/tmp -user {{ jenkins_user }} -atime +7 -exec rm -rf {} +"
+    job: find {{ jenkins_slave_home }}/tmp -user {{ jenkins_user }} -atime +7 -exec rm -rf {} +
     user: "{{ jenkins_user }}"
-    cron_file: "clean_workspace_tmp"
+    cron_file: clean_workspace_tmp
   become: true
-#  ignore_errors: true
+  #  ignore_errors: true
   tags:
     - cron
     - vm

@@ -1,11 +1,10 @@
 ---
-
 #- name: jenkins-slave | Set python link to python version
 #  set_fact: python3_default_version=3.7
 
 - name: jenkins-slave | Fail if using python3 with Ansible<2.3
   fail:
-    msg: "Ansible 2.3+ is required to use Python3 interpreter."
+    msg: Ansible 2.3+ is required to use Python3 interpreter.
   when: ansible_version.full is version_compare('2.3', '<') and ansible_python_interpreter is defined and 'python3' in ansible_python_interpreter
 
 - name: jenkins-slave | Install ansible cryptography requirements
@@ -88,7 +87,7 @@
 - name: jenkins-slave | Install devops tools for ansible accelerate mode
   pip:
     name: "{{ item }}"
-    executable: "pip{{ python3_default_version }}"
+    executable: pip{{ python3_default_version }}
   with_items:
     - python-keyczar
   become: true

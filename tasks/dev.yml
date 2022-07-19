@@ -1,12 +1,11 @@
 ---
-
 # Below is recommended to use scl, because scons still need python 27 (and eclipse)
 # scl -l
 # scl enable python27 bash
 
 - name: Workstation | Install python for scons
   yum:
-    name: "python27-python-pip"
+    name: python27-python-pip
     state: present
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
 
@@ -30,7 +29,7 @@
 # subscription-manager repos --enable rhel-6-server-optional-rpms
 
 - name: Workstation | Install the 'RHSCL 7' repo (RedHat)
-  command: "subscription-manager repos --enable={{ item }}"
+  command: subscription-manager repos --enable={{ item }}
   with_items:
     - rhel-server-rhscl-6-rpms
     - rhel-6-server-optional-rpms
@@ -38,7 +37,7 @@
   become: true
 
 - name: Workstation | Install the 'RHSCL 7' repo (RedHat)
-  command: "subscription-manager repos --enable={{ item }}"
+  command: subscription-manager repos --enable={{ item }}
   with_items:
     - rhel-server-rhscl-7-rpms
     - rhel-7-server-optional-rpms
@@ -50,8 +49,8 @@
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
     - centos-release-scl
-# sudo yum install centos-release-scl
-# sudo yum install devtoolset-4
+  # sudo yum install centos-release-scl
+  # sudo yum install devtoolset-4
   when: (ansible_distribution == 'CentOS')
   become: true
 
@@ -69,7 +68,7 @@
 
 - name: Workstation | Install the 'Development tools 7'
   yum:
-    name: "devtoolset-7"
+    name: devtoolset-7
     state: present
   when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux')
   become: true
@@ -87,10 +86,10 @@
 #   become: true
 
 - name: Workstation | Install the 'Development tools 7' repo (RedHat)
-  command: "subscription-manager repos --enable={{ item }}"
+  command: subscription-manager repos --enable={{ item }}
   with_items:
-    - rhel-7-server-devtools-rpms       # Server
-#   - rhel-7-workstation-devtools-rpms  # Workstation
+    - rhel-7-server-devtools-rpms # Server
+  #   - rhel-7-workstation-devtools-rpms  # Workstation
   when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7')
   become: true
 
@@ -134,8 +133,9 @@
 - name: Workstation | Install the rh package
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }} update_cache=yes"
   with_items:
-#   - rh-nodejs6
+    #   - rh-nodejs6
     - rh-maven33
     - rh-java
-  when: ((ansible_distribution == 'CentOS' and ansible_distribution_major_version not in '7') or (ansible_distribution == 'Red Hat Enterprise Linux' and not ansible_distribution_major_version == '5'))
+  when: ((ansible_distribution == 'CentOS' and ansible_distribution_major_version not in '7') or (ansible_distribution == 'Red Hat Enterprise Linux' and not ansible_distribution_major_version
+    == '5'))
   become: true
