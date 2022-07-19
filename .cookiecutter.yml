@@ -1,4 +1,3 @@
-
 ---
 default_context:
   role_name: ansible-jenkins-slave

@@ -65,7 +65,7 @@ for path in glob('roles/*/meta/main.yml'):
                 if depended_role:
                     add_role(depended_role)
                     link_roles(dependent_role, depended_role)
-            except:
+            except:  # noqa: ignore=E722
                 logging.exception('Probleme with %s dependency: %s', dependent_role, dependency)
 dot.format = 'png'
 dot.render('roles.gv', view=True)
