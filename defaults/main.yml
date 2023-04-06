@@ -275,6 +275,7 @@ docker_opts_no_new_privileges: true
 docker_opts_live_restore: false
 docker_opts_experimental: true
 #docker_opts_debug: true
+docker_opts_userns_remap: "albandrieu:docker",
 
 docker_py_version: "1.9.0"
 # docker_opts: >
@@ -292,6 +293,8 @@ docker_opts: >
 #  --dns-search={{ docker_opts_dns_search }}
 #  --insecure-registry=registry.albandrieu.com
 #  --userns-remap jenkins #TODO on Ubuntu only, but it is conflicting with kubernete or running docker run --net=host
+
+aws_ecr_registry: 783876277037.dkr.ecr.eu-west-3.amazonaws.com
 
 # workspace: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
 workspace: "{{ tempdir.stdout }}"

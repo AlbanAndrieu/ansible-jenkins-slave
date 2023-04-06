@@ -3,6 +3,9 @@
   set_fact: python_version=3.7
 #  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and ansible_distribution_version in ("16.04")
 
+# - name: docker | Set aws ecr
+#   set_fact: aws_ecr_registry=783876277037.dkr.ecr.eu-west-3.amazonaws.com
+
 - name: docker | Install python-docker
   action: "{{ ansible_pkg_mgr }} name={{ item }} state={{ util_pkg_state | default('present') }}"
   with_items:
@@ -309,7 +312,8 @@
     - gnome-keyring
     - gnupg2
     - pass
-  #   - docker-credential-pass
+    - amazon-ecr-credential-helper
+#   - docker-credential-pass
   when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' ) and ansible_distribution_version is version_compare(18.04, '>=')
   tags: package
   become: true

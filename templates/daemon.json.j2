@@ -29,5 +29,16 @@
 {% if docker_opts_experimental is defined %}
   "experimental": false,
 {% endif %}
+{% if docker_opts_userns_remap is defined %}
+  "userns-remap": "{{ docker_opts_userns_remap }}",
+{% endif %}
+  "default-shm-size" : "256M",
+  "default-ulimits": {
+    "memlock": { "name":"memlock", "soft":  -1, "hard": -1 },
+    "stack"  : { "name":"stack", "soft": 67108864, "hard": 67108864 }
+  },
+  "features": {
+    "buildkit" : true
+  },
   "debug": true
 }
