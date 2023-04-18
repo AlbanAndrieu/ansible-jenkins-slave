@@ -275,7 +275,7 @@ docker_opts_no_new_privileges: true
 docker_opts_live_restore: false
 docker_opts_experimental: true
 #docker_opts_debug: true
-docker_opts_userns_remap: "albandrieu:docker",
+docker_opts_userns_remap: "albandrieu:docker"
 
 docker_py_version: "1.9.0"
 # docker_opts: >
