@@ -14,7 +14,7 @@ ansible-lint = {extras = ["yamllint"], version = ">=6.0.2"}
 checkov = ">=2.0.1144"
 semgrep = ">=0.94.0"
 #pipenv = ">=2022.6.7"
-pre-commit = ">=2.19.0"
+pre-commit = ">=2.20.0"
 pre-commit-hooks = ">=4.2.0"
 ansible-playbook-grapher = "==1.1.0"
 git-pre-commit-hook-utils = ">=0.0.5"
