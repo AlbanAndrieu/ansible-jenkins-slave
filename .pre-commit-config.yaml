@@ -152,19 +152,6 @@ repos:
     rev: v0.1.2
     hooks:
       - id: encryption-check
-  - repo: https://github.com/Lucas-C/pre-commit-hooks-nodejs
-    rev: v1.1.2
-    hooks:
-      - id: htmllint
-        args: [--config, .htmlhintrc]
-        files: ^src/
-      - id: markdown-toc
-        args: [--maxdepth, "3", -i]
-      - id: dockerfile_lint
-        #  args: [--json, --verbose, --dockerfile docker/ubuntu20/Dockerfile]
-        args:
-          [--permissive, --verbose, --dockerfile, ./docker/ubuntu20/Dockerfile]
-        always_run: true
   - repo: https://github.com/hadolint/hadolint
     rev: v2.13.1-beta
     hooks:
@@ -175,12 +162,6 @@ repos:
   #      - id: ggshield
   #        language_version: python3
   #        stages: [commit]
-  # - repo: https://github.com/bridgecrewio/checkov.git
-  #   rev: 2.2.120
-  #   hooks:
-  #     - id: checkov
-  #       verbose: true
-  #       args: [--soft-fail]
   # - repo: https://github.com/zricethezav/gitleaks
   #   rev: v8.15.2
   #   hooks:
@@ -213,28 +194,15 @@ repos:
     rev: 0.29.4
     hooks:
       - id: check-github-workflows
-  #  - repo: https://github.com/Checkmarx/kics
-  #    rev: "v1.5.9"
-  #    hooks:
-  #      #- id: kics
-  #      #  exclude: >
-  #      #    (?x)^(
-  #      #        .direnv$|
-  #      #        .*\.terraform.*$|
-  #      #        .*\.tfvars$|
-  #      #    )$
-  #      - id: kics-scan
-  #        verbose: true
-  #        args: [--ignore-on-exit, "all", --config, "kics-config.json"]
   - repo: https://github.com/oxsecurity/megalinter
     rev: v8.3.0
     hooks:
       - id: megalinter-incremental # Faster, less thorough
         stages:
           - commit
-#   - id: megalinter-full  # Slower, more thorough
-#     stages:
-#       - push
+  #   - id: megalinter-full  # Slower, more thorough
+  #     stages:
+  #       - push
   - repo: https://github.com/AlbanAndrieu/nabla-hooks.git
     rev: v1.0.5
     hooks:
