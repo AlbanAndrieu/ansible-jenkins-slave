@@ -1,5 +1,5 @@
 ---
-# sudo ansible-playbook -i hosts -c local -v jenkins-slave.yml -vvvv | tee setup.log
+# sudo ansible-playbook -i hosts -c local -v jenkins-slave.yml -vvv | tee setup.log
 
 - name: Assert platform is supported
   hosts: all
